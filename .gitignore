@@ -1,0 +1,22 @@
+
+/tmp
+
+# dependencies
+/node_modules
+/bower_components
+
+# misc
+/.sass-cache
+npm-debug.log
+dist/
+/.idea
+.local_only
+.publish
+
+# virtual enviorn
+venv
+
+# csv files
+doee_scripts/*.csv
+
+
