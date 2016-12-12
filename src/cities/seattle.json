@@ -1,11 +1,11 @@
 {
-    "url_name": "dc",
-    "name": "D.C. Energy Benchmarking",
-    "logo_link_url": "http://doee.dc.gov/energybenchmarking/",
-    "address_search_regional_context": "District of Columbia",
+    "url_name": "seattle",
+    "name": "Seattle Energy Benchmarking",
+    "logo_link_url": "http://cityenergyproject.github.io/seattle/",
+    "address_search_regional_context": "Seattle",
     "header_banner_images": [
         {
-            "src": "images/dc_skyline@2x.png",
+            "src": "images/seattle-skyline@2x.png",
             "href": null,
             "alt": "DC skyline logo"
         },
@@ -24,8 +24,8 @@
     "backgroundTileSource": "https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_nolabels/{z}/{x}/{y}.png",
     "labelTileSource": "https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_only_labels/{z}/{x}/{y}.png",
     "center": [
-      38.889931,
-      -77.009003
+      47.61,
+      -122.33
     ],
     "zoom": 12,
     "categoryDefaults": [{"field":"report_status","values":["In Compliance"],"other":false}],
