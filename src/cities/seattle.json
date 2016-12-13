@@ -95,6 +95,7 @@
             "section": "Energy Performance Metrics",
             "color_range": ["#3666b4","#e7ba2e","#9e3d22"],
             "unit": "kBTU/ft²",
+            "filter_range": {"max" : 100},
             "description": "The Site Energy Use Intensity (EUI), as calculated by Portfolio Manager, at the property site. This equals the amount of energy consumed at the site in thousand British thermal units (kBtus) per gross square foot (kBtu/ft2) of the property. Site EUI values are the result of self-reported entries."
         },
         {
@@ -105,6 +106,7 @@
             "section": "Energy Performance Metrics",
             "color_range": ["#3666b4","#e7ba2e","#9e3d22"],
             "unit": "kBTU/ft²",
+            "filter_range": {"max" : 200},
             "description": "Source Energy Use divided by property square footage, normalized for weather. Weather-normalization is based on National Oceanic and Atmospheric Administration (NOAA) weather data for the zip code. Source Energy Use is the total amount of raw fuel that is required to operate the property. In addition to what the property consumes on-site, source energy includes losses that take place during generation, transmission, and distribution of the energy, thereby enabling a complete assessment of energy consumption resulting from building operations. For this reason, Source EUI is the best way to quantify the energy performance of commercial buildings."
         },
         {
