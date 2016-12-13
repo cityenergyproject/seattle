@@ -7,19 +7,13 @@
         {
             "src": "images/seattle-skyline@2x.png",
             "href": null,
-            "alt": "DC skyline logo"
+            "alt": "seattle skyline logo"
         },
         {
-            "src": "images/sustainable_dc_logo@2x.png",
-            "href": "http://sustainabledc.org/",
-            "alt": "Sustainable DC logo"
-        },
-        {
-            "src": "images/doee_logo@2x.png",
-            "href": "http://doee.dc.gov/",
-            "alt": "DOEE logo"
+            "src": "images/seattle_ose_logo@2x.png",
+            "href": null,
+            "alt": "Seattle OSE logo"
         }
-
     ],
     "backgroundTileSource": "https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_nolabels/{z}/{x}/{y}.png",
     "labelTileSource": "https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_only_labels/{z}/{x}/{y}.png",
