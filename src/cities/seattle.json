@@ -23,13 +23,12 @@
     ],
     "zoom": 12,
     "categoryDefaults": [{"field":"report_status","values":["In Compliance"],"other":false}],
-    "cartoDbUser": "dcenergybenchmarkingproject",
+    "cartoDbUser": "cityenergy-seattle",
     "property_id": "cartodb_id",
     "property_name": "property_name",
     "building_type": "primary_ptype_epa",
     "popup_fields": [
         {"field": "property_name", "label": "Property Name: "},
-        {"field": "owner_of_record", "label": "Owner of Record: "},
         {"field": "reported_address", "label": "Reported Address: "},
         {"field": "report_status", "label": "Report Status: "},
         {"field": "primary_ptype_epa", "label": "Property Type: "},
@@ -38,24 +37,18 @@
         {"field": "energy_star_score", "label": "ENERGY STAR Score: "},
         {"field": "site_eui", "label": "Site Energy Use Intensity (kBTU/ft²): "},
         {"field": "weather_norm_source_eui", "label": "Weather Normalized Source EUI (kBtu/ft²): "},
-        {"field": "water_use", "label": "Water Use: "},
         {"field": "total_ghg_emissions", "label": "Total GHG Emissions (Metric Tons CO₂e): ", "start_hidden": true },
-        {"field": "electricity_use", "label": "Electricity Use: "},
-        {"field": "natural_gas_use", "label": "Natural Gas Use: "},
-        {"field": "district_water_use", "label": "District Water-Based Energy Use: "},
-        {"field": "fuel_use", "label": "Diesel and Fuel Oil Use: "},
-        {"field": "dc_real_pid", "label": "DC Real Property ID: "},
-        {"field": "ward", "label": "Ward: "}
+        {"field": "neighborhood", "label": "Neighborhood: "}
     ],
     "map_layers": [
         {
-            "title": "Ward",
-            "field_name": "ward",
+            "title": "Neighborhood",
+            "field_name": "neighborhood",
             "display_type": "category",
             "sort_by_key": true,
             "hide_other_category": true,
             "section": "Property Information",
-            "description": "Ward as recorded by the DC Office of Tax and Revenue"
+            "description": "Neighborhood"
         },
         {
             "title": "Property Type",
@@ -64,15 +57,7 @@
             "sort_by_key": true,
             "hide_other_category": true,
             "section": "Property Information",
-            "description": "The Primary Use of the Property, as calculated by Portfolio Manager based on the owner's selections. This is not necessarily consistent with the property type designation in DC Office of Tax and Revenue Records"
-        },
-        {
-            "title": "Report Status",
-            "field_name": "report_status",
-            "display_type": "category",
-            "onload_display_values": "In Compliance",
-            "section": "Property Information",
-            "description": "The Primary Use of the Property, as calculated by Portfolio Manager based on the owner's selections. This is not necessarily consistent with the property type designation in DC Office of Tax and Revenue Records"
+            "description": "The Primary Use of the Property, as calculated by Portfolio Manager based on the owner's selections."
         },
         {
             "title": "Property Size",
@@ -92,56 +77,6 @@
             "color_range": ["#800180","#3e4b84","#028b8b"],
             "section": "Property Information",
             "description": "The year property was constructed, as reported by owner"
-        },
-        {
-            "title": "Electricity Use",
-            "field_name": "electricity_use",
-            "display_type": "range",
-            "range_slice_count": 18,
-            "section": "Energy Use",
-            "color_range": ["#3666b4","#e7ba2e","#9e3d22"],
-            "unit": "kBTU",
-            "description": "The total annual electricity consumed by the property, both sourced from the electrical grid and generated from any onsite renewable energy generation systems (if applicable), in kilowatt-hours (kWh)"
-        },
-        {
-            "title": "Natural Gas Use",
-            "field_name": "natural_gas_use",
-            "display_type": "range",
-            "range_slice_count": 18,
-            "section": "Energy Use",
-            "color_range": ["#3666b4","#e7ba2e","#9e3d22"],
-            "unit": "kBTU",
-            "description": "The total annual natural gas consumed by the property, in therms (1 therm  equals 100,000 British Thermal Units (BTUs), and is apoximately equal to the energy content of 100 cubic feet (CCF) of natural gas."
-        },
-        {
-            "title": "Water Use",
-            "field_name": "water_use",
-            "display_type": "range",
-            "range_slice_count": 18,
-            "section": "Water Use",
-            "color_range": ["#3666b4","#e7ba2e","#9e3d22"],
-            "unit": "kgal",
-            "description": "Total annual water consumption in kilogallons (1,000 gallons)"
-        },
-        {
-            "title": "Water-Based Energy Use",
-            "field_name": "district_water_use",
-            "display_type": "range",
-            "range_slice_count": 18,
-            "section": "Energy Use",
-            "color_range": ["#3666b4","#e7ba2e","#9e3d22"],
-            "unit": "kBTU",
-            "description": "Total annual energy consumption from district water-based energy sources, inclusive of District Steam systems, District Hot Water, and District Chilled Water, measured in kBTU (1,000 Brittish Thermal Units)."
-        },
-        {
-            "title": "Fuel Oil & Diesel Fuel Use",
-            "field_name": "fuel_use",
-            "display_type": "range",
-            "range_slice_count": 18,
-            "section": "Energy Use",
-            "color_range": ["#3666b4","#e7ba2e","#9e3d22"],
-            "unit": "kBTU",
-            "description": "Total annual energy consumption from liquid fuel use on the property, inclusive of fuel oil no. 1, fuel oil no. 2, fuel oil no. 4, fuel oil no. 5 and no. 6, diesel, kerosene, and propane, measured in kBTU (1,000 British Thermal Units)."
         },
         {
             "title": "ENERGY STAR Score",
@@ -195,7 +130,7 @@
     ],
     "years": {
         "2015": {
-            "table_name": "t2015",
+            "table_name": "table_2015_stamen_phase_i",
             "default_layer": "energy_star_score"
         }
     }
