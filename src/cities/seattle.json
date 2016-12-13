@@ -79,7 +79,7 @@
             "field_name": "reported_gross_floor_area",
             "display_type": "range",
             "range_slice_count": 18,
-            "color_range": ["#3494a3","#306e9a","#76498d"],
+            "color_range": ["#800180","#3e4b84","#028b8b"],
             "unit": "ft²",
             "section": "Property Information",
             "description": "The Gross Floor Area as reported by owner. The Gross Floor Area is the total size, as measured between the principal exterior surfaces of the enclosing fixed walls of the building(s). This includes all areas inside the building(s) such as: occupied tenant areas, common areas, meeting areas, break rooms, restrooms, elevator shafts, mechanical equipment areas, and storage rooms.  It does not include the floor area of secondary spaces such as parking lots."
@@ -89,7 +89,7 @@
             "field_name": "year_built",
             "display_type": "range",
             "range_slice_count": 18,
-            "color_range": ["#3494a3","#306e9a","#76498d"],
+            "color_range": ["#800180","#3e4b84","#028b8b"],
             "section": "Property Information",
             "description": "The year property was constructed, as reported by owner"
         },
@@ -194,14 +194,6 @@
         }
     ],
     "years": {
-        "2013": {
-            "table_name": "t2013",
-            "default_layer": "energy_star_score"
-        },
-        "2014": {
-            "table_name": "t2014",
-            "default_layer": "energy_star_score"
-        },
         "2015": {
             "table_name": "t2015",
             "default_layer": "energy_star_score"
