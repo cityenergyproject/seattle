@@ -155,7 +155,7 @@ define([
     },
 
     root: function () {
-      this.navigate('/dc', {trigger: true, replace: true});
+      this.navigate('/seattle', {trigger: true, replace: true});
     },
 
     city: function(cityname){
