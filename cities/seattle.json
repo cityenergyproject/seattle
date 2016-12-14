@@ -5,14 +5,9 @@
     "address_search_regional_context": "Seattle",
     "header_banner_images": [
         {
-            "src": "images/seattle-skyline_option1.png",
+            "src": "images/seattle-skyline@2x.jpg",
             "href": null,
             "alt": "seattle skyline logo"
-        },
-        {
-            "src": "images/seattle_ose_logo@2x.png",
-            "href": null,
-            "alt": "Seattle OSE logo"
         }
     ],
     "backgroundTileSource": "https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_nolabels/{z}/{x}/{y}.png",
@@ -64,8 +59,9 @@
             "field_name": "reported_gross_floor_area",
             "display_type": "range",
             "range_slice_count": 18,
-            "color_range": ["#800180","#3e4b84","#028b8b"],
+            "color_range": ["#f0e5c7","#007749"],
             "unit": "ft²",
+            "filter_range": {"max" : 300000},
             "section": "Property Information",
             "description": "The Gross Floor Area as reported by owner. The Gross Floor Area is the total size, as measured between the principal exterior surfaces of the enclosing fixed walls of the building(s). This includes all areas inside the building(s) such as: occupied tenant areas, common areas, meeting areas, break rooms, restrooms, elevator shafts, mechanical equipment areas, and storage rooms.  It does not include the floor area of secondary spaces such as parking lots."
         },
@@ -74,7 +70,7 @@
             "field_name": "year_built",
             "display_type": "range",
             "range_slice_count": 18,
-            "color_range": ["#800180","#3e4b84","#028b8b"],
+            "color_range": ["#f0e5c7","#007749"],
             "section": "Property Information",
             "description": "The year property was constructed, as reported by owner"
         },
@@ -84,7 +80,7 @@
             "display_type": "range",
             "range_slice_count": 18,
             "section": "Energy Performance Metrics",
-            "color_range": ["#9e3d22","#e7ba2e","#3666b4"],
+            "color_range": ["#ab2328","#ffd552","#1f5dbe"],
             "description": "The 1-100 score calculated by ENERGY STAR® Portfolio Manager® that measures how well the property is performing relative to similar properties, when normalized for climate and operational characteristics. The 1-100 scale is set so that 1 represents the worst performing buildings and 100 represents the best performing buildings. A score of 50 indicates that a building is performing at the national median, taking into account its size, location, and operating parameters. A score of 75 indicates that at a property is performing in the 75th percentile and may be eligible to earn ENERGY STAR® Certification."
         },
         {
@@ -93,8 +89,9 @@
             "display_type": "range",
             "range_slice_count": 18,
             "section": "Energy Performance Metrics",
-            "color_range": ["#3666b4","#e7ba2e","#9e3d22"],
+            "color_range": ["#1f5dbe","#ffd552","#ab2328"],
             "unit": "kBTU/ft²",
+            "filter_range": {"max" : 100},
             "description": "The Site Energy Use Intensity (EUI), as calculated by Portfolio Manager, at the property site. This equals the amount of energy consumed at the site in thousand British thermal units (kBtus) per gross square foot (kBtu/ft2) of the property. Site EUI values are the result of self-reported entries."
         },
         {
@@ -103,8 +100,9 @@
             "display_type": "range",
             "range_slice_count": 18,
             "section": "Energy Performance Metrics",
-            "color_range": ["#3666b4","#e7ba2e","#9e3d22"],
+            "color_range": ["#1f5dbe","#ffd552","#ab2328"],
             "unit": "kBTU/ft²",
+            "filter_range": {"max" : 200},
             "description": "Source Energy Use divided by property square footage, normalized for weather. Weather-normalization is based on National Oceanic and Atmospheric Administration (NOAA) weather data for the zip code. Source Energy Use is the total amount of raw fuel that is required to operate the property. In addition to what the property consumes on-site, source energy includes losses that take place during generation, transmission, and distribution of the energy, thereby enabling a complete assessment of energy consumption resulting from building operations. For this reason, Source EUI is the best way to quantify the energy performance of commercial buildings."
         },
         {
@@ -113,7 +111,7 @@
             "display_type": "range",
             "range_slice_count": 18,
             "section": "Greenhouse Gas Emissions",
-            "color_range": ["#3666b4","#e7ba2e","#9e3d22"],
+            "color_range": ["#1f5dbe","#ffd552","#ab2328"],
             "unit": "Metric Tons CO₂e",
             "description": "Greenhouse Gas (GHG) Emissions are the carbon dioxide (CO2), methane (CH4), and nitrous oxide (N2O) gases released into the atmosphere as a result of energy consumption at the property. GHG emissions are expressed in Metric Tons of carbon dioxide equivalent (CO2e), a universal unit of measure that combines the quantity and global warming potential of each greenhouse gas. Total Emissions is the sum of Direct Emissions (emissions associated with onsite fuel combustion) and Indirect Emissions (emissions associated with purchases of electricity, district steam, district hot water, or district chilled water. These emissions occur at the utility plant, but they are a result of the property’s energy consumption and therefore contribute to the overall GHG footprint)."
         },
@@ -123,7 +121,7 @@
             "display_type": "range",
             "range_slice_count": 18,
             "section": "Greenhouse Gas Emissions",
-            "color_range": ["#3666b4","#e7ba2e","#9e3d22"],
+            "color_range": ["#1f5dbe","#ffd552","#ab2328"],
             "unit": "Metric Tons CO₂e/ft²",
             "description": "The  total Greenhouse Gas (GHG) Emissions, divided by the floor area of the building, in kilograms of carbon dioxide equivalent (CO2e) per square foot."
         }

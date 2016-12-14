@@ -150,7 +150,7 @@ body {
   -ms-font-feature-settings: "kern", "liga", "pnum";
   font-feature-settings: "kern", "liga", "pnum";
   -webkit-font-smoothing: antialiased;
-  color: #003DA5;
+  color: #0047ba;
   font-family: "Ubuntu", "Helvetica Neue", "Helvetica", "Roboto", "Arial", sans-serif;
   font-size: 14px;
   line-height: 1.5; }
@@ -193,7 +193,7 @@ picture {
 
 input[type="search"], button, input[type="button"], input[type="reset"], input[type="submit"], .irs-from, .irs-to, .irs-single {
   -webkit-font-smoothing: antialiased;
-  background-color: #003DA5;
+  background-color: #0047ba;
   border: 1px solid white;
   border-radius: 1em;
   color: #fff;
@@ -203,7 +203,7 @@ input[type="search"], button, input[type="button"], input[type="reset"], input[t
 
 button, input[type="button"], input[type="reset"], input[type="submit"], .irs-from, .irs-to, .irs-single {
   background-color: white;
-  color: #003DA5; }
+  color: #0047ba; }
 
 .map-category-control label, #map-controls .more-info, #map-controls h2, #map-controls .map-control, .building-report label, .year-control label {
   -webkit-touch-callout: none;
@@ -695,7 +695,7 @@ header {
     margin: 0; }
   #footer a {
     display: table-cell;
-    color: #003DA5;
+    color: #0047ba;
     text-decoration: none;
     vertical-align: middle; }
 
@@ -718,7 +718,7 @@ header {
       margin-bottom: 80px; } }
 
 .toolbar {
-  background-color: #003DA5;
+  background-color: #0047ba;
   color: white; }
 
 .search-wrapper {
@@ -754,7 +754,7 @@ header {
     .address-search-results.autocomplete-suggestions .autocomplete-suggestion:last-child {
       border-bottom: 0; }
     .address-search-results.autocomplete-suggestions .autocomplete-suggestion b {
-      color: #003DA5; }
+      color: #0047ba; }
   .address-search-results.autocomplete-suggestions .autocomplete-suggestion-prop {
     padding: 0 .6em; }
   .address-search-results.autocomplete-suggestions .autocomplete-suggestion-prop:last-child {
@@ -807,7 +807,7 @@ header {
     padding-bottom: 0.5em;
     text-transform: uppercase; }
     .map-category-control li.actions a {
-      color: #003DA5; }
+      color: #0047ba; }
   .map-category-control .content {
     padding-left: 1.5em;
     position: relative; }
@@ -820,7 +820,7 @@ header {
     width: 1em; }
 
 .map-category-control .category-list-toggle {
-  background-color: #003DA5;
+  background-color: #0047ba;
   border: 1px solid white;
   border-radius: 1em;
   color: #fff;
@@ -830,10 +830,10 @@ header {
 
 .map-category-control input[type="checkbox"]:checked + .category-list-toggle {
   background-color: white;
-  color: #003DA5; }
+  color: #0047ba; }
 
 .map-category-control .categories {
-  color: #003DA5;
+  color: #0047ba;
   background-color: rgba(209, 209, 208, 0.9); }
 
 .map-category-control li {
@@ -844,10 +844,10 @@ header {
   display: none; }
 
 .map-category-control input[type=checkbox]:checked + label .check {
-  background: #003DA5; }
+  background: #0047ba; }
 
 .map-category-control .check {
-  box-shadow: inset 0 0 0 1px #003DA5; }
+  box-shadow: inset 0 0 0 1px #0047ba; }
 
 .map-category-control label {
   cursor: pointer;
@@ -925,9 +925,9 @@ header {
 #map-controls {
   background-color: #f2f2f2; }
   #map-controls .category, #map-controls input:checked + label h2 {
-    box-shadow: inset 0 -1px #003DA5; }
+    box-shadow: inset 0 -1px #0047ba; }
   #map-controls .current.category {
-    box-shadow: inset 1em -1px #003DA5; }
+    box-shadow: inset 1em -1px #0047ba; }
   #map-controls h2:after, #map-controls label:after {
     content: "\A";
     display: block;
@@ -942,7 +942,7 @@ header {
     bottom: -9px;
     border-top-color: #f2f2f2; }
   #map-controls h2:after {
-    border-top-color: #003DA5; }
+    border-top-color: #0047ba; }
   #map-controls h3 {
     font-weight: bold; }
   #map-controls .category {
@@ -954,12 +954,12 @@ header {
     background-color: #d0d0d0;
     color: #fff; }
   #map-controls .current.map-control {
-    box-shadow: inset 1em 0 #003DA5;
-    color: #003DA5; }
+    box-shadow: inset 1em 0 #0047ba;
+    color: #0047ba; }
   #map-controls .map-control:last-child {
-    box-shadow: inset 0 -1px #003DA5; }
+    box-shadow: inset 0 -1px #0047ba; }
   #map-controls .current.map-control:last-child {
-    box-shadow: inset 1em -1px #003DA5; }
+    box-shadow: inset 1em -1px #0047ba; }
   #map-controls .more-info {
     text-transform: uppercase; }
   #map-controls .more-info .more,
@@ -981,9 +981,9 @@ header {
     border-width: 0.4em 0.6em 0.4em 0;
     border-color: transparent #fff transparent transparent; }
   #map-controls .current.map-control .more-info .more:after {
-    border-color: transparent transparent transparent #003DA5; }
+    border-color: transparent transparent transparent #0047ba; }
   #map-controls .current.map-control .more-info .less:after {
-    border-color: transparent #003DA5 transparent transparent; }
+    border-color: transparent #0047ba transparent transparent; }
   #map-controls .map-control:not(.current) rect {
     fill: #fff !important; }
 
@@ -1050,11 +1050,11 @@ header {
     font-size: 1.25em; }
 
 .building-report thead {
-  background-color: #003DA5;
+  background-color: #0047ba;
   color: #fff; }
 
 .building-report tbody {
-  color: #003DA5;
+  color: #0047ba;
   background-color: #fff; }
 
 .building-report th:first-child, .building-report td:first-child {
@@ -1072,7 +1072,7 @@ header {
 .building-report label {
   background: #fff;
   border-radius: 1em;
-  color: #003DA5;
+  color: #0047ba;
   cursor: pointer; }
 
 .building-report .building-info div:first-child {
@@ -1148,15 +1148,15 @@ header {
 
 .year-control {
   font-weight: 500;
-  border-bottom-color: rgba(0, 33, 89, 0.7);
+  border-bottom-color: rgba(0, 42, 110, 0.7);
   text-align: center; }
   .year-control input + label {
     cursor: pointer;
-    color: #002a72;
+    color: #003487;
     opacity: 0.85; }
     .year-control input + label::after {
       opacity: 0.6;
-      background-color: #002159; }
+      background-color: #002a6e; }
   .year-control input:checked + label {
     color: white;
     opacity: 1;
