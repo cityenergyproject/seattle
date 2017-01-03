@@ -27,6 +27,7 @@
         {"field": "reported_address", "label": "Reported Address: "},
         {"field": "zip", "label": "ZIP code: "},
         {"field": "neighborhood", "label": "Neighborhood: "},
+        {"field": "councildistrict", "label": "Council District: "},
         {"field": "id", "label": "Seattle Benchmarking building ID: "},
         {"field": "report_status", "label": "Report Status: "},
         {"field": "primary_ptype_epa", "label": "Property Type: "},
