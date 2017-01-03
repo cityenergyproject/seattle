@@ -32,7 +32,7 @@
         {"field": "primary_ptype_epa", "label": "Property Type: "},
         {"field": "buildingtypename", "label": "Seattle Building Type: "},
         {"field": "reported_gross_floor_area", "label": "Property Size (ft²): "},
-        {"field": "year_built", "label": "Year Built: "},
+        {"field": "yearbuiltstring", "label": "Year Built: "},
         {"field": "numbuildings", "label": "Number of Buildings: ", "suppress_unless_field": "primary_ptype_epa", "suppress_unless_value": "Multifamily Housing"},
         {"field": "numfloors", "label": "Number of Floors: ", "suppress_unless_field": "primary_ptype_epa", "suppress_unless_value": "Multifamily Housing"},
         {"field": "numunits", "label": "Number of Units: ", "suppress_unless_field": "primary_ptype_epa", "suppress_unless_value": "Multifamily Housing"},
@@ -74,7 +74,7 @@
         },
         {
             "title": "Year Built",
-            "field_name": "year_built",
+            "field_name": "yearbuiltstring",
             "display_type": "range",
             "range_slice_count": 18,
             "color_range": ["#f0e5c7","#007749"],
@@ -137,7 +137,7 @@
     ],
     "years": {
         "2015": {
-            "table_name": "table_2015_stamen_phase_i",
+            "table_name": "table_2015_stamen_phase_iv2",
             "default_layer": "energy_star_score"
         }
     }
