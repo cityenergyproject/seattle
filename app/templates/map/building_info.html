@@ -1,13 +1,13 @@
 <div class="building-info">
   <ul>
     <%_.each(labels, function (label) {%>
-      <% if ( !label.default_hidden ) {%>
+      <% if ( !label.default_hidden && !label.suppress ) {%>
         <li><%= label.label %> <strong><%= label.value %></strong></li>
       <%}%>
     <%})%>
     <span class="show-more-container hide">
     <%_.each(labels, function (label) {%>
-      <% if ( label.default_hidden ) {%>
+      <% if ( label.default_hidden && !label.suppress ) {%>
         <li><%= label.label %> <strong><%= label.value %></strong></li>
       <%}%>
     <%})%>

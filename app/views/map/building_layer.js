@@ -56,12 +56,22 @@ define([
   BuildingInfoPresenter.prototype.toPopulatedLabels = function()  {
     var default_hidden = false;
     return _.map(this.city.get('popup_fields'), function(field) {
+      var suppress = false;
       if (field.start_hidden) default_hidden = true;
       var building = this.toBuilding();
       var value = (typeof building === 'undefined') ? null : building.get(field.field);
+
+      if (field.suppress_unless_field &&
+          field.suppress_unless_value &&
+          (typeof building !== 'undefined') &&
+          (field.suppress_unless_value !== building.get(field.suppress_unless_field))) {
+        suppress = true; // do not display this field
+      }
+
       return _.extend({
         value: (value || 'N/A').toLocaleString(),
-        default_hidden: default_hidden
+        default_hidden: default_hidden,
+        suppress: suppress
       }, field);
     }, this);
   };
