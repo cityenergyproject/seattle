@@ -68,8 +68,9 @@ define([
         suppress = true; // do not display this field
       }
 
+      // don't apply toLocaleString if it's a year, to prevent commas in year.
       return _.extend({
-        value: (value || 'N/A').toLocaleString(),
+        value: field.isYear ? (value || 'N/A') : (value || 'N/A').toLocaleString(),
         default_hidden: default_hidden,
         suppress: suppress
       }, field);

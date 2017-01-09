@@ -33,7 +33,7 @@
         {"field": "primary_ptype_epa", "label": "Property Type: "},
         {"field": "buildingtypename", "label": "Seattle Building Type: "},
         {"field": "reported_gross_floor_area", "label": "Property Size (ft²): "},
-        {"field": "yearbuilt", "label": "Year Built: "},
+        {"field": "yearbuilt", "label": "Year Built: ", "isYear": true},
         {"field": "numbuildings", "label": "Number of Buildings: ", "suppress_unless_field": "primary_ptype_epa", "suppress_unless_value": "Multifamily Housing"},
         {"field": "numfloors", "label": "Number of Floors: ", "suppress_unless_field": "primary_ptype_epa", "suppress_unless_value": "Multifamily Housing"},
         {"field": "numunits", "label": "Number of Units: ", "suppress_unless_field": "primary_ptype_epa", "suppress_unless_value": "Multifamily Housing"},
