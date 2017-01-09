@@ -84,7 +84,7 @@ define([
           force_edges: true,
           grid: false,
           hide_min_max: true,
-          prettify_enabled: !fieldName.match(/year/),
+          prettify_enabled: !fieldName.match(/year/), // TODO: don't hardcode this?
           prettify: this.onPrettifyHandler(filterRangeMin, filterRangeMax),
           onFinish: _.bind(this.onFilterFinish, this),
         });
