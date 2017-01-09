@@ -1183,7 +1183,9 @@ header {
   .leaflet-popup-content .building-info li:first-child {
     font-size: 1.2em;
     font-weight: bold;
-    margin-bottom: .3em; }
+    margin-bottom: -0.2em; }
+  .leaflet-popup-content .building-info li:nth-child(2) {
+    margin-bottom: -0.3em; }
   .leaflet-popup-content .building-info .show-more-container.hide li {
     display: none; }
   .leaflet-popup-content .building-info .show-more-container.show li {
@@ -1191,8 +1193,10 @@ header {
   .leaflet-popup-content .building-info .show-more-container li:first-child {
     font-size: inherit;
     font-weight: inherit;
-    margin-bottom: inherit;
-    margin-top: .3em; }
+    margin-bottom: 0;
+    margin-top: .5em; }
+  .leaflet-popup-content .building-info .show-more-container li:nth-child(2) {
+    margin-bottom: 0; }
   .leaflet-popup-content .building-info .show-hide-attrs {
     display: inline-block;
     margin: 10px 0px 0px;

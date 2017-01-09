@@ -84,7 +84,8 @@ define([
           force_edges: true,
           grid: false,
           hide_min_max: true,
-          prettify_enabled: !fieldName.match(/year/),
+          step: (filterRangeMax < 1) ? 0.0001 : 1,
+          prettify_enabled: !fieldName.match(/year/), // TODO: don't hardcode this?
           prettify: this.onPrettifyHandler(filterRangeMin, filterRangeMax),
           onFinish: _.bind(this.onFilterFinish, this),
         });
@@ -96,12 +97,10 @@ define([
       // will cause a stack overflow
       if (!isUpdate){
         this.$filter.update({
-          min: extent[0],
-          max: extent[1],
           from: filterState.min,
           to: filterState.max,
-          from_min: filterRangeMin,
-          to_max: filterRangeMax
+          min: filterRangeMin,
+          max: filterRangeMax
         });
       }
 

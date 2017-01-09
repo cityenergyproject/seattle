@@ -23,25 +23,24 @@
     "property_name": "property_name",
     "building_type": "primary_ptype_epa",
     "popup_fields": [
-        {"field": "property_name", "label": "Property Name: "},
-        {"field": "reported_address", "label": "Reported Address: "},
-        {"field": "zip", "label": "ZIP code: "},
-        {"field": "neighborhood", "label": "Neighborhood: "},
-        {"field": "councildistrict", "label": "Council District: "},
+        {"field": "property_name", "label": ""},
+        {"field": "reported_address", "label": ""},
+        {"field": "zip", "label": ""},
         {"field": "id", "label": "Seattle Benchmarking building ID: "},
-        {"field": "report_status", "label": "Report Status: "},
         {"field": "primary_ptype_epa", "label": "Property Type: "},
         {"field": "buildingtypename", "label": "Seattle Building Type: "},
         {"field": "reported_gross_floor_area", "label": "Property Size (ft²): "},
-        {"field": "yearbuiltstring", "label": "Year Built: "},
-        {"field": "numbuildings", "label": "Number of Buildings: ", "suppress_unless_field": "primary_ptype_epa", "suppress_unless_value": "Multifamily Housing"},
-        {"field": "numfloors", "label": "Number of Floors: ", "suppress_unless_field": "primary_ptype_epa", "suppress_unless_value": "Multifamily Housing"},
-        {"field": "numunits", "label": "Number of Units: ", "suppress_unless_field": "primary_ptype_epa", "suppress_unless_value": "Multifamily Housing"},
+        {"field": "yearbuilt", "label": "Year Built: ", "isYear": true},
+        {"field": "total_ghg_emissions", "label": "Total GHG Emissions (Metric Tons CO₂e): "},
         {"field": "energy_star_score", "label": "ENERGY STAR Score: "},
         {"field": "site_eui", "label": "Site Energy Use Intensity (kBTU/ft²): "},
+        {"field": "comments", "label": "Comments: "},
+        {"field": "neighborhood", "label": "Neighborhood: ", "start_hidden": true},
+        {"field": "councildistrict", "label": "Council District: "},
         {"field": "weather_norm_source_eui", "label": "Weather Normalized Source EUI (kBtu/ft²): "},
-        {"field": "total_ghg_emissions", "label": "Total GHG Emissions (Metric Tons CO₂e): ", "start_hidden": true },
-        {"field": "comments", "label": "Comments: "}
+        {"field": "numbuildings", "label": "Number of Buildings: ", "suppress_unless_field": "primary_ptype_epa", "suppress_unless_value": "Multifamily Housing"},
+        {"field": "numfloors", "label": "Number of Floors: ", "suppress_unless_field": "primary_ptype_epa", "suppress_unless_value": "Multifamily Housing"},
+        {"field": "numunits", "label": "Number of Units: ", "suppress_unless_field": "primary_ptype_epa", "suppress_unless_value": "Multifamily Housing"}
     ],
     "map_layers": [
         {
@@ -52,6 +51,15 @@
             "hide_other_category": true,
             "section": "Property Information",
             "description": "Neighborhood"
+        },
+        {
+            "title": "Council District",
+            "field_name": "councildistrict",
+            "display_type": "category",
+            "sort_by_key": true,
+            "hide_other_category": true,
+            "section": "Property Information",
+            "description": "Council District"
         },
         {
             "title": "Property Type",
@@ -75,7 +83,7 @@
         },
         {
             "title": "Year Built",
-            "field_name": "yearbuiltstring",
+            "field_name": "yearbuilt",
             "display_type": "range",
             "range_slice_count": 18,
             "color_range": ["#f0e5c7","#007749"],
@@ -87,6 +95,7 @@
             "field_name": "energy_star_score",
             "display_type": "range",
             "range_slice_count": 18,
+            "filter_range": {"min": 0, "max" : 100},
             "section": "Energy Performance Metrics",
             "color_range": ["#ab2328","#ffd552","#1f5dbe"],
             "description": "The 1-100 score calculated by ENERGY STAR® Portfolio Manager® that measures how well the property is performing relative to similar properties, when normalized for climate and operational characteristics. The 1-100 scale is set so that 1 represents the worst performing buildings and 100 represents the best performing buildings. A score of 50 indicates that a building is performing at the national median, taking into account its size, location, and operating parameters. A score of 75 indicates that at a property is performing in the 75th percentile and may be eligible to earn ENERGY STAR® Certification."
@@ -110,7 +119,7 @@
             "section": "Energy Performance Metrics",
             "color_range": ["#1f5dbe","#ffd552","#ab2328"],
             "unit": "kBTU/ft²",
-            "filter_range": {"max" : 200},
+            "filter_range": {"min" : 0, "max" : 200},
             "description": "Source Energy Use divided by property square footage, normalized for weather. Weather-normalization is based on National Oceanic and Atmospheric Administration (NOAA) weather data for the zip code. Source Energy Use is the total amount of raw fuel that is required to operate the property. In addition to what the property consumes on-site, source energy includes losses that take place during generation, transmission, and distribution of the energy, thereby enabling a complete assessment of energy consumption resulting from building operations. For this reason, Source EUI is the best way to quantify the energy performance of commercial buildings."
         },
         {
@@ -121,7 +130,7 @@
             "section": "Greenhouse Gas Emissions",
             "color_range": ["#1f5dbe","#ffd552","#ab2328"],
             "unit": "Metric Tons CO₂e",
-            "filter_range": {"max" : 500},
+            "filter_range": {"min" : 0, "max" : 500},
             "description": "Greenhouse Gas (GHG) Emissions are the carbon dioxide (CO2), methane (CH4), and nitrous oxide (N2O) gases released into the atmosphere as a result of energy consumption at the property. GHG emissions are expressed in Metric Tons of carbon dioxide equivalent (CO2e), a universal unit of measure that combines the quantity and global warming potential of each greenhouse gas. Total Emissions is the sum of Direct Emissions (emissions associated with onsite fuel combustion) and Indirect Emissions (emissions associated with purchases of electricity, district steam, district hot water, or district chilled water. These emissions occur at the utility plant, but they are a result of the property’s energy consumption and therefore contribute to the overall GHG footprint)."
         },
         {
@@ -132,7 +141,7 @@
             "section": "Greenhouse Gas Emissions",
             "color_range": ["#1f5dbe","#ffd552","#ab2328"],
             "unit": "Metric Tons CO₂e/ft²",
-            "filter_range": {"max" : 0.02},
+            "filter_range": {"min" : 0, "max" : 0.02},
             "description": "The  total Greenhouse Gas (GHG) Emissions, divided by the floor area of the building, in kilograms of carbon dioxide equivalent (CO2e) per square foot."
         }
     ],
