@@ -39,7 +39,11 @@
     li:first-child{
       font-size: inherit;
       font-weight: inherit;
-      margin-bottom: inherit;
+      margin-bottom: 0;
+      margin-top: .5em;
+    }
+    li:nth-child(2){
+      margin-bottom: 0;
     }
   }
   .show-hide-attrs {
