@@ -45,6 +45,7 @@ define([
         return {
           value: value,
           color: color,
+          isYear: (field == 'yearbuilt'), // TODO: don't hardcode this
           undefined: (value ? 'defined' : 'undefined')
         };
       }, this);
@@ -75,6 +76,7 @@ define([
 
     return _.extend({}, field, {
       median: median,
+      isYear: (field.field_name == 'yearbuilt'),  // TODO: don't hardcode this
       color: gradientCalculator.toColor(median)
     });
   };
