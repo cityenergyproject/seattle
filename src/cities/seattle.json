@@ -53,6 +53,15 @@
             "description": "Neighborhood"
         },
         {
+            "title": "Council District",
+            "field_name": "councildistrict",
+            "display_type": "category",
+            "sort_by_key": true,
+            "hide_other_category": true,
+            "section": "Property Information",
+            "description": "Council District"
+        },
+        {
             "title": "Property Type",
             "field_name": "primary_ptype_epa",
             "display_type": "category",
