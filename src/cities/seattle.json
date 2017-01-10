@@ -75,7 +75,7 @@
             "field_name": "reported_gross_floor_area",
             "display_type": "range",
             "range_slice_count": 18,
-            "color_range": ["#f0e5c7","#007749"],
+            "color_range": ["#b8cba9","#007749"],
             "unit": "ft²",
             "filter_range": {"max" : 500000},
             "section": "Property Information",
@@ -86,7 +86,7 @@
             "field_name": "yearbuilt",
             "display_type": "range",
             "range_slice_count": 18,
-            "color_range": ["#f0e5c7","#007749"],
+            "color_range": ["#b8cba9","#007749"],
             "section": "Property Information",
             "description": "The year property was constructed, as reported by owner"
         },
