@@ -108,7 +108,7 @@
             "section": "Energy Performance Metrics",
             "color_range": ["#1f5dbe","#599b67","#ffd552","#da863f","#ab2328"],
             "unit": "kBTU/ft²",
-            "filter_range": {"max" : 200},
+            "filter_range": {"min": 0, "max" : 200},
             "description": "The Site Energy Use Intensity (EUI), as calculated by Portfolio Manager, at the property site. This equals the amount of energy consumed at the site in thousand British thermal units (kBtus) per gross square foot (kBtu/ft2) of the property. Site EUI values are the result of self-reported entries."
         },
         {
