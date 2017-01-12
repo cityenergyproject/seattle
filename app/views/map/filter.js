@@ -59,8 +59,8 @@ define([
           filterTemplate = _.template(FilterTemplate),
           stateFilters = this.state.get('filters'),
           filterState = _.findWhere(stateFilters, {field: fieldName}) || {min: extent[0], max: extent[1]},
-          filterRangeMin = (filterRange || {}).min,
-          filterRangeMax = (filterRange || {}).max;
+          filterRangeMin = (filterRange && filterRange.min) ? filterRange.min : extent[0],
+          filterRangeMax = (filterRange && filterRange.max) ? filterRange.max : extent[1];
 
       var bucketGradients = _.map(gradientStops, function(stop, bucketIndex){
         return {
