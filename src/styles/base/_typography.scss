@@ -24,14 +24,14 @@ p {
 }
 
 a {
-  color: $action-color;
+  color: darken($medium-gray,20); // seems like cartodb.css supersedes this
   text-decoration: none;
   transition: color 0.1s linear;
 
   &:active,
   &:focus,
   &:hover {
-    color: darken($action-color, 15%);
+    color: darken($medium-gray,30);
   }
 
   &:active,
