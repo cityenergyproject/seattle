@@ -131,7 +131,7 @@
   }
 
   .category-control-container {
-    @include linear-gradient(to right, #dedede, #d0d0d0);
+    @include linear-gradient(to right, #d0d0d0, darken(#d0d0d0,5%));
     background-color: #d0d0d0;
     color: #fff;
   }
