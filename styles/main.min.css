@@ -788,14 +788,11 @@ header {
     top: 0;
     left: -999999px;
     padding-bottom: 5px;
-    height: 19.125em;
+    max-height: 19.125em;
     max-width: 11em;
-    overflow-y: scroll;
     overflow-x: hidden; }
   .map-category-control .categories-wrapper {
-    overflow-y: scroll;
-    position: relative;
-    height: 100%; }
+    position: relative; }
   .map-category-control ul {
     padding: 0.5em 0; }
   .map-category-control li {
