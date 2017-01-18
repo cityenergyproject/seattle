@@ -831,7 +831,7 @@ header {
 
 .map-category-control .categories {
   color: #0047ba;
-  background-color: rgba(209, 209, 208, 0.9); }
+  background-color: rgba(183, 183, 183, 0.9); }
 
 .map-category-control li {
   line-height: 1.2;
@@ -945,9 +945,9 @@ header {
   #map-controls .category {
     cursor: pointer; }
   #map-controls .category-control-container {
-    background-color: #dedede;
-    background-image: -webkit-linear-gradient(left, #dedede, #d0d0d0);
-    background-image: linear-gradient(to right,#dedede, #d0d0d0);
+    background-color: #d0d0d0;
+    background-image: -webkit-linear-gradient(left, #d0d0d0, #c3c3c3);
+    background-image: linear-gradient(to right,#d0d0d0, #c3c3c3);
     background-color: #d0d0d0;
     color: #fff; }
   #map-controls .current.map-control {
@@ -1077,7 +1077,7 @@ header {
   text-transform: uppercase; }
 
 .building-report .subheader, .building-report .average-info {
-  color: #d1d1d0;
+  color: #b7b7b7;
   text-transform: uppercase; }
 
 .building-report .averages .subheader, .building-report .averages .average-container {
@@ -1102,7 +1102,7 @@ header {
 .building-report .metric-container {
   font-weight: bold;
   text-align: center;
-  color: #d1d1d0; }
+  color: #b7b7b7; }
 
 .building-report .undefined .value {
   display: none; }
@@ -1111,7 +1111,7 @@ header {
   display: none; }
 
 .building-report .building:not(.current) .value {
-  color: #d1d1d0 !important; }
+  color: #b7b7b7 !important; }
 
 .building-report .metric-container .histogram {
   height: 1.9375em; }
