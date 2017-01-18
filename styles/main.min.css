@@ -170,12 +170,12 @@ p {
   margin: 0 0 0.6em; }
 
 a {
-  color: white;
+  color: #848484;
   text-decoration: none;
   -webkit-transition: color 0.1s linear;
           transition: color 0.1s linear; }
   a:active, a:focus, a:hover {
-    color: #d9d9d9; }
+    color: #6a6a6a; }
   a:active, a:focus {
     outline: none; }
 
@@ -492,7 +492,7 @@ body {
 
 .main-container {
   position: absolute;
-  top: 9em;
+  top: 3em;
   bottom: 7em;
   width: 100%;
   max-width: 100%;
@@ -510,7 +510,7 @@ body {
       bottom: 7em; } }
 
 header {
-  height: 6em; }
+  height: 0em; }
 
 .iframed header {
   display: none; }
@@ -633,7 +633,7 @@ header {
 
 header h1 {
   position: relative;
-  line-height: 3em;
+  line-height: 0em;
   font-size: 2em; }
   header h1 span {
     position: absolute;
@@ -645,7 +645,7 @@ header h1 {
     top: 0;
     margin: 0;
     padding: 0;
-    height: 3em;
+    height: 0em;
     float: left;
     font-size: 1em;
     text-decoration: none;
@@ -655,7 +655,7 @@ header h1 {
     header h1 .header-logo img {
       display: block;
       width: auto;
-      height: 3em;
+      height: 0em;
       margin: 0;
       padding: 0;
       border: 0; }
