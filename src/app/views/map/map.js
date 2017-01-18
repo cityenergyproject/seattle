@@ -45,9 +45,9 @@ define([
           zIndex: 0
         }).addTo(this.leafletMap);
 
-        L.tileLayer(labels, {
-          zIndex: 2
-        }).addTo(this.leafletMap);
+        // L.tileLayer(labels, {
+        //   zIndex: 2
+        // }).addTo(this.leafletMap);
 
         this.leafletMap.zoomControl.setPosition('topright');
         this.leafletMap.on('moveend', this.onMapMove, this);
