@@ -81,17 +81,18 @@ define([
     initialize: function(options){
       this.state = options.state;
       this.leafletMap = options.leafletMap;
+      this.mapElm = $(this.leafletMap._container);
 
       this.allBuildings = new CityBuildings(null, {});
 
-      this.listenTo(this.state, 'change:layer', this.onStateChange);
-      this.listenTo(this.state, 'change:filters', this.onStateChange);
-      this.listenTo(this.state, 'change:categories', this.onStateChange);
-      this.listenTo(this.state, 'change:tableName', this.onStateChange);
+      // Listen for all changes but filter in the handler for these
+      // attributes: layer, filters, categories, and tableName
+      this.listenTo(this.state, 'change', this.changeStateChecker);
+
+      // building has a different handler
       this.listenTo(this.state, 'change:building', this.onBuildingChange);
       this.listenTo(this.state, 'clear_map_popups', this.onClearPopups);
       this.listenTo(this.allBuildings, 'sync', this.render);
-      this.onStateChange();
 
       var self = this;
       this.leafletMap.on('popupclose', function(e) {
@@ -178,16 +179,38 @@ define([
     },
 
     onFeatureOver: function(){
-      $('#map').css('cursor', "help");
+      this.mapElm.css('cursor', "help");
     },
     onFeatureOut: function(){
-      $('#map').css('cursor', '');
+      this.mapElm.css('cursor', '');
     },
 
     onStateChange: function(){
+      // TODO: should not be mutating the buildings model.
       _.extend(this.allBuildings, this.state.pick('tableName', 'cartoDbUser'));
       this.allBuildings.fetch();
     },
+
+    changeStateChecker: function() {
+      // filters change
+      if (this.state._previousAttributes.filters !== this.state.attributes.filters) {
+        return this.onStateChange();
+      }
+      // layer change
+      if (this.state._previousAttributes.layer !== this.state.attributes.layer) {
+        return this.onStateChange();
+      }
+      // catergory change
+      if (this.state._previousAttributes.categories !== this.state.attributes.categories) {
+        return this.onStateChange();
+      }
+      // tableName change
+      if (this.state._previousAttributes.tableName !== this.state.attributes.tableName) {
+        return this.onStateChange();
+      }
+
+    },
+
 
     toCartoSublayer: function(){
       var buildings = this.allBuildings,
