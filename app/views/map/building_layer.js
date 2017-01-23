@@ -212,6 +212,11 @@ define([
         this.cartoLayer.getSubLayer(0).set(this.toCartoSublayer()).show();
         return this;
       }
+
+      // skip if we are loading `cartoLayer`
+      if (this.cartoLoading) return;
+
+      this.cartoLoading = true;
       cartodb.createLayer(this.leafletMap, {
         user_name: this.allBuildings.cartoDbUser,
         type: 'cartodb',
@@ -221,6 +226,7 @@ define([
       return this;
     },
     onCartoLoad: function(layer) {
+      this.cartoLoading = false;
       var sub = layer.getSubLayer(0);
       this.cartoLayer = layer;
       sub.setInteraction(true);

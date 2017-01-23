@@ -30,6 +30,7 @@ define([
     }, this);
   };
 
+
   ReportTranslator.prototype.updateMetrics = function(buildings, metricFields) {
     var metrichash = metricFields.toString();
 
@@ -40,8 +41,9 @@ define([
       if (currentMetricHash === metrichash) return;
 
       var metrics = _.map(metricFields, function(field) {
-        var value = building.get(field),
-            color = this.gradientCalculators[field].toColor(value);
+        var value = building.get(field);
+        var color = this.gradientCalculators[field].toColor(value); // ~5ms
+
         return {
           value: value,
           color: color,
@@ -53,6 +55,7 @@ define([
       this.lookup[id].metrics = metrics;
       this.lookup[id].metrichash = metrichash;
     }, this);
+
   };
 
   ReportTranslator.prototype.toRows = function(buildings) {
@@ -191,7 +194,6 @@ define([
           buildingId = this.state.get('city').get('property_id');
 
       this.report = new ReportTranslator(buildingId, buildingFields, buildings, gradientCalculators);
-
       this.updateBuildings();
     },
 
@@ -201,8 +203,8 @@ define([
 
     updateBuildings: function() {
       if (!this.buildingsExist()) return;
-      this.buildings = this.allBuildings.toFilter(this.allBuildings, this.state.get('categories'), this.state.get('filters'));
 
+      this.buildings = this.allBuildings.toFilter(this.allBuildings, this.state.get('categories'), this.state.get('filters'));
       this.preCalculateTable();
       this.onSort(true);
     },
@@ -313,7 +315,6 @@ define([
           metrics = new MetricAverageCalculator(buildings, metricFields, this.gradientCalculators).calculate(),
           building = buildings.find(function(b) { return b.get(buildingId) == currentBuilding; }),
           buildingMetrics = new BuildingMetricCalculator(building, this.allBuildings, metricFields, this.gradientCalculators);
-
 
       $body.replaceWith(template({
         currentBuilding: currentBuilding,
