@@ -316,7 +316,6 @@ define([
           building = buildings.find(function(b) { return b.get(buildingId) == currentBuilding; }),
           buildingMetrics = new BuildingMetricCalculator(building, this.allBuildings, metricFields, this.gradientCalculators);
 
-
       $body.replaceWith(template({
         currentBuilding: currentBuilding,
         metrics: metrics,
