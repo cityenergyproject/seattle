@@ -64,6 +64,7 @@ define([
   StateBuilder.prototype.toState = function() {
     var year = this.toYear(),
         layer = this.toLayer(year);
+
     return {
       year: year,
       cartoDbUser: this.city.cartoDbUser,
@@ -157,6 +158,7 @@ define([
     },
 
     root: function () {
+      // TODO: the path should come from config
       this.navigate('/seattle', {trigger: true, replace: true});
     },
 
