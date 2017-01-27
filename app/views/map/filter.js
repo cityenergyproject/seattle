@@ -85,7 +85,7 @@ define([
           grid: false,
           hide_min_max: true,
           step: (filterRangeMax < 1) ? 0.0001 : 1,
-          prettify_enabled: !fieldName.match(/year/), // TODO: don't hardcode this?
+          prettify_enabled: !(fieldName.match(/year/) || fieldName.match(/energy_star/)), // TODO: don't hardcode this?
           prettify: this.onPrettifyHandler(filterRangeMin, filterRangeMax),
           onFinish: _.bind(this.onFilterFinish, this),
         });
@@ -143,7 +143,13 @@ define([
       filters = _.reject(filters, function(f){ return f.field == fieldName; });
 
       if (rangeSlider.from !== rangeSlider.min || rangeSlider.to !== rangeSlider.max){
-        filters.push({field: fieldName, min: rangeSlider.from, max: rangeSlider.to});
+        var newFilter = {field: fieldName};
+        // Only include min or max in the filter if it is different from the rangeSlider extent.
+        // This is important to the rangeSlider can clip the extreme values off, but we don't
+        // want to use the rangeSlider extents to filter the data on the map.
+        if (rangeSlider.from !== rangeSlider.min) newFilter.min = rangeSlider.from;
+        if (rangeSlider.to   !== rangeSlider.max) newFilter.max = rangeSlider.to;
+        filters.push(newFilter);
       }
 
       // fire event for other non Filter.js listeners

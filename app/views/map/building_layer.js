@@ -62,9 +62,9 @@ define([
       var value = (typeof building === 'undefined') ? null : building.get(field.field);
 
       if (field.suppress_unless_field &&
-          field.suppress_unless_value &&
+          field.suppress_unless_values &&
           (typeof building !== 'undefined') &&
-          (field.suppress_unless_value !== building.get(field.suppress_unless_field))) {
+          (field.suppress_unless_values.indexOf(building.get(field.suppress_unless_field)) === -1)) {
         suppress = true; // do not display this field
       }
 
