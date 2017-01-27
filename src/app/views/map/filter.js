@@ -85,7 +85,7 @@ define([
           grid: false,
           hide_min_max: true,
           step: (filterRangeMax < 1) ? 0.0001 : 1,
-          prettify_enabled: !fieldName.match(/year/), // TODO: don't hardcode this?
+          prettify_enabled: !(fieldName.match(/year/) || fieldName.match(/energy_star/)), // TODO: don't hardcode this?
           prettify: this.onPrettifyHandler(filterRangeMin, filterRangeMax),
           onFinish: _.bind(this.onFilterFinish, this),
         });
