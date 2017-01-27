@@ -21,14 +21,13 @@
     "cartoDbUser": "cityenergy-seattle",
     "property_id": "cartodb_id",
     "property_name": "property_name",
-    "building_type": "primary_ptype_epa",
+    "building_type": "property_type",
     "popup_fields": [
         {"field": "property_name", "label": ""},
         {"field": "reported_address", "label": ""},
         {"field": "zip", "label": ""},
         {"field": "id", "label": "Seattle Benchmarking building ID: "},
-        {"field": "primary_ptype_epa", "label": "Property Type: "},
-        {"field": "buildingtypename", "label": "Seattle Building Type: "},
+        {"field": "property_type", "label": "Property Type: "},
         {"field": "reported_gross_floor_area", "label": "Property Size (ft²): "},
         {"field": "yearbuilt", "label": "Year Built: ", "isYear": true},
         {"field": "total_ghg_emissions", "label": "Total GHG Emissions (Metric Tons CO₂e): "},
@@ -38,9 +37,9 @@
         {"field": "neighborhood", "label": "Neighborhood: ", "start_hidden": true},
         {"field": "councildistrict", "label": "Council District: "},
         {"field": "weather_norm_source_eui", "label": "Weather Normalized Source EUI (kBtu/ft²): "},
-        {"field": "numbuildings", "label": "Number of Buildings: ", "suppress_unless_field": "primary_ptype_epa", "suppress_unless_values": ["Multifamily Housing","High-Rise Multifamily","Mid-Rise Multifamily","Low-Rise Multifamily","Small- and Mid-Sized Office","Large Office","Medical Office"]},
-        {"field": "numfloors", "label": "Number of Floors: ", "suppress_unless_field": "primary_ptype_epa", "suppress_unless_values": ["Multifamily Housing","High-Rise Multifamily","Mid-Rise Multifamily","Low-Rise Multifamily","Small- and Mid-Sized Office","Large Office","Medical Office"]},
-        {"field": "numunits", "label": "Number of Units: ", "suppress_unless_field": "primary_ptype_epa", "suppress_unless_values": ["Multifamily Housing","High-Rise Multifamily","Mid-Rise Multifamily","Low-Rise Multifamily","Small- and Mid-Sized Office","Large Office","Medical Office"]}
+        {"field": "numbuildings", "label": "Number of Buildings: ", "suppress_unless_field": "property_type", "suppress_unless_values": ["Multifamily Housing","High-Rise Multifamily","Mid-Rise Multifamily","Low-Rise Multifamily","Small- and Mid-Sized Office","Large Office","Medical Office"]},
+        {"field": "numfloors", "label": "Number of Floors: ", "suppress_unless_field": "property_type", "suppress_unless_values": ["Multifamily Housing","High-Rise Multifamily","Mid-Rise Multifamily","Low-Rise Multifamily","Small- and Mid-Sized Office","Large Office","Medical Office"]},
+        {"field": "numunits", "label": "Number of Units: ", "suppress_unless_field": "property_type", "suppress_unless_values": ["Multifamily Housing","High-Rise Multifamily","Mid-Rise Multifamily","Low-Rise Multifamily","Small- and Mid-Sized Office","Large Office","Medical Office"]}
     ],
     "map_layers": [
         {
@@ -63,7 +62,7 @@
         },
         {
             "title": "Property Type",
-            "field_name": "primary_ptype_epa",
+            "field_name": "property_type",
             "display_type": "category",
             "sort_by_key": true,
             "hide_other_category": true,
@@ -147,7 +146,7 @@
     ],
     "years": {
         "2015": {
-            "table_name": "table_2015_stamen_phase_iv2",
+            "table_name": "table_2015_stamen_phase_i_final",
             "default_layer": "energy_star_score"
         }
     }
