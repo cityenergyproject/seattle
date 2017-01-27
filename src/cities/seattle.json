@@ -38,9 +38,9 @@
         {"field": "neighborhood", "label": "Neighborhood: ", "start_hidden": true},
         {"field": "councildistrict", "label": "Council District: "},
         {"field": "weather_norm_source_eui", "label": "Weather Normalized Source EUI (kBtu/ft²): "},
-        {"field": "numbuildings", "label": "Number of Buildings: ", "suppress_unless_field": "primary_ptype_epa", "suppress_unless_value": "Multifamily Housing"},
-        {"field": "numfloors", "label": "Number of Floors: ", "suppress_unless_field": "primary_ptype_epa", "suppress_unless_value": "Multifamily Housing"},
-        {"field": "numunits", "label": "Number of Units: ", "suppress_unless_field": "primary_ptype_epa", "suppress_unless_value": "Multifamily Housing"}
+        {"field": "numbuildings", "label": "Number of Buildings: ", "suppress_unless_field": "primary_ptype_epa", "suppress_unless_values": ["Multifamily Housing","High-Rise Multifamily","Mid-Rise Multifamily","Low-Rise Multifamily","Small- and Mid-Sized Office","Large Office","Medical Office"]},
+        {"field": "numfloors", "label": "Number of Floors: ", "suppress_unless_field": "primary_ptype_epa", "suppress_unless_values": ["Multifamily Housing","High-Rise Multifamily","Mid-Rise Multifamily","Low-Rise Multifamily","Small- and Mid-Sized Office","Large Office","Medical Office"]},
+        {"field": "numunits", "label": "Number of Units: ", "suppress_unless_field": "primary_ptype_epa", "suppress_unless_values": ["Multifamily Housing","High-Rise Multifamily","Mid-Rise Multifamily","Low-Rise Multifamily","Small- and Mid-Sized Office","Large Office","Medical Office"]}
     ],
     "map_layers": [
         {
