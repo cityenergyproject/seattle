@@ -76,7 +76,7 @@
             "range_slice_count": 18,
             "color_range": ["#b8cba9","#007749"],
             "unit": "ft²",
-            "filter_range": {"max" : 500000},
+            "filter_range": {"min": 20000, "max" : 500000},
             "section": "Property Information",
             "description": "The Gross Floor Area as reported by owner. The Gross Floor Area is the total size, as measured between the principal exterior surfaces of the enclosing fixed walls of the building(s). This includes all areas inside the building(s) such as: occupied tenant areas, common areas, meeting areas, break rooms, restrooms, elevator shafts, mechanical equipment areas, and storage rooms.  It does not include the floor area of secondary spaces such as parking lots."
         },
@@ -140,7 +140,7 @@
             "section": "Greenhouse Gas Emissions",
             "color_range": ["#1f5dbe","#599b67","#ffd552","#da863f","#ab2328"],
             "unit": "Metric Tons CO₂e/ft²",
-            "filter_range": {"min" : 0, "max" : 0.02},
+            "filter_range": {"min" : 0, "max" : 10},
             "description": "The  total Greenhouse Gas (GHG) Emissions, divided by the floor area of the building, in kilograms of carbon dioxide equivalent (CO2e) per square foot."
         }
     ],
