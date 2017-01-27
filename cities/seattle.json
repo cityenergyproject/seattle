@@ -31,7 +31,7 @@
         {"field": "reported_gross_floor_area", "label": "Property Size (ft²): "},
         {"field": "yearbuilt", "label": "Year Built: ", "isYear": true},
         {"field": "total_ghg_emissions", "label": "Total GHG Emissions (Metric Tons CO₂e): "},
-        {"field": "total_ghg_emissions_intensity", "label": "GHG Intensity (Metric Tons CO₂e/ft²): "},
+        {"field": "total_ghg_emissions_intensity", "label": "GHG Intensity (Kilograms CO₂e/ft²): "},
         {"field": "energy_star_score", "label": "ENERGY STAR Score: "},
         {"field": "site_eui", "label": "Site Energy Use Intensity (kBTU/ft²): "},
         {"field": "source_eui", "label": "Source EUI (kBTU/ft²): "},
@@ -140,7 +140,7 @@
             "range_slice_count": 18,
             "section": "Greenhouse Gas Emissions",
             "color_range": ["#1f5dbe","#599b67","#ffd552","#da863f","#ab2328"],
-            "unit": "Metric Tons CO₂e/ft²",
+            "unit": "Kilograms CO₂e/ft²",
             "filter_range": {"min" : 0, "max" : 10},
             "description": "The  total Greenhouse Gas (GHG) Emissions, divided by the floor area of the building, in kilograms of carbon dioxide equivalent (CO2e) per square foot."
         }
