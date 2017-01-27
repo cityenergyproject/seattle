@@ -53,8 +53,13 @@ define([
     if (!_.isNumber(_value)) {
       return false;
     }
-
-    return (_value >= range.min && _value <= range.max);
+    // Handle situations where there's only a min or only a max
+    if (range.min && range.max)
+      return (_value >= range.min && _value <= range.max);
+    if (range.min)
+      return (_value >= range.min);
+    if (range.max)
+      return (_value <= range.max);
   }
 
   function cityBuildingsFilterizer(buildings, categories, ranges) {
@@ -92,7 +97,13 @@ define([
 
   CityBuildingQuery.prototype.toRangeSql = function() {
     return _.map(this.ranges, function(range){
-      return range.field + " BETWEEN " + range.min + " AND " + range.max;
+      // Handle situations where there's only a min or only a max
+      if (range.min && range.max)
+        return range.field + " BETWEEN " + range.min + " AND " + range.max;
+      if (range.min)
+        return range.field + " >= " + range.min;
+      if (range.max)
+        return range.field + " <= " + range.max;
     });
   };
 
