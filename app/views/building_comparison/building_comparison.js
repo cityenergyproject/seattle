@@ -356,7 +356,7 @@ define([
           buildingFields = _.values(this.state.get('city').pick('property_name', 'building_type')),
           cityFields = this.state.get('city').get('map_layers'),
           buildingId = this.state.get('city').get('property_id'),
-          currentBuilding = this.state.get('building') || (buildings.length) ? buildings[0].get(buildingId) : -1,
+          currentBuilding = this.state.get('building'),
           metricFieldNames = this.state.get('metrics'),
           metricFields = _.map(metricFieldNames, function(name) { return _.findWhere(cityFields, {field_name: name}); }),
           report = this.report.toRows(buildings),
@@ -385,7 +385,11 @@ define([
           $row = $target.closest('tr'),
           buildingId = $row.attr('id');
 
+      console.log("onRowClick buildingstate before", this.state.get('building'), "will set with", buildingId);
       this.state.set({building: buildingId});
+      console.log("onRowClick buildingstate after:", this.state.get('building'));
+      console.log("changedAttributes", this.state.changedAttributes());
+      console.log("attributes", this.state.attributes);
     },
 
     removeMetric: function(event){
