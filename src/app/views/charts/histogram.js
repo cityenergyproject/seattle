@@ -36,7 +36,14 @@ define([
           .data(this.gradients);
 
       bars.enter().append('rect')
-          .style({fill: function(d){ return d.color; }})
+          .style({fill: function(d){
+            // This just applies the color of the given gradient swatch.
+            // It does not calculate the "correct" color for this particular spot
+            // on the number line. If the map is using a quantile scale, the colors
+            // will not match.
+            // Must synchronize this with colorGradient function in BuildingColorBucketCalculator
+            return d.color;
+          }})
           .attr({
             width: function() { return xScale.rangeBand() - (xScale.rangeBand() / 3); },
             'stroke-width': function() { return xScale.rangeBand() / 6; },

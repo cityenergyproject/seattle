@@ -34,6 +34,7 @@ define([
         buckets = this.buckets,
         bucketStops = this.toBucketStops(),
         gradientScale = d3.scale.linear().range(range).domain(bucketStops);
+    //console.log("gradientScale", gradientScale);
 
     return _.map(_.range(buckets), gradientScale);
   };
@@ -47,6 +48,9 @@ define([
         fieldName = this.fieldName,
         fieldValues = this.getFieldValues(),
         gradient = this.colorGradient();
+
+    //console.log("CartoCSS stops", stops);
+    //console.log("CartoCSS stops", _.map(stops, function(stop) { return gradient.invertExtent(stop);}));
 
     var css = this.memoized.cartoCSS[this.fieldName] = _.map(stops, function(stop){
       var min = _.min(gradient.invertExtent(stop));
@@ -71,9 +75,17 @@ define([
       return this.memoized.colorGradients[this.fieldName];
     }
 
+    // This is how we calculate the colors for the dots on the map.
+    // But they don't line up with the colors in the histogram. Why not?
+
+    // The domain is "fieldValues", which is an unordered list of all of the building value for this field.
+    // But the domain for the histogram color ramp is just linear max and min for the given field.
+    // And more importantly, it needs to be the max and min that's set according to the config file. That's how the colors get determined in the histogram, 
     var stops = this.toGradientStops();
     var fieldValues = this.getFieldValues();
+    //var scale = this.memoized.colorGradients[this.fieldName] = d3.scale.linear().domain(fieldValues).range(stops);
     var scale = this.memoized.colorGradients[this.fieldName] = d3.scale.quantile().domain(fieldValues).range(stops);
+
 
     return scale;
   }
