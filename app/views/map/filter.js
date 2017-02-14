@@ -105,7 +105,7 @@ define([
       }
 
       if (!this.histogram) {
-        this.histogram = new HistogramView({gradients: bucketGradients, slices: rangeSliceCount});
+        this.histogram = new HistogramView({gradients: bucketGradients, slices: rangeSliceCount, filterRange: [filterRangeMin, filterRangeMax], quantileScale: gradientCalculator.colorGradient().copy()});
       }
 
       this.$el.find('.chart').html(this.histogram.render());

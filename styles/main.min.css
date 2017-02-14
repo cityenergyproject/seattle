@@ -916,7 +916,7 @@ header {
   display: block; }
 
 #map-controls .histogram {
-  padding: 0 1em;
+  padding: 0 0.625em;
   height: 2.9375em; }
 
 #map-controls {
