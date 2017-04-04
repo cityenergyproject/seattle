@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Fuel Use prototype</title>
+</head>
+<body>
+  <script src="https://d3js.org/d3.v4.min.js"></script>
+  <script src="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/cartodb.js"></script>
+  <script>
+
+  var metric = 'site_eui';
+  var numberOfBuckets = 18;
+  var cappedMax = 200;
+
+  cappedMax = cappedMax * ((numberOfBuckets+1)/numberOfBuckets); //need to make the max as the last class break
+
+  var sql = new cartodb.SQL({ user: 'cityenergy-seattle', format: 'json' });
+  sql.execute("SELECT * FROM table_2015_stamen_phase_i_final WHERE id::int >= {{id}}", { id: 1 })
+    .done(function(data) {
+      console.log(data.rows);
+
+      var extent = d3.extent(data.rows, d => { return d[metric]; });
+      console.log("min", extent[0], "max", extent[1]);
+
+      var breaks = [];
+      var counts = {};
+      for (var i = 0; i < numberOfBuckets; i++) {
+        var classBreak = cappedMax*i/numberOfBuckets;
+        breaks.push(classBreak);
+        counts[i] = 0;
+      }
+      console.log("breaks",breaks);
+
+      // Can't use a true d3 scale if we're doing an override capped max
+      //var buckets = d3.scaleQuantize()
+      //      .domain([0, extent[1]])
+      //      //.domain(data.rows.map(d => { return d[metric];}))
+      //      .range(breaks);
+
+      data.rows.forEach(row => {
+        var bucket = Math.floor(row[metric]/(cappedMax/numberOfBuckets));
+        counts[bucket < numberOfBuckets ? bucket : (numberOfBuckets-1)]++;
+      });
+      console.log("counts",counts);
+
+      var maxHeight = d3.max(d3.values(counts));
+
+      var width = 960;
+      var height = 5000;
+
+      var svg = d3.select("body").append("svg")
+        .attr("width",width)
+        .attr("height",height)
+
+      var chartHeight = 50;
+      var chartWidth = 400;
+      var spacing = 5;
+
+      svg.append("g").selectAll("rect")
+          .data(breaks)
+        .enter()
+          .append("rect")
+          .attr("width", chartWidth/numberOfBuckets - spacing)
+          .attr("height", (d,i) => { return chartHeight*counts[i]/maxHeight; })
+          .attr("y", (d,i) => { return 2*chartHeight-chartHeight*counts[i]/maxHeight; })
+          .attr("x", (d,i) => { return 50+i*chartWidth/numberOfBuckets; })
+          .attr("fill", "steelblue")
+          .on("mouseover", (d,i) => { console.log(d)});
+
+      var cityAvg = d3.mean(data.rows, d => { return d[metric]; });
+
+      svg.append("text")
+          .attr("y", chartHeight+150)
+          .attr("x", 50+chartWidth*(cityAvg/cappedMax))
+          .text("^" + d3.format(".3n")(cityAvg) + " = city average");
+
+      // Use d3.map to uniqify
+      var buildingTypes = d3.map(data.rows, d => { return d.property_type; }).keys();
+
+      var averages = buildingTypes.map(type => {
+      //var averages = d3.map(buildingTypes, type => {
+        return d3.mean(data.rows, d => { return d.property_type == type ? d[metric] : null; });
+      });
+
+      svg.append("g").selectAll("text")
+          .data(averages)
+        .enter()
+          .append("text")
+          .attr("y", (d,i) => { return chartHeight+200+50*i;})
+          .attr("x", (d,i) => { return 50+chartWidth*d/cappedMax;})
+          .text((d,i) => { return "^" + d3.format(".3n")(d) + " = " + buildingTypes[i] + " average";});
+
+      console.log(buildingTypes, averages);
+      console.log(averages[buildingTypes.indexOf('Large Office')]);
+
+    })
+    .error(function(errors) {
+      // errors contains a list of errors
+      console.log("errors:" + errors);
+    })
+
+  </script>
+</body>
+</html>
