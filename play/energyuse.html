@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Fuel Use prototype</title>
+</head>
+<body>
+  <script src="https://d3js.org/d3.v4.min.js"></script>
+  <script src="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/cartodb.js"></script>
+  <script>
+
+  var metric = 'site_eui';
+  var numberOfBuckets = 18;
+  var cappedMax = 200;
+
+  cappedMax = cappedMax * ((numberOfBuckets+1)/numberOfBuckets); //need to make the max as the last class break
+
+  var sql = new cartodb.SQL({ user: 'cityenergy-seattle', format: 'json' });
+  sql.execute("SELECT * FROM table_2015_stamen_phase_ii_v1 WHERE id::int >= {{id}}", { id: 1 })
+      // new data table: table_2015_stamen_phase_ii_v1
+    .done(function(data) {
+      console.log(data.rows);
+
+      data.rows.forEach(row => {
+        row.gas_2016_pct = row.gas_2016_pct ? row.gas_2016_pct : 0;
+        row.electricity_2016_pct = row.electricity_2016_pct ? row.electricity_2016_pct : 0;
+        row.steam_2016_pct = row.steam_2016_pct ? row.steam_2016_pct : 0;
+        row.other_2016_pct = row.other_2016_pct ? row.other_2016_pct : 0;
+      });
+
+      var width = 960;
+      var height = 5000;
+
+      var svg = d3.select("body").append("svg")
+        .attr("width",width)
+        .attr("height",height)
+
+      var chartHeight = 50;
+      var chartWidth = 400;
+      var spacing = 5;
+
+
+
+      var enterSelection = svg.append("g").selectAll("g")
+          .data(data.rows)
+        .enter();
+
+          
+      enterSelection.append("rect")
+          .attr("width", (d,i) => { return 100*d.gas_2016_pct; })
+          .attr("height", (d,i) => { return 10; })
+          .attr("y", (d,i) => { return i*10; })
+          .attr("x", (d,i) => { return 100; })
+          .attr("fill", "steelblue")
+          
+      enterSelection.insert("rect") // use insert for subsequent rectangles
+          .attr("width", (d,i) => { return 100*d.electricity_2016_pct; })
+          .attr("height", (d,i) => { return 10; })
+          .attr("y", (d,i) => { return i*10; })
+          .attr("x", (d,i) => { return 100+100*d.gas_2016_pct; })
+          .attr("fill", "limegreen")
+          
+      enterSelection.insert("rect") // use insert for subsequent rectangles
+          .attr("width", (d,i) => { return 100*d.steam_2016_pct; })
+          .attr("height", (d,i) => { return 10; })
+          .attr("y", (d,i) => { return i*10; })
+          .attr("x", (d,i) => { return 100+100*d.gas_2016_pct+100*d.electricity_2016_pct; })
+          .attr("fill", "pink")
+          
+      enterSelection.insert("rect") // use insert for subsequent rectangles
+          .append("rect")
+          .attr("width", (d,i) => { return 100*d.other_2016_pct; })
+          .attr("height", (d,i) => { return 10; })
+          .attr("y", (d,i) => { return i*10; })
+          .attr("x", (d,i) => { return 100+100*d.gas_2016_pct+100*d.electricity_2016_pct+100*d.steam_2016_pct; })
+          .attr("fill", "gray")
+
+
+    })
+    .error(function(errors) {
+      // errors contains a list of errors
+      console.log("errors:" + errors);
+    })
+
+  </script>
+</body>
+</html>
