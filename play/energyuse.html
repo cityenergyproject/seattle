@@ -2,6 +2,16 @@
 <html>
 <head>
     <meta charset="utf-8" />
+    <style>
+      .tooltip {
+        position: absolute;
+        text-align: left;
+        padding: 8px;
+        font: 10px sans-serif;
+        pointer-events: none;
+        background: rgba(255,255,255,0.8);
+      }
+    </style>
     <title>Fuel Use prototype</title>
 </head>
 <body>
@@ -28,52 +38,94 @@
         row.other_2016_pct = row.other_2016_pct ? row.other_2016_pct : 0;
       });
 
+      var chartHeight = 5;
+      var chartWidth = 100;
+      var spacing = 1;
+
       var width = 960;
-      var height = 5000;
+      var height = data.rows.length*(chartHeight+spacing);
 
       var svg = d3.select("body").append("svg")
         .attr("width",width)
         .attr("height",height)
 
-      var chartHeight = 50;
-      var chartWidth = 400;
-      var spacing = 5;
-
-
+      var tooltip = d3.select("body").append("div")
+          .attr("class", "tooltip")
+          .style("display", "none");
 
       var enterSelection = svg.append("g").selectAll("g")
           .data(data.rows)
         .enter();
 
-          
+
       enterSelection.append("rect")
-          .attr("width", (d,i) => { return 100*d.gas_2016_pct; })
-          .attr("height", (d,i) => { return 10; })
-          .attr("y", (d,i) => { return i*10; })
-          .attr("x", (d,i) => { return 100; })
+          .attr("width", (d,i) => { return chartWidth*d.gas_2016_pct; })
+          .attr("height", (d,i) => { return chartHeight; })
+          .attr("y", (d,i) => { return i*(chartHeight+spacing); })
+          .attr("x", (d,i) => { return chartWidth; })
           .attr("fill", "steelblue")
-          
+          .on("mouseover", (d,i) => {
+            tooltip.style("display", null);
+            tooltip.style("left", (100 + chartWidth) + "px")
+            tooltip.style("top", i*(chartHeight+spacing) + "px")
+            var output = d3.keys(d).map(key => { return key + ": " + d[key]; });
+            tooltip.html(output.join("<br>"));
+          })
+          .on("mouseout", function() {
+            tooltip.style("display", "none");
+          });
+
       enterSelection.insert("rect") // use insert for subsequent rectangles
-          .attr("width", (d,i) => { return 100*d.electricity_2016_pct; })
-          .attr("height", (d,i) => { return 10; })
-          .attr("y", (d,i) => { return i*10; })
-          .attr("x", (d,i) => { return 100+100*d.gas_2016_pct; })
+          .attr("width", (d,i) => { return chartWidth*d.electricity_2016_pct; })
+          .attr("height", (d,i) => { return chartHeight; })
+          .attr("y", (d,i) => { return i*(chartHeight+spacing); })
+          .attr("x", (d,i) => { return chartWidth+chartWidth*d.gas_2016_pct; })
           .attr("fill", "limegreen")
-          
+          .on("mouseover", (d,i) => {
+            tooltip.style("display", null);
+            tooltip.style("left", (100 + chartWidth) + "px")
+            tooltip.style("top", i*(chartHeight+spacing) + "px")
+            var output = d3.keys(d).map(key => { return key + ": " + d[key]; });
+            tooltip.html(output.join("<br>"));
+          })
+          .on("mouseout", function() {
+            tooltip.style("display", "none");
+          });
+
       enterSelection.insert("rect") // use insert for subsequent rectangles
-          .attr("width", (d,i) => { return 100*d.steam_2016_pct; })
-          .attr("height", (d,i) => { return 10; })
-          .attr("y", (d,i) => { return i*10; })
-          .attr("x", (d,i) => { return 100+100*d.gas_2016_pct+100*d.electricity_2016_pct; })
+          .attr("width", (d,i) => { return chartWidth*d.steam_2016_pct; })
+          .attr("height", (d,i) => { return chartHeight; })
+          .attr("y", (d,i) => { return i*(chartHeight+spacing); })
+          .attr("x", (d,i) => { return chartWidth+chartWidth*d.gas_2016_pct+chartWidth*d.electricity_2016_pct; })
           .attr("fill", "pink")
-          
+          .on("mouseover", (d,i) => {
+            tooltip.style("display", null);
+            tooltip.style("left", (100 + chartWidth) + "px")
+            tooltip.style("top", i*(chartHeight+spacing) + "px")
+            var output = d3.keys(d).map(key => { return key + ": " + d[key]; });
+            tooltip.html(output.join("<br>"));
+          })
+          .on("mouseout", function() {
+            tooltip.style("display", "none");
+          });
+
       enterSelection.insert("rect") // use insert for subsequent rectangles
           .append("rect")
-          .attr("width", (d,i) => { return 100*d.other_2016_pct; })
-          .attr("height", (d,i) => { return 10; })
-          .attr("y", (d,i) => { return i*10; })
-          .attr("x", (d,i) => { return 100+100*d.gas_2016_pct+100*d.electricity_2016_pct+100*d.steam_2016_pct; })
+          .attr("width", (d,i) => { return chartWidth*d.other_2016_pct; })
+          .attr("height", (d,i) => { return chartHeight; })
+          .attr("y", (d,i) => { return i*(chartHeight+spacing); })
+          .attr("x", (d,i) => { return chartWidth+chartWidth*d.gas_2016_pct+chartWidth*d.electricity_2016_pct+chartWidth*d.steam_2016_pct; })
           .attr("fill", "gray")
+          .on("mouseover", (d,i) => {
+            tooltip.style("display", null);
+            tooltip.style("left", (100 + chartWidth) + "px")
+            tooltip.style("top", i*(chartHeight+spacing) + "px")
+            var output = d3.keys(d).map(key => { return key + ": " + d[key]; });
+            tooltip.html(output.join("<br>"));
+          })
+          .on("mouseout", function() {
+            tooltip.style("display", "none");
+          });
 
 
     })
