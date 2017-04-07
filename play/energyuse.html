@@ -68,8 +68,15 @@
             tooltip.style("display", null);
             tooltip.style("left", (100 + chartWidth) + "px")
             tooltip.style("top", i*(chartHeight+spacing) + "px")
-            var output = d3.keys(d).map(key => { return key + ": " + d[key]; });
-            tooltip.html(output.join("<br>"));
+            var summary = 
+              "<span style='color:steelblue'>gas_2016_pct: " + d.gas_2016_pct + "</span><br>" +
+              "<span style='color:limegreen'>electricity_2016_pct: " + d.electricity_2016_pct + "</span><br>" +
+              "<span style='color:pink'>steam_2016_pct: " + d.steam_2016_pct + "</span><br>" +
+              "<span style='color:gray'>other_2016_pct: " + d.other_2016_pct + "</span><br>";
+            var output = d3.keys(d)
+              .filter(key => { return (key != 'gas_2016_pct' && key != 'electricity_2016_pct' && key != 'steam_2016_pct' && key != 'other_2016_pct') })
+              .map(key => { return key + ": " + d[key]; });
+            tooltip.html(summary + output.join("<br>"));
           })
           .on("mouseout", function() {
             tooltip.style("display", "none");
@@ -85,8 +92,15 @@
             tooltip.style("display", null);
             tooltip.style("left", (100 + chartWidth) + "px")
             tooltip.style("top", i*(chartHeight+spacing) + "px")
-            var output = d3.keys(d).map(key => { return key + ": " + d[key]; });
-            tooltip.html(output.join("<br>"));
+            var summary = 
+              "<span style='color:steelblue'>gas_2016_pct: " + d.gas_2016_pct + "</span><br>" +
+              "<span style='color:limegreen'>electricity_2016_pct: " + d.electricity_2016_pct + "</span><br>" +
+              "<span style='color:pink'>steam_2016_pct: " + d.steam_2016_pct + "</span><br>" +
+              "<span style='color:gray'>other_2016_pct: " + d.other_2016_pct + "</span><br>";
+            var output = d3.keys(d)
+              .filter(key => { return (key != 'gas_2016_pct' && key != 'electricity_2016_pct' && key != 'steam_2016_pct' && key != 'other_2016_pct') })
+              .map(key => { return key + ": " + d[key]; });
+            tooltip.html(summary + output.join("<br>"));
           })
           .on("mouseout", function() {
             tooltip.style("display", "none");
@@ -102,15 +116,21 @@
             tooltip.style("display", null);
             tooltip.style("left", (100 + chartWidth) + "px")
             tooltip.style("top", i*(chartHeight+spacing) + "px")
-            var output = d3.keys(d).map(key => { return key + ": " + d[key]; });
-            tooltip.html(output.join("<br>"));
+            var summary = 
+              "<span style='color:steelblue'>gas_2016_pct: " + d.gas_2016_pct + "</span><br>" +
+              "<span style='color:limegreen'>electricity_2016_pct: " + d.electricity_2016_pct + "</span><br>" +
+              "<span style='color:pink'>steam_2016_pct: " + d.steam_2016_pct + "</span><br>" +
+              "<span style='color:gray'>other_2016_pct: " + d.other_2016_pct + "</span><br>";
+            var output = d3.keys(d)
+              .filter(key => { return (key != 'gas_2016_pct' && key != 'electricity_2016_pct' && key != 'steam_2016_pct' && key != 'other_2016_pct') })
+              .map(key => { return key + ": " + d[key]; });
+            tooltip.html(summary + output.join("<br>"));
           })
           .on("mouseout", function() {
             tooltip.style("display", "none");
           });
 
       enterSelection.insert("rect") // use insert for subsequent rectangles
-          .append("rect")
           .attr("width", (d,i) => { return chartWidth*d.other_2016_pct; })
           .attr("height", (d,i) => { return chartHeight; })
           .attr("y", (d,i) => { return i*(chartHeight+spacing); })
@@ -120,8 +140,15 @@
             tooltip.style("display", null);
             tooltip.style("left", (100 + chartWidth) + "px")
             tooltip.style("top", i*(chartHeight+spacing) + "px")
-            var output = d3.keys(d).map(key => { return key + ": " + d[key]; });
-            tooltip.html(output.join("<br>"));
+            var summary = 
+              "<span style='color:steelblue'>gas_2016_pct: " + d.gas_2016_pct + "</span><br>" +
+              "<span style='color:limegreen'>electricity_2016_pct: " + d.electricity_2016_pct + "</span><br>" +
+              "<span style='color:pink'>steam_2016_pct: " + d.steam_2016_pct + "</span><br>" +
+              "<span style='color:gray'>other_2016_pct: " + d.other_2016_pct + "</span><br>";
+            var output = d3.keys(d)
+              .filter(key => { return (key != 'gas_2016_pct' && key != 'electricity_2016_pct' && key != 'steam_2016_pct' && key != 'other_2016_pct') })
+              .map(key => { return key + ": " + d[key]; });
+            tooltip.html(summary + output.join("<br>"));
           })
           .on("mouseout", function() {
             tooltip.style("display", "none");
