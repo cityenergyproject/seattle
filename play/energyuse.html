@@ -26,7 +26,7 @@
   cappedMax = cappedMax * ((numberOfBuckets+1)/numberOfBuckets); //need to make the max as the last class break
 
   var sql = new cartodb.SQL({ user: 'cityenergy-seattle', format: 'json' });
-  sql.execute("SELECT * FROM table_2015_stamen_phase_ii_v2 WHERE id::int >= {{id}} limit 100", { id: 1 })
+  sql.execute("SELECT * FROM table_2015_stamen_phase_ii_v2 WHERE id::int >= {{id}}", { id: 1 })
       // new data table: table_2015_stamen_phase_ii_v1
     .done(function(data) {
       console.log(data.rows);
