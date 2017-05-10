@@ -87,16 +87,13 @@ define([
         ":cityname/:year?:params": "year",
         ":cityname/:year/?:params": "year",
     },
-    //  w table view = 12s
-    //  w/o = ~2.5s
+
     initialize: function(){
       var activityIndicator = new ActivityIndicator({state: this.state});
-      // var headerView = new HeaderView({state: this.state});
       var yearControlView = new YearControlView({state: this.state});
       var mapView = new MapView({state: this.state});
       var addressSearchView = new AddressSearchView({mapView: mapView, state: this.state});
       var comparisonView = new BuildingComparisonView({state: this.state});
-      // var footerView = new FooterView({state: this.state});
 
       this.state.on('change', this.onChange, this);
     },
