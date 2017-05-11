@@ -146,6 +146,7 @@ header {
   right: 0;
   overflow: hidden;
   left: $nav-col-fixed-width;
+  z-index: 1;
 
   @include media($large-screen-up) {
     left: $large-nav-col-fixed-width;

@@ -1,0 +1,166 @@
+#scorecard {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  background: white;
+  overflow: auto;
+  z-index: $zIndexMax;
+
+  .scorecard--content {
+    position: relative;
+    width: 100%;
+  }
+
+  .scorecard--nav {
+    margin: 1rem 1rem;
+
+    & > div {
+      position: relative;
+      margin: 0.5rem 0 0;
+    }
+
+    a {
+      font-size: 0.75rem;
+      color: $blue;
+    }
+  }
+
+  .building--name {
+    font-size: 1.5rem;
+    font-weight: 500;
+    line-height: 1;
+  }
+
+  .comparison-view {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+  }
+
+  .scorecard--details {
+    padding: 0 1rem;
+    background: $blue;
+    height: 210px;
+    overflow: hidden;
+
+    .col {
+      float: left;
+      width: 33%;
+      height: 100%;
+      padding-top: 1rem;
+      color: white;
+    }
+
+    .col.middle {
+      position: relative;
+      padding-top: 0;
+      color: $blue;
+      z-index: 1;
+
+      & > div {
+        position: relative;
+        top: 50%;
+        padding-top: 0;
+        text-align: center;
+        z-index: 1;
+        transform: translateY(-50%);
+      }
+
+      &:after {
+        content: ' ';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 260px;
+        height: 260px;
+        background: white;
+        border-radius: 50%;
+        transform: translateX(-50%) translateY(-50%);
+        z-index: -1;
+      }
+
+      h4, h3, h3 + p {
+        padding: 0;
+        margin: 0;
+        line-height: 1;
+      }
+
+      h4 {
+        font-weight: 400;
+        font-size: 1rem;
+      }
+
+      h3 {
+        font-weight: 500;
+        font-size: 3rem;
+        color: $real-orange;
+      }
+
+      h3 + p {
+        color: $real-orange;
+        font-size: 0.75rem;
+      }
+
+      .eui-desc {
+        margin: 1rem auto 0;
+        width: 150px;
+
+        p {
+          font-size: 10px;
+          padding: 0;
+          margin: 0;
+        }
+
+        p:first-child {
+          font-weight: 500;
+        }
+      }
+    }
+
+    .toggle {
+      position: absolute;
+      bottom: 1rem;
+
+      label {
+        display: inline-block;
+        font-weight: 400;
+        margin: 0;
+      }
+
+      label + label {
+        margin-left: 0.5rem;
+      }
+
+      label.cb-plain {
+        line-height: 1;
+
+        input[type="checkbox"] {
+          display: none;
+        }
+
+        span {
+          opacity: 0.25;
+        }
+
+        span.cb {
+          content: ' ';
+          display: inline-block;
+          width: 10px;
+          height: 10px;
+          margin-right: 5px;
+          border-radius: 10px;
+          background: white;
+        }
+
+        input[type=checkbox]:checked ~ span {
+          opacity: 1.0;
+        }
+      }
+    }
+  }
+
+
+}
