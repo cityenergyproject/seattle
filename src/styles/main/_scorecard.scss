@@ -14,6 +14,32 @@
     width: 100%;
   }
 
+  .scorecard--section {
+    margin: 1rem 1rem;
+  }
+
+  .section-head {
+    h3 {
+      font-weight: 500;
+      font-size: 1rem;
+      text-transform: uppercase;
+    }
+  }
+
+  .two-col {
+    overflow: hidden;
+
+    & > div {
+      float: left;
+      width: 70%;
+    }
+
+    & > div:first-child {
+      width: 30%;
+    }
+  }
+
+
   .scorecard--nav {
     margin: 1rem 1rem;
 
@@ -41,6 +67,7 @@
   }
 
   .scorecard--details {
+    position: relative;
     padding: 0 1rem;
     background: $blue;
     height: 210px;
@@ -163,4 +190,176 @@
   }
 
 
+  .compare-logo {
+    position: relative;
+    margin: 0;
+    padding: 0;
+    width: 83px;
+    height: 83px;
+    background: transparent url('../images/scorecard/compare-left.png');
+    line-height: 1;
+    text-align: center;
+
+    span {
+      position: absolute;
+      bottom: 10px;
+      left: 0;
+      width: 100%;
+      font-size: 1rem;
+      font-weight: 500;
+      color: white;
+    }
+
+  }
+
+  #compare-chart {
+    position: relative;
+
+    .bar rect {
+      fill: #F1F1F1;
+      shape-rendering: crispEdges;
+
+      &.selected {
+        fill: #DE8F41;
+      }
+    }
+
+    .axis path {
+      fill: none;
+      stroke: #CBCBCB;
+      shape-rendering: crispEdges;
+    }
+
+    text {
+      font-family: $base-font-family;
+      font-size: 10px;
+    }
+
+    .y.axis text, .label text {
+      fill: #CBCBCB;
+    }
+
+    .label text {
+      text-transform: uppercase;
+    }
+
+    .axis line {
+      fill: none;
+      shape-rendering: crispEdges;
+    }
+
+    .y.axis line {
+      display: none;
+    }
+
+    .x.axis line {
+      stroke-width: 1.5;
+    }
+
+    .avg-highlight-html {
+      position: absolute;
+
+      & > div {
+        position: absolute;
+        bottom: calc(100% + 10px);
+        width: 100px;
+
+        &:after {
+          content: ' ';
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 1px;
+          height: calc(100% + 10px);
+          background: #CBCBCB;
+        }
+      }
+
+      p {
+        margin: 0 0 0 10px;
+        padding: 0;
+        line-height: 1;
+        font-size: 24px;
+        font-weight: 500;
+        color: $real-orange;
+      }
+
+      p:first-child, p:last-child {
+        font-size: 10px;
+        font-weight: 400;
+        text-transform: uppercase;
+      }
+
+      p:first-child {
+        color: #CBCBCB;
+      }
+
+      p:last-child {
+        margin-top: -2px;
+      }
+    }
+
+    .selected-city-highlight-html {
+      position: absolute;
+      margin-left: -30px;
+
+      .circle {
+        position: relative;
+        width: 60px;
+        height: 60px;
+        border-radius: 30px;
+        border: 1px solid $blue;
+
+        .inner {
+          position: absolute;
+          top: 50%;
+          left: 0;
+          width: 100%;
+          text-align: center;
+          transform: translateY(-50%);
+
+          p {
+            margin: 0;
+            padding: 0;
+            line-height: 1;
+            color: $real-orange;
+            font-size: 10px;
+          }
+
+          p:first-child {
+            font-size: 24px;
+            font-weight: 500;
+          }
+          p:last-child {
+            margin-top: -2px;
+          }
+        }
+
+        .outer {
+          position: absolute;
+          left: calc(100% + 10px);
+          top: 50%;
+          width: 150px;
+          transform: translateY(-50%);
+
+          p {
+            margin: 0;
+            padding: 0;
+            line-height: 1;
+          }
+        }
+      }
+
+      .line {
+        position: absolute;
+        top: 60px;
+        left: 50%;
+        width: 1px;
+        background: $blue;
+      }
+    }
+
+
+
+  }
 }

@@ -1,4 +1,5 @@
 <div class='scorecard--content'>
+
   <div class='scorecard--nav'>
     <a class='back' href='#'>&lt; Back to Map</a>
     <div>
@@ -6,11 +7,12 @@
       <a class='comparison-view'>Building Comparison View &gt;</a>
     </div>
   </div>
+
   <div class='scorecard--details'>
     <div class='col'>
         <ul>
           <li><%= addr %></li>
-          <li><%= sqft %> sf</li>
+          <li><%= sqft %> ft<sup>2</sup></li>
           <li><%= type %></li>
           <li>Building ID <%= id %></li>
         </ul>
@@ -24,13 +26,28 @@
       <div>
         <h4><%= year %> EUI</h4>
         <h3><%= eui %></h3>
-        <p>KBTU/SF</p>
+        <p>KBTU/FT<sup>2</sup></p>
         <div class='eui-desc'>
           <p>Energy Use Intensity</p>
-          <p>EUI is your building’s annual energy use (all fuel types) per square foot (sf) in kBtu/sf.</p>
+          <p>EUI is your building’s annual energy use (all fuel types) per square foot (ft<sup>2</sup>) in kBtu/ft<sup>2</sup>.</p>
         </div>
       </div>
     </div>
     <div class='col'></div>
+  </div>
+
+  <div class='scorecard--section'>
+    <div class='section-head'>
+      <h3>Compared to Average</h3>
+      <p>See how this building measures up against other buildings of the same type:</p>
+    </div>
+
+    <div class='two-col'>
+      <div class='compare-desc'>
+        <p class='compare-logo'><span>12%</span></p>
+        <p>This building’s EUI is 12% lower than the average large office building in Seattle.</p>
+      </div>
+      <div id='compare-chart'></div>
+    </div>
   </div>
 </div>
