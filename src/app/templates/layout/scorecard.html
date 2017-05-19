@@ -78,14 +78,14 @@
       </div>
       <div id='fueluse-chart'>
         <div class='fc-labels fc-panel'>
-          <div class='fc-header fc-row'></div>
+          <div class='fc-headers fc-row'></div>
           <div class='fc-label fc-row'>
             <div>
               <p>USAGE</p>
               <p>(% kBtu)</p>
             </div>
           </div>
-          <div class='fc-label fc-row'>
+          <div class='fc-label fc-row margin-top'>
             <div>
               <p>EMISSIONS</p>
               <p>(% ghg)</p>
@@ -94,17 +94,17 @@
         </div>
 
         <div class='fc-bars fc-panel'>
-          <div id='fuel-headers' class='fc-header fc-row'>
+          <div class='fc-headers fc-row'>
             <% _.each(fuels.fuels, function(fuel) { %>
               <span class='fc-header <%= fuel.key %>' style="width: <%= fuel.usage.pct %>%;"><%= fuel.label %></span>
             <% }); %>
           </div>
-          <div id='fuel-usage-chart' class='fc-row'>
+          <div class='fc-row'>
             <% _.each(fuels.fuels, function(fuel) { %>
               <div class='fc-bar <%= fuel.key %>' style="width: <%= fuel.usage.pct %>%;"><span><%= fuel.usage.pct %>%</span></div>
             <% }); %>
           </div>
-          <div id='fuel-emissions-chart' class='fc-row'>
+          <div class='fc-row margin-top'>
             <% _.each(fuels.fuels, function(fuel) { %>
               <div class='fc-bar <%= fuel.key %>' style="width: <%= fuel.emissions.pct %>%;"><span><%= fuel.emissions.pct %>%</span></div>
             <% }); %>
@@ -115,14 +115,14 @@
         </div>
 
         <div class='fc-totals fc-panel'>
-          <div class='fc-header fc-row'><span class='fc-header'>TOTAL</span></div>
+          <div class='fc-headers fc-row'><span class='fc-header'>TOTAL</span></div>
           <div class='fc-label fc-row'>
             <div>
               <p><%= fuels.totals.usage %></p>
               <p>million kBtu</p>
             </div>
           </div>
-          <div class='fc-label fc-row'>
+          <div class='fc-label fc-row margin-top'>
             <div>
               <p><%= fuels.totals.emissions %></p>
               <p>metric tons</p>

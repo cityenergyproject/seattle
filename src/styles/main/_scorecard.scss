@@ -449,6 +449,8 @@
   }
 
   #fueluse-chart {
+    .margin-top { margin-top: 1rem; }
+
     .fc-panel {
       display: inline-block;
       vertical-align: top;
@@ -463,12 +465,9 @@
       height: 36px;
       overflow: hidden;
 
-      &.fc-header {
-
-      }
-
-      &:last-child {
-        margin-top: 1rem;
+      &.fc-headers {
+        height: 24px;
+        line-height: 24px;
       }
     }
 
@@ -496,12 +495,11 @@
 
 
     .fc-header {
-      span {
-        display: block;
-        float: left;
-        text-align: center;
-        line-height: 36px;
-      }
+      display: block;
+      float: left;
+      text-align: center;
+      line-height: 24px;
+
 
       &.gas {
         color: #C04F31;
@@ -513,6 +511,18 @@
 
       &.steam {
         color: #F7C34D;
+      }
+    }
+
+    .fc-bars {
+
+      .fc-row:last-child {
+        p {
+          margin-top: 0.5rem;
+          text-align: center;
+          font-size: 0.75rem;
+          font-weight: 500;
+        }
       }
     }
 
