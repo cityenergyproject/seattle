@@ -146,8 +146,8 @@
         }
     ],
     "years": {
-        "2015": {
-            "table_name": "table_2015_stamen_phase_i_final",
+        "2016": {
+            "table_name": "table_2015_stamen_phase_ii_v2",
             "default_layer": "energy_star_score"
         }
     }

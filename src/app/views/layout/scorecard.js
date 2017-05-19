@@ -9,32 +9,107 @@ define([
     initialize: function(options){
       this.state = options.state;
       this.listenTo(this.state, 'change:allbuildings', this.onBuildings);
+      this.formatters = {
+        currency: d3.format('$,.2f'),
+        currency_zero: d3.format('$,.0f'),
+        commaize: d3.format(',.2r'),
+        percent: d3.format('.0%'),
+        fixed: d3.format(',.2f')
+      };
+
       this.template = _.template(ScorecardTemplate);
       this.render();
     },
 
+    onBuildings: function() {
+      var buildings = this.state.get('allbuildings');
+      var year = this.state.get('year');
+      var rid = Math.floor(Math.random() * 1000) + 1;
+
+      var building = buildings.at(rid);
+
+      if (typeof building === 'undefined') {
+        console.warn('Could not find a random building, trying again');
+        this.onBuildings();
+      }
+
+      console.log('RID: ', rid);
+
+      // Temporary hack to get yearly data
+      d3.json(`https://cityenergy-seattle.carto.com/api/v2/sql?q=SELECT+ST_X(the_geom)+AS+lng%2C+ST_Y(the_geom)+AS+lat%2C*+FROM+table_2015_stamen_phase_ii_v2_w_year+WHERE+id=${building.get('id')}`, (d) => {
+        this.processBuilding(buildings, d, year);
+      });
+
+    },
+
     full_address: function(building) {
-      var zip = building.get('zip');
-      var state = building.get('state');
-      var city = building.get('city');
-      var addr = building.get('reported_address');
+      var zip = building.zip; // building.get('zip');
+      var state = building.state; // building.get('state');
+      var city = building.city; // building.get('city');
+      var addr = building.reported_address; // building.get('reported_address');
 
       return addr + ', ' + city + ' ' + state + ' ' + zip;
     },
 
-    onBuildings: function() {
-      var buildings = this.state.get('allbuildings');
-      var rid = Math.floor(Math.random() * 1000) + 1;
-      var building = buildings.at(rid);
+    costs: function(building, year) {
+      //  ft²
+      var per_sqft = building.cost_sq_ft;
+      if (per_sqft === null) {
+        per_sqft = '0';
+      } else {
+        per_sqft = this.formatters.currency(per_sqft);
+      }
 
-      var name = building.get('property_name');
+      var annual = building.cost_annual;
+      if (annual === null) {
+        annual = '0';
+      } else {
+        annual = this.formatters.currency_zero(annual);
+      }
+
+      var save_pct = building.percent_save;
+      if (save_pct === null) {
+        save_pct = '0';
+      } else {
+        save_pct = this.formatters.percent(save_pct);
+      }
+
+      var savings = building.amount_save;
+      if (savings === null) {
+        savings = '0';
+      } else {
+        savings = this.formatters.currency_zero(savings);
+      }
+
+
+      return {
+        per_sqft: per_sqft,
+        annual: annual,
+        save_pct: save_pct,
+        savings: savings
+      }
+    },
+
+    processBuilding: function(buildings, building_data, selected_year) {
+      var data = {};
+      building_data.rows.forEach(d => {
+        data[d.year] = {...d};
+      });
+
+      var building = data[selected_year];
+
+
+      var name = building.property_name; // building.get('property_name');
       var address = this.full_address(building);
-      var sqft = +(building.get('reported_gross_floor_area'));
-      var prop_type = building.get('property_type');
-      var id = building.get('id');
-      var eui = building.get('site_eui');
+      var sqft = +(building.reported_gross_floor_area);
+      var prop_type = building.property_type;
+      var id = building.id;
+      var eui = building.site_eui;
 
       console.log(building);
+
+      var fuels = this.renderFuelUseChart(building);
+      console.log(fuels);
 
       $('#scorecard').html(this.template({
         name: name,
@@ -42,14 +117,27 @@ define([
         sqft: sqft.toLocaleString(),
         type: prop_type,
         id: id,
-        year: 2015,
-        eui: eui
+        year: selected_year,
+        eui: eui,
+        costs: this.costs(building, selected_year),
+        compare: this.compare(building),
+        fuels: fuels
       }));
 
-      this.renderCompareChart(buildings, prop_type, id, name, eui);
+      // this.renderFuelUseChart(building);
+      this.renderCompareChart(buildings, prop_type, id, name, eui, selected_year);
     },
 
-    renderCompareChart: function(buildings, prop_type, id, name, eui) {
+    compare: function(building) {
+      return {
+        change_label: building.higher_or_lower.toLowerCase(),
+        change_pct: this.formatters.percent(building.percent_from_median)
+      }
+    },
+
+    renderCompareChart: function(buildings, prop_type, id, name, eui, year) {
+
+      var siteeuiKey = 'site_eui_' + year;
       var buildingsOfType = buildings.where({property_type: prop_type}).map(function(m) {
         return m.toJSON();
       });
@@ -57,17 +145,17 @@ define([
       var data = d3.layout.histogram()
           .bins(22)
           .value(function(d) {
-            return d.site_eui;
+            return d[siteeuiKey];
           })(buildingsOfType);
 
       data.forEach(function(d) {
         var min = d3.min(d, function(v){
-          if (v.hasOwnProperty('site_eui')) return v.site_eui;
+          if (v.hasOwnProperty(siteeuiKey)) return v[siteeuiKey];
           return 0;
         });
 
         var max = d3.max(d, function(v){
-          if (v.hasOwnProperty('site_eui')) return v.site_eui;
+          if (v.hasOwnProperty(siteeuiKey)) return v[siteeuiKey];
           return 0;
         });
 
@@ -88,16 +176,14 @@ define([
         if (f) selectedIndex = i;
       });
 
-      var sum =  buildingsOfType.reduce(function(a, b) { return a + b.site_eui; }, 0);
-      var avg = sum / buildingsOfType.length;
+
+      var avg = d3.mean(buildingsOfType, function(d) { return d[siteeuiKey]; });
+      // var median = d3.median(buildingsOfType, function(d) { return d[siteeuiKey]; })
 
       data.forEach(function(d, i) {
         if (avgIndex !== null) return;
         if (avg >= d.min && avg <= d.max) avgIndex = i;
       });
-
-      console.log(selectedIndex, avg, avgIndex);
-      console.log(data);
 
       var thresholds = [
         {
@@ -270,6 +356,53 @@ define([
 
       avgHighlight.append('p')
         .html('KBTU/FT<sup>2</sup>');
+    },
+
+    renderFuelUseChart: function(building) {
+      var fuels = [
+        {
+          label: 'Natural Gas',
+          key: 'gas'
+        },
+        {
+          label: 'Electric',
+          key: 'electricity'
+        },
+        {
+          label: 'Steam',
+          key: 'steam'
+        }
+      ];
+
+      var pctFormat = function(n) {
+        var val = n * 100;
+        return d3.format('.0f')(val);
+      }
+
+      fuels.forEach(function(d) {
+        d.emissions = {};
+        d.emissions.pct = pctFormat(building[d.key + '_ghg_percent']);
+        d.emissions.amt = building[d.key + '_ghg'];
+
+        d.usage = {};
+        d.usage.pct = pctFormat(building[d.key + '_pct']);
+        d.usage.amt = building[d.key];
+      });
+
+      fuels = fuels.filter(function(d) {
+        return d.usage.amt > 0 && d.emissions.amt > 0;
+      });
+
+      var totals = {
+        usage: this.formatters.fixed(building.total_kbtu),
+        emissions: this.formatters.fixed(building.total_ghg_emissions)
+      };
+
+      return {
+        fuels: fuels,
+        totals: totals
+      };
+
     },
 
     render: function(){

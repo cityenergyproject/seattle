@@ -15,7 +15,15 @@
   }
 
   .scorecard--section {
-    margin: 1rem 1rem;
+    border-bottom: 1px solid #F1F1F1;
+
+    .inner {
+      padding: 1rem;
+    }
+
+    .section-head {
+      margin-bottom: 2rem;
+    }
   }
 
   .section-head {
@@ -23,6 +31,11 @@
       font-weight: 500;
       font-size: 1rem;
       text-transform: uppercase;
+    }
+
+    p {
+      font-size: 0.75rem;
+      font-weight: 500;
     }
   }
 
@@ -37,6 +50,25 @@
     & > div:first-child {
       width: 30%;
     }
+  }
+
+  .sc-heading {
+    margin: 0;
+    padding: 0;
+    font-size: 1rem;
+    text-transform: uppercase;
+    line-height: 1;
+
+    &.lg {
+      font-size: 1.5rem;
+    }
+  }
+
+  .sqft {
+    font-size: 0.75rem;
+    text-transform: lowercase;
+
+    sup { font-size: 0.625rem; }
   }
 
 
@@ -147,6 +179,38 @@
       }
     }
 
+    .details-box {
+      text-align: left;
+
+      & + .details-box {
+        margin-top: 1rem;
+      }
+
+      & > h4 {
+        text-align: right;
+      }
+
+      & > div {
+        margin-top: 1rem;
+        text-align: left;
+        overflow: hidden;
+      }
+
+      & > div > * {
+        float: left;
+        text-align: right;
+      }
+
+      & > div *:first-child {
+        width: 70%;
+        font-size: 0.75rem;
+      }
+
+      & > div *:last-child {
+        width: 30%;
+      }
+    }
+
     .toggle {
       position: absolute;
       bottom: 1rem;
@@ -189,27 +253,50 @@
     }
   }
 
-
-  .compare-logo {
-    position: relative;
-    margin: 0;
-    padding: 0;
-    width: 83px;
-    height: 83px;
-    background: transparent url('../images/scorecard/compare-left.png');
-    line-height: 1;
+  .compare-desc {
     text-align: center;
+    padding-right: 2rem;
 
-    span {
-      position: absolute;
-      bottom: 10px;
-      left: 0;
-      width: 100%;
-      font-size: 1rem;
-      font-weight: 500;
-      color: white;
+    & > p:last-child {
+      text-align: left;
     }
 
+    .compare-logo {
+      position: relative;
+      display: inline-block;
+      margin: 0 0 1rem;
+      padding: 0;
+      width: 83px;
+      height: 83px;
+      background: transparent;
+      background-repeat: no-repeat;
+      background-position: 50%;
+      line-height: 1;
+
+      &.lower {
+        background-image: url('../images/scorecard/compare-left.png');
+      }
+
+      &.higher {
+        background-image: url('../images/scorecard/compare-right.png');
+      }
+
+      span {
+        position: absolute;
+        bottom: 10px;
+        left: 0;
+        width: 100%;
+        font-size: 1rem;
+        font-weight: 500;
+        color: white;
+      }
+
+    }
+
+    .change-txt {
+      &.lower { color: #90AE60; }
+      &.higher {color: #C04F31; }
+    }
   }
 
   #compare-chart {
@@ -359,7 +446,101 @@
       }
     }
 
+  }
 
+  #fueluse-chart {
+    .fc-panel {
+      display: inline-block;
+      vertical-align: top;
+
+      &.fc-bars {
+        width: 70%;
+        margin: 0 1rem;
+      }
+    }
+
+    .fc-row {
+      height: 36px;
+      overflow: hidden;
+
+      &.fc-header {
+
+      }
+
+      &:last-child {
+        margin-top: 1rem;
+      }
+    }
+
+    .fc-label {
+      height: 36px;
+      line-height: 36px;
+
+      & > div {
+        display: inline-block;
+        vertical-align: middle;
+      }
+
+      p {
+        margin: 0;
+        padding: 0;
+        line-height: 1;
+        font-size: 1rem;
+        font-weight: 500;
+      }
+
+      p:last-child {
+        font-size: 0.75rem;
+      }
+    }
+
+
+    .fc-header {
+      span {
+        display: block;
+        float: left;
+        text-align: center;
+        line-height: 36px;
+      }
+
+      &.gas {
+        color: #C04F31;
+      }
+
+      &.electricity {
+        color: #DE8F41;
+      }
+
+      &.steam {
+        color: #F7C34D;
+      }
+    }
+
+    .fc-bar {
+      position: relative;
+      height: 36px;
+      float: left;
+      text-align: center;
+
+      &.gas {
+        background: #C04F31;
+      }
+
+      &.electricity {
+        background: #DE8F41;
+      }
+
+      &.steam {
+        background: #F7C34D;
+      }
+
+      span {
+        color: white !important;
+        line-height: 36px;
+      }
+    }
 
   }
+
+
 }
