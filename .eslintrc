@@ -7,7 +7,7 @@
     "blockBindings": false,                     // enable let and const (aka block bindings)
     "classes": false,                           // enable classes
     "defaultParams": false,                     // enable default function parameters
-    "destructuring": false,                     // enable destructuring
+    "destructuring": true,                     // enable destructuring
     "forOf": false,                             // enable for-of loops
     "generators": false,                        // enable generators
     "modules": false,                           // enable modules and global strict mode
@@ -19,7 +19,7 @@
     "regexUFlag": false,                        // enable the regular expression u flag
     "regexYFlag": false,                        // enable the regular expression y flag
     "restParams": false,                        // enable the rest parameters
-    "spread": false,                            // enable the spread operator
+    "spread": true,                            // enable the spread operator
     "superInFunctions": false,                  // enable super references inside of functions
     "templateStrings": false,                   // enable template strings
     "unicodeCodePointEscapes": false,           // enable code point escapes

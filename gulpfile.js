@@ -16,7 +16,8 @@ var gulp = require('gulp'),
     connect = require('gulp-connect'),
     livereload = require('gulp-livereload'),
     del = require('del'),
-    deploy = require('gulp-gh-pages');
+    deploy = require('gulp-gh-pages'),
+    babel = require('gulp-babel');
 
 gulp.task('fileinclude', function() {
   return  gulp.src(['src/index.html', 'src/iframe.html', 'src/CNAME'])
@@ -43,6 +44,7 @@ gulp.task('styles', function() {
 // Scripts
 gulp.task('scripts', function() {
   return gulp.src('src/app/**/*.js')
+    .pipe(babel())
     .pipe(jshint())
     .pipe(jshint.reporter('default'))
     .pipe(gulp.dest('dist/app'))
@@ -83,7 +85,8 @@ gulp.task('copy-lib', function() {
 
 // Default task
 gulp.task('default', ['clean'], function() {
-    gulp.start('fileinclude', 'styles', 'scripts', 'images', 'templates', 'cities_config', 'copy-lib');
+  //gulp.start('scripts');
+  gulp.start('fileinclude', 'styles', 'scripts', 'images', 'templates', 'cities_config', 'copy-lib');
 });
 
 gulp.task('connect', function() {

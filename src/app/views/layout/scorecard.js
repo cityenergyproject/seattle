@@ -14,7 +14,8 @@ define([
         currency_zero: d3.format('$,.0f'),
         commaize: d3.format(',.2r'),
         percent: d3.format('.0%'),
-        fixed: d3.format(',.2f')
+        fixed: d3.format(',.2f'),
+        fixedOne: d3.format(',.1f')
       };
 
       this.template = _.template(ScorecardTemplate);
@@ -81,7 +82,6 @@ define([
         savings = this.formatters.currency_zero(savings);
       }
 
-
       return {
         per_sqft: per_sqft,
         annual: annual,
@@ -98,6 +98,24 @@ define([
 
       var building = data[selected_year];
 
+      var energy_fields = {
+        source_eui: 'Source EUI',
+        source_eui_wn: 'WN Source EUI',
+        total_kbtu: 'Total Energy Use (kBtu)',
+        total_ghg_emissions: 'Total Emisions',
+        total_ghg_emissions_intensity: 'Emissions Intensity',
+        comments: 'Comments'
+      };
+
+      var building_fields = {
+        property_type: 'Primary Property Type',
+        neighborhood: 'Neighborhood',
+        councildistrict: 'Council District',
+        yearbuilt: 'Year Built',
+        numbuildings: 'Number of Buildings',
+        numfloors: 'Number of Floors'
+      };
+
 
       var name = building.property_name; // building.get('property_name');
       var address = this.full_address(building);
@@ -109,7 +127,7 @@ define([
       console.log(building);
 
       var fuels = this.renderFuelUseChart(building);
-      console.log(fuels);
+      const change_data = this.extractChangeData(data);
 
       $('#scorecard').html(this.template({
         name: name,
@@ -121,11 +139,23 @@ define([
         eui: eui,
         costs: this.costs(building, selected_year),
         compare: this.compare(building),
-        fuels: fuels
+        fuels: fuels,
+        change: change_data.template,
+        building_info: this.listdata(building, building_fields),
+        energy_info: this.listdata(building, energy_fields)
       }));
 
-      // this.renderFuelUseChart(building);
+      this.renderChangeChart(change_data.chart);
       this.renderCompareChart(buildings, prop_type, id, name, eui, selected_year);
+    },
+
+    listdata: function(building, fields) {
+      return Object.keys(fields).map(f => {
+        return {
+          label: fields[f],
+          val: (building.hasOwnProperty(f)) ? building[f] : ''
+        };
+      });
     },
 
     compare: function(building) {
@@ -400,8 +430,150 @@ define([
 
       return {
         fuels: fuels,
-        totals: totals
+        totals: totals,
+        cars: this.formatters.fixedOne(building.total_ghg_emissions * 0.211)
       };
+
+    },
+
+    extractChangeData: function(buildings) {
+      const o = [];
+      const buildingYearlyEuis = {};
+      Object.keys(buildings).forEach(year => {
+        const building = buildings[year];
+
+        buildingYearlyEuis[year] = building.site_eui_wn;
+
+        o.push({
+          label: building.property_name,
+          value: +(building.site_eui_wn.toFixed(1)),
+          year: year,
+          isAvg: false
+        });
+
+        o.push({
+          label: 'Building Type Average',
+          value: +(building.building_type_eui.toFixed(1)),
+          year: year,
+          isAvg: true
+        });
+      });
+
+      o.sort((a,b) => {
+        return a.year - b.year;
+      });
+
+      const years = d3.extent(o, function(d){ return d.year;}).sort((a,b) => {
+        return a.year - b.year;
+      });
+
+      let change = ((buildingYearlyEuis[years[1]] - buildingYearlyEuis[years[0]]) / buildingYearlyEuis[years[1]]) * 100;
+
+      const direction = (change < 0) ? 'decreased' : 'increased';
+
+      return {
+        chart: o,
+        template: {
+          pct: this.formatters.fixedOne(Math.abs(change)) + '%',
+          direction,
+          years
+        }
+      };
+    },
+
+    renderChangeChart: function(data) {
+      var rootElm = d3.select('#change-chart-vis');
+      var yearsElm = d3.select('#change-chart-years');
+
+      var diameter = 10;
+      var yearExtent = d3.extent(data, function(d){ return d.year;});
+      var valueExtent = d3.extent(data, function(d) { return d.value; });
+
+      var yearWidth = yearsElm.select('p').node().offsetWidth;
+      var baseWidth = yearsElm.node().offsetWidth - (yearWidth * 2);
+
+      baseWidth += diameter;
+
+      rootElm.style('margin-left', (yearWidth - diameter/2) + 'px');
+
+      var margin = {top: 0, right: 0, bottom: 0, left: 0},
+          width = baseWidth - margin.left - margin.right,
+          height = rootElm.node().offsetHeight - margin.top - margin.bottom;
+
+      var svg = rootElm.append('svg')
+          .attr('width', width + margin.left + margin.right)
+          .attr('height', height + margin.top + margin.bottom)
+        .append('g')
+          .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+      var x = d3.scale.ordinal()
+          .range([0, width])
+          .domain(yearExtent);
+
+      var y = d3.scale.linear()
+          .domain(valueExtent)
+          .range([height, 0]);
+
+      var line = d3.svg.line()
+          .x(function(d) { return x(d.year); })
+          .y(function(d) { return y(d.value); });
+
+      var connections = d3.nest()
+        .key(d => d.label)
+        .entries(data);
+
+      svg.selectAll('.line')
+        .data(connections)
+      .enter().append('path')
+        .attr('class', 'line')
+        .attr('d', d => line(d.values));
+
+      var bar = svg.selectAll('.dot')
+          .data(data)
+        .enter().append('g')
+          .attr('class', 'dot')
+          .classed('avg', d => d.isAvg)
+          .attr('transform', d => { return 'translate(' + x(d.year) + ',' + y(d.value) + ')'; });
+
+      bar.append('circle')
+        .attr('r', 5);
+
+      var firstyear = x.domain()[0];
+      var lastyear = x.domain()[1];
+
+      var label = rootElm.selectAll('.label')
+        .data(data)
+      .enter().append('div')
+        .attr('class', 'label')
+        .classed('avg', d => d.isAvg)
+        .style('left', d => {
+          if (d.year === firstyear) return x(d.year) + 'px';
+          return x(d.year) + 10 +'px';
+        })
+        .style('top',  d => { return y(d.value) + 'px'; });
+
+      label.append('p')
+        .text(d => d.value);
+      label.append('p')
+        .attr('class','metric small')
+        .text('kbtu/sf');
+
+      label.each(function(d) {
+        var el = d3.select(this);
+        var w = el.node().offsetWidth;
+
+        if (d.year === firstyear) {
+          el.style('margin-left', -(w + 10) + 'px');
+        }
+      });
+
+      label.filter(d => d.year === lastyear)
+        .append('span')
+          .attr('class', 'building')
+          .classed('avg', d => d.isAvg)
+          .text(d => d.label);
+
+
 
     },
 

@@ -261,7 +261,8 @@
       text-align: left;
     }
 
-    .compare-logo {
+    .compare-logo,
+    .change-arrow {
       position: relative;
       display: inline-block;
       margin: 0 0 1rem;
@@ -293,9 +294,32 @@
 
     }
 
+    .change-arrow {
+      width: 85px;
+      height: 74px;
+
+      &.decreased {
+        background-image: url('../images/scorecard/changearrow-down.png');
+      }
+
+      &.increased {
+        background-image: url('../images/scorecard/changearrow-up.png');
+      }
+
+      span {
+        bottom: auto;
+        top: 50%;
+        margin-top: -2px;
+      }
+
+      &.decreased span {
+        margin-top: -8px;
+      }
+    }
+
     .change-txt {
-      &.lower { color: #90AE60; }
-      &.higher {color: #C04F31; }
+      &.lower, &.decreased { color: #90AE60; }
+      &.higher, &.increased {color: #C04F31; }
     }
   }
 
@@ -552,5 +576,162 @@
 
   }
 
+  #change-chart {
+    text-align: center;
 
+    .change-chart-inner {
+      position: relative;
+      display: inline-block;
+      width: 70%;
+      margin-left: -37px;
+      text-align: left;
+
+    }
+
+    #change-chart-years {
+      position: relative;
+      width: 100%;
+      height: 24px;
+
+      p {
+        float: left;
+        //position: absolute;
+        //top: 0;
+        //right: calc(100% - 10px);
+        margin: 0;
+        padding: 0;
+        line-height: 1;
+        font-size: 24px;
+        font-weight: 500;
+      }
+
+      p:last-child {
+        float: right;
+        //right: auto;
+        //left: calc(100% - 10px);
+      }
+    }
+
+    #change-chart-vis {
+      position: relative;
+      margin: 30px 0;
+      height: 200px;
+
+      svg {
+        overflow: visible;
+      }
+
+      path {
+        fill: none;
+        stroke: #f1f1f1;
+        stroke-width: 1;
+      }
+
+      circle {
+        fill: #CF6F39;
+        stroke: none;
+      }
+
+      .avg > circle {
+        fill: #d8d8d8;
+      }
+
+      .label {
+        position: absolute;
+        color: #CF6F39;
+        transform: translateY(-50%);
+
+        &.avg {
+          color: #d8d8d8;
+        }
+
+        p {
+          margin: 0;
+          padding: 0;
+          line-height: 1;
+          font-size: 16px;
+        }
+
+        p.metric.small {
+          font-size: 8px;
+          text-transform: uppercase;
+        }
+
+        .building {
+          position: absolute;
+          left: 100%;
+          top: 50%;
+          width: 75px;
+          margin-left: 15px;
+          line-height: 1.2;
+          font-size: 12px;
+          color: #0047BA;
+          text-transform: uppercase;
+          transform: translateY(-50%);
+
+          &.avg {
+            color: #d8d8d8;
+            font-size: 8px;
+          }
+        }
+      }
+    }
+  }
+
+  #building-information {
+    .two-col { display: inline-block; }
+    .two-col > div.scorecard-list { width: auto; }
+    .inner { text-align: center; }
+    .scorecard-list {
+      &:last-child { margin-left: 6rem; }
+      h4 {
+        text-transform: uppercase;
+        text-align: center;
+      }
+
+      table {
+        width: auto;
+        margin: 0;
+
+        td {
+          padding: 2px 0;
+          border: 0;
+          text-align: right;
+
+          &:first-child { font-weight: 500; }
+
+          &:last-child {
+            text-align: left;
+            padding-left: 1rem;
+          }
+        }
+      }
+    }
+  }
+
+  #links {
+    background: #F1F1F1;
+
+    table {
+      td { border: 0; }
+    }
+  }
+
+  .scg {
+    overflow: hidden;
+
+    .scg-col {
+      float: left;
+      margin: 0;
+      padding: 0;
+      min-height: 1px;
+
+      &.one { width: 10%; }
+      &.two { width: 20%; }
+      &.three { width: 30%; }
+      &.four { width: 40%; }
+      &.five { width: 50%; }
+      &.six { width: 60%; }
+    }
+  }
 }

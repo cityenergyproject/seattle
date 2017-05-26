@@ -110,7 +110,7 @@
             <% }); %>
           </div>
           <div class='fc-row'>
-            <p><%= fuels.totals.emissions %> metric tons of CO<sub>2</sub>E is the equivalent of 36.7 passenger vehicles driven for one year.</p>
+            <p><%= fuels.totals.emissions %> metric tons of CO<sub>2</sub>E is the equivalent of <%= fuels.cars %> passenger vehicles driven for one year.</p>
           </div>
         </div>
 
@@ -139,8 +139,74 @@
         <h3>change from last year</h3>
         <p>See how this building’s performance has shifted since last year:</p>
       </div>
+
+      <div class='two-col'>
+        <div class='compare-desc'>
+          <p class='change-arrow <%= change.direction %>'><span><%= change.pct %></span></p>
+          <p>After adjusting for weather, from <%= change.years[0] %> to <%= change.years[1] %> this building’s site EUI <span class='change-txt <%= change.direction %>'><%= change.direction %> by <%= change.pct %></span>.</p>
+        </div>
+        <div id='change-chart'>
+          <div class='change-chart-inner'>
+            <div id='change-chart-years'>
+              <p><%= change.years[0] %></p>
+              <p><%= change.years[1] %></p>
+            </div>
+            <div id='change-chart-vis'></div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 
+  <div id='building-information' class='scorecard--section'>
+    <div class='inner'>
+      <div class='two-col'>
+        <div class='scorecard-list'>
+          <h4>Building information</h4>
+          <table>
+            <% _.each(building_info, function(item) { %>
+              <tr>
+                <td><%= item.label %></td>
+                <td><%= item.val %></td>
+              </tr>
+            <% }) %>
+          </table>
+        </div>
+        <div class='scorecard-list'>
+          <h4>Energy Use</h4>
+          <table>
+            <% _.each(energy_info, function(item) { %>
+              <tr>
+                <td><%= item.label %></td>
+                <td><%= item.val %></td>
+              </tr>
+            <% }) %>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id='links' class='scorecard--section'>
+    <div class='inner'>
+      <h2>Links</h2>
+      <table>
+        <tr>
+          <td rowspan='2'>
+            <p>Contact us:</p>
+            <p>City Light Energy Advisors</p>
+            <p>Answering questions by email or phone (206) 684-3800</p>
+          </td>
+          <td>Seattle City Light incentives for energy efficiency equipment</td>
+          <td>This is an opportunity for users to click on another link</td>
+        </tr>
+        <tr>
+          <td>This is an opportunity for users to click on another link</td>
+          <td>This is an opportunity for users to click on another link</td>
+        </tr>
+      </table>
+    </div>
+  </div>
 
 </div>
