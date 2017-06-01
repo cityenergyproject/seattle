@@ -1,71 +1,70 @@
-<div class='scorecard--content'>
+<div class='scorecard-content'>
 
   <div class='scorecard--nav'>
-    <a class='back' href='#'>&lt; Back to Map</a>
+    <a id='back-to-map-link' class='sc-link' href='#'>&lt; Back to Map</a>
     <div>
-      <h2 class='building--name'><%= name %></h2>
-      <a class='comparison-view'>Building Comparison View &gt;</a>
+      <h2 class='sc-heading large'><%= name %></h2>
+      <a id='comparison-view-link' class='sc-link'>Building Comparison View &gt;</a>
     </div>
   </div>
 
-  <div class='scorecard--details'>
-    <div class='col'>
-        <ul>
-          <li><%= addr %></li>
-          <li><%= sqft %> <span class='sqft'>ft²</span></li>
-          <li><%= type %></li>
-          <li>Building ID <%= id %></li>
+  <div class='scorecard--details row'>
+    <div class='col-4'>
+        <ul class='sc-list'>
+          <li class='sc-txt white small light'><%= addr %></li>
+          <li class='sc-txt white small light'><%= sqft %> <span class='sqft'>ft²</span></li>
+          <li class='sc-txt white small light'><%= type %></li>
+          <li class='sc-txt white small light'>Building ID <%= id %></li>
         </ul>
-        <div class='toggle'>
-          <h4>TOGGLE VIEW:</h4>
-          <label class='cb-plain'><input type="checkbox" checked='checked'/><span class='cb'></span><span>EUI</span></label>
-          <label class='cb-plain'><input type="checkbox" /><span class='cb'></span><span>Energy Star Score</span></label>
+        <div class='sc-toggle'>
+          <h4 class='sc-heading small white'>TOGGLE VIEW:</h4>
+          <label class='cb-plain sc-txt white small'><input type="checkbox" checked='checked'/><span class='cb'></span><span>EUI</span></label>
+          <label class='cb-plain sc-txt white small'><input type="checkbox" /><span class='cb'></span><span>Energy Star Score</span></label>
         </div>
     </div>
-    <div class='col middle'>
-      <div>
-        <h4><%= year %> EUI</h4>
-        <h3><%= eui %></h3>
-        <p>KBTU/FT<sup>2</sup></p>
+    <div class='col-4 middle'>
+      <div class='circle-bk'>
+        <h4 class='sc-heading'><%= year %> EUI</h4>
+        <h3 class='sc-heading orange xlarge' ><%= eui %></h3>
+        <p class='sc-heading orange small'>kBtu/ft²</p>
         <div class='eui-desc'>
-          <p>Energy Use Intensity</p>
-          <p>EUI is your building’s annual energy use (all fuel types) per square foot (<span class='sqft'>ft²</span>) in kBtu/<span class='sqft'>ft²</span>.</p>
+          <p class='sc-txt tiny'>Energy Use Intensity</p>
+          <p class='sc-txt tiny'>EUI is your building’s annual energy use (all fuel types) per square foot (ft²) in kBtu/ft².</p>
         </div>
       </div>
     </div>
-    <div class='col'>
+    <div class='col-4'>
       <div class='details-box'>
-        <h4 class='sc-heading'>Cost of Energy</h4>
+        <h4 class='sc-heading white'>Cost of Energy</h4>
         <div>
-          <p>This building currently spends an estimated <%= costs.per_sqft %><span class='sqft'>/ft²</span> annually on energy or <%= costs.annual %></p>
-          <h4 class='sc-heading lg'><%= costs.per_sqft %><span class='sqft'>/ft²</span></h4>
+          <p class='sc-txt small white light pg'>This building currently spends an estimated <%= costs.per_sqft %>/ft² annually on energy or <span class='bold'><%= costs.annual %></span></p>
+          <h4 class='sc-heading white large'><%= costs.per_sqft %><span class='sc-heading white small'>/ft²</span></h4>
         </div>
       </div>
 
       <div class='details-box'>
-        <h4 class='sc-heading'>Savings opportunities</h4>
+        <h4 class='sc-heading white'>Savings opportunities</h4>
         <div>
-          <p>By reducing energy use by <%= costs.save_pct %>, this building could save up to <%= costs.savings %> annually on energy costs.</p>
-          <h4 class='sc-heading lg'><%= costs.savings %></h4>
+          <p class='sc-txt small white light pg'>By reducing energy use by <%= costs.save_pct %>, this building could save up to <span class='bold'><%= costs.savings %></span> annually on energy costs.</p>
+          <h4 class='sc-heading white large'><%= costs.savings %></h4>
         </div>
       </div>
-
     </div>
   </div>
 
   <div class='scorecard--section'>
     <div class='inner'>
       <div class='section-head'>
-        <h3>Compared to Average</h3>
-        <p>See how this building measures up against other buildings of the same type:</p>
+        <h3 class='sc-heading'>Compared to Average</h3>
+        <p class='sc-txt small bold'>See how this building measures up against other buildings of the same type:</p>
       </div>
 
-      <div class='two-col'>
-        <div class='compare-desc'>
+      <div class='row'>
+        <div class='col-4 compare-desc'>
           <p class='compare-logo <%= compare.change_label %>'><span><%= compare.change_pct %></span></p>
-          <p>This building’s EUI is <span class='change-txt <%= compare.change_label %>'><%= compare.change_pct %> <%= compare.change_label %></span> than the average large office building in Seattle.</p>
+          <p class="sc-txt light pg">This building’s EUI is <span class='change-txt bold <%= compare.change_label %>'><%= compare.change_pct %> <%= compare.change_label %></span> than the average large office building in Seattle.</p>
         </div>
-        <div id='compare-chart'></div>
+        <div id='compare-chart' class='col-8'></div>
       </div>
     </div>
   </div>
@@ -73,8 +72,8 @@
   <div class='scorecard--section'>
     <div class='inner'>
       <div class='section-head'>
-        <h3>Fuel Use</h3>
-        <p>See the breakdown of different fuel types contributing to this building’s GHG emissions:</p>
+        <h3 class='sc-heading'>Fuel Use</h3>
+        <p class='sc-txt small bold'>See the breakdown of different fuel types contributing to this building’s GHG emissions:</p>
       </div>
       <div id='fueluse-chart'>
         <div class='fc-labels fc-panel'>
@@ -136,16 +135,16 @@
   <div class='scorecard--section'>
     <div class='inner'>
       <div class='section-head'>
-        <h3>change from last year</h3>
-        <p>See how this building’s performance has shifted since last year:</p>
+        <h3 class='sc-heading'>change from last year</h3>
+        <p class='sc-txt small bold'>See how this building’s performance has shifted since last year:</p>
       </div>
 
-      <div class='two-col'>
-        <div class='compare-desc'>
+      <div class='row'>
+        <div class='col-4 compare-desc'>
           <p class='change-arrow <%= change.direction %>'><span><%= change.pct %></span></p>
-          <p>After adjusting for weather, from <%= change.years[0] %> to <%= change.years[1] %> this building’s site EUI <span class='change-txt <%= change.direction %>'><%= change.direction %> by <%= change.pct %></span>.</p>
+          <p class="sc-txt light pg">After adjusting for weather, from <%= change.years[0] %> to <%= change.years[1] %> this building’s site EUI <span class='change-txt bold <%= change.direction %>'><%= change.direction %> by <%= change.pct %></span>.</p>
         </div>
-        <div id='change-chart'>
+        <div id='change-chart' class='col-8'>
           <div class='change-chart-inner'>
             <div id='change-chart-years'>
               <p><%= change.years[0] %></p>
@@ -155,15 +154,14 @@
           </div>
         </div>
       </div>
-
     </div>
   </div>
 
   <div id='building-information' class='scorecard--section'>
     <div class='inner'>
-      <div class='two-col'>
+      <div class='scorecard-list-cont'>
         <div class='scorecard-list'>
-          <h4>Building information</h4>
+          <h4 class='sc-heading small normalweight'>Building information</h4>
           <table>
             <% _.each(building_info, function(item) { %>
               <tr>
@@ -174,7 +172,7 @@
           </table>
         </div>
         <div class='scorecard-list'>
-          <h4>Energy Use</h4>
+          <h4 class='sc-heading small normalweight'>Energy Use</h4>
           <table>
             <% _.each(energy_info, function(item) { %>
               <tr>
@@ -190,23 +188,23 @@
 
   <div id='links' class='scorecard--section'>
     <div class='inner'>
-      <h2>Links</h2>
+      <h2 class='sc-heading large'>Links</h2>
       <table>
         <tr>
           <td rowspan='2'>
-            <p>Contact us:</p>
-            <p>City Light Energy Advisors</p>
-            <p>Answering questions by email or phone (206) 684-3800</p>
+            <p class='sc-txt small'>Contact us:</p>
+            <p class='sc-txt small'>City Light Energy Advisors</p>
+            <p class='sc-txt small'>Answering questions by email or phone (206) 684-3800</p>
           </td>
-          <td>Seattle City Light incentives for energy efficiency equipment</td>
-          <td>This is an opportunity for users to click on another link</td>
+          <td><span class='sc-txt small'>Seattle City Light <span class='bold'>incentives for energy efficiency equipment</span></span></td>
+          <td><span class='sc-txt small'>This is an opportunity for users to click on another link</span></td>
         </tr>
         <tr>
-          <td>This is an opportunity for users to click on another link</td>
-          <td>This is an opportunity for users to click on another link</td>
+          <td><span class='sc-txt small'>This is an opportunity for users to click on another link</span></td>
+          <td><span class='sc-txt small'>This is an opportunity for users to click on another link</span></td>
         </tr>
       </table>
     </div>
   </div>
 
-</div>
+</div> <!-- end .scorecard-content -->

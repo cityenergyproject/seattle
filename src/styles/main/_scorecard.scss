@@ -1,3 +1,24 @@
+@import '../base/_basic_grid';
+
+$sc-blue: #0047BA;
+$sc-orange: #DE8F41;
+$sc-red: #C04F31;
+$sc-yellow: #F7C34D;
+$sc-white: #fff;
+$sc-offwhite: #f1f1f1;
+
+$sc-weight-lt: 300;
+$sc-weight: 400;
+$sc-weight-bd: 500;
+
+$sc-font-micro: 0.5rem;
+$sc-font-tiny: 0.625rem;
+$sc-font-sm: 0.75rem;
+$sc-font-std: 1rem;
+$sc-font-lg: 1.5rem;
+$sc-font-lgr: 3rem;
+
+
 #scorecard {
   position: absolute;
   top: 0;
@@ -5,17 +26,80 @@
   right: 0;
   bottom: 0;
   width: 100%;
-  background: white;
+  background: $sc-white;
   overflow: auto;
   z-index: $zIndexMax;
 
-  .scorecard--content {
+  .scorecard-content {
     position: relative;
     width: 100%;
+    max-width: 960px;
+    margin: 0 auto;
   }
 
+
+  .sc-heading {
+    margin: 0;
+    padding: 0;
+    font-size: $sc-font-std;
+    font-weight: $sc-weight-bd;
+    color: $blue;
+    text-transform: uppercase;
+    line-height: 1;
+
+    &.small { font-size: $sc-font-sm; }
+    &.large { font-size: $sc-font-lg; }
+    &.xlarge { font-size: $sc-font-lgr; }
+
+    &.light { font-weight: $sc-weight-lt; }
+    &.normal-weight { font-weight: $sc-weight; }
+
+    &.orange { color: $sc-orange; }
+    &.white { color: $sc-white; }
+  }
+
+  .sc-link {
+    color: $blue;
+    font-size: 0.75rem;
+  }
+
+  .bold { font-weight: $sc-weight-bd; }
+
+  .sc-txt {
+    margin: 0;
+    padding: 0;
+    color: $sc-blue;
+    font-size: $sc-font-std;
+    font-weight: $sc-weight;
+    line-height: 1;
+
+    &.white { color: $sc-white; }
+    &.orange { color: $sc-orange; }
+
+    &.tiny { font-size: $sc-font-tiny; }
+    &.small { font-size: $sc-font-sm; }
+
+    &.light { font-weight: $sc-weight-lt; }
+    &.bold { font-weight: $sc-weight-bd; }
+
+    &.pg { line-height: 1.2; }
+  }
+
+
+  .sc-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    li {}
+    li + li {
+      margin-top: 8px;
+    }
+  }
+
+
   .scorecard--section {
-    border-bottom: 1px solid #F1F1F1;
+    border-bottom: 1px solid $sc-offwhite;
 
     .inner {
       padding: 1rem;
@@ -23,52 +107,50 @@
 
     .section-head {
       margin-bottom: 2rem;
+
+      .sc-heading {
+        margin-bottom: 0.75rem;
+      }
     }
   }
 
-  .section-head {
-    h3 {
-      font-weight: 500;
-      font-size: 1rem;
-      text-transform: uppercase;
+  .sc-toggle {
+
+    label {
+      display: inline-block;
+      font-weight: 400;
+      margin: 0;
     }
 
-    p {
-      font-size: 0.75rem;
-      font-weight: 500;
-    }
-  }
-
-  .two-col {
-    overflow: hidden;
-
-    & > div {
-      float: left;
-      width: 70%;
+    label + label {
+      margin-left: 0.5rem;
     }
 
-    & > div:first-child {
-      width: 30%;
+    label.cb-plain {
+      line-height: 1;
+
+      input[type="checkbox"] {
+        display: none;
+      }
+
+      span {
+        opacity: 0.25;
+      }
+
+      span.cb {
+        content: ' ';
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        margin-right: 5px;
+        border-radius: 10px;
+        background: white;
+      }
+
+      input[type=checkbox]:checked ~ span {
+        opacity: 1.0;
+      }
     }
-  }
-
-  .sc-heading {
-    margin: 0;
-    padding: 0;
-    font-size: 1rem;
-    text-transform: uppercase;
-    line-height: 1;
-
-    &.lg {
-      font-size: 1.5rem;
-    }
-  }
-
-  .sqft {
-    font-size: 0.75rem;
-    text-transform: lowercase;
-
-    sup { font-size: 0.625rem; }
   }
 
 
@@ -80,23 +162,13 @@
       margin: 0.5rem 0 0;
     }
 
-    a {
-      font-size: 0.75rem;
-      color: $blue;
+    #comparison-view-link {
+      position: absolute;
+      bottom: 0;
+      right: 0;
     }
   }
 
-  .building--name {
-    font-size: 1.5rem;
-    font-weight: 500;
-    line-height: 1;
-  }
-
-  .comparison-view {
-    position: absolute;
-    bottom: 0;
-    right: 0;
-  }
 
   .scorecard--details {
     position: relative;
@@ -105,21 +177,19 @@
     height: 210px;
     overflow: hidden;
 
-    .col {
-      float: left;
-      width: 33%;
+    [class^="col"] {
       height: 100%;
       padding-top: 1rem;
       color: white;
     }
 
-    .col.middle {
+    [class^="col"].middle {
       position: relative;
       padding-top: 0;
       color: $blue;
       z-index: 1;
 
-      & > div {
+      .circle-bk {
         position: relative;
         top: 50%;
         padding-top: 0;
@@ -141,40 +211,12 @@
         z-index: -1;
       }
 
-      h4, h3, h3 + p {
-        padding: 0;
-        margin: 0;
-        line-height: 1;
-      }
-
-      h4 {
-        font-weight: 400;
-        font-size: 1rem;
-      }
-
-      h3 {
-        font-weight: 500;
-        font-size: 3rem;
-        color: $real-orange;
-      }
-
-      h3 + p {
-        color: $real-orange;
-        font-size: 0.75rem;
-      }
-
       .eui-desc {
         margin: 1rem auto 0;
         width: 150px;
 
-        p {
-          font-size: 10px;
-          padding: 0;
-          margin: 0;
-        }
-
         p:first-child {
-          font-weight: 500;
+          font-weight: $sc-weight-bd;
         }
       }
     }
@@ -201,55 +243,20 @@
         text-align: right;
       }
 
-      & > div *:first-child {
-        width: 70%;
-        font-size: 0.75rem;
+      & > div p {
+        width: 60%;
       }
 
-      & > div *:last-child {
-        width: 30%;
+      & > div h4 {
+        width: 35%;
+        margin-left: 5%;
+        text-align: left;
       }
     }
 
-    .toggle {
+    .sc-toggle {
       position: absolute;
       bottom: 1rem;
-
-      label {
-        display: inline-block;
-        font-weight: 400;
-        margin: 0;
-      }
-
-      label + label {
-        margin-left: 0.5rem;
-      }
-
-      label.cb-plain {
-        line-height: 1;
-
-        input[type="checkbox"] {
-          display: none;
-        }
-
-        span {
-          opacity: 0.25;
-        }
-
-        span.cb {
-          content: ' ';
-          display: inline-block;
-          width: 10px;
-          height: 10px;
-          margin-right: 5px;
-          border-radius: 10px;
-          background: white;
-        }
-
-        input[type=checkbox]:checked ~ span {
-          opacity: 1.0;
-        }
-      }
     }
   }
 
@@ -426,6 +433,7 @@
           top: 50%;
           left: 0;
           width: 100%;
+          padding: 0;
           text-align: center;
           transform: translateY(-50%);
 
@@ -469,7 +477,6 @@
         background: $blue;
       }
     }
-
   }
 
   #fueluse-chart {
@@ -573,7 +580,6 @@
         line-height: 36px;
       }
     }
-
   }
 
   #change-chart {
@@ -679,26 +685,30 @@
   }
 
   #building-information {
-    .two-col { display: inline-block; }
-    .two-col > div.scorecard-list { width: auto; }
+    .scorecard-list-cont { display: inline-block; }
+    .scorecard-list-cont > div.scorecard-list {
+      display: inline-block;
+      width: auto;
+    }
     .inner { text-align: center; }
     .scorecard-list {
       &:last-child { margin-left: 6rem; }
       h4 {
-        text-transform: uppercase;
-        text-align: center;
+
       }
 
       table {
         width: auto;
-        margin: 0;
+        margin: 1rem 0 0;
+        font-size: $sc-font-sm;
+        font-weight: $sc-weight;
 
         td {
           padding: 2px 0;
           border: 0;
           text-align: right;
 
-          &:first-child { font-weight: 500; }
+          &:first-child { font-weight: $sc-weight-bd; }
 
           &:last-child {
             text-align: left;
@@ -713,25 +723,28 @@
     background: #F1F1F1;
 
     table {
-      td { border: 0; }
+
+      tr:first-child {
+        td { width: 30%; }
+        td:first-child {
+          width: 40%;
+          padding-right: 10%;
+          padding-left: 0;
+
+          p:first-child {text-transform: uppercase;}
+          p + p {
+            margin-top: 10px;
+          }
+        }
+      }
+
+      td {
+        border: 0;
+        padding: 5px 10px;
+        line-height: 1.2;
+      }
     }
   }
 
-  .scg {
-    overflow: hidden;
 
-    .scg-col {
-      float: left;
-      margin: 0;
-      padding: 0;
-      min-height: 1px;
-
-      &.one { width: 10%; }
-      &.two { width: 20%; }
-      &.three { width: 30%; }
-      &.four { width: 40%; }
-      &.five { width: 50%; }
-      &.six { width: 60%; }
-    }
-  }
 }
