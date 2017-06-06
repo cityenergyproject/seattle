@@ -6,6 +6,7 @@ define([
   'underscore',
   'backbone',
   'models/city',
+  'models/scorecard',
   'collections/city_buildings',
   'views/layout/scorecard',
   'views/map/map',
@@ -13,14 +14,15 @@ define([
   'views/map/year_control',
   'views/building_comparison/building_comparison',
   'views/layout/activity_indicator',
-], function($, deparam, _, Backbone, CityModel, CityBuildings, Scorecard, MapView, AddressSearchView, YearControlView, BuildingComparisonView, ActivityIndicator) {
+], function($, deparam, _, Backbone, CityModel, ScorecardModel, CityBuildings, Scorecard, MapView, AddressSearchView, YearControlView, BuildingComparisonView, ActivityIndicator) {
 
   var RouterState = Backbone.Model.extend({
     queryFields: ['filters', 'categories', 'layer', 'metrics', 'sort', 'order', 'lat', 'lng', 'zoom', 'building'],
     defaults: {
       metrics: [],
       categories: {},
-      filters: []
+      filters: [],
+      scorecard: new ScorecardModel()
     },
     toQuery: function(){
       var query, attributes = this.pick(this.queryFields);
@@ -140,15 +142,15 @@ define([
 
       // set this to silent because we need to load buildings
       this.state.set(_.extend({city: city}, newState, mapState));
-
-      this.fetchBuildings();
+      console.log(year);
+      this.fetchBuildings(year);
     },
 
-    fetchBuildings: function() {
+    fetchBuildings: function(year) {
       this.allBuildings = this.state.asBuildings();
       this.listenToOnce(this.allBuildings, 'sync', this.onBuildingsSync, this);
 
-      this.allBuildings.fetch();
+      this.allBuildings.fetch(year);
     },
 
     onBuildingsSync: function() {

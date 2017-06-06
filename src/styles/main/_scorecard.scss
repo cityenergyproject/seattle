@@ -281,12 +281,20 @@ $sc-font-lgr: 3rem;
       background-position: 50%;
       line-height: 1;
 
-      &.lower {
+      &.lower.eui {
         background-image: url('../images/scorecard/compare-left.png');
       }
 
-      &.higher {
+      &.higher.eui {
         background-image: url('../images/scorecard/compare-right.png');
+      }
+
+      &.lower.ess {
+        background-image: url('../images/scorecard/compare-left_red.png');
+      }
+
+      &.higher.ess {
+        background-image: url('../images/scorecard/compare-right_green.png');
       }
 
       span {
@@ -325,8 +333,8 @@ $sc-font-lgr: 3rem;
     }
 
     .change-txt {
-      &.lower, &.decreased { color: #90AE60; }
-      &.higher, &.increased {color: #C04F31; }
+      &.lower.eui, &.higher.ess, &.decreased { color: #90AE60; }
+      &.higher.eui, &.lower.ess, &.increased {color: #C04F31; }
     }
   }
 
@@ -351,6 +359,7 @@ $sc-font-lgr: 3rem;
     text {
       font-family: $base-font-family;
       font-size: 10px;
+      text-transform: lowercase;
     }
 
     .y.axis text, .label text {

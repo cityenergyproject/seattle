@@ -18,18 +18,23 @@
         </ul>
         <div class='sc-toggle'>
           <h4 class='sc-heading small white'>TOGGLE VIEW:</h4>
-          <label class='cb-plain sc-txt white small'><input type="checkbox" checked='checked'/><span class='cb'></span><span>EUI</span></label>
-          <label class='cb-plain sc-txt white small'><input type="checkbox" /><span class='cb'></span><span>Energy Star Score</span></label>
+          <label class='cb-plain sc-txt white small'><input type="checkbox" <%= view === 'eui' ? 'checked' : '' %> data-view='eui'/><span class='cb'></span><span>EUI</span></label>
+          <label class='cb-plain sc-txt white small'><input type="checkbox" <%= view === 'ess' ? 'checked' : '' %> data-view='ess'/><span class='cb'></span><span>Energy Star Score</span></label>
         </div>
     </div>
     <div class='col-4 middle'>
       <div class='circle-bk'>
-        <h4 class='sc-heading'><%= year %> EUI</h4>
-        <h3 class='sc-heading orange xlarge' ><%= eui %></h3>
-        <p class='sc-heading orange small'>kBtu/ft²</p>
+        <h4 class='sc-heading'><%= year %> <%= view === 'eui' ? 'EUI' : 'ENERGY STAR' %></h4>
+        <h3 class='sc-heading orange xlarge' ><%= value %></h3>
+        <p class='sc-heading orange small'><%= view === 'eui' ? 'kBtu/ft²' : 'ENERGY STAR SCORE' %></p>
         <div class='eui-desc'>
-          <p class='sc-txt tiny'>Energy Use Intensity</p>
-          <p class='sc-txt tiny'>EUI is your building’s annual energy use (all fuel types) per square foot (ft²) in kBtu/ft².</p>
+          <p class='sc-txt tiny'><%= view === 'eui' ? 'Energy Use Intensity' : 'Energy Star Score' %></p>
+          <p class='sc-txt tiny'>
+          <% if (view === 'eui') { %>EUI is your building’s annual energy use (all fuel types) per square foot (ft²) in kBtu/ft².
+          <% } else { %>
+          The 1-100 score measures how well the property is performing relative to similar properties, when normalized for climate and operational characteristics.
+          <% } %>
+          </p>
         </div>
       </div>
     </div>
@@ -61,8 +66,8 @@
 
       <div class='row'>
         <div class='col-4 compare-desc'>
-          <p class='compare-logo <%= compare.change_label %>'><span><%= compare.change_pct %></span></p>
-          <p class="sc-txt light pg">This building’s EUI is <span class='change-txt bold <%= compare.change_label %>'><%= compare.change_pct %> <%= compare.change_label %></span> than the average large office building in Seattle.</p>
+          <p class='compare-logo <%= compare.change_label %> <%= view %>'><span><%= compare.change_pct %></span></p>
+          <p class="sc-txt light pg">This building’s <%= view === 'eui' ? 'EUI' : 'Energy Star Score' %> is <span class='change-txt bold <%= compare.change_label %> <%= view %>'><%= compare.change_pct %> <%= compare.change_label %></span> than the average large office building in Seattle.</p>
         </div>
         <div id='compare-chart' class='col-8'></div>
       </div>

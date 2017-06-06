@@ -89,10 +89,11 @@ define([
     });
   }
 
-  var CityBuildingQuery = function(table_name, categories, ranges) {
+  var CityBuildingQuery = function(table_name, year, categories, ranges) {
     this.tableName = table_name;
     this.categories = categories;
     this.ranges = ranges;
+    this.year = year;
   };
 
   CityBuildingQuery.prototype.toRangeSql = function() {
@@ -121,14 +122,20 @@ define([
     });
   };
 
+  CityBuildingQuery.prototype.toYearSql = function() {
+    return ['year=' + this.year];
+  };
+
   CityBuildingQuery.prototype.toSql = function() {
     var table = this.tableName;
     var rangeSql = this.toRangeSql();
     var categorySql = this.toCategorySql();
-    var filterSql = rangeSql.concat(categorySql).join(' AND ');
+    var yearSql = this.toYearSql();
+    var filterSql = yearSql.concat(rangeSql).concat(categorySql).join(' AND ');
     var output = ["SELECT ST_X(the_geom) AS lng, ST_Y(the_geom) AS lat,* FROM " + table].concat(filterSql).filter(function(e) { return e.length > 0; });
     return output.join(" WHERE ");
   };
+
 
   var CityBuildings = Backbone.Collection.extend({
     initialize: function(models, options){
@@ -138,16 +145,17 @@ define([
     url: function() {
       return urlTemplate(this);
     },
-    fetch: function(categories, range) {
-      var query = this.toSql(categories, range);
+    fetch: function(year, categories, range) {
+      var query = this.toSql(year, categories, range);
+      console.log(query);
       var result = Backbone.Collection.prototype.fetch.apply(this, [{data: {q: query}}]);
       return result;
     },
     parse: function(data){
       return data.rows;
     },
-    toSql: function(categories, range){
-      return new CityBuildingQuery(this.tableName, categories, range).toSql()
+    toSql: function(year, categories, range){
+      return new CityBuildingQuery(this.tableName, year, categories, range).toSql()
     },
     toFilter: function(buildings, categories, ranges) {
       return cityBuildingsFilterizer(buildings, categories, ranges);

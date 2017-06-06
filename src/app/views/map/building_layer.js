@@ -188,7 +188,7 @@ define([
     onStateChange: function(){
       // TODO: should not be mutating the buildings model.
       _.extend(this.allBuildings, this.state.pick('tableName', 'cartoDbUser'));
-      this.allBuildings.fetch();
+      this.allBuildings.fetch(this.state.get('year'));
     },
 
     changeStateChecker: function() {
