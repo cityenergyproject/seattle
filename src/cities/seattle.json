@@ -148,7 +148,24 @@
     "years": {
         "2016": {
             "table_name": "table_2015_stamen_phase_ii_v2_w_year",
-            "default_layer": "energy_star_score"
+            "default_layer": "energy_star_score",
+            "buildings": {
+                "table_name": "seattle_building_outlines_05_16_17"
+            }
+        }
+    },
+    "building_footprints": {
+        "allowable": true,
+        "atZoom": 15,
+        "property_id": "id",
+        "table_name": "seattle_building_outlines_05_16_17",
+        "carto_css": {
+            "rules": [
+                "polygon-fill: ramp([site_eui_2016], (#2b83ba, #abdda4, #ffffbf, #fdae61, #d7191c), quantiles);",
+                "line-width: 1;",
+                "line-color: #FFF;",
+                "line-opacity: 0.5;"
+            ]
         }
     },
     "scorecard": {

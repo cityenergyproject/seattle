@@ -30,6 +30,7 @@ define([
 
       if (!this.leafletMap){
         this.leafletMap = new L.Map(this.el, {center: [lat, lng], zoom: zoom, scrollWheelZoom: false});
+
         this.leafletMap.attributionControl.setPrefix("");
 
         var background = city.get('backgroundTileSource'),
@@ -62,7 +63,7 @@ define([
       var target = event.target,
           zoom = target.getZoom(),
           center = target.getCenter();
-      this.state.set({lat: center.lat, lng: center.lng, zoom: zoom});
+      this.state.set({lat: center.lat.toFixed(5), lng: center.lng.toFixed(5), zoom: zoom});
     },
 
     onMapChange: function() {

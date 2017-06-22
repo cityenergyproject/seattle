@@ -96,7 +96,7 @@ define([
       var mapView = new MapView({state: this.state});
       var addressSearchView = new AddressSearchView({mapView: mapView, state: this.state});
 
-      var scorecard = new Scorecard({state: this.state});
+      // var scorecard = new Scorecard({state: this.state});
       // var comparisonView = new BuildingComparisonView({state: this.state});
 
       this.state.on('change', this.onChange, this);

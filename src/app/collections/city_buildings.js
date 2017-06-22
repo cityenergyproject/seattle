@@ -147,7 +147,6 @@ define([
     },
     fetch: function(year, categories, range) {
       var query = this.toSql(year, categories, range);
-      console.log(query);
       var result = Backbone.Collection.prototype.fetch.apply(this, [{data: {q: query}}]);
       return result;
     },
