@@ -51,4 +51,103 @@
     margin: 10px 0px 0px;
     cursor: pointer;
   }
+
+  .building-popup-chart {
+    min-width: 250px;
+    margin: 20px 0 0 0;
+
+    & > h3 {
+      text-transform: uppercase;
+      font-size: 12px;
+      line-height: 1;
+      margin: 0 0 5px 0;
+    }
+
+    .inner {
+      border: 1px solid blue;
+      padding: 10px;
+    }
+
+    table {
+      margin: 0;
+      table-layout: auto;
+
+      td {
+        padding: 0;
+        border: 0;
+      }
+
+      td:first-child {
+        width: auto;
+        padding-right: 10px;
+      }
+      td:last-child {
+        width: 100%;
+      }
+    }
+
+    .lead td {
+      padding: 0 0 1rem 0;
+      vertical-align: bottom;
+    }
+
+    .lead td:first-child {
+      font-size: 24px;
+      font-weight: 500;
+    }
+
+    .barchart td {
+      vertical-align: bottom;
+    }
+
+    .barchart td:first-child {
+      font-size: 16px;
+      font-weight: 500;
+    }
+
+    .bar {
+      position: relative;
+      width: 100%;
+      height: 16px;
+      border: 1px solid blue;
+    }
+
+    .fill {
+      height: 100%;
+      background: blue;
+    }
+
+    .barchart--labels {
+      overflow: hidden;
+
+      td {
+        position: relative;
+        padding: 5px 0 0;
+      }
+
+      td:first-child {
+        white-space: nowrap;
+        vertical-align: bottom;
+      }
+
+      .min, .max {
+        position: relative;
+        top: 0;
+        width: 40%;
+        float: left;
+
+        span {
+          display: inline-block;
+          width: 100%;
+        }
+      }
+
+      .max {
+        float: right;
+        text-align: right;
+      }
+    }
+
+
+  }
 }

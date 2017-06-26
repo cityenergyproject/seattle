@@ -24,24 +24,31 @@
     "building_type": "property_type",
     "popup_fields": [
         {"field": "property_name", "label": ""},
-        {"field": "reported_address", "label": ""},
-        {"field": "zip", "label": ""},
-        {"field": "id", "label": "Seattle Benchmarking building ID: "},
-        {"field": "property_type", "label": "Property Type: "},
-        {"field": "reported_gross_floor_area", "label": "Property Size (ft²): "},
-        {"field": "yearbuilt", "label": "Year Built: ", "isYear": true},
-        {"field": "total_ghg_emissions", "label": "Total GHG Emissions (Metric Tons CO₂e): "},
-        {"field": "total_ghg_emissions_intensity", "label": "GHG Intensity (Kilograms CO₂e/ft²): "},
-        {"field": "energy_star_score", "label": "ENERGY STAR Score: "},
-        {"field": "site_eui", "label": "Site Energy Use Intensity (kBTU/ft²): "},
-        {"field": "source_eui", "label": "Source EUI (kBTU/ft²): "},
-        {"field": "comments", "label": "Comments: "},
-        {"field": "neighborhood", "label": "Neighborhood: ", "start_hidden": true},
-        {"field": "councildistrict", "label": "Council District: "},
-        {"field": "numbuildings", "label": "Number of Buildings: ", "suppress_unless_field": "property_type", "suppress_unless_values": ["Multifamily Housing","High-Rise Multifamily","Mid-Rise Multifamily","Low-Rise Multifamily","Small- and Mid-Sized Office","Large Office","Medical Office"]},
-        {"field": "numfloors", "label": "Number of Floors: ", "suppress_unless_field": "property_type", "suppress_unless_values": ["Multifamily Housing","High-Rise Multifamily","Mid-Rise Multifamily","Low-Rise Multifamily","Small- and Mid-Sized Office","Large Office","Medical Office"]},
-        {"field": "numunits", "label": "Number of Units: ", "suppress_unless_field": "property_type", "suppress_unless_values": ["Multifamily Housing","High-Rise Multifamily","Mid-Rise Multifamily","Low-Rise Multifamily","Small- and Mid-Sized Office","Large Office","Medical Office"]}
+        {"field": "reported_address", "template": "{reported_address}"},
+        {"field": "zip", "template": "Seattle, WA {zip}", "skipFormatter": true},
+        {"field": "property_type", "template": "<strong>{property_type}</strong>"},
+        {"field": "reported_gross_floor_area", "template": "<strong>{reported_gross_floor_area}</strong> ft²"},
+        {"field": "id", "label": "Building ID "},
+        {"field": "yearbuilt", "label": "Built in ", "skipFormatter": true}
     ],
+    "popup_chart": {
+        "lead": {
+            "field": "site_eui",
+            "label": "Site EUI (kBTU/ft²)"
+        },
+        "barchart": {
+            "field": "energy_star_score",
+            "desc": "Energy<br/>Star Score",
+            "min": {
+                "value": 0,
+                "label": "least efficient"
+            },
+            "max": {
+                "value": 100,
+                "label": "most efficient"
+            }
+        }
+    },
     "map_layers": [
         {
             "title": "Neighborhood",

@@ -60,20 +60,19 @@ define([
   };
 
   BuildingInfoPresenter.prototype.toBuilding = function() {
-   // var id_key = this.city.get(this.idKey);
     var id_key = this.city.get('property_id');
     return this.allBuildings.find(function(building) {
       return building.get('id') == this.buildingId;
-      // return building.get(id_key) == this.buildingId;
     }, this);
   };
 
-  BuildingInfoPresenter.prototype.toPopulatedLabels = function()  {
+  BuildingInfoPresenter.prototype.toPopulatedLabelsPrevious = function()  {
     var default_hidden = false;
+    var building = this.toBuilding();
+
     return _.map(this.city.get('popup_fields'), function(field) {
       var suppress = false;
       if (field.start_hidden) default_hidden = true;
-      var building = this.toBuilding();
       var value = (typeof building === 'undefined') ? null : building.get(field.field);
 
       if (field.suppress_unless_field &&
@@ -90,6 +89,59 @@ define([
         suppress: suppress
       }, field);
     }, this);
+  };
+
+  BuildingInfoPresenter.prototype.toPopulatedLabels = function() {
+    var default_hidden = false;
+    var building = this.toBuilding();
+    var o = {};
+
+    if (typeof building === 'undefined') return o;
+
+    o.items = _.map(this.city.get('popup_fields'), function(field) {
+      var value = building.get(field.field);
+      value = (field.skipFormatter) ? (value || 'N/A') : (value || 'N/A').toLocaleString();
+
+      var label = field.label;
+      var template = null;
+
+      if (field.template) {
+        var key = '{' + field.field + '}';
+        template = field.template.replace(key, value);
+        label = null;
+      }
+
+      return {
+        value: value,
+        label: label,
+        template: template,
+        klass: field.field
+      };
+    }, this);
+
+    // chart
+
+    var chartData = this.city.get('popup_chart');
+
+    if (!chartData) return o;
+
+    o.chart = {};
+    o.chart.year = this.city.get('year');
+
+    o.chart.lead = {
+      value: building.get(chartData.lead.field),
+      label: chartData.lead.label
+    };
+
+    o.chart.barchart = {
+      value: building.get(chartData.barchart.field),
+      desc: chartData.barchart.desc,
+      min: chartData.barchart.min,
+      max: chartData.barchart.max
+    };
+
+
+    return o;
   };
 
   /*
@@ -262,7 +314,7 @@ define([
 
       L.popup()
        .setLatLng(presenter.toLatLng())
-       .setContent(template({labels: presenter.toPopulatedLabels()}))
+       .setContent(template({data: presenter.toPopulatedLabels()}))
        .openOn(this.leafletMap);
 
       setTimeout(function(){

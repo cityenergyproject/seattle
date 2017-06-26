@@ -1,17 +1,51 @@
 <div class="building-info">
   <ul>
-    <%_.each(labels, function (label) {%>
-      <% if ( !label.default_hidden && !label.suppress ) {%>
-        <li><%= label.label %> <strong><%= label.value %></strong></li>
+    <%_.each(data.items, function (item) {%>
+      <% if ( item.template ) {%>
+        <li class="<%= item.klass %>"><%= item.template %> </li>
+      <%} else {%>
+        <li class="<%= item.klass %>"><%= item.label %> <strong><%= item.value %></strong></li>
       <%}%>
     <%})%>
-    <span class="show-more-container hide">
-    <%_.each(labels, function (label) {%>
-      <% if ( label.default_hidden && !label.suppress ) {%>
-        <li><%= label.label %> <strong><%= label.value %></strong></li>
-      <%}%>
-    <%})%>
-    </span>
   </ul>
-  <a class="show-hide-attrs" style="cursor:pointer;">more details...</a>
+
+  <% if ( data.chart ) {%>
+  <div class="building-popup-chart">
+    <h3><%= data.chart.year %> Data</h3>
+    <div class="inner">
+      <table>
+        <tr class="lead">
+          <td><%= data.chart.lead.value %></td>
+          <td><%= data.chart.lead.label %></td>
+        </tr>
+
+        <tr class="barchart">
+          <td><%= data.chart.barchart.value %></td>
+          <td>
+            <div class="bar">
+              <div class="fill" style="width: <%= data.chart.barchart.value %>%;"></div>
+            </div>
+          </td>
+        </tr>
+
+        <tr class="barchart--labels">
+          <td><%= data.chart.barchart.desc %></td>
+          <td>
+              <div class="min">
+                <span><%= data.chart.barchart.min.value %></span>
+                <span><%= data.chart.barchart.min.label %></span>
+              </div>
+              <div class="max">
+                <span><%= data.chart.barchart.max.value %></span>
+                <span><%= data.chart.barchart.max.label %></span>
+              </div>
+          </td>
+        </tr>
+
+      </table>
+    </div>
+  </div>
+
+  <%}%>
+
 </div>
