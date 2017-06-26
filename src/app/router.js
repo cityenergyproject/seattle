@@ -142,8 +142,11 @@ define([
 
       // set this to silent because we need to load buildings
       this.state.set(_.extend({city: city}, newState, mapState));
-      console.log(year);
-      this.fetchBuildings(year);
+
+      var thisYear = this.state.get('year');
+      if (!thisYear) console.error('Uh no, there is no year available!');
+
+      this.fetchBuildings(thisYear);
     },
 
     fetchBuildings: function(year) {
