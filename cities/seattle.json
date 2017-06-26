@@ -146,9 +146,159 @@
         }
     ],
     "years": {
-        "2015": {
-            "table_name": "table_2015_stamen_phase_i_final",
+        "2016": {
+            "table_name": "table_2015_stamen_phase_ii_v2_w_year",
             "default_layer": "energy_star_score"
+        }
+    },
+    "building_footprints": {
+        "allowable": true,
+        "atZoom": 15,
+        "property_id": "id",
+        "table_name": "seattle_building_outlines_05_16_17"
+    },
+    "scorecard": {
+        "labels": {
+            "eui": {
+                "long": "Energy use Intensity (EUI)",
+                "short": "EUI"
+            },
+            "ess": {
+                "long": "Energy Star Score",
+                "short": "Energy Star"
+            }
+        },
+        "compare_chart": {
+            "y_label": "Number of buildings",
+            "x_label": {
+                "eui": "Energy use Intensity (EUI)",
+                "ess": "Energy Star Score"
+            },
+            "highlight_metric": {
+                "eui": "kBtu/ft²",
+                "ess": "Energy Star"
+            }
+        },
+        "thresholds": {
+            "energy_star": [
+                {
+                    "label": "Poor",
+                    "range": [1, 50],
+                    "steps": 7,
+                    "color": "#C04F31"
+                },
+                {
+                    "label": "Fair",
+                    "range": [51, 75],
+                    "steps": 2,
+                    "color": "#F7C34D"
+                },
+                {
+                    "label": "Good",
+                    "range": [76, 90],
+                    "steps": 1,
+                    "color": "#90AE60"
+                },
+                {
+                    "label": "Excellent",
+                    "range": [91, 100],
+                    "steps": 7,
+                    "color": "#1F5DBE"
+                }
+            ],
+            "eui_schema": [
+                {
+                    "label": "Lowest",
+                    "steps": 1,
+                    "color": "#1F5DBE"
+                },
+                {
+                    "label": "Medium Low",
+                    "steps": 1,
+                    "color": "#90AE60"
+                },
+                {
+                    "label": "Medium High",
+                    "steps": 1,
+                    "color": "#F7C34D"
+                },
+                {
+                    "label": "Highest",
+                    "steps": 15,
+                    "color": "#C04F31"
+                }
+            ],
+            "eui": {
+              "Distribution Center": {
+                "2015": [18.8,27.2,40.7]
+              },
+              "High-Rise Multifamily": {
+                "2015": [37.0,47.3,56.4]
+              },
+              "Hospital": {
+                "2015": [196.6,209.7,218.3]
+              },
+              "Hotel": {
+                "2015": [60.3,77.2,96.0]
+              },
+              "K-12 School": {
+                "2015": [31.3,36.4,48.9]
+              },
+              "Laboratory": {
+                "2015": [247.4,247.4,247.4]
+              },
+              "Large Office": {
+                "2015": [47.1,55.5,71.1]
+              },
+              "Low-Rise Multifamily": {
+                "2015": [24.8,29.1,36.0]
+              },
+              "Medical Office": {
+                "2015": [64.1,79.6,105.4]
+              },
+              "Mid-Rise Multifamily": {
+                "2015": [27.3,33.0,42.3]
+              },
+              "Mixed Use Property": {
+                "2015": [38.4,57.4,94.3]
+              },
+              "Other": {
+                "2015": [42.5,77.8,124.7]
+              },
+              "Refrigerated Warehouse": {
+                "2015": [28.9,47.9,90.2]
+              },
+              "Residence Hall / Dormitory": {
+                "2015": [31.0,54.9,76.9]
+              },
+              "Restaurant": {
+                "2015": [91.2,150.7,203.3]
+              },
+              "Retail Store": {
+                "2015": [37.5,55.4,80.1]
+              },
+              "Self-Storage Facility": {
+                "2015": [9.1,14.3,29.4]
+              },
+              "Senior Care Community": {
+                "2015": [48.1,70.4,104.8]
+              },
+              "Small- and Mid-Sized Office": {
+                "2015": [39.4,53.1,69.1]
+              },
+              "Supermarket / Grocery": {
+                "2015": [214.6,264.9,297.1]
+              },
+              "University": {
+                "2015": [44.0,77.5,150.8]
+              },
+              "Warehouse": {
+                "2015": [13.2,24.7,43.2]
+              },
+              "Worship Facility": {
+                "2015": [20.9,29.9,39.5]
+              }
+            }
         }
     }
 }

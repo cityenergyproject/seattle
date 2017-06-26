@@ -1,3 +1,5 @@
+'use strict';
+
 require.config({
   paths: {
     jquery: '//ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min',
@@ -16,10 +18,6 @@ require.config({
   }
 });
 
-
-require([
-  'app',
-], function(App){
+require(['app'], function (App) {
   App.initialize();
 });
-

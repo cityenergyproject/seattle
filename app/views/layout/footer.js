@@ -1,11 +1,8 @@
-define([
-  'jquery',
-  'underscore',
-  'backbone',
-  'text!templates/layout/footer.html'
-], function($, _, Backbone, FooterTemplate){
+'use strict';
+
+define(['jquery', 'underscore', 'backbone', 'text!templates/layout/footer.html'], function ($, _, Backbone, FooterTemplate) {
   var Footer = Backbone.View.extend({
-    initialize: function(options){
+    initialize: function initialize(options) {
       this.state = options.state;
       this.listenTo(this.state, 'change:allbuildings', this.onBuildingsChange);
       this.template = _.template(FooterTemplate);
@@ -19,29 +16,26 @@ define([
       var self = this;
 
       var autoHideFn = $.proxy(this.autoHideHeader, this);
-      $(window).scroll(function(event){
-          if( !self.scrolling ) {
-            self.scrolling = true;
-            (!window.requestAnimationFrame) ?
-              setTimeout(autoHideFn, 250) :
-              requestAnimationFrame(autoHideFn);
-          }
+      $(window).scroll(function (event) {
+        if (!self.scrolling) {
+          self.scrolling = true;
+          !window.requestAnimationFrame ? setTimeout(autoHideFn, 250) : requestAnimationFrame(autoHideFn);
+        }
       });
 
       this.render();
       this.autoHideHeader();
     },
 
-    onBuildingsChange: function() {
+    onBuildingsChange: function onBuildingsChange() {
       this.autoHideHeader();
     },
 
-    autoHideHeader: function() {
+    autoHideHeader: function autoHideHeader() {
       this.scrolling = false;
 
       var st = $(window).scrollTop();
-      if(Math.abs(this.lastScrollTop - st) <= this.delta)
-        return;
+      if (Math.abs(this.lastScrollTop - st) <= this.delta) return;
 
       if (st > this.reveal) {
         this.footer.removeClass('nav-up').addClass('nav-down');
@@ -52,7 +46,7 @@ define([
       this.lastScrollTop = st;
     },
 
-    render: function(){
+    render: function render() {
       $('#footer').html(this.template());
       return this;
     }

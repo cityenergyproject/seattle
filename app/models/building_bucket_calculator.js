@@ -1,15 +1,14 @@
-define([
-  'underscore',
-  'd3'
-], function(_, d3) {
-  var BuildingBucketCalculator = function(buildings, fieldName, buckets, filterRange) {
+'use strict';
+
+define(['underscore', 'd3'], function (_, d3) {
+  var BuildingBucketCalculator = function BuildingBucketCalculator(buildings, fieldName, buckets, filterRange) {
     this.buildings = buildings;
     this.fieldName = fieldName;
     this.buckets = buckets;
     this.filterRange = filterRange || {};
   };
 
-  BuildingBucketCalculator.prototype.getScale = function() {
+  BuildingBucketCalculator.prototype.getScale = function () {
     var extent = this.toExtent(),
         maxBuckets = this.buckets - 1;
 
@@ -21,7 +20,7 @@ define([
     return scale;
   };
 
-  BuildingBucketCalculator.prototype.toExtent = function() {
+  BuildingBucketCalculator.prototype.toExtent = function () {
     var fieldValues = this.buildings.pluck(this.fieldName),
         extent = d3.extent(fieldValues),
         min = this.filterRange.min,
@@ -31,22 +30,24 @@ define([
 
   // Allow for extent & scale to be passed in,
   // speeds up the "toBuckets" function
-  BuildingBucketCalculator.prototype.toBucket = function(value, extent, scale) {
+  BuildingBucketCalculator.prototype.toBucket = function (value, extent, scale) {
     extent = extent || this.toExtent();
     scale = scale || this.getScale();
 
     return _.min([_.max([scale(value), 0]), scale._maxBuckets]);
   };
 
-  BuildingBucketCalculator.prototype.toBuckets = function() {
+  BuildingBucketCalculator.prototype.toBuckets = function () {
     var self = this;
 
-    var scale =  this.getScale();
+    var scale = this.getScale();
     var extent = scale.domain();
 
-    return this.buildings.reduce(function(memo, building){
+    return this.buildings.reduce(function (memo, building) {
       var value = building.get(self.fieldName);
-      if (!value) {return memo;}
+      if (!value) {
+        return memo;
+      }
       var scaled = self.toBucket(value, extent, scale);
       memo[scaled] = memo[scaled] + 1 || 1;
       return memo;

@@ -1,28 +1,25 @@
-define([
-  'jquery',
-  'underscore',
-  'backbone',
-  'text!templates/map/year_control.html'
-], function($, _, Backbone, YearControlTemplate){
+'use strict';
+
+define(['jquery', 'underscore', 'backbone', 'text!templates/map/year_control.html'], function ($, _, Backbone, YearControlTemplate) {
 
   var YearControlView = Backbone.View.extend({
     $container: $('#year-select'),
     className: "year-control",
 
-    initialize: function(options){
+    initialize: function initialize(options) {
       this.state = options.state;
       this.listenTo(this.state, 'change:city', this.onCityChange);
     },
 
-    onCityChange: function(){
+    onCityChange: function onCityChange() {
       this.listenTo(this.state.get('city'), 'sync', this.onCitySync);
     },
 
-    onCitySync: function(){
+    onCitySync: function onCitySync() {
       this.render();
     },
 
-    render: function(){
+    render: function render() {
       var city = this.state.get('city');
 
       this.$el.appendTo(this.$container);
@@ -37,15 +34,14 @@ define([
     },
 
     events: {
-      'change input' : 'selectYear'
+      'change input': 'selectYear'
     },
 
-    selectYear: function(event){
+    selectYear: function selectYear(event) {
       var year = $(event.target).val();
-      this.state.set({year: year});
+      this.state.set({ year: year });
     }
   });
 
   return YearControlView;
-
 });

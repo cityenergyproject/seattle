@@ -1,11 +1,8 @@
-define([
-  'jquery',
-  'underscore',
-  'backbone',
-  'text!templates/layout/activity_indicator.html'
-], function($, _, Backbone, ActivityIndicatorTemplate){
+'use strict';
+
+define(['jquery', 'underscore', 'backbone', 'text!templates/layout/activity_indicator.html'], function ($, _, Backbone, ActivityIndicatorTemplate) {
   var ActivityIndicator = Backbone.View.extend({
-    initialize: function(options){
+    initialize: function initialize(options) {
       this.state = options.state;
 
       // TODO: Might want to make these next three variables
@@ -26,31 +23,29 @@ define([
       $('body').append(this.template);
     },
 
-    showLoader: function() {
+    showLoader: function showLoader() {
       if (this.isShowing) return;
       this.isShowing = true;
       this.$selector.addClass(this.displayKlass);
     },
 
-    hideLoader: function() {
+    hideLoader: function hideLoader() {
       if (!this.isShowing) return;
       this.isShowing = false;
       this.$selector.removeClass(this.displayKlass);
     },
 
-    browserSupportsCSSProperty: function (propertyName) {
+    browserSupportsCSSProperty: function browserSupportsCSSProperty(propertyName) {
       var elm = document.createElement('div');
       propertyName = propertyName.toLowerCase();
 
-      if (elm.style[propertyName] !== undefined)
-        return true;
+      if (elm.style[propertyName] !== undefined) return true;
 
       var propertyNameCapital = propertyName.charAt(0).toUpperCase() + propertyName.substr(1),
-        domPrefixes = 'Webkit Moz ms O'.split(' ');
+          domPrefixes = 'Webkit Moz ms O'.split(' ');
 
       for (var i = 0; i < domPrefixes.length; i++) {
-        if (elm.style[domPrefixes[i] + propertyNameCapital] !== undefined)
-          return true;
+        if (elm.style[domPrefixes[i] + propertyNameCapital] !== undefined) return true;
       }
 
       return false;
