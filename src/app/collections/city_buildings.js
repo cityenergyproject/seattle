@@ -96,15 +96,16 @@ define([
     this.year = year;
   };
 
-  CityBuildingQuery.prototype.toRangeSql = function() {
+  CityBuildingQuery.prototype.toRangeSql = function(prefix) {
+    prefix = prefix || '';
     return _.map(this.ranges, function(range){
       // Handle situations where there's only a min or only a max
       if (range.min && range.max)
-        return range.field + " BETWEEN " + range.min + " AND " + range.max;
+        return prefix + range.field + " BETWEEN " + range.min + " AND " + range.max;
       if (range.min)
-        return range.field + " >= " + range.min;
+        return prefix + range.field + " >= " + range.min;
       if (range.max)
-        return range.field + " <= " + range.max;
+        return prefix + range.field + " <= " + range.max;
     });
   };
 
@@ -112,18 +113,20 @@ define([
     return "'" + value + "'";
   };
 
-  CityBuildingQuery.prototype.toCategorySql = function() {
+  CityBuildingQuery.prototype.toCategorySql = function(prefix) {
+    prefix = prefix || '';
     var self = this;
     return _.map(this.categories, function(category){
       var operation = (category.other === 'false' || category.other === false) ? "IN" : "NOT IN",
           values = _.map(category.values, self.toWrappedValue);
       if (values.length === 0) return "";
-      return category.field + " " + operation + " (" + values.join(', ') + ")";
+      return prefix + category.field + " " + operation + " (" + values.join(', ') + ")";
     });
   };
 
-  CityBuildingQuery.prototype.toYearSql = function() {
-    return ['year=' + this.year];
+  CityBuildingQuery.prototype.toYearSql = function(prefix) {
+    prefix = prefix || '';
+    return [prefix + 'year=' + this.year];
   };
 
   CityBuildingQuery.prototype.toSql = function() {
@@ -134,6 +137,15 @@ define([
     var filterSql = yearSql.concat(rangeSql).concat(categorySql).join(' AND ');
     var output = ["SELECT ST_X(the_geom) AS lng, ST_Y(the_geom) AS lat,* FROM " + table].concat(filterSql).filter(function(e) { return e.length > 0; });
     return output.join(" WHERE ");
+  };
+
+  CityBuildingQuery.prototype.toSqlComponents = function(prefix) {
+    return {
+      table: this.tableName,
+      range: this.toRangeSql(prefix),
+      category: this.toCategorySql(prefix),
+      year: this.toYearSql(prefix)
+    };
   };
 
 
@@ -154,7 +166,10 @@ define([
       return data.rows;
     },
     toSql: function(year, categories, range){
-      return new CityBuildingQuery(this.tableName, year, categories, range).toSql()
+      return new CityBuildingQuery(this.tableName, year, categories, range).toSql();
+    },
+    toSqlComponents: function(year, categories, range, prefix){
+      return new CityBuildingQuery(this.tableName, year, categories, range).toSqlComponents(prefix);
     },
     toFilter: function(buildings, categories, ranges) {
       return cityBuildingsFilterizer(buildings, categories, ranges);

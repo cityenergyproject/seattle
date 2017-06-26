@@ -2,11 +2,12 @@ define([
   'underscore',
   'd3'
 ], function(_, d3) {
-  var BuildingColorBucketCalculator = function(buildings, fieldName, buckets, colorStops) {
+  var BuildingColorBucketCalculator = function(buildings, fieldName, buckets, colorStops, cssFillType) {
     this.buildings = buildings;
     this.fieldName = fieldName;
     this.buckets = buckets;
     this.colorStops = colorStops;
+    this.cssFillType = cssFillType || "marker-fill";
 
 
     this.memoized = {};
@@ -47,7 +48,8 @@ define([
     var stops = this.toGradientStops(),
         fieldName = this.fieldName,
         fieldValues = this.getFieldValues(),
-        gradient = this.colorGradient();
+        gradient = this.colorGradient(),
+        cssFillType = this.cssFillType;
     /*
     console.log('FieldName: ', fieldName);
     console.log("CartoCSS stops", stops);
@@ -56,7 +58,7 @@ define([
 
     var css = this.memoized.cartoCSS[this.fieldName] = _.map(stops, function(stop){
       var min = _.min(gradient.invertExtent(stop));
-      return "[" + fieldName + ">=" + min + "]{marker-fill:" + stop + "}";
+      return "[" + fieldName + ">=" + min + "]{" + cssFillType + ":" + stop + "}";
     });
 
     return css;

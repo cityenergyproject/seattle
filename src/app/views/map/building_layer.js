@@ -7,7 +7,8 @@ define([
   'text!templates/map/building_info.html'
 ], function($, _, Backbone, CityBuildings, BuildingColorBucketCalculator, BuildingInfoTemplate){
 
-  var baseCartoCSS = [
+  var baseCartoCSS = {
+    dots: [
     '{marker-fill: #CCC;' +
     'marker-fill-opacity: 0.9;' +
     'marker-line-color: #FFF;' +
@@ -18,25 +19,27 @@ define([
     'marker-type: ellipse;' +
     'marker-allow-overlap: true;' +
     'marker-clip: false;}'
-  ];
-
-  var CartoBuildingStyleSheet = function(config) {
-    this.config = config;
+    ],
+    footprints: [
+      '{polygon-fill: #CCC;' +
+      'polygon-opacity: 0.9;' +
+      'line-width: 1;' +
+      'line-color: #FFF;' +
+      'line-opacity: 0.5;}'
+    ]
   };
 
-  CartoBuildingStyleSheet.prototype.toCartoCSS = function() {
-    console.log(this.config);
-  };
-
-  var CartoStyleSheet = function(tableName, bucketCalculator) {
+  var CartoStyleSheet = function(tableName, bucketCalculator, mode) {
     this.tableName = tableName;
     this.bucketCalculator = bucketCalculator;
+    this.mode = mode;
   };
 
   CartoStyleSheet.prototype.toCartoCSS = function(){
     var bucketCSS = this.bucketCalculator.toCartoCSS(),
-        styles = baseCartoCSS.concat(bucketCSS),
+        styles = [...baseCartoCSS[this.mode]].concat(bucketCSS),
         tableName = this.tableName;
+
     styles = _.reject(styles, function(s) { return !s; });
     styles = _.map(styles, function(s) { return "#" + tableName + " " + s; });
     return styles.join("\n");
@@ -89,32 +92,74 @@ define([
     }, this);
   };
 
-  var FootprintWatcher = function(config, map) {
+  /*
+    Determines which map layer should be showing on the map
+    Currently hardwired to show 'dots' or 'footprints'
+   */
+  var BuildingLayerWatcher = function(config, map) {
     this.config = config;
     this.map = map;
     this.currentZoom = null;
-    this.mode = this.check();
+    this.footprintsAllowed = this.config.allowable || false;
+    this.mode = this.getMode();
   };
 
-  FootprintWatcher.prototype.allowed = function() {
-    return this.config.allowable;
-  }
-
-  FootprintWatcher.prototype.check = function() {
-    if (!this.allowed()) return null;
+  BuildingLayerWatcher.prototype.getMode = function() {
+    if (!this.footprintsAllowed) return 'dots'; // `dots` are going to be our default
 
     var zoom = this.map.getZoom();
-    if (this.currentZoom === zoom) return null;
+    if (this.currentZoom === zoom) return this.mode;
     this.currentZoom = zoom;
 
-    var mode = (zoom >= this.config.atZoom) ? 'footprints' : 'dots';
+    return (zoom >= this.config.atZoom) ? 'footprints' : 'dots';
+  };
 
-    if (this.mode === mode) return null;
+  // Determines whether to change the layer type
+  BuildingLayerWatcher.prototype.check = function() {
+    if (!this.footprintsAllowed) return false;
+
+    var mode = this.getMode();
+
+    if (mode === this.mode) return false;
 
     this.mode = mode;
 
-    return this.mode;
-  }
+    return true;
+  };
+
+  BuildingLayerWatcher.prototype.fillType = function() {
+    return this.mode === 'dots' ? 'marker-fill' : 'polygon-fill';
+  };
+
+  /*
+    To render building footprints we need to join on the footprint table.
+    There is no need to wrap it in the building collection sql function, since
+    it only impacts the map layer. It does borrow most of the logic for sql
+    generation from the building collection sql function however.
+   */
+  var FootprintGenerateSql = function(footprintConfig, maplayers) {
+    this.footprintConfig = footprintConfig;
+    this.mapLayerFields = maplayers.map(function(lyr) {
+      return 'b.' + lyr.field_name;
+    });
+    this.mapLayerFields.push('b.id');
+    this.mapLayerFields = this.mapLayerFields.join(',');
+  };
+
+  FootprintGenerateSql.prototype.sql = function(components) {
+    var tableFootprint = this.footprintConfig.table_name;
+    var tableData = components.table;
+
+    // Base query
+    var query = "SELECT a.*," + this.mapLayerFields + " FROM " + tableFootprint + " a," + tableData + " b WHERE a.buildingid = b.id AND ";
+
+    var filterSql = components.year.concat(components.range).concat(components.category).filter(function(e) { return e.length > 0; });
+
+    query += filterSql.join(' AND ');
+
+    return query;
+  };
+
 
   var LayerView = Backbone.View.extend({
     initialize: function(options){
@@ -125,9 +170,11 @@ define([
       this.allBuildings = new CityBuildings(null, {});
 
       this.footprints_cfg = this.state.get('city').get('building_footprints');
-      this.footprintWatcher = new FootprintWatcher(this.footprints_cfg, this.leafletMap);
+      this.buildingLayerWatcher = new BuildingLayerWatcher(this.footprints_cfg, this.leafletMap);
 
-      console.log(this.footprints_cfg);
+      this.footprintGenerateSql = new FootprintGenerateSql(
+        this.footprints_cfg,
+        this.state.get('city').get('map_layers'));
 
       // Listen for all changes but filter in the handler for these
       // attributes: layer, filters, categories, and tableName
@@ -196,7 +243,7 @@ define([
 
       var propertyId = this.state.get('city').get('property_id');
 
-      if (this.footprintWatcher.mode !== 'dots') {
+      if (this.buildingLayerWatcher.mode !== 'dots') {
         propertyId = this.footprints_cfg.property_id;
       }
 
@@ -205,10 +252,10 @@ define([
 
       if (!presenter.toLatLng()) {
         console.warn('No building (%s) found for presenter!', presenter.buildingId);
-        console.log(presenter);
-        console.log(presenter.toLatLng());
-        console.log(presenter.toBuilding());
-        console.log('');
+        console.warn(presenter);
+        console.warn(presenter.toLatLng());
+        console.warn(presenter.toBuilding());
+        console.warn('');
         return;
       }
 
@@ -226,7 +273,7 @@ define([
     onFeatureClick: function(event, latlng, _unused, data){
       var propertyId = this.state.get('city').get('property_id');
 
-      if (this.footprintWatcher.mode !== 'dots') {
+      if (this.buildingLayerWatcher.mode !== 'dots') {
         propertyId = this.footprints_cfg.property_id;
       }
 
@@ -274,17 +321,19 @@ define([
         return this.onStateChange();
       }
 
-      // mapzoom change
+      // mapzoom change we need to re-render the map
+      // to show either 'dots' or 'footprints'
       if (this.state._previousAttributes.zoom !== this.state.attributes.zoom) {
-        var layerMode = this.footprintWatcher.check();
-        if (layerMode !== null) this.render();
+        if (this.buildingLayerWatcher.check()) this.render();
       }
 
     },
 
 
     toCartoSublayer: function(){
-      // CartoBuildingStyleSheet
+      var layerMode = this.buildingLayerWatcher.mode;
+      var cssFillType = this.buildingLayerWatcher.fillType();
+
       var buildings = this.allBuildings,
           state = this.state,
           city = state.get('city'),
@@ -293,25 +342,25 @@ define([
           cityLayer = _.findWhere(city.get('map_layers'), {field_name: fieldName}),
           buckets = cityLayer.range_slice_count,
           colorStops = cityLayer.color_range,
-          calculator = new BuildingColorBucketCalculator(buildings, fieldName, buckets, colorStops),
-          stylesheet = new CartoStyleSheet(buildings.tableName, calculator);
+          calculator = new BuildingColorBucketCalculator(buildings, fieldName, buckets, colorStops, cssFillType),
+          stylesheet = new CartoStyleSheet(buildings.tableName, calculator, layerMode);
 
-      var layerMode = this.footprintWatcher.mode;
+      var sql = (layerMode === 'dots') ? buildings.toSql(year, state.get('categories'), state.get('filters')) :
+                                        this.footprintGenerateSql.sql(
+                                          buildings.toSqlComponents(
+                                            year,
+                                            state.get('categories'),
+                                            state.get('filters'), 'b.')
+                                        );
 
-      console.log('"toCartoSublayer" mode: ', layerMode);
+      var cartocss = stylesheet.toCartoCSS();
+      var interactivity = this.state.get('city').get('property_id');
 
-      var o = {
-        sql: buildings.toSql(year, state.get('categories'), state.get('filters')),
-        cartocss: stylesheet.toCartoCSS(),
-        interactivity: this.state.get('city').get('property_id')
+      return {
+        sql: sql,
+        cartocss: cartocss,
+        interactivity: (layerMode === 'dots' ) ? interactivity : interactivity += ',' + this.footprints_cfg.property_id
       };
-
-      if (layerMode === 'dots' ) return o;
-
-      o.sql = "SELECT a.*, b.site_eui, b.id FROM seattle_building_outlines_05_16_17 a, table_2015_stamen_phase_ii_v2_w_year b WHERE a.buildingid = b.id AND b.year = 2016";
-      o.cartocss = "#table_2015_stamen_phase_ii_v2_w_year {polygon-fill: ramp([site_eui], (#2b83ba, #abdda4, #ffffbf, #fdae61, #d7191c), quantiles);line-width: 1;line-color: #FFF;line-opacity: 0.5;}";
-      o.interactivity += ',' + this.footprints_cfg.property_id;
-      return o;
     },
 
     render: function(){
@@ -322,8 +371,6 @@ define([
 
       // skip if we are loading `cartoLayer`
       if (this.cartoLoading) return;
-
-      console.log(this.toCartoSublayer());
 
       this.cartoLoading = true;
       cartodb.createLayer(this.leafletMap, {
