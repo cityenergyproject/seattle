@@ -1110,6 +1110,66 @@ header {
     display: inline-block;
     margin: 10px 0px 0px;
     cursor: pointer; }
+  .leaflet-popup-content .building-info .building-popup-chart {
+    min-width: 250px;
+    margin: 20px 0 0 0; }
+    .leaflet-popup-content .building-info .building-popup-chart > h3 {
+      text-transform: uppercase;
+      font-size: 12px;
+      line-height: 1;
+      margin: 0 0 5px 0; }
+    .leaflet-popup-content .building-info .building-popup-chart .inner {
+      border: 1px solid blue;
+      padding: 10px; }
+    .leaflet-popup-content .building-info .building-popup-chart table {
+      margin: 0;
+      table-layout: auto; }
+      .leaflet-popup-content .building-info .building-popup-chart table td {
+        padding: 0;
+        border: 0; }
+      .leaflet-popup-content .building-info .building-popup-chart table td:first-child {
+        width: auto;
+        padding-right: 10px; }
+      .leaflet-popup-content .building-info .building-popup-chart table td:last-child {
+        width: 100%; }
+    .leaflet-popup-content .building-info .building-popup-chart .lead td {
+      padding: 0 0 1rem 0;
+      vertical-align: bottom; }
+    .leaflet-popup-content .building-info .building-popup-chart .lead td:first-child {
+      font-size: 24px;
+      font-weight: 500; }
+    .leaflet-popup-content .building-info .building-popup-chart .barchart td {
+      vertical-align: bottom; }
+    .leaflet-popup-content .building-info .building-popup-chart .barchart td:first-child {
+      font-size: 16px;
+      font-weight: 500; }
+    .leaflet-popup-content .building-info .building-popup-chart .bar {
+      position: relative;
+      width: 100%;
+      height: 16px;
+      border: 1px solid blue; }
+    .leaflet-popup-content .building-info .building-popup-chart .fill {
+      height: 100%;
+      background: blue; }
+    .leaflet-popup-content .building-info .building-popup-chart .barchart--labels {
+      overflow: hidden; }
+      .leaflet-popup-content .building-info .building-popup-chart .barchart--labels td {
+        position: relative;
+        padding: 5px 0 0; }
+      .leaflet-popup-content .building-info .building-popup-chart .barchart--labels td:first-child {
+        white-space: nowrap;
+        vertical-align: bottom; }
+      .leaflet-popup-content .building-info .building-popup-chart .barchart--labels .min, .leaflet-popup-content .building-info .building-popup-chart .barchart--labels .max {
+        position: relative;
+        top: 0;
+        width: 40%;
+        float: left; }
+        .leaflet-popup-content .building-info .building-popup-chart .barchart--labels .min span, .leaflet-popup-content .building-info .building-popup-chart .barchart--labels .max span {
+          display: inline-block;
+          width: 100%; }
+      .leaflet-popup-content .building-info .building-popup-chart .barchart--labels .max {
+        float: right;
+        text-align: right; }
 
 /*
   .spinner code from http://tobiasahlin.com/spinkit/
