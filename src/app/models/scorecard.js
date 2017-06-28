@@ -3,7 +3,8 @@ define([
 ], function(Backbone) {
   var Scorecard = Backbone.Model.extend({
     defaults: {
-      view: 'eui'
+      view: 'eui',
+      active: false
     }
   });
 

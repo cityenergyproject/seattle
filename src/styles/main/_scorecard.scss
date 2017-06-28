@@ -31,6 +31,10 @@ $sc-font-lgr: 3rem;
   overflow: auto;
   z-index: $zIndexMax;
 
+  &.active {
+    display: block;
+  }
+
   .scorecard-content {
     position: relative;
     width: 100%;

@@ -6,11 +6,14 @@ define([
   'text!templates/layout/scorecard.html'
 ], function($, _, Backbone, D3, ScorecardTemplate){
   var Scorecard = Backbone.View.extend({
+    el: $('#scorecard'),
+
     initialize: function(options){
       this.state = options.state;
-      this.listenTo(this.state, 'change:allbuildings', this.onBuildings);
+      this.listenTo(this.state, 'change:reportActive', this.onReportActive);
 
       var scorecard = this.state.get('scorecard');
+
       this.listenTo(scorecard, 'change:view', this.onViewChange);
 
       this.formatters = {
@@ -22,43 +25,76 @@ define([
         fixedOne: d3.format(',.1f')
       };
 
-      this.errorCount = 0;
       this.template = _.template(ScorecardTemplate);
-      this.render();
+
+      return this;
     },
 
-    onViewChange: function() {
-      console.log('view change');
-      this.showCard();
+    events: {
+      "click #back-to-map-link": "closeReport",
+      "click .sc-toggle--input": "toggleView"
     },
 
-    showCard: function() {
-      var buildings = this.state.get('allbuildings');
+    closeReport: function(evt) {
+      evt.preventDefault();
+      this.state.set({reportActive: false});
+    },
 
-      var year = this.state.get('year');
+    toggleView: function(evt) {
+      var scorecardState = this.state.get('scorecard');
+      var view = scorecardState.get('view');
 
-      var rid = this.rid || Math.floor(Math.random() * 1000) + 1;
-      this.rid = rid;
+      var target = evt.target;
+      var value = target.dataset.view;
 
-      var building = buildings.at(rid);
-
-      if (typeof building === 'undefined') {
-        console.warn('Could not find a random building, trying again');
-        this.rid = null;
-        this.errorCount++;
-        this.onBuildings();
+      if (value === view) {
+        evt.preventDefault();
+        return false;
       }
 
-      console.log('RID: ', rid);
+      scorecardState.set({'view': value});
+    },
+
+    render: function() {
+      var building = this.state.get('building');
+      var active = this.state.get('reportActive');
+
+
+      if (active) {
+        this.$el.toggleClass('active', true);
+        this.getData();
+      } else {
+        this.scoreCardData = null;
+        this.$el.toggleClass('active', false);
+        this.$el.html('');
+      }
+
+      return this;
+    },
+
+    getData: function() {
+      this.scoreCardData = null;
+
+      var year = this.state.get('year');
+      var buildings = this.state.get('allbuildings');
+      var id = this.state.get('building');
 
       // Temporary hack to get yearly data
-      d3.json(`https://cityenergy-seattle.carto.com/api/v2/sql?q=SELECT+ST_X(the_geom)+AS+lng%2C+ST_Y(the_geom)+AS+lat%2C*+FROM+table_2015_stamen_phase_ii_v2_w_year+WHERE+id=${building.get('id')}`, (d) => {
+      d3.json(`https://cityenergy-seattle.carto.com/api/v2/sql?q=SELECT+ST_X(the_geom)+AS+lng%2C+ST_Y(the_geom)+AS+lat%2C*+FROM+table_2015_stamen_phase_ii_v2_w_year+WHERE+id=${id}`, (d) => {
+        if (!this.state.get('reportActive')) return;
+        this.scoreCardData = d;
         this.processBuilding(buildings, d, year);
       });
     },
 
-    onBuildings: function() {
-      if (this.errorCount < 10) this.showCard();
+    onReportActive: function() {
+      this.render();
+    },
+
+    onViewChange: function() {
+      var year = this.state.get('year');
+      var buildings = this.state.get('allbuildings');
+      this.processBuilding(buildings, this.scoreCardData, year);
     },
 
     full_address: function(building) {
@@ -109,7 +145,6 @@ define([
     },
 
     processBuilding: function(buildings, building_data, selected_year) {
-      console.log(buildings);
       var scorecardState = this.state.get('scorecard');
       var data = {};
       building_data.rows.forEach(d => {
@@ -148,13 +183,12 @@ define([
       var id = building.id;
       var eui = building.site_eui;
 
-      console.log(building);
-
       var chartdata = this.prepareCompareChartData(config, buildings, building, view, prop_type, id);
       var fuels = this.renderFuelUseChart(building);
       const change_data = this.extractChangeData(data);
 
-      $('#scorecard').html(this.template({
+      this.$el.html(this.template({
+        active: 'active',
         name: name,
         addr: address,
         sqft: sqft.toLocaleString(),
@@ -174,6 +208,7 @@ define([
       this.renderChangeChart(change_data.chart);
       this.renderCompareChart(config, chartdata, view, prop_type, name);
 
+      /*
       // TODO: switch to use backbone view event approach
       var inputs = d3.select('.sc-toggle').selectAll('input');
       inputs.on('click', function() {
@@ -185,6 +220,7 @@ define([
 
         scorecardState.set({'view': value});
       });
+      */
     },
 
     listdata: function(building, fields) {
@@ -717,13 +753,6 @@ define([
           .attr('class', 'building')
           .classed('avg', d => d.isAvg)
           .text(d => d.label);
-
-
-
-    },
-
-    render: function(){
-      return this;
     }
   });
 

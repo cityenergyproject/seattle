@@ -289,6 +289,17 @@ define([
       });
     },
 
+    onViewReport: function(evt) {
+      if (evt.preventDefault) evt.preventDefault();
+      this.state.set({reportActive:true});
+      return false;
+    },
+
+    onCompareBuilding: function(evt) {
+      if (evt.preventDefault) evt.preventDefault();
+      console.log('onCompareBuilding');
+      return false;
+    },
 
     onBuildingChange: function() {
       if (!this.state.get('building')) return;
@@ -311,11 +322,13 @@ define([
         return;
       }
 
-
       L.popup()
        .setLatLng(presenter.toLatLng())
        .setContent(template({data: presenter.toPopulatedLabels()}))
        .openOn(this.leafletMap);
+
+      $('#view-report').on('click', this.onViewReport.bind(this));
+      $('#compare-building').on('click', this.onCompareBuilding.bind(this));
 
       setTimeout(function(){
         this.state.trigger('building_layer_popup_shown');

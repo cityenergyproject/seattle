@@ -2,7 +2,7 @@
   a.leaflet-popup-close-button {
     display: none
   }
-  .leaflet-popup-content-wrapper{
+  .leaflet-popup-content-wrapper {
     box-shadow: none;
     border-radius: 0;
     background-color: $light-gray;
@@ -12,19 +12,24 @@
   }
 }
 
-.leaflet-popup-content .building-info{
+.leaflet-popup-content .building-info {
+  font-family: "Ubuntu", "Helvetica Neue", "Helvetica", "Roboto", "Arial", sans-serif;
   line-height: 1;
+
   li + li {
     padding-top: .5em;
   }
+
   li:first-child{
     font-size: 1.2em;
     font-weight: bold;
     margin-bottom: -0.2em;
   }
+
   li:nth-child(2){
     margin-bottom: -0.3em;
   }
+
   .show-more-container{
     &.hide {
       li {
@@ -36,16 +41,19 @@
         display: block;
       }
     }
+
     li:first-child{
       font-size: inherit;
       font-weight: inherit;
       margin-bottom: 0;
       margin-top: .5em;
     }
+
     li:nth-child(2){
       margin-bottom: 0;
     }
   }
+
   .show-hide-attrs {
     display: inline-block;
     margin: 10px 0px 0px;
@@ -53,7 +61,8 @@
   }
 
   .building-popup-chart {
-    min-width: 250px;
+    min-width: 200px;
+    max-width: 300px;
     margin: 20px 0 0 0;
 
     & > h3 {
@@ -147,7 +156,17 @@
         text-align: right;
       }
     }
+  } // end .building-popup-chart
 
-
+  button {
+    width: 100%;
+    margin: 1rem 0 0;
+    padding: 0.5em 1em;
+    border: 1px solid #0047ba;
+    border-radius: 1em;
+    background: #0047ba;
+    color: white;
+    font-size: 0.75rem;
+    text-transform: uppercase;
   }
 }
