@@ -130,6 +130,36 @@
             "description": "Non-Normalized Source Energy Use is a property’s Source Energy Use divided by property square footage. Source Energy Use is the total amount of raw fuel that is required to operate the property. In addition to what the property consumes on-site, source energy includes losses that take place during generation, transmission, and distribution of the energy, thereby enabling a complete assessment of energy consumption resulting from building operations. Source EUI is measured in thousands of British thermal units (kBtu) per square foot."
         },
         {
+            "title": "Site Total Energy Use",
+            "field_name": "total_kbtu",
+            "display_type": "range",
+            "range_slice_count": 18,
+            "section": "Energy Performance Metrics",
+            "color_range": ["#1f5dbe","#599b67","#ffd552","#da863f","#ab2328"],
+            "unit": "kBtu",
+            "description": "I need a description"
+        },
+        {
+            "title": "Weather Normalized Site EUI",
+            "field_name": "site_eui_wn",
+            "display_type": "range",
+            "range_slice_count": 18,
+            "section": "Energy Performance Metrics",
+            "color_range": ["#1f5dbe","#599b67","#ffd552","#da863f","#ab2328"],
+            "unit": "kBtu/ft²",
+            "description": "I need a description"
+        },
+        {
+            "title": "Weather Normalized Source EUI",
+            "field_name": "source_eui_wn",
+            "display_type": "range",
+            "range_slice_count": 18,
+            "section": "Energy Performance Metrics",
+            "color_range": ["#1f5dbe","#599b67","#ffd552","#da863f","#ab2328"],
+            "unit": "kBtu/ft²",
+            "description": "I need a description"
+        },
+        {
             "title": "Total Seattle GHG Emissions",
             "field_name": "total_ghg_emissions",
             "display_type": "range",
