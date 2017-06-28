@@ -267,6 +267,18 @@ define(['jquery', 'underscore', 'backbone', 'collections/city_buildings', 'model
       });
     },
 
+    onViewReport: function onViewReport(evt) {
+      if (evt.preventDefault) evt.preventDefault();
+      this.state.set({ reportActive: true });
+      return false;
+    },
+
+    onCompareBuilding: function onCompareBuilding(evt) {
+      if (evt.preventDefault) evt.preventDefault();
+      console.log('onCompareBuilding');
+      return false;
+    },
+
     onBuildingChange: function onBuildingChange() {
       if (!this.state.get('building')) return;
 
@@ -289,6 +301,9 @@ define(['jquery', 'underscore', 'backbone', 'collections/city_buildings', 'model
       }
 
       L.popup().setLatLng(presenter.toLatLng()).setContent(template({ data: presenter.toPopulatedLabels() })).openOn(this.leafletMap);
+
+      $('#view-report').on('click', this.onViewReport.bind(this));
+      $('#compare-building').on('click', this.onCompareBuilding.bind(this));
 
       setTimeout(function () {
         this.state.trigger('building_layer_popup_shown');

@@ -4,11 +4,14 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/layout/scorecard.html'], function ($, _, Backbone, D3, ScorecardTemplate) {
   var Scorecard = Backbone.View.extend({
+    el: $('#scorecard'),
+
     initialize: function initialize(options) {
       this.state = options.state;
-      this.listenTo(this.state, 'change:allbuildings', this.onBuildings);
+      this.listenTo(this.state, 'change:reportActive', this.onReportActive);
 
       var scorecard = this.state.get('scorecard');
+
       this.listenTo(scorecard, 'change:view', this.onViewChange);
 
       this.formatters = {
@@ -20,45 +23,77 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/layout/scoreca
         fixedOne: d3.format(',.1f')
       };
 
-      this.errorCount = 0;
       this.template = _.template(ScorecardTemplate);
-      this.render();
+
+      return this;
     },
 
-    onViewChange: function onViewChange() {
-      console.log('view change');
-      this.showCard();
+    events: {
+      "click #back-to-map-link": "closeReport",
+      "click .sc-toggle--input": "toggleView"
     },
 
-    showCard: function showCard() {
-      var _this = this;
+    closeReport: function closeReport(evt) {
+      evt.preventDefault();
+      this.state.set({ reportActive: false });
+    },
 
-      var buildings = this.state.get('allbuildings');
+    toggleView: function toggleView(evt) {
+      var scorecardState = this.state.get('scorecard');
+      var view = scorecardState.get('view');
 
-      var year = this.state.get('year');
+      var target = evt.target;
+      var value = target.dataset.view;
 
-      var rid = this.rid || Math.floor(Math.random() * 1000) + 1;
-      this.rid = rid;
-
-      var building = buildings.at(rid);
-
-      if (typeof building === 'undefined') {
-        console.warn('Could not find a random building, trying again');
-        this.rid = null;
-        this.errorCount++;
-        this.onBuildings();
+      if (value === view) {
+        evt.preventDefault();
+        return false;
       }
 
-      console.log('RID: ', rid);
+      scorecardState.set({ 'view': value });
+    },
+
+    render: function render() {
+      var building = this.state.get('building');
+      var active = this.state.get('reportActive');
+
+      if (active) {
+        this.$el.toggleClass('active', true);
+        this.getData();
+      } else {
+        this.scoreCardData = null;
+        this.$el.toggleClass('active', false);
+        this.$el.html('');
+      }
+
+      return this;
+    },
+
+    getData: function getData() {
+      var _this = this;
+
+      this.scoreCardData = null;
+
+      var year = this.state.get('year');
+      var buildings = this.state.get('allbuildings');
+      var id = this.state.get('building');
 
       // Temporary hack to get yearly data
-      d3.json('https://cityenergy-seattle.carto.com/api/v2/sql?q=SELECT+ST_X(the_geom)+AS+lng%2C+ST_Y(the_geom)+AS+lat%2C*+FROM+table_2015_stamen_phase_ii_v2_w_year+WHERE+id=' + building.get('id'), function (d) {
+      d3.json('https://cityenergy-seattle.carto.com/api/v2/sql?q=SELECT+ST_X(the_geom)+AS+lng%2C+ST_Y(the_geom)+AS+lat%2C*+FROM+table_2015_stamen_phase_ii_v2_w_year+WHERE+id=' + id, function (d) {
+        if (!_this.state.get('reportActive')) return;
+        _this.scoreCardData = d;
         _this.processBuilding(buildings, d, year);
       });
     },
 
-    onBuildings: function onBuildings() {
-      if (this.errorCount < 10) this.showCard();
+    onReportActive: function onReportActive() {
+      this.render();
+    },
+
+    onViewChange: function onViewChange() {
+      var year = this.state.get('year');
+      var buildings = this.state.get('allbuildings');
+      this.processBuilding(buildings, this.scoreCardData, year);
     },
 
     full_address: function full_address(building) {
@@ -109,7 +144,6 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/layout/scoreca
     },
 
     processBuilding: function processBuilding(buildings, building_data, selected_year) {
-      console.log(buildings);
       var scorecardState = this.state.get('scorecard');
       var data = {};
       building_data.rows.forEach(function (d) {
@@ -148,13 +182,12 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/layout/scoreca
       var id = building.id;
       var eui = building.site_eui;
 
-      console.log(building);
-
       var chartdata = this.prepareCompareChartData(config, buildings, building, view, prop_type, id);
       var fuels = this.renderFuelUseChart(building);
       var change_data = this.extractChangeData(data);
 
-      $('#scorecard').html(this.template({
+      this.$el.html(this.template({
+        active: 'active',
         name: name,
         addr: address,
         sqft: sqft.toLocaleString(),
@@ -174,17 +207,18 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/layout/scoreca
       this.renderChangeChart(change_data.chart);
       this.renderCompareChart(config, chartdata, view, prop_type, name);
 
+      /*
       // TODO: switch to use backbone view event approach
       var inputs = d3.select('.sc-toggle').selectAll('input');
-      inputs.on('click', function () {
+      inputs.on('click', function() {
         var value = this.dataset.view;
         if (value === view) {
           d3.event.preventDefault();
           return false;
         }
-
-        scorecardState.set({ 'view': value });
+         scorecardState.set({'view': value});
       });
+      */
     },
 
     listdata: function listdata(building, fields) {
@@ -654,10 +688,6 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/layout/scoreca
       }).text(function (d) {
         return d.label;
       });
-    },
-
-    render: function render() {
-      return this;
     }
   });
 

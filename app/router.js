@@ -10,6 +10,7 @@ define(['jquery', 'deparam', 'underscore', 'backbone', 'models/city', 'models/sc
       metrics: [],
       categories: {},
       filters: [],
+      reportActive: false,
       scorecard: new ScorecardModel()
     },
     toQuery: function toQuery() {
@@ -84,8 +85,7 @@ define(['jquery', 'deparam', 'underscore', 'backbone', 'models/city', 'models/sc
       var yearControlView = new YearControlView({ state: this.state });
       var mapView = new MapView({ state: this.state });
       var addressSearchView = new AddressSearchView({ mapView: mapView, state: this.state });
-
-      // var scorecard = new Scorecard({state: this.state});
+      var scorecard = new Scorecard({ state: this.state });
       // var comparisonView = new BuildingComparisonView({state: this.state});
 
       this.state.on('change', this.onChange, this);

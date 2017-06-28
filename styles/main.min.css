@@ -1086,6 +1086,7 @@ header {
   background-color: #ddd; }
 
 .leaflet-popup-content .building-info {
+  font-family: "Ubuntu", "Helvetica Neue", "Helvetica", "Roboto", "Arial", sans-serif;
   line-height: 1; }
   .leaflet-popup-content .building-info li + li {
     padding-top: .5em; }
@@ -1111,7 +1112,8 @@ header {
     margin: 10px 0px 0px;
     cursor: pointer; }
   .leaflet-popup-content .building-info .building-popup-chart {
-    min-width: 250px;
+    min-width: 200px;
+    max-width: 300px;
     margin: 20px 0 0 0; }
     .leaflet-popup-content .building-info .building-popup-chart > h3 {
       text-transform: uppercase;
@@ -1170,6 +1172,16 @@ header {
       .leaflet-popup-content .building-info .building-popup-chart .barchart--labels .max {
         float: right;
         text-align: right; }
+  .leaflet-popup-content .building-info button {
+    width: 100%;
+    margin: 1rem 0 0;
+    padding: 0.5em 1em;
+    border: 1px solid #0047ba;
+    border-radius: 1em;
+    background: #0047ba;
+    color: white;
+    font-size: 0.75rem;
+    text-transform: uppercase; }
 
 /*
   .spinner code from http://tobiasahlin.com/spinkit/
@@ -1310,6 +1322,8 @@ header {
   background: #fff;
   overflow: auto;
   z-index: 999999; }
+  #scorecard.active {
+    display: block; }
   #scorecard .scorecard-content {
     position: relative;
     width: 100%;
