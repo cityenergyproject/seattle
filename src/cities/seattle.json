@@ -19,7 +19,7 @@
     "zoom": 12,
     "categoryDefaults": [],
     "cartoDbUser": "cityenergy-seattle",
-    "property_id": "cartodb_id",
+    "property_id": "id",
     "property_name": "property_name",
     "building_type": "property_type",
     "popup_fields": [
