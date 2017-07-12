@@ -9,11 +9,13 @@ define([
   'text!templates/map_controls/filter_section_header.html',
   'text!templates/map_controls/filter.html',
   'text!templates/map_controls/filter_container.html'
-], function($, _, Backbone, Ion, BuildingBucketCalculator, BuildingColorBucketCalculator, HistogramView, FilterSectionHeader, FilterTemplate, FilterContainer){
+], function($, _, Backbone, Ion, BuildingBucketCalculator,
+            BuildingColorBucketCalculator, HistogramView,
+            FilterSectionHeader, FilterTemplate, FilterContainer){
 
   var MapControlView = Backbone.View.extend({
     className: "map-control",
-    $container: $('#map-controls'),
+    $container: $('#map-controls-content--inner'),
 
     initialize: function(options){
       this.layer = options.layer;
@@ -89,6 +91,7 @@ define([
           prettify: this.onPrettifyHandler(filterRangeMin, filterRangeMax),
           onFinish: _.bind(this.onFilterFinish, this),
         });
+
         this.$filter = this.$slider.data("ionRangeSlider");
       }
 
@@ -116,8 +119,7 @@ define([
 
       if (!isUpdate){
        $section.find('.category-control-container').append(this.$el);
-      }
-      else{
+      } else {
         var positionInCategory;
         $section.find('.category-control-container > .map-control').each(function(index, el){
                 if ($(el).attr('id') === this.layer.field_name){
@@ -185,10 +187,12 @@ define([
     $section: function(){
       var sectionName = this.layer.section,
           safeSectionName = sectionName.toLowerCase().replace(/\s/g, "-"),
-          $sectionEl = $("#" + safeSectionName),
-        template = _.template(FilterSectionHeader);
+          $sectionEl = $("#" + safeSectionName);
 
+      // if section exists return it, because every filter calls this fn
       if ($sectionEl.length > 0){ return $sectionEl; }
+
+      var template = _.template(FilterSectionHeader);
 
       $sectionEl = $(template({category: sectionName})).appendTo(this.$container);
 

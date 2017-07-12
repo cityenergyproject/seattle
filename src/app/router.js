@@ -14,7 +14,11 @@ define([
   'views/map/year_control',
   'views/building_comparison/building_comparison',
   'views/layout/activity_indicator',
-], function($, deparam, _, Backbone, CityModel, ScorecardModel, CityBuildings, Scorecard, MapView, AddressSearchView, YearControlView, BuildingComparisonView, ActivityIndicator) {
+  'views/layout/map_controls_footer',
+], function($, deparam, _, Backbone, CityModel, ScorecardModel,
+            CityBuildings, Scorecard, MapView, AddressSearchView,
+            YearControlView, BuildingComparisonView,
+            ActivityIndicator, MapControlsFooter) {
 
   var RouterState = Backbone.Model.extend({
     queryFields: ['filters', 'categories', 'layer', 'metrics', 'sort', 'order', 'lat', 'lng', 'zoom', 'building'],
@@ -97,10 +101,12 @@ define([
       var mapView = new MapView({state: this.state});
       var addressSearchView = new AddressSearchView({mapView: mapView, state: this.state});
       var scorecard = new Scorecard({state: this.state});
+      var mapControlsFooter = new MapControlsFooter({state: this.state});
       // var comparisonView = new BuildingComparisonView({state: this.state});
 
       this.state.on('change', this.onChange, this);
     },
+
     onChange: function(){
       var changed = _.keys(this.state.changed);
 

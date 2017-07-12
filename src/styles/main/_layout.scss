@@ -125,19 +125,15 @@ header {
 #map-controls {
   position: absolute;
   height: 100%;
-  overflow-y: scroll;
-  overflow-x: hidden;
+  width: 100%;
+  overflow: hidden;
   left: 0;
+  z-index: 10;
 
   .irs {
     height: 21px;
   }
 
-  width: $nav-col-fixed-width;
-
-  @include media($large-screen-up) {
-    width: $large-nav-col-fixed-width;
-  }
 }
 
 #map-wrapper{
