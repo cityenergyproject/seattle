@@ -1,0 +1,10 @@
+<button class='toggle'>Building Comparison</button>
+<ul class='comparables'>
+  <% _.each(compares, function(c){ %>
+    <% if (c && c.name) { %>
+      <li><span class='name'><%= c.name %></span><button class='close'>&times;</button></li>
+    <% } else { %>
+      <li class='empty'></li>
+    <% } %>
+  <% }) %>
+</ul>

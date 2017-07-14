@@ -19,9 +19,13 @@
   <div class='control-cell--inner'>
     <table class='building'>
       <tr>
-        <td>100</td>
-        <td>100</td>
-        <td>100</td>
+        <% _.each(table, function(c){ %>
+          <% if (c) { %>
+            <td><%= c %></td>
+          <% } else { %>
+            <td>-</td>
+          <% } %>
+        <% }) %>
       </tr>
     </table>
   </div>

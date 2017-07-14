@@ -38,8 +38,37 @@ define([
       this.remove();
     },
 
+    getRandomBuildings: function() {
+      var buildings = this.allBuildings;
+      var o = Array.apply(null, Array(5)).map(function () {});
+      var len = buildings.length - 1;
+      [0,1,2].forEach(function(d,i){
+        var rdm = Math.floor(Math.random() * len);
+        var model = buildings.models[rdm];
+
+        o.splice(i, 1, model.toJSON());
+      });
+
+      return o;
+    },
+
+    getTableData: function() {
+      var buildings = this.getRandomBuildings();
+      var fieldName = this.layer.field_name;
+      var unit = this.layer.unit || '';
+
+      console.log(buildings);
+
+      return buildings.map(function(b) {
+        if (!b) return b;
+        return b[fieldName] + ' ' + unit;
+      });
+    },
+
     render: function(isUpdate){
       isUpdate = isUpdate || false;
+
+      console.log(this.layer);
 
       var template = _.template(FilterContainer),
           fieldName = this.layer.field_name,
@@ -64,6 +93,7 @@ define([
           filterRangeMin = (filterRange && filterRange.min) ? filterRange.min : extent[0],
           filterRangeMax = (filterRange && filterRange.max) ? filterRange.max : extent[1];
 
+
       var bucketGradients = _.map(gradientStops, function(stop, bucketIndex){
         return {
           color: stop,
@@ -71,8 +101,10 @@ define([
         };
       });
 
+      var tableData = this.getTableData();
+
       if ($el.length === 0) {
-        this.$el.html(template(_.defaults(this.layer, {description: null})));
+        this.$el.html(template(_.defaults(this.layer, {table: tableData, description: null})));
         this.$el.find('.filter-wrapper').html(filterTemplate({id: fieldName}));
         this.$el.attr('id', safeFieldName);
       } else {

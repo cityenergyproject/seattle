@@ -1,0 +1,85 @@
+#map-controls-bar {
+  position: absolute;
+  left: $metric-left-width;
+  top: 100%;
+  width: 100% - $metric-left-width;
+  height: $metric-footer-height;
+  background: blue;
+  z-index: 1000;
+  cursor: pointer;
+
+  button {
+    background: transparent;
+    border: 0;
+    margin: 0;
+    padding: 0;
+    outline: 0;
+    font-weight: 500;
+    text-transform: uppercase;
+  }
+
+  .toggle {
+    float: right;
+    height: 100%;
+    width: 100px;
+    margin-right: 2em;
+    color: #fff;
+    white-space: initial;
+    text-align: left;
+  }
+
+  .comparables {
+    height: 100%;
+    width: auto;
+    list-style: none;
+    margin: 0;
+    padding: 0 1em;
+    overflow: hidden;
+
+    li {
+      display: block;
+      position: relative;
+      float: left;
+      width: calc(20% - 0.8em); // (4/5) * 1em
+      height: 2em;
+      margin: 0.5em 0;
+      padding: 0 1em;
+      background: white;
+      border-radius: 1em;
+      line-height: 2em;
+
+      &.empty {
+        background: #001488;
+      }
+    }
+
+    li + li {
+      margin-left: 1em;
+    }
+
+    .name {
+      display: inline-block;
+      width: 100%;
+      padding-right: 0.5em;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+
+    .close {
+      position: absolute;
+      right: 0;
+      font-size: 1.7em;
+      line-height: 1;
+      top: 50%;
+      transform: translateY(-50%);
+      font-family: monospace;
+      width: 1em;
+      z-index: 1;
+    }
+  }
+}
+
+.compare-mode #map-controls-bar {
+  top: $metric-header-height - $metric-footer-height;
+}

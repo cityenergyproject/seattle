@@ -1,0 +1,14 @@
+#map-controls-counts {
+  position: absolute;
+  left: 0;
+  top: 100%;
+  width: $metric-left-width;
+  height: $metric-footer-height;
+  background: #eee;
+  text-align: center;
+  z-index: 5;
+
+  p {
+    margin: 0;
+  }
+}
