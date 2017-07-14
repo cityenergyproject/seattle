@@ -313,7 +313,7 @@ $metric-footer-height: 3em;
 }
 
 
-.map-controls-counts {
+#map-controls-counts {
   position: absolute;
   left: 0;
   top: 100%;
@@ -328,11 +328,11 @@ $metric-footer-height: 3em;
   }
 }
 
-.compare-mode & .map-controls-bar {
+.compare-mode & #map-controls-bar {
   top: $metric-header-height - $metric-footer-height;
 }
 
-.map-controls-bar {
+#map-controls-bar {
   position: absolute;
   left: $metric-left-width;
   top: 100%;
