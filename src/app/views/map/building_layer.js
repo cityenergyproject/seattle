@@ -291,6 +291,7 @@ define([
 
     onViewReport: function(evt) {
       if (evt.preventDefault) evt.preventDefault();
+      //this.onClearPopups();
       this.state.set({reportActive:true});
       return false;
     },
@@ -356,7 +357,6 @@ define([
         console.warn('');
         return;
       }
-
 
       L.popup()
        .setLatLng(presenter.toLatLng())

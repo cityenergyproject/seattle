@@ -21,7 +21,8 @@ define([
     },
 
     events: {
-      'click .toggle': 'onBarClick'
+      'click .toggle': 'onBarClickHandler',
+      'click .close': 'onCloseHandler'
     },
 
     onCompareChange: function() {
@@ -29,10 +30,26 @@ define([
       this.$applyTo.toggleClass('compare-mode', mode);
     },
 
-    onBarClick: function(evt) {
+    onBarClickHandler: function(evt) {
       evt.preventDefault();
       var mode = this.state.get('building_compare_active');
       this.state.set({building_compare_active: !mode});
+    },
+
+    onCloseHandler: function(evt) {
+      evt.preventDefault();
+
+      var target = evt.target;
+      if (target && target.dataset.id) {
+        var id = target.dataset.id;
+        var selected_buildings = this.state.get('selected_buildings') || [];
+
+        var filtered = selected_buildings.filter(function(building){
+          return building.id !== id;
+        });
+
+        this.state.set({selected_buildings: filtered});
+      }
     },
 
     getContent: function() {
@@ -53,7 +70,8 @@ define([
         if (!model) return;
 
         o.compares.splice(i, 1, {
-          name: model.get('property_name')
+          name: model.get('property_name'),
+          id: building.id
         });
       });
 
