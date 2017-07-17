@@ -19,20 +19,37 @@
   </head>
   <body>
     <header id="title"></header>
+
     <div id="toolbar" class="toolbar">
         <div id='search'></div>
         <div id="map-category-controls"></div>
         <div id='year-select'></div>
     </div>
+
     <div class="main-container">
-      <div id="map-controls"></div>
+      <div id="map-controls">
+        <div id="map-controls-bk"></div>
+        <div id="map-controls-header">
+          <div>
+            <h4>Metric Filters <button class="reset-all-filters">Reset all</button></h4>
+            <p>Select a metric to see filtered results on the map</p>
+          </div>
+        </div>
+        <div id='map-controls-content'>
+            <div id='map-controls-content--inner'></div>
+        </div>
+      </div>
       <div id="map-wrapper">
         <div id="map"></div>
       </div>
-      <div id="buildings"></div>
+      <div id="map-controls-counts"></div>
+      <div id="map-controls-bar"></div>
     </div>
+
     <div id="footer" class="nav-up"></div>
+
     <div id="scorecard"></div>
+
     <script src="lib/polyfills.js"></script>
     <script src="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/cartodb.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/require.js/2.1.19/require.js" data-main="app/main"></script>

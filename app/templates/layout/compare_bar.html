@@ -1,0 +1,17 @@
+
+<table class='comparables'>
+  <tr>
+  <% _.each(compares, function(c){ %>
+    <% if (c && c.name) { %>
+      <td>
+        <div>
+          <span class='name'><%= c.name %></span><button class='close' data-id="<%= c.id %>">&times;</button>
+        </div>
+      </td>
+    <% } else { %>
+      <td class='empty'><div></div></td>
+    <% } %>
+  <% }) %>
+    <td><button class='toggle'>Building Comparison</button></td>
+  </tr>
+</table>

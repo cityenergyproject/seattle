@@ -1,16 +1,17 @@
 'use strict';
 
-define(['jquery', 'underscore', 'backbone', 'ionrangeslider', 'models/building_bucket_calculator', 'models/building_color_bucket_calculator', 'views/charts/histogram', 'text!templates/map_controls/filter_section_header.html', 'text!templates/map_controls/filter.html', 'text!templates/map_controls/filter_container.html'], function ($, _, Backbone, Ion, BuildingBucketCalculator, BuildingColorBucketCalculator, HistogramView, FilterSectionHeader, FilterTemplate, FilterContainer) {
+define(['jquery', 'underscore', 'backbone', 'ionrangeslider', 'models/building_bucket_calculator', 'models/building_color_bucket_calculator', 'views/charts/histogram', 'text!templates/map_controls/filter_section_header.html', 'text!templates/map_controls/filter.html', 'text!templates/map_controls/filter_container.html', 'text!templates/map_controls/filter_building_details.html'], function ($, _, Backbone, Ion, BuildingBucketCalculator, BuildingColorBucketCalculator, HistogramView, FilterSectionHeader, FilterTemplate, FilterContainer, FilterBuildingDetailsTemplate) {
 
   var MapControlView = Backbone.View.extend({
     className: "map-control",
-    $container: $('#map-controls'),
+    $container: $('#map-controls-content--inner'),
 
     initialize: function initialize(options) {
       this.layer = options.layer;
       this.allBuildings = options.allBuildings;
       this.state = options.state;
       this.listenTo(this.state, 'change:layer', this.onLayerChange);
+      this.listenTo(this.state, 'change:selected_buildings', this.updateBuildingDetails);
       //this.listenTo(this.state, 'change:filters', this.render);
     },
 
@@ -27,8 +28,46 @@ define(['jquery', 'underscore', 'backbone', 'ionrangeslider', 'models/building_b
       this.remove();
     },
 
+    updateBuildingDetails: function updateBuildingDetails() {
+      if (!this.$el || this.$el.length === 0) return;
+
+      var tableTemplate = _.template(FilterBuildingDetailsTemplate);
+      var tableData = this.getTableData();
+
+      this.$el.find('.building-details').html(tableTemplate({ table: tableData }));
+    },
+
+    getCompareBuildings: function getCompareBuildings() {
+      var buildings = this.allBuildings;
+      var o = Array.apply(null, Array(5)).map(function () {});
+
+      var selected_buildings = this.state.get('selected_buildings') || [];
+
+      selected_buildings.forEach(function (building, i) {
+        var model = buildings.get(building.id);
+        if (!model) return;
+
+        o.splice(i, 1, model.toJSON());
+      });
+
+      return o;
+    },
+
+    getTableData: function getTableData() {
+      var buildings = this.getCompareBuildings();
+      var fieldName = this.layer.field_name;
+      var unit = this.layer.unit || '';
+
+      return buildings.map(function (b) {
+        if (!b) return b;
+        return b[fieldName] + ' ' + unit;
+      });
+    },
+
     render: function render(isUpdate) {
       isUpdate = isUpdate || false;
+
+      console.log(this.layer);
 
       var template = _.template(FilterContainer),
           fieldName = this.layer.field_name,
@@ -61,9 +100,13 @@ define(['jquery', 'underscore', 'backbone', 'ionrangeslider', 'models/building_b
         };
       });
 
+      var tableTemplate = _.template(FilterBuildingDetailsTemplate);
+      var tableData = this.getTableData();
+
       if ($el.length === 0) {
         this.$el.html(template(_.defaults(this.layer, { description: null })));
         this.$el.find('.filter-wrapper').html(filterTemplate({ id: fieldName }));
+        this.$el.find('.building-details').html(tableTemplate({ table: tableData }));
         this.$el.attr('id', safeFieldName);
       } else {
         this.$el = $el;
@@ -81,6 +124,7 @@ define(['jquery', 'underscore', 'backbone', 'ionrangeslider', 'models/building_b
           prettify: this.onPrettifyHandler(filterRangeMin, filterRangeMax),
           onFinish: _.bind(this.onFilterFinish, this)
         });
+
         this.$filter = this.$slider.data("ionRangeSlider");
       }
 
@@ -183,12 +227,14 @@ define(['jquery', 'underscore', 'backbone', 'ionrangeslider', 'models/building_b
     $section: function $section() {
       var sectionName = this.layer.section,
           safeSectionName = sectionName.toLowerCase().replace(/\s/g, "-"),
-          $sectionEl = $("#" + safeSectionName),
-          template = _.template(FilterSectionHeader);
+          $sectionEl = $("#" + safeSectionName);
 
+      // if section exists return it, because every filter calls this fn
       if ($sectionEl.length > 0) {
         return $sectionEl;
       }
+
+      var template = _.template(FilterSectionHeader);
 
       $sectionEl = $(template({ category: sectionName })).appendTo(this.$container);
 

@@ -78,13 +78,13 @@ define(['jquery', 'underscore', 'backbone', 'views/map/building_layer', 'views/m
       var layers = city.get('map_layers');
       var allBuildings = state.get('allbuildings');
 
-      $('#map-category-controls').empty();
-      $('#map-controls').empty();
-
       // close/remove any existing MapControlView(s)
       this.controls && this.controls.each(function (view) {
         view.close();
       });
+
+      $('#map-category-controls').empty();
+      $('#map-controls-content--inner').empty();
 
       // recreate MapControlView(s)
       this.controls = _.chain(layers).map(function (layer) {
@@ -98,6 +98,7 @@ define(['jquery', 'underscore', 'backbone', 'views/map/building_layer', 'views/m
         view.render();
       });
 
+      console.log(this.controls);
       return this;
     }
   });
