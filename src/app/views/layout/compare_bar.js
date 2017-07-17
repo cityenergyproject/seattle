@@ -40,8 +40,9 @@ define([
       evt.preventDefault();
 
       var target = evt.target;
+
       if (target && target.dataset.id) {
-        var id = target.dataset.id;
+        var id = +target.dataset.id;
         var selected_buildings = this.state.get('selected_buildings') || [];
 
         var filtered = selected_buildings.filter(function(building){
