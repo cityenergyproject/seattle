@@ -239,28 +239,12 @@ define([
 
       var self = this;
       this.leafletMap.on('popupclose', function(e) {
-        self.state.set({building: null});
-      });
-      // register single handler for showing more attrs in popup
-      $('body').on('click', '.show-hide-attrs', function (e) {
-        e.preventDefault();
-        e.stopPropagation();
-
-        var is_show = $(this).text().indexOf('more') > -1 ? true: false;
-        if(is_show){
-          $(this).text('less details...');
-          $('.show-more-container').removeClass('hide').addClass('show');
+        // When the map is closing the popup the id's will match,
+        // so close.  Otherwise were probably closing an old popup
+        // to open a new one for a new building
+        if (e.popup._buildingid === self.state.get('building')) {
+          self.state.set({building: null});
         }
-        else {
-          $(this).text('more details...');
-          $('.show-more-container').removeClass('show').addClass('hide');
-        }
-
-        self.leafletMap.eachLayer(function(layer){
-            if (layer._tip) {
-              self.adjustPopup(layer);
-            }
-        });
       });
     },
 
@@ -291,7 +275,6 @@ define([
 
     onViewReport: function(evt) {
       if (evt.preventDefault) evt.preventDefault();
-      //this.onClearPopups();
       this.state.set({reportActive:true});
       return false;
     },
@@ -324,6 +307,8 @@ define([
       out.sort(function(a, b) {
         return a.insertedAt - b.insertedAt;
       });
+
+      this.onClearPopups();
 
       $('#compare-building').attr("disabled", "disabled");
       this.state.set({selected_buildings: out});
@@ -358,20 +343,18 @@ define([
         return;
       }
 
-      L.popup()
+      var popup = L.popup()
        .setLatLng(presenter.toLatLng())
        .setContent(template({
           data: presenter.toPopulatedLabels(),
           compare_disabled: disableCompareBtn ? 'disabled="disable"' : ''
-        }))
-       .openOn(this.leafletMap);
+        }));
+
+      popup._buildingid = building_id;
+      popup.openOn(this.leafletMap);
 
       $('#view-report').on('click', this.onViewReport.bind(this));
       $('#compare-building').on('click', this.onCompareBuilding.bind(this));
-
-      setTimeout(function(){
-        this.state.trigger('building_layer_popup_shown');
-      }.bind(this),1);
     },
 
     onFeatureClick: function(event, latlng, _unused, data){
@@ -382,14 +365,6 @@ define([
       }
 
       var buildingId = data[propertyId];
-
-      var current = this.state.get('building');
-
-      // Need to unset building if current is same
-      // as buildingId or the popup will not appear
-      if (current === buildingId) {
-        this.state.unset('building', {silent: true});
-      }
 
       this.state.set({building: buildingId});
     },
