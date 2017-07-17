@@ -8,10 +8,11 @@ define([
   'views/charts/histogram',
   'text!templates/map_controls/filter_section_header.html',
   'text!templates/map_controls/filter.html',
-  'text!templates/map_controls/filter_container.html'
+  'text!templates/map_controls/filter_container.html',
+  'text!templates/map_controls/filter_building_details.html'
 ], function($, _, Backbone, Ion, BuildingBucketCalculator,
             BuildingColorBucketCalculator, HistogramView,
-            FilterSectionHeader, FilterTemplate, FilterContainer){
+            FilterSectionHeader, FilterTemplate, FilterContainer, FilterBuildingDetailsTemplate){
 
   var MapControlView = Backbone.View.extend({
     className: "map-control",
@@ -22,6 +23,7 @@ define([
       this.allBuildings = options.allBuildings;
       this.state = options.state;
       this.listenTo(this.state, 'change:layer', this.onLayerChange);
+      this.listenTo(this.state, 'change:selected_buildings', this.updateBuildingDetails);
       //this.listenTo(this.state, 'change:filters', this.render);
     },
 
@@ -38,13 +40,25 @@ define([
       this.remove();
     },
 
-    getRandomBuildings: function() {
+    updateBuildingDetails: function() {
+      if (!this.$el || this.$el.length === 0) return;
+
+      var tableTemplate = _.template(FilterBuildingDetailsTemplate);
+      var tableData = this.getTableData();
+
+      this.$el.find('.building-details').html(tableTemplate({table: tableData}));
+
+    },
+
+    getCompareBuildings: function() {
       var buildings = this.allBuildings;
       var o = Array.apply(null, Array(5)).map(function () {});
-      var len = buildings.length - 1;
-      [0,1,2].forEach(function(d,i){
-        var rdm = Math.floor(Math.random() * len);
-        var model = buildings.models[rdm];
+
+      var selected_buildings = this.state.get('selected_buildings') || [];
+
+      selected_buildings.forEach(function(building,i){
+        var model = buildings.get(building.id);
+        if (!model) return;
 
         o.splice(i, 1, model.toJSON());
       });
@@ -53,11 +67,10 @@ define([
     },
 
     getTableData: function() {
-      var buildings = this.getRandomBuildings();
+      var buildings = this.getCompareBuildings();
       var fieldName = this.layer.field_name;
       var unit = this.layer.unit || '';
 
-      console.log(buildings);
 
       return buildings.map(function(b) {
         if (!b) return b;
@@ -101,11 +114,14 @@ define([
         };
       });
 
+      var tableTemplate = _.template(FilterBuildingDetailsTemplate);
       var tableData = this.getTableData();
 
+
       if ($el.length === 0) {
-        this.$el.html(template(_.defaults(this.layer, {table: tableData, description: null})));
+        this.$el.html(template(_.defaults(this.layer, {description: null})));
         this.$el.find('.filter-wrapper').html(filterTemplate({id: fieldName}));
+        this.$el.find('.building-details').html(tableTemplate({table: tableData}));
         this.$el.attr('id', safeFieldName);
       } else {
         this.$el = $el;

@@ -7,6 +7,7 @@
   background: blue;
   z-index: 1000;
   cursor: pointer;
+  font-size: 1em;
 
   button {
     background: transparent;
@@ -19,10 +20,10 @@
   }
 
   .toggle {
-    float: right;
     height: 100%;
-    width: 100px;
-    margin-right: 2em;
+    width: 100%;
+    margin: 0;
+    padding: 0 0.5em;
     color: #fff;
     white-space: initial;
     text-align: left;
@@ -30,37 +31,41 @@
 
   .comparables {
     height: 100%;
-    width: auto;
+    width: 100%;
     list-style: none;
     margin: 0;
     padding: 0 1em;
     overflow: hidden;
 
-    li {
-      display: block;
-      position: relative;
-      float: left;
-      width: calc(20% - 0.8em); // (4/5) * 1em
-      height: 2em;
-      margin: 0.5em 0;
-      padding: 0 1em;
-      background: white;
-      border-radius: 1em;
-      line-height: 2em;
+    td {
+      padding: 0;
+      width: auto;
 
-      &.empty {
-        background: #001488;
+      &:last-child {
+        width: 160px;
       }
     }
 
-    li + li {
-      margin-left: 1em;
+    td > div {
+      display: block;
+      position: relative;
+      height: 2em;
+      margin: 0 0.5em;
+      padding: 0 0.5em;
+      background: white;
+      border-radius: 1em;
+      line-height: 2em;
+    }
+
+    td.empty > div {
+      background: #001488;
     }
 
     .name {
       display: inline-block;
       width: 100%;
       padding-right: 0.5em;
+      font-size: 0.8em;
       white-space: nowrap;
       text-overflow: ellipsis;
       overflow: hidden;

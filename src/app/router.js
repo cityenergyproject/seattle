@@ -28,6 +28,7 @@ define([
       categories: {},
       filters: [],
       reportActive: false,
+      selected_buildings: [],
       scorecard: new ScorecardModel()
     },
     toQuery: function(){

@@ -295,9 +295,38 @@ define([
       return false;
     },
 
+    isSelectedBuilding: function(selected_buildings, id) {
+      var hasBuilding = selected_buildings.find(function(b) {
+        return b.id === id;
+      });
+
+      return hasBuilding;
+    },
+
     onCompareBuilding: function(evt) {
       if (evt.preventDefault) evt.preventDefault();
-      console.log('onCompareBuilding');
+
+      var id = this.state.get('building');
+      var selected_buildings = this.state.get('selected_buildings') || [];
+
+      if (this.isSelectedBuilding(selected_buildings, id)) return;
+
+      var out = selected_buildings.map(function(b) {
+        return b;
+      });
+
+      out.push({
+        id: id,
+        insertedAt: Date.now()
+      });
+
+      out.sort(function(a, b) {
+        return a.insertedAt - b.insertedAt;
+      });
+
+      $('#compare-building').attr("disabled", "disabled");
+      this.state.set({selected_buildings: out});
+
       return false;
     },
 
@@ -310,8 +339,14 @@ define([
         propertyId = this.footprints_cfg.property_id;
       }
 
-      var template = _.template(BuildingInfoTemplate),
-          presenter = new BuildingInfoPresenter(this.state.get('city'), this.allBuildings, this.state.get('building'), propertyId);
+      var building_id = this.state.get('building');
+      var selected_buildings = this.state.get('selected_buildings') || [];
+
+      var disableCompareBtn = this.isSelectedBuilding(selected_buildings, building_id);
+      if (selected_buildings.length >= 5) disableCompareBtn = true
+
+      var template = _.template(BuildingInfoTemplate);
+      var presenter = new BuildingInfoPresenter(this.state.get('city'), this.allBuildings, building_id, propertyId);
 
       if (!presenter.toLatLng()) {
         console.warn('No building (%s) found for presenter!', presenter.buildingId);
@@ -322,9 +357,13 @@ define([
         return;
       }
 
+
       L.popup()
        .setLatLng(presenter.toLatLng())
-       .setContent(template({data: presenter.toPopulatedLabels()}))
+       .setContent(template({
+          data: presenter.toPopulatedLabels(),
+          compare_disabled: disableCompareBtn ? 'disabled="disable"' : ''
+        }))
        .openOn(this.leafletMap);
 
       $('#view-report').on('click', this.onViewReport.bind(this));

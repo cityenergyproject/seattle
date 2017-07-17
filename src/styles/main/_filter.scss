@@ -116,18 +116,22 @@
 
     .control-cell--inner {
       padding: 0;
-      background-color: #ddd;
     }
 
-    table {
-      width: 100%;
+
+    .building-details {
       height: 100%;
+      width: calc(100% - 160px);
       margin: 0;
+      padding: 0 1em;
+      overflow: hidden;
 
       td {
-        vertical-align: middle;
-        border-bottom: 0;
         padding: 0;
+        width: auto;
+        text-align: center;
+        background-color: #ddd;
+        border: 0;
       }
     }
   }
