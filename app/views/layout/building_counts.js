@@ -23,8 +23,8 @@ define(['jquery', 'underscore', 'backbone', 'text!templates/layout/building_coun
       var filteredBuildings = buildings.toFilter(buildings, this.state.get('categories'), this.state.get('filters'));
 
       return this.template({
-        showing: filteredBuildings.length,
-        total: buildings.length
+        showing: filteredBuildings.length.toLocaleString(),
+        total: buildings.length.toLocaleString()
       });
     },
 

@@ -5,7 +5,7 @@
     <% if (c && c.name) { %>
       <td>
         <div>
-          <span class='name'><%= c.name %></span><button class='close' data-id="<%= c.id %>">&times;</button>
+          <span class='name' data-btnid="<%= c.id %>"><%= c.name %></span><button class='close' data-id="<%= c.id %>">&times;</button>
         </div>
       </td>
     <% } else { %>

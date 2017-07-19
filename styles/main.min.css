@@ -491,7 +491,7 @@ body {
 .main-container {
   position: absolute;
   top: 3em;
-  bottom: 7em;
+  bottom: 4em;
   width: 100%;
   max-width: 100%;
   margin-left: auto;
@@ -502,10 +502,10 @@ body {
     display: table; }
   @media screen and (min-width: 43.75em) {
     .main-container {
-      bottom: 8em; } }
+      bottom: 4em; } }
   @media screen and (min-width: 56.25em) {
     .main-container {
-      bottom: 7em; } }
+      bottom: 4em; } }
 
 header {
   height: 0em; }
@@ -792,16 +792,19 @@ header {
   #map-controls label {
     position: relative;
     margin-bottom: 0;
-    width: 100%;
-    background-color: #f2f2f2;
-    box-shadow: inset 0 -1px #0047ba; }
+    width: 100%; }
   #map-controls input {
     display: none; }
   #map-controls h2 {
-    font-weight: 300;
     margin-bottom: 0;
+    padding: 0.75em 0;
+    width: 100%;
+    background-color: #f2f2f2;
+    font-weight: 300;
     text-indent: 2em;
-    padding: 0.75em 0; }
+    box-shadow: inset 0 -1px #0047ba; }
+  .compare-mode #map-controls h2 {
+    width: calc(100% - 160px); }
   #map-controls h3 {
     margin: 0;
     font-size: inherit; }
@@ -809,7 +812,7 @@ header {
     position: relative;
     display: table-row;
     height: auto; }
-  #map-controls .map-control + .map-control .control-cell {
+  #map-controls .map-control + .map-control .control-cell--inner {
     border-top: 1px solid #f2f2f2; }
   #map-controls .control-cell {
     position: relative;
@@ -824,6 +827,8 @@ header {
     width: 100%;
     z-index: 2; }
     #map-controls .control-cell.left .control-cell--inner {
+      background-color: #dedede;
+      background-image: linear-gradient(to right,#dedede, #d0d0d0);
       background-color: #d0d0d0; }
   .compare-mode #map-controls .control-cell.left {
     width: 30%; }
@@ -833,19 +838,34 @@ header {
     transition: left 0.4s linear;
     z-index: 1; }
     #map-controls .control-cell.right .control-cell--inner {
-      padding: 0; }
+      width: calc(100% - 160px);
+      padding: 0;
+      background-color: #dadada; }
     #map-controls .control-cell.right .building-details {
       height: 100%;
-      width: calc(100% - 160px);
+      width: 100%;
       margin: 0;
       padding: 0 1em;
-      overflow: hidden; }
+      overflow: hidden;
+      color: #b6b6b6;
+      font-size: 1em; }
       #map-controls .control-cell.right .building-details td {
         padding: 0;
         width: auto;
         text-align: center;
-        background-color: #ddd;
         border: 0; }
+        #map-controls .control-cell.right .building-details td.col-selected {
+          color: #0047ba; }
+      #map-controls .control-cell.right .building-details td span {
+        display: block; }
+        #map-controls .control-cell.right .building-details td span.value {
+          font-size: 1.2em;
+          font-weight: 500; }
+        #map-controls .control-cell.right .building-details td span.unit {
+          font-size: 0.85em;
+          margin-top: -.15em; }
+  #map-controls .map-control:last-child .control-cell--inner {
+    box-shadow: inset 0 -1px #0047ba; }
   .compare-mode #map-controls .control-cell.right {
     left: 0; }
   #map-controls .chart {
@@ -912,12 +932,10 @@ header {
   #map-controls .category {
     cursor: pointer; }
   #map-controls .category-control-container {
-    color: #fff; }
-  #map-controls .current.map-control {
+    color: #0047ba; }
+  #map-controls .current.map-control .control-cell.left .control-cell--inner {
     box-shadow: inset 1em 0 #0047ba;
     color: #0047ba; }
-  #map-controls .map-control:last-child {
-    box-shadow: inset 0 -1px #0047ba; }
   #map-controls .more-info {
     text-transform: uppercase; }
   #map-controls .more-info .more,
@@ -942,8 +960,11 @@ header {
     border-color: transparent transparent transparent #0047ba; }
   #map-controls .current.map-control .more-info .less:after {
     border-color: transparent #0047ba transparent transparent; }
-  #map-controls .map-control:not(.current) rect {
-    fill: #fff !important; }
+  #map-controls .map-control:not(.current) rect, #map-controls .map-control:not(.current) .filter-wrapper, #map-controls .map-control:not(.current) .irs {
+    opacity: 0.6;
+    pointer-events: none; }
+  #map-controls .map-control:not(.current) .irs {
+    opacity: 1; }
 
 .building-report {
   margin: 0; }
@@ -1315,19 +1336,29 @@ header {
   left: 0;
   top: 100%;
   width: 30%;
-  height: 3em;
-  background: #eee;
+  height: 4em;
+  background: #f2f2f2;
   text-align: center;
   z-index: 5; }
   #map-controls-counts p {
-    margin: 0; }
+    position: relative;
+    top: 50%;
+    margin: 0;
+    font-size: 0.85em;
+    text-transform: uppercase;
+    line-height: 1.2;
+    -webkit-transform: translateY(-50%);
+            transform: translateY(-50%); }
+  #map-controls-counts .showing {
+    font-size: 1.4em;
+    font-weight: 500; }
 
 #map-controls-bar {
   position: absolute;
   left: 30%;
   top: 100%;
   width: 70%;
-  height: 3em;
+  height: 4em;
   background: blue;
   z-index: 1000;
   cursor: pointer;
@@ -1357,7 +1388,8 @@ header {
     overflow: hidden; }
     #map-controls-bar .comparables td {
       padding: 0;
-      width: auto; }
+      width: auto;
+      border: 0; }
       #map-controls-bar .comparables td:last-child {
         width: 160px; }
     #map-controls-bar .comparables td > div {
@@ -1374,7 +1406,7 @@ header {
     #map-controls-bar .comparables .name {
       display: inline-block;
       width: 100%;
-      padding-right: 0.5em;
+      padding-right: 1em;
       font-size: 0.8em;
       white-space: nowrap;
       text-overflow: ellipsis;
@@ -1392,7 +1424,7 @@ header {
       z-index: 1; }
 
 .compare-mode #map-controls-bar {
-  top: 2em; }
+  top: 1em; }
 
 .row {
   position: relative;
