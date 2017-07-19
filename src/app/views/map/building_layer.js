@@ -273,12 +273,6 @@ define([
       });
     },
 
-    onViewReport: function(evt) {
-      if (evt.preventDefault) evt.preventDefault();
-      this.state.set({reportActive:true});
-      return false;
-    },
-
     isSelectedBuilding: function(selected_buildings, id) {
       var hasBuilding = selected_buildings.find(function(b) {
         return b.id === id;
@@ -287,32 +281,52 @@ define([
       return hasBuilding;
     },
 
-    onCompareBuilding: function(evt) {
-      if (evt.preventDefault) evt.preventDefault();
-
-      var id = this.state.get('building');
+    makeSelectedBuildingsState: function(id) {
       var selected_buildings = this.state.get('selected_buildings') || [];
-
-      if (this.isSelectedBuilding(selected_buildings, id)) return;
+      if (this.isSelectedBuilding(selected_buildings, id)) return null;
 
       var out = selected_buildings.map(function(b) {
+        b.selected = false;
         return b;
       });
 
       out.push({
         id: id,
-        insertedAt: Date.now()
+        insertedAt: Date.now(),
+        selected: true
       });
 
       out.sort(function(a, b) {
         return a.insertedAt - b.insertedAt;
       });
 
+      return out;
+    },
+
+    onCompareBuildingClick: function(evt) {
+      if (evt.preventDefault) evt.preventDefault();
+      var buildingId = this.state.get('building');
+      if (!buildingId) return;
+
       this.onClearPopups();
-
       $('#compare-building').attr("disabled", "disabled");
-      this.state.set({selected_buildings: out});
 
+      // Add building to selected_buildings
+      var selectedBuildings = this.makeSelectedBuildingsState(buildingId);
+
+      if (selectedBuildings) {
+        this.state.set({
+          selected_buildings: selectedBuildings,
+          building_compare_active: true
+        });
+      }
+
+      return false;
+    },
+
+    onViewReportClick: function(evt) {
+      if (evt.preventDefault) evt.preventDefault();
+      this.state.set({reportActive:true});
       return false;
     },
 
@@ -353,8 +367,8 @@ define([
       popup._buildingid = building_id;
       popup.openOn(this.leafletMap);
 
-      $('#view-report').on('click', this.onViewReport.bind(this));
-      $('#compare-building').on('click', this.onCompareBuilding.bind(this));
+      $('#view-report').on('click', this.onViewReportClick.bind(this));
+      $('#compare-building').on('click', this.onCompareBuildingClick.bind(this));
     },
 
     onFeatureClick: function(event, latlng, _unused, data){
@@ -365,8 +379,19 @@ define([
       }
 
       var buildingId = data[propertyId];
+      var state = {
+        building: buildingId
+      };
 
-      this.state.set({building: buildingId});
+      /*
+      var selectedBuildings = this.makeSelectedBuildingsState(buildingId);
+
+      if (selectedBuildings) {
+        state.selected_buildings =selectedBuildings;
+      }
+      */
+
+      this.state.set(state);
     },
 
     onFeatureOver: function(){

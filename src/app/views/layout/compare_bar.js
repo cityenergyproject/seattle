@@ -22,12 +22,33 @@ define([
 
     events: {
       'click .toggle': 'onBarClickHandler',
-      'click .close': 'onCloseHandler'
+      'click .close': 'onCloseHandler',
+      'click .name': 'onNameClickHandler'
     },
 
     onCompareChange: function() {
       var mode = this.state.get('building_compare_active');
       this.$applyTo.toggleClass('compare-mode', mode);
+    },
+
+    onNameClickHandler: function(evt) {
+      evt.preventDefault();
+
+      var target = evt.target;
+
+      if (target && target.dataset.btnid) {
+        var id = +target.dataset.btnid;
+
+        var selected_buildings = this.state.get('selected_buildings') || [];
+
+        var changed = selected_buildings.map(function(building){
+          var b = Object.assign({}, building);
+          b.selected = (b.id === id);
+          return b;
+        });
+
+        this.state.set({selected_buildings: changed});
+      }
     },
 
     onBarClickHandler: function(evt) {
@@ -38,6 +59,7 @@ define([
 
     onCloseHandler: function(evt) {
       evt.preventDefault();
+      evt.stopImmediatePropagation();
 
       var target = evt.target;
 
@@ -45,9 +67,13 @@ define([
         var id = +target.dataset.id;
         var selected_buildings = this.state.get('selected_buildings') || [];
 
+        var wasSelected = false;
         var filtered = selected_buildings.filter(function(building){
+          if (building.id === id) wasSelected = building.selected;
           return building.id !== id;
         });
+
+        if (wasSelected && filtered.length) filtered[0].selected = true;
 
         this.state.set({selected_buildings: filtered});
       }

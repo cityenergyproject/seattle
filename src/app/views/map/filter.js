@@ -6,12 +6,13 @@ define([
   'models/building_bucket_calculator',
   'models/building_color_bucket_calculator',
   'views/charts/histogram',
+  'utils/formatters',
   'text!templates/map_controls/filter_section_header.html',
   'text!templates/map_controls/filter.html',
   'text!templates/map_controls/filter_container.html',
   'text!templates/map_controls/filter_building_details.html'
 ], function($, _, Backbone, Ion, BuildingBucketCalculator,
-            BuildingColorBucketCalculator, HistogramView,
+            BuildingColorBucketCalculator, HistogramView, Formatters,
             FilterSectionHeader, FilterTemplate, FilterContainer, FilterBuildingDetailsTemplate){
 
   var MapControlView = Backbone.View.extend({
@@ -24,6 +25,8 @@ define([
       this.state = options.state;
       this.listenTo(this.state, 'change:layer', this.onLayerChange);
       this.listenTo(this.state, 'change:selected_buildings', this.updateBuildingDetails);
+
+      this._valueFormatter = Formatters.get(this.layer.formatter);
       //this.listenTo(this.state, 'change:filters', this.render);
     },
 
@@ -36,11 +39,13 @@ define([
     },
 
     close: function() {
+      console.log('CLOSE....')
       this.undelegateEvents();
       this.remove();
     },
 
     updateBuildingDetails: function() {
+      console.log('UPDATE BUILDING....')
       if (!this.$el || this.$el.length === 0) return;
 
       var tableTemplate = _.template(FilterBuildingDetailsTemplate);
@@ -60,7 +65,10 @@ define([
         var model = buildings.get(building.id);
         if (!model) return;
 
-        o.splice(i, 1, model.toJSON());
+        o.splice(i, 1, {
+          selected: building.selected,
+          data: model.toJSON()
+        });
       });
 
       return o;
@@ -70,18 +78,21 @@ define([
       var buildings = this.getCompareBuildings();
       var fieldName = this.layer.field_name;
       var unit = this.layer.unit || '';
+      var formatter = this._valueFormatter;
 
 
       return buildings.map(function(b) {
         if (!b) return b;
-        return b[fieldName] + ' ' + unit;
+        return {
+          value: formatter(b.data[fieldName]),
+          unit: unit,
+          cell_klass: b.selected ? 'col-selected' : ''
+        }
       });
     },
 
     render: function(isUpdate){
       isUpdate = isUpdate || false;
-
-      console.log(this.layer);
 
       var template = _.template(FilterContainer),
           fieldName = this.layer.field_name,
