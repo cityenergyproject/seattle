@@ -2,11 +2,13 @@
   "extends": ["eslint:recommended", "google"],
   "rules": {
     "no-var": 0,
-    "space-before-blocks": 0
+    "space-before-blocks": 0,
+    "comma-dangle": 0
   },
   "env": {
     "browser": true,
-    "node": true
+    "node": true,
+    "amd": true
   },
   "globals": {
     "define": true,

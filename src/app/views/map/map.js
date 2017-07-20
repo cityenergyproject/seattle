@@ -7,7 +7,7 @@ define([
   'views/map/category',
 ], function($, _, Backbone, BuildingLayer, Filter, Category) {
   var MapView = Backbone.View.extend({
-    el: $("#map"),
+    el: $('#map'),
 
     initialize: function(options){
       this.state = options.state;
@@ -23,54 +23,60 @@ define([
     },
 
     render: function(){
-      var city = this.state.get('city'),
-          lat = this.state.get('lat'),
-          lng = this.state.get('lng'),
-          zoom = this.state.get('zoom');
+      var city = this.state.get('city');
+      var lat = this.state.get('lat');
+      var lng = this.state.get('lng');
+      var zoom = this.state.get('zoom');
 
       if (!this.leafletMap){
-        this.leafletMap = new L.Map(this.el, {center: [lat, lng], zoom: zoom, scrollWheelZoom: false});
+        this.leafletMap = new L.Map(
+                                this.el, {
+                                  center: [lat, lng],
+                                  zoom: zoom,
+                                  scrollWheelZoom: false,
+                              });
 
-        this.leafletMap.attributionControl.setPrefix("");
+        this.leafletMap.attributionControl.setPrefix('');
 
-        var background = city.get('backgroundTileSource'),
-            labels = city.get('labelTileSource');
+        var background = city.get('backgroundTileSource');
 
         if (window.devicePixelRatio > 1) {
-          // replace the last "." with "@2x."
-          background = background.replace(/\.(?!.*\.)/, "@2x.");
-          labels = labels.replace(/\.(?!.*\.)/, "@2x.");
+          // replace the last '.' with '@2x.'
+          background = background.replace(/\.(?!.*\.)/, '@2x.');
         }
 
         L.tileLayer(background, {
-          zIndex: 0
+          zIndex: 0,
         }).addTo(this.leafletMap);
-
-        // L.tileLayer(labels, {
-        //   zIndex: 2
-        // }).addTo(this.leafletMap);
 
         this.leafletMap.zoomControl.setPosition('topright');
         this.leafletMap.on('moveend', this.onMapMove, this);
 
         // TODO: Possibly remove the need for this
         // layer to make seperate Carto calls
-        this.currentLayerView = new BuildingLayer({leafletMap: this.leafletMap, state: this.state});
+        this.currentLayerView = new BuildingLayer({
+                                      leafletMap: this.leafletMap,
+                                      state: this.state});
       }
     },
 
     onMapMove: function(event) {
-      var target = event.target,
-          zoom = target.getZoom(),
-          center = target.getCenter();
-      this.state.set({lat: center.lat.toFixed(5), lng: center.lng.toFixed(5), zoom: zoom});
+      var target = event.target;
+      var zoom = target.getZoom();
+      var center = target.getCenter();
+      this.state.set({
+          lat: center.lat.toFixed(5),
+          lng: center.lng.toFixed(5),
+          zoom: zoom});
     },
 
     onMapChange: function() {
-      var lat = this.state.get('lat'),
-          lng = this.state.get('lng'),
-          zoom = this.state.get('zoom');
-      if (!this.leafletMap){ return; }
+      var lat = this.state.get('lat');
+      var lng = this.state.get('lng');
+      var zoom = this.state.get('zoom');
+
+      if (!this.leafletMap) return;
+
       this.leafletMap.panTo(new L.LatLng(lat, lng));
       this.leafletMap.setZoom(zoom);
     },
@@ -91,18 +97,23 @@ define([
 
       // recreate MapControlView(s)
       this.controls = _.chain(layers).map(function(layer){
-        var viewClass = {
+        var ViewClass = {
           range: Filter,
-          category: Category
+          category: Category,
         }[layer.display_type];
 
-        return new viewClass({layer: layer, allBuildings: allBuildings, state: state});
-      }).each(function(view){ view.render(); });
+        return new ViewClass({
+          layer: layer,
+          allBuildings: allBuildings,
+          state: state,
+        });
+      }).each(function(view){
+        view.render();
+      });
 
       return this;
-    }
+    },
   });
 
   return MapView;
-
 });

@@ -346,6 +346,10 @@
     rect, .filter-wrapper, .irs {
       pointer-events: none;
     }
+
+    rect {
+      fill-opacity: 0.2;
+    }
   }
 
   rect {
