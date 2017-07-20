@@ -1162,7 +1162,8 @@ header {
 
 .leaflet-popup-content .building-info {
   font-family: "Ubuntu", "Helvetica Neue", "Helvetica", "Roboto", "Arial", sans-serif;
-  line-height: 1; }
+  line-height: 1;
+  font-size: 1em; }
   .leaflet-popup-content .building-info li + li {
     padding-top: .5em; }
   .leaflet-popup-content .building-info li:first-child {
@@ -1171,28 +1172,13 @@ header {
     margin-bottom: -0.2em; }
   .leaflet-popup-content .building-info li:nth-child(2) {
     margin-bottom: -0.3em; }
-  .leaflet-popup-content .building-info .show-more-container.hide li {
-    display: none; }
-  .leaflet-popup-content .building-info .show-more-container.show li {
-    display: block; }
-  .leaflet-popup-content .building-info .show-more-container li:first-child {
-    font-size: inherit;
-    font-weight: inherit;
-    margin-bottom: 0;
-    margin-top: .5em; }
-  .leaflet-popup-content .building-info .show-more-container li:nth-child(2) {
-    margin-bottom: 0; }
-  .leaflet-popup-content .building-info .show-hide-attrs {
-    display: inline-block;
-    margin: 10px 0px 0px;
-    cursor: pointer; }
   .leaflet-popup-content .building-info .building-popup-chart {
     min-width: 200px;
     max-width: 300px;
     margin: 20px 0 0 0; }
     .leaflet-popup-content .building-info .building-popup-chart > h3 {
       text-transform: uppercase;
-      font-size: 12px;
+      font-size: 1.2em;
       line-height: 1;
       margin: 0 0 5px 0; }
     .leaflet-popup-content .building-info .building-popup-chart .inner {
@@ -1210,15 +1196,16 @@ header {
       .leaflet-popup-content .building-info .building-popup-chart table td:last-child {
         width: 100%; }
     .leaflet-popup-content .building-info .building-popup-chart .lead td {
-      padding: 0 0 1rem 0;
-      vertical-align: bottom; }
+      padding-bottom: 1rem;
+      vertical-align: baseline; }
     .leaflet-popup-content .building-info .building-popup-chart .lead td:first-child {
-      font-size: 24px;
-      font-weight: 500; }
+      font-size: 2.5em;
+      font-weight: 500;
+      line-height: 1; }
     .leaflet-popup-content .building-info .building-popup-chart .barchart td {
       vertical-align: bottom; }
     .leaflet-popup-content .building-info .building-popup-chart .barchart td:first-child {
-      font-size: 16px;
+      font-size: 1.5em;
       font-weight: 500; }
     .leaflet-popup-content .building-info .building-popup-chart .bar {
       position: relative;
@@ -1235,7 +1222,7 @@ header {
         padding: 5px 0 0; }
       .leaflet-popup-content .building-info .building-popup-chart .barchart--labels td:first-child {
         white-space: nowrap;
-        vertical-align: bottom; }
+        vertical-align: top; }
       .leaflet-popup-content .building-info .building-popup-chart .barchart--labels .min, .leaflet-popup-content .building-info .building-popup-chart .barchart--labels .max {
         position: relative;
         top: 0;

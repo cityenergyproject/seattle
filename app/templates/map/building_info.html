@@ -15,12 +15,12 @@
     <div class="inner">
       <table>
         <tr class="lead">
-          <td><%= data.chart.lead.value %></td>
+          <td style="color: <%= data.chart.lead.color %>;"><%= data.chart.lead.value %></td>
           <td><%= data.chart.lead.label %></td>
         </tr>
 
         <tr class="barchart">
-          <td><%= data.chart.barchart.value %></td>
+          <td style="color: <%= data.chart.barchart.color %>"><%= data.chart.barchart.value %></td>
           <td>
             <div class="bar">
               <div class="fill" style="width: <%= data.chart.barchart.value %>%;"></div>

@@ -5,6 +5,7 @@ define(['jquery', 'underscore', 'backbone', 'ionrangeslider', 'models/city', 'te
 
   var MapCategoryControlView = Backbone.View.extend({
     $container: $('#map-category-controls'),
+    viewType: 'category',
 
     initialize: function initialize(options) {
       this.layer = options.layer;

@@ -50,7 +50,8 @@ define(['jquery', 'underscore', 'backbone', 'views/map/building_layer', 'views/m
         // layer to make seperate Carto calls
         this.currentLayerView = new BuildingLayer({
           leafletMap: this.leafletMap,
-          state: this.state });
+          state: this.state,
+          mapView: this });
       }
     },
 
@@ -73,6 +74,10 @@ define(['jquery', 'underscore', 'backbone', 'views/map/building_layer', 'views/m
 
       this.leafletMap.panTo(new L.LatLng(lat, lng));
       this.leafletMap.setZoom(zoom);
+    },
+
+    getControls: function getControls() {
+      return this.controls;
     },
 
     onBuildings: function onBuildings() {
@@ -105,6 +110,7 @@ define(['jquery', 'underscore', 'backbone', 'views/map/building_layer', 'views/m
         view.render();
       });
 
+      if (this.currentLayerView) this.currentLayerView.onBuildingChange();
       return this;
     }
   });

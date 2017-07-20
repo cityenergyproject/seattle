@@ -2,7 +2,7 @@
 
 // Filename: router.js
 //
-define(['jquery', 'deparam', 'underscore', 'backbone', 'models/city', 'models/scorecard', 'collections/city_buildings', 'views/layout/scorecard', 'views/map/map', 'views/map/address_search_autocomplete', 'views/map/year_control', 'views/building_comparison/building_comparison', 'views/layout/activity_indicator', 'views/layout/building_counts', 'views/layout/compare_bar'], function ($, deparam, _, Backbone, CityModel, ScorecardModel, CityBuildings, Scorecard, MapView, AddressSearchView, YearControlView, BuildingComparisonView, ActivityIndicator, BuildingCounts, CompareBar) {
+define(['jquery', 'deparam', 'underscore', 'backbone', 'models/city', 'models/scorecard', 'collections/city_buildings', 'views/layout/scorecard', 'views/map/map', 'views/map/address_search_autocomplete', 'views/map/year_control', 'views/layout/activity_indicator', 'views/layout/building_counts', 'views/layout/compare_bar'], function ($, deparam, _, Backbone, CityModel, ScorecardModel, CityBuildings, Scorecard, MapView, AddressSearchView, YearControlView, ActivityIndicator, BuildingCounts, CompareBar) {
 
   var RouterState = Backbone.Model.extend({
     queryFields: ['filters', 'categories', 'layer', 'metrics', 'sort', 'order', 'lat', 'lng', 'zoom', 'building'],
@@ -89,7 +89,6 @@ define(['jquery', 'deparam', 'underscore', 'backbone', 'models/city', 'models/sc
       var scorecard = new Scorecard({ state: this.state });
       var buildingCounts = new BuildingCounts({ state: this.state });
       var compareBar = new CompareBar({ state: this.state });
-      // var comparisonView = new BuildingComparisonView({state: this.state});
 
       this.state.on('change', this.onChange, this);
     },
