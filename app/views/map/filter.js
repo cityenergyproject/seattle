@@ -26,19 +26,21 @@ define(['jquery', 'underscore', 'backbone', 'ionrangeslider', 'models/building_b
     },
 
     close: function close() {
-      console.log('CLOSE....');
       this.undelegateEvents();
       this.remove();
     },
 
     updateBuildingDetails: function updateBuildingDetails() {
-      console.log('UPDATE BUILDING....');
       if (!this.$el || this.$el.length === 0) return;
 
       var tableTemplate = _.template(FilterBuildingDetailsTemplate);
       var tableData = this.getTableData();
 
-      this.$el.find('.building-details').html(tableTemplate({ table: tableData }));
+      this.$el.find('.building-details').html(tableTemplate({ table: tableData.data }));
+
+      if (this.histogram) {
+        this.histogram.updateHighlight(tableData.selected_value);
+      }
     },
 
     getCompareBuildings: function getCompareBuildings() {
@@ -66,14 +68,22 @@ define(['jquery', 'underscore', 'backbone', 'ionrangeslider', 'models/building_b
       var unit = this.layer.unit || '';
       var formatter = this._valueFormatter;
 
-      return buildings.map(function (b) {
+      var o = {
+        selected_value: null
+      };
+      o.data = buildings.map(function (b) {
         if (!b) return b;
+
+        if (b.selected) o.selected_value = b.data[fieldName];
+
         return {
           value: formatter(b.data[fieldName]),
           unit: unit,
           cell_klass: b.selected ? 'col-selected' : ''
         };
       });
+
+      return o;
     },
 
     render: function render(isUpdate) {
@@ -116,7 +126,7 @@ define(['jquery', 'underscore', 'backbone', 'ionrangeslider', 'models/building_b
       if ($el.length === 0) {
         this.$el.html(template(_.defaults(this.layer, { description: null })));
         this.$el.find('.filter-wrapper').html(filterTemplate({ id: fieldName }));
-        this.$el.find('.building-details').html(tableTemplate({ table: tableData }));
+        this.$el.find('.building-details').html(tableTemplate({ table: tableData.data }));
         this.$el.attr('id', safeFieldName);
       } else {
         this.$el = $el;
@@ -151,7 +161,14 @@ define(['jquery', 'underscore', 'backbone', 'ionrangeslider', 'models/building_b
       }
 
       if (!this.histogram) {
-        this.histogram = new HistogramView({ gradients: bucketGradients, slices: rangeSliceCount, filterRange: [filterRangeMin, filterRangeMax], quantileScale: gradientCalculator.colorGradient().copy() });
+        var histogram_options = {
+          gradients: bucketGradients,
+          slices: rangeSliceCount,
+          filterRange: [filterRangeMin, filterRangeMax],
+          quantileScale: gradientCalculator.colorGradient().copy(),
+          selected_value: tableData.selected_value
+        };
+        this.histogram = new HistogramView(histogram_options);
       }
 
       this.$el.find('.chart').html(this.histogram.render());

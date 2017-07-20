@@ -87,10 +87,9 @@ define(['jquery', 'underscore', 'backbone', 'models/building_comparator', 'model
   };
 
   BuildingMetricCalculator.prototype.renderField = function (field) {
-    var fieldName = field.field_name,
-        gradients = this.gradientCalculators[fieldName],
-        slices = field.range_slice_count,
-        aspectRatio = 4 / 1;
+    var fieldName = field.field_name;
+    var gradients = this.gradientCalculators[fieldName];
+    slices = field.range_slice_count, aspectRatio = 4 / 1;
     gradientStops = gradients.toGradientStops(), filterRange = field.filter_range, bucketCalculator = new BuildingBucketCalculator(this.buildings, fieldName, slices, filterRange), value = this.currentBuilding.get(fieldName), currentColor = gradients.toColor(value), buckets = bucketCalculator.toBuckets(), bucketGradients = _.map(gradientStops, function (stop, bucketIndex) {
       return {
         current: _.indexOf(gradientStops, currentColor),

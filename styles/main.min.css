@@ -961,10 +961,15 @@ header {
   #map-controls .current.map-control .more-info .less:after {
     border-color: transparent #0047ba transparent transparent; }
   #map-controls .map-control:not(.current) rect, #map-controls .map-control:not(.current) .filter-wrapper, #map-controls .map-control:not(.current) .irs {
-    opacity: 0.6;
     pointer-events: none; }
-  #map-controls .map-control:not(.current) .irs {
-    opacity: 1; }
+  #map-controls .map-control:not(.current) rect {
+    fill-opacity: 0.2; }
+  #map-controls rect {
+    fill-opacity: 1; }
+  .compare-mode #map-controls rect {
+    fill-opacity: 0.2; }
+    .compare-mode #map-controls rect.highlight {
+      fill-opacity: 1; }
 
 .building-report {
   margin: 0; }
