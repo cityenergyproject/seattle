@@ -99,7 +99,6 @@ define([
         return new viewClass({layer: layer, allBuildings: allBuildings, state: state});
       }).each(function(view){ view.render(); });
 
-      console.log(this.controls);
       return this;
     }
   });

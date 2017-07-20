@@ -344,10 +344,19 @@
 
   .map-control:not(.current) {
     rect, .filter-wrapper, .irs {
-      opacity: 0.6;
       pointer-events: none;
     }
+  }
 
-    .irs { opacity: 1};
+  rect {
+    fill-opacity: 1;
+  }
+
+  .compare-mode & rect {
+    fill-opacity: 0.2;
+
+    &.highlight {
+      fill-opacity: 1;
+    }
   }
 }
