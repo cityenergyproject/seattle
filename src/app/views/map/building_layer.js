@@ -5,8 +5,8 @@ define([
   'collections/city_buildings',
   'models/building_color_bucket_calculator',
   'text!templates/map/building_info.html'
-], function($, _, Backbone, CityBuildings, BuildingColorBucketCalculator, BuildingInfoTemplate){
-
+], function($, _, Backbone, CityBuildings,
+        BuildingColorBucketCalculator, BuildingInfoTemplate){
   var baseCartoCSS = {
     dots: [
     '{marker-fill: #CCC;' +
@@ -36,16 +36,17 @@ define([
   };
 
   CartoStyleSheet.prototype.toCartoCSS = function(){
-    var bucketCSS = this.bucketCalculator.toCartoCSS(),
-        styles = [...baseCartoCSS[this.mode]].concat(bucketCSS),
-        tableName = this.tableName;
+    var bucketCSS = this.bucketCalculator.toCartoCSS();
+    var styles = [...baseCartoCSS[this.mode]].concat(bucketCSS);
+    var tableName = this.tableName;
 
     styles = _.reject(styles, function(s) { return !s; });
-    styles = _.map(styles, function(s) { return "#" + tableName + " " + s; });
-    return styles.join("\n");
+    styles = _.map(styles, function(s) { return `'#${tableName} ${s}`; });
+    return styles.join('\n');
   };
 
-  var BuildingInfoPresenter = function(city, allBuildings, buildingId, idKey, controls, defaultColor){
+  var BuildingInfoPresenter = function(city, allBuildings,
+                    buildingId, idKey, controls, defaultColor) {
     this.city = city;
     this.allBuildings = allBuildings;
     this.buildingId = buildingId;
@@ -62,39 +63,12 @@ define([
   };
 
   BuildingInfoPresenter.prototype.toBuilding = function() {
-    var id_key = this.city.get('property_id');
-    return this.allBuildings.find(function(building) {
-      return building.get('id') == this.buildingId;
-    }, this);
-  };
-
-  BuildingInfoPresenter.prototype.toPopulatedLabelsPrevious = function()  {
-    var default_hidden = false;
-    var building = this.toBuilding();
-
-    return _.map(this.city.get('popup_fields'), function(field) {
-      var suppress = false;
-      if (field.start_hidden) default_hidden = true;
-      var value = (typeof building === 'undefined') ? null : building.get(field.field);
-
-      if (field.suppress_unless_field &&
-          field.suppress_unless_values &&
-          (typeof building !== 'undefined') &&
-          (field.suppress_unless_values.indexOf(building.get(field.suppress_unless_field)) === -1)) {
-        suppress = true; // do not display this field
-      }
-
-      // don't apply toLocaleString if it's a year, to prevent commas in year.
-      return _.extend({
-        value: field.isYear ? (value || 'N/A') : (value || 'N/A').toLocaleString(),
-        default_hidden: default_hidden,
-        suppress: suppress
-      }, field);
+    return this.allBuildings.find(building => {
+      return building.get(this.idKey) == this.buildingId;
     }, this);
   };
 
   BuildingInfoPresenter.prototype.toPopulatedLabels = function() {
-    var default_hidden = false;
     var building = this.toBuilding();
     var o = {};
 
@@ -102,7 +76,9 @@ define([
 
     o.items = _.map(this.city.get('popup_fields'), function(field) {
       var value = building.get(field.field);
-      value = (field.skipFormatter) ? (value || 'N/A') : (value || 'N/A').toLocaleString();
+
+      value = (field.skipFormatter) ?
+                (value || 'N/A') : (value || 'N/A').toLocaleString();
 
       var label = field.label;
       var template = null;
@@ -218,9 +194,15 @@ define([
     var tableData = components.table;
 
     // Base query
-    var query = "SELECT a.*," + this.mapLayerFields + " FROM " + tableFootprint + " a," + tableData + " b WHERE a.buildingid = b.id AND ";
+    var query = 'SELECT a.*,' +
+                this.mapLayerFields +
+                ' FROM ' + tableFootprint +
+                ' a,' + tableData +
+                ' b WHERE a.buildingid = b.id AND ';
 
-    var filterSql = components.year.concat(components.range).concat(components.category).filter(function(e) { return e.length > 0; });
+    var filterSql = components.year.concat(components.range)
+                      .concat(components.category)
+                      .filter(function(e) { return e.length > 0; });
 
     query += filterSql.join(' AND ');
 
@@ -273,7 +255,6 @@ define([
     adjustPopup: function(layer) {
       var container = $(layer._container);
       var latlng = layer.getLatLng();
-      var mapSize = this.leafletMap.getSize();
 
       var pt = this.leafletMap.latLngToContainerPoint(latlng);
       var height = container.height();
@@ -330,7 +311,7 @@ define([
       if (!buildingId) return;
 
       this.onClearPopups();
-      $('#compare-building').attr("disabled", "disabled");
+      $('#compare-building').attr('disabled', 'disabled');
 
       // Add building to selected_buildings
       var selectedBuildings = this.makeSelectedBuildingsState(buildingId);
@@ -347,7 +328,7 @@ define([
 
     onViewReportClick: function(evt) {
       if (evt.preventDefault) evt.preventDefault();
-      this.state.set({reportActive:true});
+      this.state.set({reportActive: true});
       return false;
     },
 
@@ -365,7 +346,7 @@ define([
       var selected_buildings = this.state.get('selected_buildings') || [];
 
       var disableCompareBtn = this.isSelectedBuilding(selected_buildings, building_id);
-      if (selected_buildings.length >= 5) disableCompareBtn = true
+      if (selected_buildings.length >= 5) disableCompareBtn = true;
 
       var template = _.template(BuildingInfoTemplate);
 
@@ -420,7 +401,7 @@ define([
     },
 
     onFeatureOver: function(){
-      this.mapElm.css('cursor', "help");
+      this.mapElm.css('cursor', 'help');
     },
     onFeatureOut: function(){
       this.mapElm.css('cursor', '');
@@ -455,7 +436,6 @@ define([
       if (this.state._previousAttributes.zoom !== this.state.attributes.zoom) {
         if (this.buildingLayerWatcher.check()) this.render();
       }
-
     },
 
 
@@ -463,24 +443,26 @@ define([
       var layerMode = this.buildingLayerWatcher.mode;
       var cssFillType = this.buildingLayerWatcher.fillType();
 
-      var buildings = this.allBuildings,
-          state = this.state,
-          city = state.get('city'),
-          year = state.get('year'),
-          fieldName = state.get('layer'),
-          cityLayer = _.findWhere(city.get('map_layers'), {field_name: fieldName}),
-          buckets = cityLayer.range_slice_count,
-          colorStops = cityLayer.color_range,
-          calculator = new BuildingColorBucketCalculator(buildings, fieldName, buckets, colorStops, cssFillType),
-          stylesheet = new CartoStyleSheet(buildings.tableName, calculator, layerMode);
+      var buildings = this.allBuildings;
+      var state = this.state;
+      var city = state.get('city');
+      var year = state.get('year');
+      var fieldName = state.get('layer');
+      var cityLayer = _.findWhere(city.get('map_layers'), {field_name: fieldName});
+      var buckets = cityLayer.range_slice_count;
+      var colorStops = cityLayer.color_range;
+      var calculator = new BuildingColorBucketCalculator(
+                              buildings, fieldName, buckets, colorStops, cssFillType);
+      var stylesheet = new CartoStyleSheet(buildings.tableName, calculator, layerMode);
 
-      var sql = (layerMode === 'dots') ? buildings.toSql(year, state.get('categories'), state.get('filters')) :
-                                        this.footprintGenerateSql.sql(
-                                          buildings.toSqlComponents(
-                                            year,
-                                            state.get('categories'),
-                                            state.get('filters'), 'b.')
-                                        );
+      var sql = (layerMode === 'dots') ?
+                  buildings.toSql(year, state.get('categories'), state.get('filters')) :
+                  this.footprintGenerateSql.sql(
+                    buildings.toSqlComponents(
+                      year,
+                      state.get('categories'),
+                      state.get('filters'), 'b.')
+                  );
 
       var cartocss = stylesheet.toCartoCSS();
       var interactivity = this.state.get('city').get('property_id');
@@ -488,12 +470,13 @@ define([
       return {
         sql: sql,
         cartocss: cartocss,
-        interactivity: (layerMode === 'dots' ) ? interactivity : interactivity += ',' + this.footprints_cfg.property_id
+        interactivity: (layerMode === 'dots' ) ?
+            interactivity : interactivity += ',' + this.footprints_cfg.property_id
       };
     },
 
     render: function(){
-      if(this.cartoLayer) {
+      if (this.cartoLayer) {
         this.cartoLayer.getSubLayer(0).set(this.toCartoSublayer()).show();
         return this;
       }
@@ -506,7 +489,7 @@ define([
         user_name: this.allBuildings.cartoDbUser,
         type: 'cartodb',
         sublayers: [this.toCartoSublayer()]
-      },{https: true}).addTo(this.leafletMap).on('done', this.onCartoLoad, this);
+      }, {https: true}).addTo(this.leafletMap).on('done', this.onCartoLoad, this);
 
       return this;
     },

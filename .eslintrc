@@ -3,16 +3,24 @@
   "rules": {
     "no-var": 0,
     "space-before-blocks": 0,
-    "comma-dangle": 0
+    "comma-dangle": 0,
+    "block-spacing": [2, "always"],
+    "brace-style": ["error", "1tbs", { "allowSingleLine": true }],
+    "arrow-parens": ["error", "as-needed"],
+    "max-len": [2, 100, 2],
+    "camelcase": 0,
+    "no-console": 0
   },
   "env": {
     "browser": true,
     "node": true,
-    "amd": true
+    "amd": true,
+    "es6": true
   },
   "globals": {
     "define": true,
-    "L": true
+    "L": true,
+    "cartodb": true
   },
   "plugins": [
     "json"
