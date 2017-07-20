@@ -18,6 +18,7 @@ define([
   var MapControlView = Backbone.View.extend({
     className: "map-control",
     $container: $('#map-controls-content--inner'),
+    viewType: 'filter',
 
     initialize: function(options){
       this.layer = options.layer;
@@ -27,6 +28,9 @@ define([
       this.listenTo(this.state, 'change:selected_buildings', this.updateBuildingDetails);
 
       this._valueFormatter = Formatters.get(this.layer.formatter);
+
+      this.memorize();
+
       //this.listenTo(this.state, 'change:filters', this.render);
     },
 
@@ -100,39 +104,61 @@ define([
       return o;
     },
 
+    memorize: function() {
+      var buildings = this.allBuildings;
+      var fieldName = this.layer.field_name;
+      var rangeSliceCount = this.layer.range_slice_count;
+      var filterRange = this.layer.filter_range;
+      var colorStops = this.layer.color_range;
+
+      this.bucketCalculator = new BuildingBucketCalculator(buildings, fieldName, rangeSliceCount, filterRange);
+      this.gradientCalculator = new BuildingColorBucketCalculator(buildings, fieldName, rangeSliceCount, colorStops);
+      this.gradientStops = this.gradientCalculator.toGradientStops();
+      this.buckets = this.bucketCalculator.toBuckets();
+
+      this.bucketGradients = _.map(this.gradientStops, (stop, bucketIndex) => {
+        return {
+          color: stop,
+          count: this.buckets[bucketIndex] || 0
+        };
+      });
+    },
+
+    getColorForValue: function(val) {
+      if (!this.gradientCalculator) return 'blue';
+
+      var scale = this.gradientCalculator.colorGradient().copy();
+      return scale(val);
+    },
+
+
     render: function(isUpdate){
       isUpdate = isUpdate || false;
 
-      var template = _.template(FilterContainer),
-          fieldName = this.layer.field_name,
-          safeFieldName = fieldName.toLowerCase().replace(/\s/g, "-"),
-          $el = $('#' + safeFieldName),
-          currentLayer = this.state.get('layer'),
-          isCurrent = currentLayer == fieldName,
-          $section = this.$section(),
-          filterRange = this.layer.filter_range,
-          rangeSliceCount = this.layer.range_slice_count,
-          colorStops = this.layer.color_range,
-          buildings = this.allBuildings,
-          bucketCalculator = new BuildingBucketCalculator(buildings, fieldName, rangeSliceCount, filterRange),
-          extent = bucketCalculator.toExtent(),
-          gradientCalculator = new BuildingColorBucketCalculator(buildings, fieldName, rangeSliceCount, colorStops),
-          buckets = bucketCalculator.toBuckets(),
-          gradientStops = gradientCalculator.toGradientStops(),
-          histogram, $filter,
-          filterTemplate = _.template(FilterTemplate),
-          stateFilters = this.state.get('filters'),
-          filterState = _.findWhere(stateFilters, {field: fieldName}) || {min: extent[0], max: extent[1]},
-          filterRangeMin = (filterRange && filterRange.min) ? filterRange.min : extent[0],
-          filterRangeMax = (filterRange && filterRange.max) ? filterRange.max : extent[1];
-
-
-      var bucketGradients = _.map(gradientStops, function(stop, bucketIndex){
-        return {
-          color: stop,
-          count: buckets[bucketIndex] || 0
-        };
-      });
+      var template = _.template(FilterContainer);
+      var fieldName = this.layer.field_name;
+      var safeFieldName = fieldName.toLowerCase().replace(/\s/g, "-");
+      var $el = $('#' + safeFieldName);
+      var currentLayer = this.state.get('layer');
+      var isCurrent = currentLayer == fieldName;
+      var $section = this.$section();
+      var filterRange = this.layer.filter_range;
+      var rangeSliceCount = this.layer.range_slice_count;
+      var colorStops = this.layer.color_range;
+      var buildings = this.allBuildings;
+      var bucketCalculator = this.bucketCalculator;
+      var extent = bucketCalculator.toExtent();
+      var gradientCalculator = this.gradientCalculator;
+      var buckets = this.buckets;
+      var gradientStops = this.gradientStops;
+      var histogram;
+      var $filter;
+      var filterTemplate = _.template(FilterTemplate);
+      var stateFilters = this.state.get('filters');
+      var filterState = _.findWhere(stateFilters, {field: fieldName}) || {min: extent[0], max: extent[1]};
+      var filterRangeMin = (filterRange && filterRange.min) ? filterRange.min : extent[0];
+      var filterRangeMax = (filterRange && filterRange.max) ? filterRange.max : extent[1];
+      var bucketGradients = this.bucketGradients;
 
       var tableTemplate = _.template(FilterBuildingDetailsTemplate);
       var tableData = this.getTableData();

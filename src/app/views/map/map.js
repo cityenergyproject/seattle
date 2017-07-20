@@ -56,7 +56,8 @@ define([
         // layer to make seperate Carto calls
         this.currentLayerView = new BuildingLayer({
                                       leafletMap: this.leafletMap,
-                                      state: this.state});
+                                      state: this.state,
+                                      mapView: this});
       }
     },
 
@@ -79,6 +80,10 @@ define([
 
       this.leafletMap.panTo(new L.LatLng(lat, lng));
       this.leafletMap.setZoom(zoom);
+    },
+
+    getControls: function() {
+      return this.controls;
     },
 
     onBuildings: function(){
@@ -111,6 +116,7 @@ define([
         view.render();
       });
 
+      if (this.currentLayerView) this.currentLayerView.onBuildingChange();
       return this;
     },
   });

@@ -12,14 +12,13 @@ define([
   'views/map/map',
   'views/map/address_search_autocomplete',
   'views/map/year_control',
-  'views/building_comparison/building_comparison',
   'views/layout/activity_indicator',
   'views/layout/building_counts',
   'views/layout/compare_bar',
 ], function($, deparam, _, Backbone, CityModel, ScorecardModel,
             CityBuildings, Scorecard, MapView, AddressSearchView,
-            YearControlView, BuildingComparisonView,
-            ActivityIndicator, BuildingCounts, CompareBar) {
+            YearControlView, ActivityIndicator,
+            BuildingCounts, CompareBar) {
 
   var RouterState = Backbone.Model.extend({
     queryFields: ['filters', 'categories', 'layer', 'metrics', 'sort', 'order', 'lat', 'lng', 'zoom', 'building'],
@@ -105,7 +104,6 @@ define([
       var scorecard = new Scorecard({state: this.state});
       var buildingCounts = new BuildingCounts({state: this.state});
       var compareBar = new CompareBar({state: this.state});
-      // var comparisonView = new BuildingComparisonView({state: this.state});
 
       this.state.on('change', this.onChange, this);
     },

@@ -10,6 +10,7 @@ define([
 
   var MapCategoryControlView = Backbone.View.extend({
     $container: $('#map-category-controls'),
+    viewType: 'category',
 
     initialize: function(options){
       this.layer = options.layer;

@@ -45,11 +45,13 @@ define([
     return styles.join("\n");
   };
 
-  var BuildingInfoPresenter = function(city, allBuildings, buildingId, idKey){
+  var BuildingInfoPresenter = function(city, allBuildings, buildingId, idKey, controls, defaultColor){
     this.city = city;
     this.allBuildings = allBuildings;
     this.buildingId = buildingId;
     this.idKey = idKey;
+    this.controls = controls;
+    this.defaultColor = defaultColor || 'blue';
   };
 
   BuildingInfoPresenter.prototype.toLatLng = function() {
@@ -130,11 +132,13 @@ define([
 
     o.chart.lead = {
       value: building.get(chartData.lead.field),
-      label: chartData.lead.label
+      color: this.getColor(chartData.lead.field, building.get(chartData.lead.field)),
+      label: chartData.lead.label,
     };
 
     o.chart.barchart = {
       value: building.get(chartData.barchart.field),
+      color: this.getColor(chartData.barchart.field, building.get(chartData.barchart.field)),
       desc: chartData.barchart.desc,
       min: chartData.barchart.min,
       max: chartData.barchart.max
@@ -142,6 +146,17 @@ define([
 
 
     return o;
+  };
+
+  BuildingInfoPresenter.prototype.getColor = function(field, value) {
+    if (!this.controls || !this.controls._wrapped) return this.defaultColor;
+
+    var filter = this.controls._wrapped.find(function(item) {
+      return item.viewType === 'filter' && item.layer.field_name === field;
+    });
+
+    if (!filter) return this.defaultColor;
+    return filter.getColorForValue(value);
   };
 
   /*
@@ -217,6 +232,7 @@ define([
     initialize: function(options){
       this.state = options.state;
       this.leafletMap = options.leafletMap;
+      this.mapView = options.mapView;
       this.mapElm = $(this.leafletMap._container);
 
       this.allBuildings = new CityBuildings(null, {});
@@ -245,6 +261,11 @@ define([
         if (e.popup._buildingid === self.state.get('building')) {
           self.state.set({building: null});
         }
+      });
+
+      this.leafletMap.on('popupopen', function(e) {
+        $('#view-report').on('click', self.onViewReportClick.bind(self));
+        $('#compare-building').on('click', self.onCompareBuildingClick.bind(self));
       });
     },
 
@@ -331,7 +352,9 @@ define([
     },
 
     onBuildingChange: function() {
-      if (!this.state.get('building')) return;
+      var building_id = this.state.get('building');
+
+      if (!building_id || !this.allBuildings.length) return;
 
       var propertyId = this.state.get('city').get('property_id');
 
@@ -339,14 +362,19 @@ define([
         propertyId = this.footprints_cfg.property_id;
       }
 
-      var building_id = this.state.get('building');
       var selected_buildings = this.state.get('selected_buildings') || [];
 
       var disableCompareBtn = this.isSelectedBuilding(selected_buildings, building_id);
       if (selected_buildings.length >= 5) disableCompareBtn = true
 
       var template = _.template(BuildingInfoTemplate);
-      var presenter = new BuildingInfoPresenter(this.state.get('city'), this.allBuildings, building_id, propertyId);
+
+      var presenter = new BuildingInfoPresenter(
+          this.state.get('city'),
+          this.allBuildings,
+          building_id,
+          propertyId,
+          this.mapView.getControls());
 
       if (!presenter.toLatLng()) {
         console.warn('No building (%s) found for presenter!', presenter.buildingId);
@@ -361,14 +389,11 @@ define([
        .setLatLng(presenter.toLatLng())
        .setContent(template({
           data: presenter.toPopulatedLabels(),
-          compare_disabled: disableCompareBtn ? 'disabled="disable"' : ''
+          compare_disabled: disableCompareBtn ? 'disabled="disable"' : '',
         }));
 
       popup._buildingid = building_id;
       popup.openOn(this.leafletMap);
-
-      $('#view-report').on('click', this.onViewReportClick.bind(this));
-      $('#compare-building').on('click', this.onCompareBuildingClick.bind(this));
     },
 
     onFeatureClick: function(event, latlng, _unused, data){
@@ -485,6 +510,7 @@ define([
 
       return this;
     },
+
     onCartoLoad: function(layer) {
       this.cartoLoading = false;
       var sub = layer.getSubLayer(0);
@@ -499,5 +525,4 @@ define([
   });
 
   return LayerView;
-
 });
