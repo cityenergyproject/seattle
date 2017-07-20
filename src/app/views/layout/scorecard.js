@@ -5,6 +5,7 @@ define([
   'd3',
   'text!templates/layout/scorecard.html'
 ], function($, _, Backbone, D3, ScorecardTemplate){
+
   var Scorecard = Backbone.View.extend({
     el: $('#scorecard'),
 

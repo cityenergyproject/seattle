@@ -1,6 +1,6 @@
 /*!
  * gulp
- * $ npm install gulp-sass gulp-autoprefixer gulp-minify-css gulp-jshint gulp-concat gulp-uglify gulp-notify gulp-rename gulp-livereload gulp-cache del --save-dev
+ * $ npm install gulp-sass gulp-autoprefixer gulp-minify-css gulp-eslint gulp-concat gulp-uglify gulp-notify gulp-rename gulp-livereload gulp-cache del --save-dev
  */
 
 // Load plugins
@@ -8,7 +8,7 @@ var gulp = require('gulp'),
     mainBowerFiles = require('main-bower-files');
     sass = require('gulp-sass'),
     autoprefixer = require('gulp-autoprefixer'),
-    jshint = require('gulp-jshint'),
+    eslint = require('gulp-eslint'),
     rename = require('gulp-rename'),
     concat = require('gulp-concat'),
     notify = require('gulp-notify'),
@@ -42,20 +42,25 @@ gulp.task('styles', function() {
 });
 
 // Scripts
-gulp.task('scripts', function() {
+gulp.task('scripts', ['lint'], function() {
   return gulp.src('src/app/**/*.js')
     .pipe(babel())
-    .pipe(jshint())
-    .pipe(jshint.reporter('default'))
     .pipe(gulp.dest('dist/app'))
     .pipe(notify({ message: 'Scripts task complete' }));
+});
+
+// Lint
+gulp.task('lint', function() {
+  return gulp.src(['src/app/**/*.js','!node_modules/**'])
+    .pipe(eslint('./.eslintrc'))
+    .pipe(eslint.format());
 });
 
 // Cities Config
 gulp.task('cities_config', function() {
   return gulp.src('src/cities/*.json')
-    .pipe(jshint())
-    .pipe(jshint.reporter('default'))
+    .pipe(eslint('./.eslintrc'))
+    .pipe(eslint.format())
     .pipe(gulp.dest('dist/cities'))
     .pipe(notify({ message: 'Cities config task complete' }));
 });
