@@ -20,7 +20,8 @@
   "globals": {
     "define": true,
     "L": true,
-    "cartodb": true
+    "cartodb": true,
+    "d3": true
   },
   "plugins": [
     "json"

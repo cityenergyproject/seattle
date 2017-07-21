@@ -41,7 +41,7 @@ define([
     var tableName = this.tableName;
 
     styles = _.reject(styles, function(s) { return !s; });
-    styles = _.map(styles, function(s) { return `'#${tableName} ${s}`; });
+    styles = _.map(styles, function(s) { return `#${tableName} ${s}`; });
     return styles.join('\n');
   };
 
@@ -328,14 +328,20 @@ define([
 
     onViewReportClick: function(evt) {
       if (evt.preventDefault) evt.preventDefault();
-      this.state.set({reportActive: true});
+      var buildingId = this.state.get('building');
+      this.state.set({report_active: true});
       return false;
     },
 
+
+
     onBuildingChange: function() {
       var building_id = this.state.get('building');
+      var isShowing = (building_id === this._popupid);
 
-      if (!building_id || !this.allBuildings.length) return;
+      if (!building_id || isShowing) return;
+
+      this.popup_dirty = false;
 
       var propertyId = this.state.get('city').get('property_id');
 
@@ -373,6 +379,7 @@ define([
           compare_disabled: disableCompareBtn ? 'disabled="disable"' : '',
         }));
 
+      this._popupid = building_id;
       popup._buildingid = building_id;
       popup.openOn(this.leafletMap);
     },
@@ -470,8 +477,7 @@ define([
       return {
         sql: sql,
         cartocss: cartocss,
-        interactivity: (layerMode === 'dots' ) ?
-            interactivity : interactivity += ',' + this.footprints_cfg.property_id
+        interactivity: (layerMode === 'dots' ) ? interactivity : interactivity += ',' + this.footprints_cfg.property_id
       };
     },
 

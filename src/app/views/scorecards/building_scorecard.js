@@ -3,7 +3,7 @@ define([
   'underscore',
   'backbone',
   'd3',
-  'text!templates/layout/scorecard.html'
+  'text!templates/layout/scorecards/scorecard.html'
 ], function($, _, Backbone, D3, ScorecardTemplate){
 
   var Scorecard = Backbone.View.extend({
@@ -11,7 +11,8 @@ define([
 
     initialize: function(options){
       this.state = options.state;
-      this.listenTo(this.state, 'change:reportActive', this.onReportActive);
+      this.listenTo(this.state, 'change:report_active', this.onReportActive);
+      this.listenTo(this.state, 'change:allbuildings', this.onBuildingChange);
 
       var scorecard = this.state.get('scorecard');
 
@@ -38,7 +39,7 @@ define([
 
     closeReport: function(evt) {
       evt.preventDefault();
-      this.state.set({reportActive: false});
+      this.state.set({report_active: false});
     },
 
     toggleView: function(evt) {
@@ -57,11 +58,14 @@ define([
     },
 
     render: function() {
-      var building = this.state.get('building');
-      var active = this.state.get('reportActive');
-
-
+      var active = this.state.get('report_active');
+      var buildings = this.state.get('allbuildings');
       if (active) {
+        if (!buildings) {
+          this.dirty = true;
+          return;
+        }
+
         this.$el.toggleClass('active', true);
         this.getData();
       } else {
@@ -70,22 +74,13 @@ define([
         this.$el.html('');
       }
 
+      this.dirty = false;
+
       return this;
     },
 
-    getData: function() {
-      this.scoreCardData = null;
-
-      var year = this.state.get('year');
-      var buildings = this.state.get('allbuildings');
-      var id = this.state.get('building');
-
-      // Temporary hack to get yearly data
-      d3.json(`https://cityenergy-seattle.carto.com/api/v2/sql?q=SELECT+ST_X(the_geom)+AS+lng%2C+ST_Y(the_geom)+AS+lat%2C*+FROM+table_2015_stamen_phase_ii_v2_w_year+WHERE+id=${id}`, (d) => {
-        if (!this.state.get('reportActive')) return;
-        this.scoreCardData = d;
-        this.processBuilding(buildings, d, year);
-      });
+    onBuildingChange: function() {
+      if (this.dirty) this.render();
     },
 
     onReportActive: function() {
@@ -97,6 +92,22 @@ define([
       var buildings = this.state.get('allbuildings');
       this.processBuilding(buildings, this.scoreCardData, year);
     },
+
+    getData: function() {
+      this.scoreCardData = null;
+
+      var year = this.state.get('year');
+      var buildings = this.state.get('allbuildings');
+      var id = this.state.get('building');
+
+      // Temporary hack to get yearly data
+      d3.json(`https://cityenergy-seattle.carto.com/api/v2/sql?q=SELECT+ST_X(the_geom)+AS+lng%2C+ST_Y(the_geom)+AS+lat%2C*+FROM+table_2015_stamen_phase_ii_v2_w_year+WHERE+id=${id}`, (d) => {
+        if (!this.state.get('report_active')) return;
+        this.scoreCardData = d;
+        this.processBuilding(buildings, d, year);
+      });
+    },
+
 
     full_address: function(building) {
       var zip = building.zip; // building.get('zip');
@@ -153,6 +164,7 @@ define([
       });
 
       var building = data[selected_year];
+      console.log('building: ', building);
       var config = this.state.get('city').get('scorecard');
 
       var energy_fields = {
