@@ -1,0 +1,47 @@
+<div class='inner'>
+  <div class='section-head'>
+    <h3 class='sc-heading'><%= year %> energy performance ranges by building type</h3>
+    <p class='sc-txt small bold'>See how Seattle building types compare in their energy usage:</p>
+  </div>
+  <table>
+    <thead>
+    <tr>
+      <td></td>
+      <td colspan="5" class="gray-bk no-border">2015 Annual Energy Use Intensity<br>(Site EUI in kBTU/sf)</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>Building Type</td>
+      <td class="gray-bk">Median</td>
+      <td class="gray-bk">Lowest</td>
+      <td class="gray-bk">Medium-low</td>
+      <td class="gray-bk">Medium-high</td>
+      <td class="gray-bk">Highest</td>
+      <td>Num. of Buildings</td>
+      <td>Year Built</td>
+      <td>Size</td>
+      <td>EPA Energy Star</td>
+    </tr>
+    </thead>
+    <tbody>
+    <% _.each(rows, function(row){ %>
+    <tr>
+    <td><%= row.label %></td>
+    <td class="gray-bk"><%= row.site_eui %></td>
+    <td class="gray-bk">0000</td>
+    <td class="gray-bk">0000</td>
+    <td class="gray-bk">0000</td>
+    <td class="gray-bk">0000</td>
+    <td><%= row.count %></td>
+    <td><%= row.built %></td>
+    <td><%= row.size %></td>
+    <td><%= row.ess || "n/a" %></td>
+    </tr>
+    <% }) %>
+    </tbody>
+  </table>
+
+</div>

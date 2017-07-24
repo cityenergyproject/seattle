@@ -2,157 +2,53 @@ define([
   'jquery',
   'underscore',
   'backbone',
-  'd3',
+  './scorecard',
   'text!templates/layout/scorecards/scorecard.html'
-], function($, _, Backbone, D3, ScorecardTemplate){
-
-  var Scorecard = Backbone.View.extend({
-    el: $('#scorecard'),
+], function($, _, Backbone, ScoreCardBaseView, ScorecardTemplate){
+  var BuildingScorecard = ScoreCardBaseView.extend({
 
     initialize: function(options){
-      this.state = options.state;
+      BuildingScorecard.__super__.initialize.apply(this, [options]);
+
       this.listenTo(this.state, 'change:report_active', this.onReportActive);
-      this.listenTo(this.state, 'change:allbuildings', this.onBuildingChange);
-
-      var scorecard = this.state.get('scorecard');
-
-      this.listenTo(scorecard, 'change:view', this.onViewChange);
-
-      this.formatters = {
-        currency: d3.format('$,.2f'),
-        currency_zero: d3.format('$,.0f'),
-        commaize: d3.format(',.2r'),
-        percent: d3.format('.0%'),
-        fixed: d3.format(',.2f'),
-        fixedOne: d3.format(',.1f')
-      };
-
       this.template = _.template(ScorecardTemplate);
 
+      // this.render();
       return this;
     },
 
-    events: {
-      "click #back-to-map-link": "closeReport",
-      "click .sc-toggle--input": "toggleView"
-    },
-
-    closeReport: function(evt) {
-      evt.preventDefault();
+    close: function() {
+      this.scoreCardData = null;
       this.state.set({report_active: false});
     },
 
-    toggleView: function(evt) {
-      var scorecardState = this.state.get('scorecard');
-      var view = scorecardState.get('view');
-
-      var target = evt.target;
-      var value = target.dataset.view;
-
-      if (value === view) {
-        evt.preventDefault();
-        return false;
-      }
-
-      scorecardState.set({'view': value});
-    },
-
-    render: function() {
+    isActive: function() {
       var active = this.state.get('report_active');
-      var buildings = this.state.get('allbuildings');
-      if (active) {
-        if (!buildings) {
-          this.dirty = true;
-          return;
-        }
 
-        this.$el.toggleClass('active', true);
-        this.getData();
-      } else {
-        this.scoreCardData = null;
-        this.$el.toggleClass('active', false);
-        this.$el.html('');
-      }
+      if (!active) this.scoreCardData = null;
 
-      this.dirty = false;
-
-      return this;
+      return active;
     },
 
-    onBuildingChange: function() {
-      if (this.dirty) this.render();
-    },
-
-    onReportActive: function() {
-      this.render();
-    },
-
-    onViewChange: function() {
-      var year = this.state.get('year');
-      var buildings = this.state.get('allbuildings');
-      this.processBuilding(buildings, this.scoreCardData, year);
-    },
-
-    getData: function() {
-      this.scoreCardData = null;
-
-      var year = this.state.get('year');
-      var buildings = this.state.get('allbuildings');
+    renderScorecard: function() {
       var id = this.state.get('building');
+      var year = this.state.get('year');
+      var buildings = this.state.get('allbuildings');
 
-      // Temporary hack to get yearly data
-      d3.json(`https://cityenergy-seattle.carto.com/api/v2/sql?q=SELECT+ST_X(the_geom)+AS+lng%2C+ST_Y(the_geom)+AS+lat%2C*+FROM+table_2015_stamen_phase_ii_v2_w_year+WHERE+id=${id}`, (d) => {
-        if (!this.state.get('report_active')) return;
-        this.scoreCardData = d;
-        this.processBuilding(buildings, d, year);
-      });
-    },
-
-
-    full_address: function(building) {
-      var zip = building.zip; // building.get('zip');
-      var state = building.state; // building.get('state');
-      var city = building.city; // building.get('city');
-      var addr = building.reported_address; // building.get('reported_address');
-
-      return addr + ', ' + city + ' ' + state + ' ' + zip;
-    },
-
-    costs: function(building, year) {
-      //  ft²
-      var per_sqft = building.cost_sq_ft;
-      if (per_sqft === null) {
-        per_sqft = '0';
+      if (this.scoreCardData && this.scoreCardData.id === id) {
+        this.processBuilding(buildings, this.scoreCardData.data, year);
       } else {
-        per_sqft = this.formatters.currency(per_sqft);
-      }
+        // Temporary hack to get yearly data
+        d3.json(`https://cityenergy-seattle.carto.com/api/v2/sql?q=SELECT+ST_X(the_geom)+AS+lng%2C+ST_Y(the_geom)+AS+lat%2C*+FROM+table_2015_stamen_phase_ii_v2_w_year+WHERE+id=${id}`, (d) => {
+          if (!this.state.get('report_active')) return;
 
-      var annual = building.cost_annual;
-      if (annual === null) {
-        annual = '0';
-      } else {
-        annual = this.formatters.currency_zero(annual);
-      }
+          this.scoreCardData = {
+            id: this.state.get('building'),
+            data: d
+          };
 
-      var save_pct = building.percent_save;
-      if (save_pct === null) {
-        save_pct = '0';
-      } else {
-        save_pct = this.formatters.percent(save_pct);
-      }
-
-      var savings = building.amount_save;
-      if (savings === null) {
-        savings = '0';
-      } else {
-        savings = this.formatters.currency_zero(savings);
-      }
-
-      return {
-        per_sqft: per_sqft,
-        annual: annual,
-        save_pct: save_pct,
-        savings: savings
+          this.processBuilding(buildings, d, year);
+        });
       }
     },
 
@@ -234,6 +130,53 @@ define([
         scorecardState.set({'view': value});
       });
       */
+    },
+
+    full_address: function(building) {
+      var zip = building.zip; // building.get('zip');
+      var state = building.state; // building.get('state');
+      var city = building.city; // building.get('city');
+      var addr = building.reported_address; // building.get('reported_address');
+
+      return addr + ', ' + city + ' ' + state + ' ' + zip;
+    },
+
+    costs: function(building, year) {
+      //  ft²
+      var per_sqft = building.cost_sq_ft;
+      if (per_sqft === null) {
+        per_sqft = '0';
+      } else {
+        per_sqft = this.formatters.currency(per_sqft);
+      }
+
+      var annual = building.cost_annual;
+      if (annual === null) {
+        annual = '0';
+      } else {
+        annual = this.formatters.currency_zero(annual);
+      }
+
+      var save_pct = building.percent_save;
+      if (save_pct === null) {
+        save_pct = '0';
+      } else {
+        save_pct = this.formatters.percent(save_pct);
+      }
+
+      var savings = building.amount_save;
+      if (savings === null) {
+        savings = '0';
+      } else {
+        savings = this.formatters.currency_zero(savings);
+      }
+
+      return {
+        per_sqft: per_sqft,
+        annual: annual,
+        save_pct: save_pct,
+        savings: savings
+      }
     },
 
     listdata: function(building, fields) {
@@ -769,5 +712,5 @@ define([
     }
   });
 
-  return Scorecard;
+  return BuildingScorecard;
 });

@@ -26,7 +26,7 @@ define([
     queryFields: [
       'filters', 'categories', 'layer',
       'metrics', 'sort', 'order', 'lat',
-      'lng', 'zoom', 'building', 'report_active'
+      'lng', 'zoom', 'building', 'report_active', 'city_report_active'
     ],
 
     defaults: {
@@ -48,6 +48,10 @@ define([
         delete attributes.report_active;
       }
 
+      if (attributes.hasOwnProperty('city_report_active') && !attributes.city_report_active) {
+        delete attributes.city_report_active;
+      }
+
       if (attributes.hasOwnProperty('building') && _.isNull(attributes.building))  {
         delete attributes.building;
       }
@@ -58,6 +62,10 @@ define([
     mapParamsToState: function(params) {
       if (params.hasOwnProperty('report_active') && !_.isBoolean(params.report_active)) {
         params.report_active = (params.report_active === 'true');
+      }
+
+      if (params.hasOwnProperty('city_report_active') && !_.isBoolean(params.city_report_active)) {
+        params.city_report_active = (params.city_report_active === 'true');
       }
 
       return params;
@@ -145,6 +153,9 @@ define([
 
     toggleCityScorecard: function() {
       console.log('toggleCityScorecard');
+
+      this.state.set({city_report_active: true});
+
     },
 
     onChange: function(){

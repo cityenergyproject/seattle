@@ -11,15 +11,15 @@
         <table class='datatable'>
           <tr>
             <td class='sm'>Number of buildings reporting</td>
-            <td class='lg'>3,364</td>
+            <td class='lg'><%= stats.reporting %></td>
           </tr>
           <tr>
             <td class='sm'>Number of buildings required to report</td>
-            <td class='lg'>3,364</td>
+            <td class='lg'><%= stats.required %></td>
           </tr>
           <tr>
             <td class='sm'>Compliance Rate</td>
-            <td class='lg'>100<span class='unit'>%</span></td>
+            <td class='lg'><%= stats.pct %><span class='unit'>%</span></td>
           </tr>
         </table>
       </div>
@@ -31,7 +31,7 @@
     </div>
     <div class='col-4 middle'>
       <div class='circle-bk'>
-        <h4 class='sc-heading'><%= year %> <%= view === 'eui' ? 'EUI' : 'ENERGY STAR' %></h4>
+        <h4 class='sc-heading'><%= year %> Median <%= view === 'eui' ? 'EUI' : 'ENERGY STAR' %></h4>
         <h3 class='sc-heading orange xlarge' ><%= value %></h3>
         <p class='sc-heading orange small'><%= view === 'eui' ? 'kBtu/ft²' : 'ENERGY STAR SCORE' %></p>
         <div class='eui-desc'>
@@ -50,19 +50,46 @@
       <div class='pushdown vertical-datatable'>
         <div class='details-box'>
           <p class='sm'>Total Consumption</p>
-          <h3 class='lg'>340,900,303 <span class='unit'>KBTU</span></h3>
+          <h3 class='lg'><%= compliance.consumption %><span class='unit'>KBTU</span></h3>
         </div>
 
         <div class='details-box'>
           <p class='sm'>Total GHC Emissions</p>
-          <h3 class='lg'>328,000 <span class='unit'>MT</span></h3>
+          <h3 class='lg'><%= compliance.ghg %><span class='unit'>MT</span></h3>
         </div>
 
         <div class='details-box'>
           <p class='sm'>Total Reported GFA</p>
-          <h3 class='lg'>293,817,154</h3>
+          <h3 class='lg'><%= compliance.gfa %></h3>
         </div>
       </div>
+    </div>
+  </div>
+
+  <div id='fuel-use-chart' class='scorecard--section'></div>
+
+  <div id='compare-shift-chart' class='scorecard--section'></div>
+
+  <div id='building-type-table' class='scorecard--section'></div>
+
+  <div id='links' class='scorecard--section'>
+    <div class='inner'>
+      <h2 class='sc-heading large'>Links</h2>
+      <table>
+        <tr>
+          <td rowspan='2'>
+            <p class='sc-txt small'>Contact us:</p>
+            <p class='sc-txt small'>City Light Energy Advisors</p>
+            <p class='sc-txt small'>Answering questions by email or phone (206) 684-3800</p>
+          </td>
+          <td><span class='sc-txt small'>Seattle City Light <span class='bold'>incentives for energy efficiency equipment</span></span></td>
+          <td><span class='sc-txt small'>This is an opportunity for users to click on another link</span></td>
+        </tr>
+        <tr>
+          <td><span class='sc-txt small'>This is an opportunity for users to click on another link</span></td>
+          <td><span class='sc-txt small'>This is an opportunity for users to click on another link</span></td>
+        </tr>
+      </table>
     </div>
   </div>
 

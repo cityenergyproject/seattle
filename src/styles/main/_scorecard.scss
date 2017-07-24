@@ -760,5 +760,37 @@ $sc-font-lgr: 3rem;
     }
   }
 
+  #building-type-table {
+    color: #646569;
+    font-size: 0.8em;
+
+    td {
+      text-align: center;
+      vertical-align: middle;
+      border-bottom-color: #ddd;
+    }
+
+    thead tr:first-child td {
+      border: 0;
+    }
+
+    thead td:first-child {
+      font-size: 1.2em;
+      text-transform: uppercase;
+      font-weight: 500;
+    }
+
+    tbody td {
+      font-weight: 500;
+    }
+
+    .gray-bk {
+      background: #f1f1f1;
+    }
+
+    .no-border {
+      border: 0;
+    }
+  }
 
 }
