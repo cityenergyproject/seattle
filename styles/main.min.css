@@ -627,6 +627,12 @@ header {
   display: table;
   clear: both; }
 
+#city-scorcard-toggle {
+  position: absolute;
+  top: 1em;
+  right: 5em;
+  z-index: 2; }
+
 .toolbar {
   background-color: #0047ba;
   color: white; }
@@ -1960,3 +1966,65 @@ header {
       border: 0;
       padding: 5px 10px;
       line-height: 1.2; }
+  #scorecard #building-type-table {
+    color: #646569;
+    font-size: 0.8em; }
+    #scorecard #building-type-table td {
+      text-align: center;
+      vertical-align: middle;
+      border-bottom-color: #ddd; }
+    #scorecard #building-type-table thead tr:first-child td {
+      border: 0; }
+    #scorecard #building-type-table thead td:first-child {
+      font-size: 1.2em;
+      text-transform: uppercase;
+      font-weight: 500; }
+    #scorecard #building-type-table tbody td {
+      font-weight: 500; }
+    #scorecard #building-type-table .gray-bk {
+      background: #f1f1f1; }
+    #scorecard #building-type-table .no-border {
+      border: 0; }
+
+#scorecard .pushdown {
+  margin-top: 0.5em; }
+
+#scorecard .sm {
+  font-size: 0.8em;
+  font-weight: 300; }
+
+#scorecard .lg {
+  font-size: 1.5em;
+  font-weight: 500; }
+
+#scorecard .unit {
+  font-size: 0.6em;
+  font-weight: 300;
+  vertical-align: baseline; }
+
+#scorecard .datatable {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  font-size: 1rem; }
+  #scorecard .datatable td {
+    padding: 0 0 0.5em 0;
+    margin: 0;
+    border: 0;
+    vertical-align: top;
+    line-height: 1.1; }
+  #scorecard .datatable tr:last-child td {
+    padding-bottom: 0; }
+  #scorecard .datatable td:first-child {
+    text-align: right; }
+  #scorecard .datatable td:last-child {
+    text-align: left;
+    padding-left: 10px; }
+
+#scorecard .vertical-datatable p, #scorecard .vertical-datatable h3 {
+  margin: 0;
+  padding: 0;
+  line-height: 1; }
+
+#scorecard .vertical-datatable p {
+  margin-bottom: 0.25em; }

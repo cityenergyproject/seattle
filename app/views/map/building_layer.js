@@ -3,7 +3,6 @@
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 define(['jquery', 'underscore', 'backbone', 'collections/city_buildings', 'models/building_color_bucket_calculator', 'text!templates/map/building_info.html'], function ($, _, Backbone, CityBuildings, BuildingColorBucketCalculator, BuildingInfoTemplate) {
-
   var baseCartoCSS = {
     dots: ['{marker-fill: #CCC;' + 'marker-fill-opacity: 0.9;' + 'marker-line-color: #FFF;' + 'marker-line-width: 0.5;' + 'marker-line-opacity: 1;' + 'marker-placement: point;' + 'marker-multi-policy: largest;' + 'marker-type: ellipse;' + 'marker-allow-overlap: true;' + 'marker-clip: false;}'],
     footprints: ['{polygon-fill: #CCC;' + 'polygon-opacity: 0.9;' + 'line-width: 1;' + 'line-color: #FFF;' + 'line-opacity: 0.5;}']
@@ -16,17 +15,17 @@ define(['jquery', 'underscore', 'backbone', 'collections/city_buildings', 'model
   };
 
   CartoStyleSheet.prototype.toCartoCSS = function () {
-    var bucketCSS = this.bucketCalculator.toCartoCSS(),
-        styles = [].concat(_toConsumableArray(baseCartoCSS[this.mode])).concat(bucketCSS),
-        tableName = this.tableName;
+    var bucketCSS = this.bucketCalculator.toCartoCSS();
+    var styles = [].concat(_toConsumableArray(baseCartoCSS[this.mode])).concat(bucketCSS);
+    var tableName = this.tableName;
 
     styles = _.reject(styles, function (s) {
       return !s;
     });
     styles = _.map(styles, function (s) {
-      return "#" + tableName + " " + s;
+      return '#' + tableName + ' ' + s;
     });
-    return styles.join("\n");
+    return styles.join('\n');
   };
 
   var BuildingInfoPresenter = function BuildingInfoPresenter(city, allBuildings, buildingId, idKey, controls, defaultColor) {
@@ -46,36 +45,14 @@ define(['jquery', 'underscore', 'backbone', 'collections/city_buildings', 'model
   };
 
   BuildingInfoPresenter.prototype.toBuilding = function () {
-    var id_key = this.city.get('property_id');
+    var _this = this;
+
     return this.allBuildings.find(function (building) {
-      return building.get('id') == this.buildingId;
-    }, this);
-  };
-
-  BuildingInfoPresenter.prototype.toPopulatedLabelsPrevious = function () {
-    var default_hidden = false;
-    var building = this.toBuilding();
-
-    return _.map(this.city.get('popup_fields'), function (field) {
-      var suppress = false;
-      if (field.start_hidden) default_hidden = true;
-      var value = typeof building === 'undefined' ? null : building.get(field.field);
-
-      if (field.suppress_unless_field && field.suppress_unless_values && typeof building !== 'undefined' && field.suppress_unless_values.indexOf(building.get(field.suppress_unless_field)) === -1) {
-        suppress = true; // do not display this field
-      }
-
-      // don't apply toLocaleString if it's a year, to prevent commas in year.
-      return _.extend({
-        value: field.isYear ? value || 'N/A' : (value || 'N/A').toLocaleString(),
-        default_hidden: default_hidden,
-        suppress: suppress
-      }, field);
+      return building.get(_this.idKey) == _this.buildingId;
     }, this);
   };
 
   BuildingInfoPresenter.prototype.toPopulatedLabels = function () {
-    var default_hidden = false;
     var building = this.toBuilding();
     var o = {};
 
@@ -83,6 +60,7 @@ define(['jquery', 'underscore', 'backbone', 'collections/city_buildings', 'model
 
     o.items = _.map(this.city.get('popup_fields'), function (field) {
       var value = building.get(field.field);
+
       value = field.skipFormatter ? value || 'N/A' : (value || 'N/A').toLocaleString();
 
       var label = field.label;
@@ -198,7 +176,7 @@ define(['jquery', 'underscore', 'backbone', 'collections/city_buildings', 'model
     var tableData = components.table;
 
     // Base query
-    var query = "SELECT a.*," + this.mapLayerFields + " FROM " + tableFootprint + " a," + tableData + " b WHERE a.buildingid = b.id AND ";
+    var query = 'SELECT a.*,' + this.mapLayerFields + ' FROM ' + tableFootprint + ' a,' + tableData + ' b WHERE a.buildingid = b.id AND ';
 
     var filterSql = components.year.concat(components.range).concat(components.category).filter(function (e) {
       return e.length > 0;
@@ -252,7 +230,6 @@ define(['jquery', 'underscore', 'backbone', 'collections/city_buildings', 'model
     adjustPopup: function adjustPopup(layer) {
       var container = $(layer._container);
       var latlng = layer.getLatLng();
-      var mapSize = this.leafletMap.getSize();
 
       var pt = this.leafletMap.latLngToContainerPoint(latlng);
       var height = container.height();
@@ -309,7 +286,7 @@ define(['jquery', 'underscore', 'backbone', 'collections/city_buildings', 'model
       if (!buildingId) return;
 
       this.onClearPopups();
-      $('#compare-building').attr("disabled", "disabled");
+      $('#compare-building').attr('disabled', 'disabled');
 
       // Add building to selected_buildings
       var selectedBuildings = this.makeSelectedBuildingsState(buildingId);
@@ -326,14 +303,18 @@ define(['jquery', 'underscore', 'backbone', 'collections/city_buildings', 'model
 
     onViewReportClick: function onViewReportClick(evt) {
       if (evt.preventDefault) evt.preventDefault();
-      this.state.set({ reportActive: true });
+      var buildingId = this.state.get('building');
+      this.state.set({ report_active: true });
       return false;
     },
 
     onBuildingChange: function onBuildingChange() {
       var building_id = this.state.get('building');
+      var isShowing = building_id === this._popupid;
 
-      if (!building_id || !this.allBuildings.length) return;
+      if (!building_id || isShowing) return;
+
+      this.popup_dirty = false;
 
       var propertyId = this.state.get('city').get('property_id');
 
@@ -364,6 +345,7 @@ define(['jquery', 'underscore', 'backbone', 'collections/city_buildings', 'model
         compare_disabled: disableCompareBtn ? 'disabled="disable"' : ''
       }));
 
+      this._popupid = building_id;
       popup._buildingid = building_id;
       popup.openOn(this.leafletMap);
     },
@@ -391,7 +373,7 @@ define(['jquery', 'underscore', 'backbone', 'collections/city_buildings', 'model
     },
 
     onFeatureOver: function onFeatureOver() {
-      this.mapElm.css('cursor', "help");
+      this.mapElm.css('cursor', 'help');
     },
     onFeatureOut: function onFeatureOut() {
       this.mapElm.css('cursor', '');
@@ -432,16 +414,16 @@ define(['jquery', 'underscore', 'backbone', 'collections/city_buildings', 'model
       var layerMode = this.buildingLayerWatcher.mode;
       var cssFillType = this.buildingLayerWatcher.fillType();
 
-      var buildings = this.allBuildings,
-          state = this.state,
-          city = state.get('city'),
-          year = state.get('year'),
-          fieldName = state.get('layer'),
-          cityLayer = _.findWhere(city.get('map_layers'), { field_name: fieldName }),
-          buckets = cityLayer.range_slice_count,
-          colorStops = cityLayer.color_range,
-          calculator = new BuildingColorBucketCalculator(buildings, fieldName, buckets, colorStops, cssFillType),
-          stylesheet = new CartoStyleSheet(buildings.tableName, calculator, layerMode);
+      var buildings = this.allBuildings;
+      var state = this.state;
+      var city = state.get('city');
+      var year = state.get('year');
+      var fieldName = state.get('layer');
+      var cityLayer = _.findWhere(city.get('map_layers'), { field_name: fieldName });
+      var buckets = cityLayer.range_slice_count;
+      var colorStops = cityLayer.color_range;
+      var calculator = new BuildingColorBucketCalculator(buildings, fieldName, buckets, colorStops, cssFillType);
+      var stylesheet = new CartoStyleSheet(buildings.tableName, calculator, layerMode);
 
       var sql = layerMode === 'dots' ? buildings.toSql(year, state.get('categories'), state.get('filters')) : this.footprintGenerateSql.sql(buildings.toSqlComponents(year, state.get('categories'), state.get('filters'), 'b.'));
 
