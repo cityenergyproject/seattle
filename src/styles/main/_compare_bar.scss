@@ -4,7 +4,7 @@
   top: 100%;
   width: 100% - $metric-left-width;
   height: $metric-footer-height;
-  background: blue;
+  background: $base-font-color;
   z-index: 1000;
   cursor: pointer;
   font-size: 1em;
