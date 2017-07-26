@@ -774,6 +774,10 @@ $sc-font-lgr: 3rem;
       border: 0;
     }
 
+    thead td {
+      vertical-align: bottom;
+    }
+
     thead td:first-child {
       font-size: 1.2em;
       text-transform: uppercase;
