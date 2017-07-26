@@ -761,13 +761,24 @@ $sc-font-lgr: 3rem;
   }
 
   #building-type-table {
-    color: #646569;
-    font-size: 0.8em;
+    table {
+      color: #646569;
+      font-size: 0.725rem;
+    }
 
     td {
       text-align: center;
       vertical-align: middle;
       border-bottom-color: #ddd;
+      padding: 0.5rem 0;
+
+      &:first-child {
+        text-align: right;
+        width: auto;
+        padding-left: 0.7rem;
+        padding-right: 0.7rem;
+        width: 6.5em;
+      }
     }
 
     thead tr:first-child td {
@@ -779,14 +790,23 @@ $sc-font-lgr: 3rem;
     }
 
     thead td:first-child {
-      font-size: 1.2em;
+      font-size: 1.1rem;
       text-transform: uppercase;
       font-weight: 500;
+      line-height: 1.1;
     }
 
     tbody td {
       font-weight: 500;
+      font-size: 0.75rem;
+
+      &:first-child {
+        font-size: 0.725rem;
+        font-weight: 400;
+      }
     }
+
+    .header { font-size: 0.75rem; }
 
     .gray-bk {
       background: #f1f1f1;

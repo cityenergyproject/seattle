@@ -62,7 +62,6 @@ define([
 
     getThresholdHeaders: function() {
       return this.schema.map((d,i) => {
-        console.log(d.label.replace(' ', '-<br>'))
         return {
           clr: d.color,
           label: `${d.label.replace(' ', '-<br>')} Use`,
