@@ -1,6 +1,6 @@
 'use strict';
 
-define(['jquery', 'underscore', 'backbone', 'ionrangeslider', 'models/city', 'text!templates/map_controls/category.html'], function ($, _, Backbone, Ion, CityModel, MapCategoryControlTemplate) {
+define(['jquery', 'underscore', 'backbone', 'models/city', 'text!templates/map_controls/category.html'], function ($, _, Backbone, CityModel, MapCategoryControlTemplate) {
   var OTHER_LABEL = "Other";
 
   var MapCategoryControlView = Backbone.View.extend({

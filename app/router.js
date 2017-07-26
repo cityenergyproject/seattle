@@ -131,8 +131,6 @@ define(['jquery', 'deparam', 'underscore', 'backbone', 'models/city', 'models/sc
     },
 
     toggleCityScorecard: function toggleCityScorecard() {
-      console.log('toggleCityScorecard');
-
       this.state.set({ city_report_active: true });
     },
 

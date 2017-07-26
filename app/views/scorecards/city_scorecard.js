@@ -49,6 +49,7 @@ define(['jquery', 'underscore', 'backbone', './scorecard', './charts/fuel', './c
       var buildings = this.state.get('allbuildings');
       var year = this.state.get('year');
       var view = scorecardState.get('view');
+      var scorecardConfig = this.state.get('city').get('scorecard');
 
       var compareField = view === 'eui' ? 'site_eui' : 'energy_star_score';
 
@@ -67,7 +68,6 @@ define(['jquery', 'underscore', 'backbone', './scorecard', './charts/fuel', './c
         });
       }
 
-      console.log(buildings);
       this.$el.find('#fuel-use-chart').html(this.chart_fueluse.render());
 
       if (!this.chart_shift) {
@@ -85,7 +85,9 @@ define(['jquery', 'underscore', 'backbone', './scorecard', './charts/fuel', './c
         this.building_table = new BuildingTypeTableView({
           formatters: this.formatters,
           data: buildings,
-          year: year
+          year: year,
+          schema: scorecardConfig.thresholds.eui_schema,
+          thresholds: scorecardConfig.thresholds.eui
         });
       }
 

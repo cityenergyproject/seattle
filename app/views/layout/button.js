@@ -22,7 +22,6 @@ define(['jquery', 'underscore', 'backbone', 'text!templates/layout/button.html']
     },
 
     render: function render() {
-      console.log(this.el);
       $(this.$el).html(this.template({ value: this.value }));
       return this;
     }

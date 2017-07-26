@@ -1,6 +1,6 @@
 'use strict';
 
-define(['jquery', 'underscore', 'backbone', 'views/map/building_layer', 'views/map/filter', 'views/map/category'], function ($, _, Backbone, BuildingLayer, Filter, Category) {
+define(['jquery', 'underscore', 'backbone', 'views/map/building_layer', 'views/map/filter', 'views/map/category', 'selectize', 'text!templates/map_controls/property_type_selectlist.html'], function ($, _, Backbone, BuildingLayer, Filter, Category, selectize, ProptypeSelectListTemplate) {
   var MapView = Backbone.View.extend({
     el: $('#map'),
 
@@ -15,6 +15,46 @@ define(['jquery', 'underscore', 'backbone', 'views/map/building_layer', 'views/m
 
     onCityChange: function onCityChange() {
       this.render();
+    },
+
+    createPropTypeSelector: function createPropTypeSelector(buildings) {
+      var _this = this;
+
+      var items = _.uniq(buildings.pluck('property_type')).sort();
+
+      var template = _.template(ProptypeSelectListTemplate);
+
+      $('#building-proptype-selector').html(template({ items: items }));
+
+      var me = this;
+      var selector = $('#building-proptype-selector > select').selectize({
+        onChange: function onChange(val) {
+          if (val === '*') val = null;
+
+          var currentCategories = _this.state.get('categories');
+          var match = currentCategories.find(function (cat) {
+            return cat.field === 'property_type';
+          });
+
+          var currentValue = match ? match.values[0] : null;
+
+          if (val === currentValue) return;
+
+          var newCats = currentCategories.filter(function (cat) {
+            return cat.field !== 'property_type';
+          });
+
+          if (val !== null) {
+            newCats.push({
+              field: 'property_type',
+              other: false,
+              values: [val]
+            });
+          }
+
+          _this.state.set('categories', newCats);
+        }
+      });
     },
 
     render: function render() {
@@ -85,6 +125,8 @@ define(['jquery', 'underscore', 'backbone', 'views/map/building_layer', 'views/m
       var city = state.get('city');
       var layers = city.get('map_layers');
       var allBuildings = state.get('allbuildings');
+
+      this.createPropTypeSelector(allBuildings);
 
       // close/remove any existing MapControlView(s)
       this.controls && this.controls.each(function (view) {
