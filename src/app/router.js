@@ -26,7 +26,7 @@ define([
     queryFields: [
       'filters', 'categories', 'layer',
       'metrics', 'sort', 'order', 'lat',
-      'lng', 'zoom', 'building', 'report_active', 'city_report_active', 'proptype'
+      'lng', 'zoom', 'building', 'report_active', 'city_report_active'
     ],
 
     defaults: {
@@ -54,10 +54,6 @@ define([
 
       if (attributes.hasOwnProperty('building') && _.isNull(attributes.building))  {
         delete attributes.building;
-      }
-
-      if (attributes.hasOwnProperty('proptype') && _.isNull(attributes.proptype))  {
-        delete attributes.proptype;
       }
 
       return attributes;
