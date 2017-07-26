@@ -5,7 +5,9 @@ define([
   'views/map/building_layer',
   'views/map/filter',
   'views/map/category',
-], function($, _, Backbone, BuildingLayer, Filter, Category) {
+  'selectize',
+  'text!templates/map_controls/property_type_selectlist.html'
+], function($, _, Backbone, BuildingLayer, Filter, Category, selectize, ProptypeSelectListTemplate) {
   var MapView = Backbone.View.extend({
     el: $('#map'),
 
@@ -22,11 +24,49 @@ define([
       this.render();
     },
 
+    createPropTypeSelector: function(buildings) {
+      const items = _.uniq(buildings.pluck('property_type')).sort();
+
+      var template = _.template(ProptypeSelectListTemplate);
+
+      $('#building-proptype-selector').html(template({items}));
+
+      var me = this;
+      const selector = $('#building-proptype-selector > select').selectize({
+        onChange: (val) => {
+          if (val === '*') val = null;
+
+          const currentCategories = this.state.get('categories');
+          const match = currentCategories.find(cat => {
+            return cat.field === 'property_type';
+          });
+
+          const currentValue = match ? match.values[0] : null;
+
+          if (val === currentValue) return;
+
+          const newCats = currentCategories.filter(cat => cat.field !== 'property_type');
+
+          if (val !== null) {
+            newCats.push({
+              field: 'property_type',
+              other: false,
+              values: [val]
+            });
+          }
+
+          this.state.set('categories', newCats);
+        }
+      });
+    },
+
     render: function(){
       var city = this.state.get('city');
       var lat = this.state.get('lat');
       var lng = this.state.get('lng');
       var zoom = this.state.get('zoom');
+
+
 
       if (!this.leafletMap){
         this.leafletMap = new L.Map(
@@ -91,6 +131,8 @@ define([
       var city = state.get('city');
       var layers = city.get('map_layers');
       var allBuildings = state.get('allbuildings');
+
+      this.createPropTypeSelector(allBuildings);
 
       // close/remove any existing MapControlView(s)
       this.controls && this.controls.each(function(view){

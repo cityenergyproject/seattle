@@ -205,3 +205,37 @@ header {
     clear: both;
   }
 }
+
+#building-proptype-selector {
+  width: 60%;
+
+  .selectize-control.single {}
+
+  .selectize-control.single .selectize-input {
+    background: $base-font-color;
+    color: #fff;
+    border: 0;
+
+    &:after {
+      border-color: #fff transparent transparent;
+    }
+
+    &.dropdown-active:after {
+      border-color: transparent transparent #fff;
+    }
+  }
+
+  .selectize-input {}
+
+  .selectize-dropdown {
+    background: $base-font-color;
+    color: #fff;
+    border: 0;
+    white-space: nowrap;
+  }
+
+  .selectize-dropdown .active {
+    background-color: #001488;
+    color: #fff;
+  }
+}

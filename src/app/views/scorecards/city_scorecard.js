@@ -73,7 +73,6 @@ define([
         });
       }
 
-      console.log( buildings );
       this.$el.find('#fuel-use-chart').html(this.chart_fueluse.render());
 
 

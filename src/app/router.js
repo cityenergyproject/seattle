@@ -26,7 +26,7 @@ define([
     queryFields: [
       'filters', 'categories', 'layer',
       'metrics', 'sort', 'order', 'lat',
-      'lng', 'zoom', 'building', 'report_active', 'city_report_active'
+      'lng', 'zoom', 'building', 'report_active', 'city_report_active', 'proptype'
     ],
 
     defaults: {
@@ -54,6 +54,10 @@ define([
 
       if (attributes.hasOwnProperty('building') && _.isNull(attributes.building))  {
         delete attributes.building;
+      }
+
+      if (attributes.hasOwnProperty('proptype') && _.isNull(attributes.proptype))  {
+        delete attributes.proptype;
       }
 
       return attributes;
@@ -152,10 +156,7 @@ define([
     },
 
     toggleCityScorecard: function() {
-      console.log('toggleCityScorecard');
-
       this.state.set({city_report_active: true});
-
     },
 
     onChange: function(){
