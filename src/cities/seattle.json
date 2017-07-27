@@ -69,15 +69,6 @@
             "description": "Council District"
         },
         {
-            "title": "Property Type",
-            "field_name": "property_type",
-            "display_type": "category",
-            "sort_by_key": true,
-            "hide_other_category": true,
-            "section": "Property Information",
-            "description": "The Primary Use of the Property, as calculated by Portfolio Manager based on the owner's selections."
-        },
-        {
             "title": "Property Size",
             "field_name": "reported_gross_floor_area",
             "display_type": "range",
