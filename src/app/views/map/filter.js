@@ -2,6 +2,7 @@ define([
   'jquery',
   'underscore',
   'backbone',
+  'd3',
   'ionrangeslider',
   'models/building_bucket_calculator',
   'models/building_color_bucket_calculator',
@@ -10,10 +11,12 @@ define([
   'text!templates/map_controls/filter_section_header.html',
   'text!templates/map_controls/filter.html',
   'text!templates/map_controls/filter_container.html',
-  'text!templates/map_controls/filter_building_details.html'
-], function($, _, Backbone, Ion, BuildingBucketCalculator,
+  'text!templates/map_controls/filter_building_details.html',
+  'text!templates/map_controls/filter_property_type.html'
+], function($, _, Backbone, d3, Ion, BuildingBucketCalculator,
             BuildingColorBucketCalculator, HistogramView, Formatters,
-            FilterSectionHeader, FilterTemplate, FilterContainer, FilterBuildingDetailsTemplate){
+            FilterSectionHeader, FilterTemplate, FilterContainer,
+            FilterBuildingDetailsTemplate, FilterPropertyTypeTemplate){
 
   var MapControlView = Backbone.View.extend({
     className: "map-control",
@@ -26,12 +29,18 @@ define([
       this.state = options.state;
       this.listenTo(this.state, 'change:layer', this.onLayerChange);
       this.listenTo(this.state, 'change:selected_buildings', this.updateBuildingDetails);
+      this.listenTo(this.state, 'change:categories', this.onCategoryChange);
 
       this._valueFormatter = Formatters.get(this.layer.formatter);
+      this._medianFormatter = Formatters.get('fixed-0');
+
+      // set key for property_type
+      this.propertyTypeKey = 'property_type';
+
+      // Hack to keep track of property_type changes
+      this._lastPropertyType = null;
 
       this.memorize();
-
-      //this.listenTo(this.state, 'change:filters', this.render);
     },
 
     onLayerChange: function(){
@@ -40,6 +49,19 @@ define([
           isCurrent = currentLayer == fieldName;
       this.$el.toggleClass('current', isCurrent);
       this.$section().toggleClass('current', this.$section().find('.current').length > 0);
+    },
+
+    onCategoryChange: function() {
+      const propertyCategory = this.getPropertyCategory();
+      const value = propertyCategory ? propertyCategory.values[0] : null;
+
+      // Check for change in property_type category
+      if (value !== this._lastPropertyType) {
+        // if change, re-calculate the heavy bits
+        // and re-render
+        this.memorize();
+        this.render(false, true);
+      }
     },
 
     close: function() {
@@ -104,13 +126,47 @@ define([
       return o;
     },
 
-    memorize: function() {
-      var buildings = this.allBuildings;
-      var fieldName = this.layer.field_name;
-      var rangeSliceCount = this.layer.range_slice_count;
-      var filterRange = this.layer.filter_range;
-      var colorStops = this.layer.color_range;
+    getPropertyCategory: function() {
+      const cats = this.state.get('categories');
+      return cats.find(cat => cat.field === this.propertyTypeKey);
+    },
 
+    getPropertyTypeProps: function(category) {
+      const propertyType = category ? category.values[0] : null;
+      const buildings = this.allBuildings;
+      let median;
+
+      if (propertyType) {
+        const subset = buildings.where({[this.propertyTypeKey]: category.values[0]});
+        median = d3.median(subset, d => d.get(this.layer.field_name));
+      } else {
+        median = d3.median(buildings.pluck(this.layer.field_name));
+      }
+
+      return [
+        propertyType,
+        this._valueFormatter(median)
+      ];
+
+    },
+
+    memorize: function() {
+      const propertyCategory = this.getPropertyCategory();
+      const propertyType = propertyCategory ? propertyCategory.values[0] : null;
+
+      let buildings = this.allBuildings;
+      const fieldName = this.layer.field_name;
+      const rangeSliceCount = this.layer.range_slice_count;
+      const filterRange = this.layer.filter_range;
+      const colorStops = this.layer.color_range;
+
+      if (propertyType) {
+        buildings = new Backbone.Collection(this.allBuildings.filter(model => {
+          return model.get(this.propertyTypeKey) === propertyType;
+        }));
+      }
+
+      this.activeBuildings = buildings;
       this.bucketCalculator = new BuildingBucketCalculator(buildings, fieldName, rangeSliceCount, filterRange);
       this.gradientCalculator = new BuildingColorBucketCalculator(buildings, fieldName, rangeSliceCount, colorStops);
       this.gradientStops = this.gradientCalculator.toGradientStops();
@@ -131,10 +187,11 @@ define([
       return scale(val);
     },
 
-
-    render: function(isUpdate){
+    render: function(isUpdate, isDirty){
       isUpdate = isUpdate || false;
 
+      const propertyCategory = this.getPropertyCategory();
+      var propTypeTemplate = _.template(FilterPropertyTypeTemplate);
       var template = _.template(FilterContainer);
       var fieldName = this.layer.field_name;
       var safeFieldName = fieldName.toLowerCase().replace(/\s/g, "-");
@@ -145,14 +202,12 @@ define([
       var filterRange = this.layer.filter_range;
       var rangeSliceCount = this.layer.range_slice_count;
       var colorStops = this.layer.color_range;
-      var buildings = this.allBuildings;
+      var buildings = this.activeBuildings;
       var bucketCalculator = this.bucketCalculator;
       var extent = bucketCalculator.toExtent();
       var gradientCalculator = this.gradientCalculator;
       var buckets = this.buckets;
       var gradientStops = this.gradientStops;
-      var histogram;
-      var $filter;
       var filterTemplate = _.template(FilterTemplate);
       var stateFilters = this.state.get('filters');
       var filterState = _.findWhere(stateFilters, {field: fieldName}) || {min: extent[0], max: extent[1]};
@@ -162,6 +217,9 @@ define([
 
       var tableTemplate = _.template(FilterBuildingDetailsTemplate);
       var tableData = this.getTableData();
+
+      const [proptype, proptype_val] = this.getPropertyTypeProps(propertyCategory);
+      this._lastPropertyType = proptype;
 
 
       if ($el.length === 0) {
@@ -173,8 +231,14 @@ define([
         this.$el = $el;
       }
 
-      if (!this.$filter) {
-        this.$slider = this.$el.find('.filter-wrapper').ionRangeSlider({
+      this.$el.find('.proptype-median-wrapper').html(propTypeTemplate({proptype, proptype_val}))
+
+      if (!this.$filter || isDirty) {
+        if (this.$filter) {
+          this.$filter.destroy();
+        }
+
+        const slider = this.$el.find('.filter-wrapper').ionRangeSlider({
           type: 'double',
           hide_from_to: false,
           force_edges: true,
@@ -186,7 +250,7 @@ define([
           onFinish: _.bind(this.onFilterFinish, this),
         });
 
-        this.$filter = this.$slider.data("ionRangeSlider");
+        this.$filter = slider.data("ionRangeSlider");
       }
 
       // if this is a slider update, skip
@@ -210,6 +274,15 @@ define([
           selected_value: tableData.selected_value
         };
         this.histogram = new HistogramView(histogram_options);
+      }
+
+      if (isDirty) {
+        this.histogram.update({
+          gradients: bucketGradients,
+          slices: rangeSliceCount,
+          filterRange: [filterRangeMin, filterRangeMax],
+          quantileScale: gradientCalculator.colorGradient().copy()
+        });
       }
 
       this.$el.find('.chart').html(this.histogram.render());
@@ -239,6 +312,7 @@ define([
 
       return this;
     },
+
     onFilterFinish: function(rangeSlider) {
       var filters = this.state.get('filters'),
           fieldName = this.layer.field_name;

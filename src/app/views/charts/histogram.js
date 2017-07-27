@@ -13,7 +13,7 @@ define([
       this.selected_value = options.selected_value || null;
       this.width = this.height * this.aspectRatio;
       this.gradients = options.gradients;
-      this.qScale = options.quantileScale;
+      this.quantileScale = options.quantileScale;
       this.filterRange = options.filterRange;
       this.slices = options.slices; // Not sure why we have slices, when that value can be extrapulated from this.gradients
       this.chart = d3.select(this.el).append('svg')
@@ -24,8 +24,16 @@ define([
                       .append('g');
     },
 
+    update: function(options) {
+      Object.keys(options).forEach(k => {
+        if (this.hasOwnProperty(k)) {
+          this[k] = options[k];
+        }
+      });
+    },
+
     findQuantileIndexForValue: function(val, quantiles) {
-      quantiles = quantiles || this.qScale.quantiles();
+      quantiles = quantiles || this.quantileScale.quantiles();
       var len = quantiles.length - 1;
 
       return _.reduce(quantiles, function(prev, curr, i){
@@ -55,7 +63,7 @@ define([
 
     highlightBar: function(bars, context) {
       var highlightIndex = (context.selected_value !== null)
-              ? context.findQuantileIndexForValue(context.selected_value, context.qScale.quantiles()) : null;
+              ? context.findQuantileIndexForValue(context.selected_value, context.quantileScale.quantiles()) : null;
 
       bars.classed('highlight', function(d,i) {
         return i === highlightIndex;
@@ -63,8 +71,8 @@ define([
     },
 
     render: function(){
-      var qScale = this.qScale;
-      var quantiles = qScale.quantiles();
+      var quantileScale = this.quantileScale;
+      var quantiles = quantileScale.quantiles();
       var gradients = this.gradients,
           counts = _.pluck(gradients, 'count'),
           height = this.height,
@@ -83,20 +91,21 @@ define([
 
 
       var bars = this.chart.selectAll("rect")
-          .data(gradients);
+          .data(gradients, function(d){return d.color;});
 
-      bars.enter().append('rect')
-          .style({fill: function(d, i){
-            var val = xScale(i);
-            return qScale(colorizer(val));
-          }})
-          .attr({
-            width: function() { return xScale.rangeBand() - (xScale.rangeBand() / 3); },
-            'stroke-width': function() { return xScale.rangeBand() / 6; },
-            height: function (data) { return yScale(data.count); },
-            x: function (data, i) { return xScale(i); },
-            y: function (data) { return height - yScale(data.count); }
-          });
+      bars.enter().append('rect');
+
+      bars.style({fill: function(d, i){
+        var val = xScale(i);
+        return quantileScale(colorizer(val));
+      }})
+      .attr({
+        width: function() { return xScale.rangeBand() - (xScale.rangeBand() / 3); },
+        'stroke-width': function() { return xScale.rangeBand() / 6; },
+        height: function (data) { return yScale(data.count); },
+        x: function (data, i) { return xScale(i); },
+        y: function (data) { return height - yScale(data.count); }
+      });
 
       bars.exit().remove();
 

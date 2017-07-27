@@ -259,6 +259,19 @@
     padding: 0 em(10px);
     height: em(47px);
   }
+
+  .proptype-median {
+    color: $base-font-color;
+    font-size: 0.75em;
+    text-align: center;
+    margin-top: 5px;
+    text-transform: uppercase;
+
+    > span {
+      font-size: 1.25em;
+      font-weight: 500;
+    }
+  }
 }
 
 #map-controls {
