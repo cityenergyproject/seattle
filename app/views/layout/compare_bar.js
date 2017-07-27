@@ -13,6 +13,10 @@ define(['jquery', 'underscore', 'backbone', 'text!templates/layout/compare_bar.h
       this.listenTo(this.state, 'change:building_compare_active', this.onCompareChange);
       this.listenTo(this.state, 'change:allbuildings', this.render);
       this.listenTo(this.state, 'change:selected_buildings', this.render);
+      this.listenTo(this.state, 'change:categories', this.onCategoryChange);
+
+      this.propertyTypeKey = 'property_type';
+      this._lastPropertyType = null;
 
       this.render();
     },
@@ -21,6 +25,16 @@ define(['jquery', 'underscore', 'backbone', 'text!templates/layout/compare_bar.h
       'click .toggle': 'onBarClickHandler',
       'click .close': 'onCloseHandler',
       'click .name': 'onNameClickHandler'
+    },
+
+    onCategoryChange: function onCategoryChange() {
+      var propertyCategory = this.getPropertyCategory();
+      var value = propertyCategory ? propertyCategory.values[0] : null;
+
+      // Check for change in property_type category
+      if (value !== this._lastPropertyType) {
+        this.render();
+      }
     },
 
     onCompareChange: function onCompareChange() {
@@ -76,7 +90,24 @@ define(['jquery', 'underscore', 'backbone', 'text!templates/layout/compare_bar.h
       }
     },
 
+    getPropertyCategory: function getPropertyCategory() {
+      var _this = this;
+
+      var cats = this.state.get('categories');
+      if (!_.isArray(cats)) return undefined;
+      return cats.find(function (cat) {
+        return cat.field === _this.propertyTypeKey;
+      });
+    },
+
     getContent: function getContent() {
+      var _this2 = this;
+
+      var propertyCategory = this.getPropertyCategory();
+      var propertyType = propertyCategory ? propertyCategory.values[0] : null;
+
+      this._lastPropertyType = propertyType;
+
       var o = {
         compares: Array.apply(null, Array(5)).map(function () {})
       };
@@ -92,8 +123,11 @@ define(['jquery', 'underscore', 'backbone', 'text!templates/layout/compare_bar.h
 
         if (!model) return;
 
+        var disabled = propertyType && model.get(_this2.propertyTypeKey) !== propertyType;
+
         o.compares.splice(i, 1, {
           name: model.get('property_name'),
+          disabled: disabled,
           id: building.id
         });
       });

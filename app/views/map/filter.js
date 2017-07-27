@@ -90,23 +90,36 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'ionrangeslider', 'models/buil
     },
 
     getTableData: function getTableData() {
+      var _this = this;
+
       var buildings = this.getCompareBuildings();
       var fieldName = this.layer.field_name;
       var unit = this.layer.unit || '';
       var formatter = this._valueFormatter;
 
+      var propertyCategory = this.getPropertyCategory();
+      var propertyType = propertyCategory ? propertyCategory.values[0] : null;
+
       var o = {
         selected_value: null
       };
+
       o.data = buildings.map(function (b) {
         if (!b) return b;
+        var klasses = [];
+        if (b.selected) {
+          o.selected_value = b.data[fieldName];
+          klasses.push('col-selected');
+        }
 
-        if (b.selected) o.selected_value = b.data[fieldName];
+        if (propertyType && b.data[_this.propertyTypeKey] !== propertyType) {
+          klasses.push('disable');
+        }
 
         return {
           value: formatter(b.data[fieldName]),
           unit: unit,
-          cell_klass: b.selected ? 'col-selected' : ''
+          cell_klass: klasses.join(' ')
         };
       });
 
@@ -114,16 +127,16 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'ionrangeslider', 'models/buil
     },
 
     getPropertyCategory: function getPropertyCategory() {
-      var _this = this;
+      var _this2 = this;
 
       var cats = this.state.get('categories');
       return cats.find(function (cat) {
-        return cat.field === _this.propertyTypeKey;
+        return cat.field === _this2.propertyTypeKey;
       });
     },
 
     getPropertyTypeProps: function getPropertyTypeProps(category) {
-      var _this2 = this;
+      var _this3 = this;
 
       var propertyType = category ? category.values[0] : null;
       var buildings = this.allBuildings;
@@ -132,7 +145,7 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'ionrangeslider', 'models/buil
       if (propertyType) {
         var subset = buildings.where(_defineProperty({}, this.propertyTypeKey, category.values[0]));
         median = d3.median(subset, function (d) {
-          return d.get(_this2.layer.field_name);
+          return d.get(_this3.layer.field_name);
         });
       } else {
         median = d3.median(buildings.pluck(this.layer.field_name));
@@ -142,7 +155,7 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'ionrangeslider', 'models/buil
     },
 
     memorize: function memorize() {
-      var _this3 = this;
+      var _this4 = this;
 
       var propertyCategory = this.getPropertyCategory();
       var propertyType = propertyCategory ? propertyCategory.values[0] : null;
@@ -155,7 +168,7 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'ionrangeslider', 'models/buil
 
       if (propertyType) {
         buildings = new Backbone.Collection(this.allBuildings.filter(function (model) {
-          return model.get(_this3.propertyTypeKey) === propertyType;
+          return model.get(_this4.propertyTypeKey) === propertyType;
         }));
       }
 
@@ -168,7 +181,7 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'ionrangeslider', 'models/buil
       this.bucketGradients = _.map(this.gradientStops, function (stop, bucketIndex) {
         return {
           color: stop,
-          count: _this3.buckets[bucketIndex] || 0
+          count: _this4.buckets[bucketIndex] || 0
         };
       });
     },
@@ -222,12 +235,16 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'ionrangeslider', 'models/buil
         this.$el.html(template(_.defaults(this.layer, { description: null })));
         this.$el.find('.filter-wrapper').html(filterTemplate({ id: fieldName }));
         this.$el.find('.building-details').html(tableTemplate({ table: tableData.data }));
+        this.$el.find('.proptype-median-wrapper').html(propTypeTemplate({ proptype: proptype, proptype_val: proptype_val }));
         this.$el.attr('id', safeFieldName);
       } else {
         this.$el = $el;
       }
 
-      this.$el.find('.proptype-median-wrapper').html(propTypeTemplate({ proptype: proptype, proptype_val: proptype_val }));
+      if (isDirty) {
+        this.$el.find('.building-details').html(tableTemplate({ table: tableData.data }));
+        this.$el.find('.proptype-median-wrapper').html(propTypeTemplate({ proptype: proptype, proptype_val: proptype_val }));
+      }
 
       if (!this.$filter || isDirty) {
         if (this.$filter) {
