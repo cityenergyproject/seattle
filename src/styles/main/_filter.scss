@@ -173,6 +173,13 @@
         &.col-selected {
           color: $base-font-color;
         }
+
+        &.disable {
+          pointer-events: none;
+          user-select: none;
+          opacity: 0.5;
+          color: #b6b6b6 !important;
+        }
       }
 
       td span {

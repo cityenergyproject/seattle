@@ -4,9 +4,15 @@
   <% _.each(compares, function(c){ %>
     <% if (c && c.name) { %>
       <td>
+        <% if (c.disabled) { %>
+        <div class='disable'>
+          <span class='name'><%= c.name %></span><button class='close' data-id="<%= c.id %>">&times;</button>
+        </div>
+        <% } else { %>
         <div>
           <span class='name' data-btnid="<%= c.id %>"><%= c.name %></span><button class='close' data-id="<%= c.id %>">&times;</button>
         </div>
+        <% } %>
       </td>
     <% } else { %>
       <td class='empty'><div></div></td>

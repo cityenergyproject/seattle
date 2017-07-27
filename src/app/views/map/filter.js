@@ -108,18 +108,29 @@ define([
       var unit = this.layer.unit || '';
       var formatter = this._valueFormatter;
 
+      const propertyCategory = this.getPropertyCategory();
+      const propertyType = propertyCategory ? propertyCategory.values[0] : null;
+
       var o = {
         selected_value: null
       };
-      o.data = buildings.map(function(b) {
-        if (!b) return b;
 
-        if (b.selected) o.selected_value = b.data[fieldName];
+      o.data = buildings.map(b => {
+        if (!b) return b;
+        const klasses = [];
+        if (b.selected) {
+          o.selected_value = b.data[fieldName];
+          klasses.push('col-selected');
+        }
+
+        if (propertyType && b.data[this.propertyTypeKey] !== propertyType) {
+          klasses.push('disable');
+        }
 
         return {
           value: formatter(b.data[fieldName]),
           unit: unit,
-          cell_klass: b.selected ? 'col-selected' : ''
+          cell_klass: klasses.join(' ')
         }
       });
 
@@ -226,12 +237,17 @@ define([
         this.$el.html(template(_.defaults(this.layer, {description: null})));
         this.$el.find('.filter-wrapper').html(filterTemplate({id: fieldName}));
         this.$el.find('.building-details').html(tableTemplate({table: tableData.data}));
+        this.$el.find('.proptype-median-wrapper').html(propTypeTemplate({proptype, proptype_val}));
         this.$el.attr('id', safeFieldName);
       } else {
         this.$el = $el;
       }
 
-      this.$el.find('.proptype-median-wrapper').html(propTypeTemplate({proptype, proptype_val}))
+      if (isDirty) {
+        this.$el.find('.building-details').html(tableTemplate({table: tableData.data}));
+        this.$el.find('.proptype-median-wrapper').html(propTypeTemplate({proptype, proptype_val}));
+      }
+
 
       if (!this.$filter || isDirty) {
         if (this.$filter) {

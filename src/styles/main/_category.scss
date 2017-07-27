@@ -13,6 +13,7 @@
 
   input[type="checkbox"]:checked + .category-list-toggle + .categories {
     left: 0;
+    height: auto;
   }
 
   .categories {
@@ -21,6 +22,7 @@
     z-index: 99;
     top: 0;
     left: -999999px;
+    height: 0;
     padding-bottom: 5px;
     max-height: em(306);
     max-width: 11em;

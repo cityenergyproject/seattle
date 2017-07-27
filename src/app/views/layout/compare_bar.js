@@ -16,6 +16,10 @@ define([
       this.listenTo(this.state, 'change:building_compare_active', this.onCompareChange );
       this.listenTo(this.state, 'change:allbuildings', this.render);
       this.listenTo(this.state, 'change:selected_buildings', this.render);
+      this.listenTo(this.state, 'change:categories', this.onCategoryChange);
+
+      this.propertyTypeKey = 'property_type';
+      this._lastPropertyType = null;
 
       this.render();
     },
@@ -24,6 +28,16 @@ define([
       'click .toggle': 'onBarClickHandler',
       'click .close': 'onCloseHandler',
       'click .name': 'onNameClickHandler'
+    },
+
+    onCategoryChange: function() {
+      const propertyCategory = this.getPropertyCategory();
+      const value = propertyCategory ? propertyCategory.values[0] : null;
+
+      // Check for change in property_type category
+      if (value !== this._lastPropertyType) {
+        this.render();
+      }
     },
 
     onCompareChange: function() {
@@ -79,28 +93,43 @@ define([
       }
     },
 
+    getPropertyCategory: function() {
+      const cats = this.state.get('categories');
+      if (!_.isArray(cats)) return undefined;
+      return cats.find(cat => cat.field === this.propertyTypeKey);
+    },
+
     getContent: function() {
-      var o = {
+      const propertyCategory = this.getPropertyCategory();
+      const propertyType = propertyCategory ? propertyCategory.values[0] : null;
+
+      this._lastPropertyType = propertyType;
+
+      const o = {
         compares: Array.apply(null, Array(5)).map(function () {})
       };
 
-      var selected_buildings = this.state.get('selected_buildings') || [];
+      const selected_buildings = this.state.get('selected_buildings') || [];
 
-
-      var buildings = this.state.get('allbuildings');
+      const buildings = this.state.get('allbuildings');
       if (!buildings) return this.template(o);
 
-      var len = buildings.length - 1;
-      selected_buildings.forEach(function(building, i){
+      const len = buildings.length - 1;
+      selected_buildings.forEach((building, i) => {
         var model = buildings.get(building.id);
 
         if (!model) return;
 
+        const disabled = (propertyType && model.get(this.propertyTypeKey) !== propertyType);
+
         o.compares.splice(i, 1, {
           name: model.get('property_name'),
+          disabled,
           id: building.id
         });
       });
+
+
 
       return this.template(o)
     },
