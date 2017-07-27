@@ -11,14 +11,24 @@ define(['jquery', 'underscore', 'backbone'], function ($, _, Backbone) {
       this.selected_value = options.selected_value || null;
       this.width = this.height * this.aspectRatio;
       this.gradients = options.gradients;
-      this.qScale = options.quantileScale;
+      this.quantileScale = options.quantileScale;
       this.filterRange = options.filterRange;
       this.slices = options.slices; // Not sure why we have slices, when that value can be extrapulated from this.gradients
       this.chart = d3.select(this.el).append('svg').style({ width: '100%', height: '100%' }).attr('viewBox', '0 0 ' + this.width + ' ' + this.height).attr('preserveAspectRatio', "xMinYMin meet").style('background', 'transparent').append('g');
     },
 
+    update: function update(options) {
+      var _this = this;
+
+      Object.keys(options).forEach(function (k) {
+        if (_this.hasOwnProperty(k)) {
+          _this[k] = options[k];
+        }
+      });
+    },
+
     findQuantileIndexForValue: function findQuantileIndexForValue(val, quantiles) {
-      quantiles = quantiles || this.qScale.quantiles();
+      quantiles = quantiles || this.quantileScale.quantiles();
       var len = quantiles.length - 1;
 
       return _.reduce(quantiles, function (prev, curr, i) {
@@ -47,7 +57,7 @@ define(['jquery', 'underscore', 'backbone'], function ($, _, Backbone) {
     },
 
     highlightBar: function highlightBar(bars, context) {
-      var highlightIndex = context.selected_value !== null ? context.findQuantileIndexForValue(context.selected_value, context.qScale.quantiles()) : null;
+      var highlightIndex = context.selected_value !== null ? context.findQuantileIndexForValue(context.selected_value, context.quantileScale.quantiles()) : null;
 
       bars.classed('highlight', function (d, i) {
         return i === highlightIndex;
@@ -55,8 +65,8 @@ define(['jquery', 'underscore', 'backbone'], function ($, _, Backbone) {
     },
 
     render: function render() {
-      var qScale = this.qScale;
-      var quantiles = qScale.quantiles();
+      var quantileScale = this.quantileScale;
+      var quantiles = quantileScale.quantiles();
       var gradients = this.gradients,
           counts = _.pluck(gradients, 'count'),
           height = this.height,
@@ -66,11 +76,15 @@ define(['jquery', 'underscore', 'backbone'], function ($, _, Backbone) {
 
       var colorizer = d3.scale.linear().range(this.filterRange).domain([0, this.width]);
 
-      var bars = this.chart.selectAll("rect").data(gradients);
+      var bars = this.chart.selectAll("rect").data(gradients, function (d) {
+        return d.color;
+      });
 
-      bars.enter().append('rect').style({ fill: function fill(d, i) {
+      bars.enter().append('rect');
+
+      bars.style({ fill: function fill(d, i) {
           var val = xScale(i);
-          return qScale(colorizer(val));
+          return quantileScale(colorizer(val));
         } }).attr({
         width: function width() {
           return xScale.rangeBand() - xScale.rangeBand() / 3;
