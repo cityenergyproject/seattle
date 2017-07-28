@@ -2,18 +2,21 @@ define([
   'underscore',
   'd3'
 ], function(_, d3) {
-  var BuildingBucketCalculator = function(buildings, fieldName, buckets, filterRange) {
+  const BuildingBucketCalculator = function(buildings, fieldName, buckets, filterRange, thresholds) {
     this.buildings = buildings;
     this.fieldName = fieldName;
     this.buckets = buckets;
+    this.thresholds = thresholds;
     this.filterRange = filterRange || {};
   };
 
   BuildingBucketCalculator.prototype.getScale = function() {
-    var extent = this.toExtent(),
-        maxBuckets = this.buckets - 1;
+    const extent = this.toExtent();
+    const maxBuckets = this.buckets - 1;
 
-    var scale = d3.scale.linear().domain(extent).rangeRound([0, maxBuckets]);
+    let scale = d3.scale.linear()
+                  .domain(extent)
+                  .rangeRound([0, maxBuckets]);
 
     // stuff maxBuckets into scale, for future reference
     scale._maxBuckets = maxBuckets;
@@ -22,10 +25,11 @@ define([
   };
 
   BuildingBucketCalculator.prototype.toExtent = function() {
-    var fieldValues = this.buildings.pluck(this.fieldName),
-        extent = d3.extent(fieldValues),
-        min = this.filterRange.min,
-        max = this.filterRange.max;
+    const fieldValues = this.buildings.pluck(this.fieldName);
+    const extent = d3.extent(fieldValues);
+    const min = this.filterRange.min;
+    const max = this.filterRange.max;
+
     return [min || extent[0], max || extent[1]];
   };
 
@@ -39,17 +43,37 @@ define([
   };
 
   BuildingBucketCalculator.prototype.toBuckets = function() {
-    var self = this;
+    const scale = this.getScale();
+    const extent = scale.domain();
 
-    var scale =  this.getScale();
-    var extent = scale.domain();
 
-    return this.buildings.reduce(function(memo, building){
-      var value = building.get(self.fieldName);
-      if (!value) {return memo;}
-      var scaled = self.toBucket(value, extent, scale);
-      memo[scaled] = memo[scaled] + 1 || 1;
-      return memo;
+    if (this.thresholds) {
+      const thresholdsLength = this.thresholds.length;
+
+      return this.buildings.reduce((acc, building) => {
+        const value = building.get(this.fieldName);
+
+        if (!value) { return acc; }
+
+        let bucket = _.findIndex(this.thresholds, d => value < d);
+
+        if (bucket === -1) bucket = thresholdsLength;
+
+        acc[bucket] = acc[bucket] + 1 || 1;
+        return acc;
+      }, {});
+    }
+
+
+    return this.buildings.reduce((acc, building) => {
+      const value = building.get(this.fieldName);
+
+      if (!value) { return acc; }
+
+      let bucket = this.toBucket(value, extent, scale);
+      acc[bucket] = acc[bucket] + 1 || 1;
+
+      return acc;
     }, {});
   };
 

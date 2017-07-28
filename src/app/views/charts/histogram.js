@@ -15,6 +15,7 @@ define([
       this.gradients = options.gradients;
       this.quantileScale = options.quantileScale;
       this.filterRange = options.filterRange;
+      this.fieldName = options.fieldName;
       this.slices = options.slices; // Not sure why we have slices, when that value can be extrapulated from this.gradients
       this.chart = d3.select(this.el).append('svg')
                       .style({width: '100%', height: '100%'})
@@ -34,7 +35,7 @@ define([
 
     findQuantileIndexForValue: function(val, quantiles) {
       quantiles = quantiles || this.quantileScale.quantiles();
-      var len = quantiles.length - 1;
+      const len = quantiles.length - 1;
 
       return _.reduce(quantiles, function(prev, curr, i){
         // bail if we found an index
@@ -58,12 +59,15 @@ define([
       if (!this.chart || this.selected_value === val) return;
       this.selected_value = val;
 
-      this.chart.selectAll("rect").call(this.highlightBar, this);
+      this.chart.selectAll('rect').call(this.highlightBar, this);
     },
 
     highlightBar: function(bars, context) {
-      var highlightIndex = (context.selected_value !== null)
-              ? context.findQuantileIndexForValue(context.selected_value, context.quantileScale.quantiles()) : null;
+      const ctxValue = context.selected_value;
+
+      const highlightIndex = (ctxValue !== null)
+          ? context.findQuantileIndexForValue(ctxValue, context.quantileScale.quantiles()) :
+            null;
 
       bars.classed('highlight', function(d,i) {
         return i === highlightIndex;
@@ -71,49 +75,88 @@ define([
     },
 
     render: function(){
-      var quantileScale = this.quantileScale;
-      var quantiles = quantileScale.quantiles();
-      var gradients = this.gradients,
-          counts = _.pluck(gradients, 'count'),
-          height = this.height,
-          yScale = d3.scale.linear()
+      const quantileScale = this.quantileScale;
+      const isThreshold = quantileScale.quantiles ? true : false;
+
+      const quantiles = quantileScale.quantiles ?
+                [0, ...quantileScale.quantiles()] :
+                [0, ...quantileScale.domain()];
+
+      const gradients = this.gradients;
+      const counts = _.pluck(gradients, 'count');
+      const height = this.height;
+
+      const yScale = d3.scale.linear()
                      .domain([0, d3.max(counts)])
                      .range([0, this.height]);
 
-      var xScale = d3.scale.ordinal()
-                     .domain(d3.range(0, this.slices))
+      const xScale = d3.scale.ordinal()
+                     .domain(quantiles)
                      .rangeBands([0, this.width]);
 
-      var colorizer = d3.scale.linear()
-        .range(this.filterRange)
-        .domain([0, this.width]);
 
+      if (!isThreshold) {
+        xScale.domain([0, ...quantileScale.domain()]);
+        xScale.rangeRoundBands([0, this.width], 0.1);
 
+        console.log(xScale.range());
+        console.log(xScale.rangeBand());
+      }
 
-      var bars = this.chart.selectAll("rect")
-          .data(gradients, function(d){return d.color;});
+      this.xScale = xScale;
+
+      const bardata = xScale.domain().map((d,i) => {
+        return {
+          ...gradients[i],
+          idx: i,
+          pt: d,
+          xpt: xScale(d)
+        }
+      });
+
+      let xBuckets = xScale.range().slice(1);
+      xBuckets = xBuckets.map(d => Math.floor(d));
+
+      const findIndex = (x) => {
+
+        let bucket = _.findIndex(xBuckets, d => x < d);
+
+        if (bucket === -1) bucket = xBuckets.length;
+
+        return bucket;
+      };
+
+      this.extentFromValue = function(x) {
+        return findIndex(x);
+      };
+
+      const bars = this.chart.selectAll('rect')
+          .data(bardata, function(d){return d.color;});
 
       bars.enter().append('rect');
 
-      bars.style({fill: function(d, i){
-        var val = xScale(i);
-        return quantileScale(colorizer(val));
-      }})
+      bars
+      .style('fill', d => quantileScale(d.pt))
       .attr({
-        width: function() { return xScale.rangeBand() - (xScale.rangeBand() / 3); },
-        'stroke-width': function() { return xScale.rangeBand() / 6; },
-        height: function (data) { return yScale(data.count); },
-        x: function (data, i) { return xScale(i); },
-        y: function (data) { return height - yScale(data.count); }
+        width: () => {
+          if (!isThreshold) {
+            return xScale.rangeBand();
+          }
+          return xScale.rangeBand() - (xScale.rangeBand() / 3);
+        },
+        'stroke-width': () => xScale.rangeBand() / 6,
+        height: (d) => yScale(d.count),
+        x: (d, i) => xScale(d.pt),
+        y: d => (height - yScale(d.count))
       });
 
       bars.exit().remove();
 
-      bars.call(this.highlightBar, this);
+      if (!isThreshold) bars.call(this.highlightBar, this);
 
       this.chart.selectAll('rect')
                 .filter(function(bucket, index) { return bucket.current === index; })
-                .classed("current", true);
+                .classed('current', true);
 
       return this.el;
     }

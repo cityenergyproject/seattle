@@ -7,7 +7,8 @@ define([
   'text!templates/map/building_info.html'
 ], function($, _, Backbone, CityBuildings,
         BuildingColorBucketCalculator, BuildingInfoTemplate){
-  var baseCartoCSS = {
+
+  const baseCartoCSS = {
     dots: [
     '{marker-fill: #CCC;' +
     'marker-fill-opacity: 0.9;' +
@@ -29,21 +30,23 @@ define([
     ]
   };
 
-  var CartoStyleSheet = function(tableName, bucketCalculator, mode) {
+  const CartoStyleSheet = function(tableName, bucketCalculator, mode) {
     this.tableName = tableName;
     this.bucketCalculator = bucketCalculator;
     this.mode = mode;
   };
 
   CartoStyleSheet.prototype.toCartoCSS = function(){
-    var bucketCSS = this.bucketCalculator.toCartoCSS();
-    var styles = [...baseCartoCSS[this.mode]].concat(bucketCSS);
-    var tableName = this.tableName;
+    const bucketCSS = this.bucketCalculator.toCartoCSS();
+    const tableName = this.tableName;
+
+    let styles = [...baseCartoCSS[this.mode]].concat(bucketCSS);
 
     styles = _.reject(styles, function(s) { return !s; });
     styles = _.map(styles, function(s) { return `#${tableName} ${s}`; });
     return styles.join('\n');
   };
+
 
   var BuildingInfoPresenter = function(city, allBuildings,
                     buildingId, idKey, controls, defaultColor) {
@@ -333,8 +336,6 @@ define([
       return false;
     },
 
-
-
     onBuildingChange: function() {
       var building_id = this.state.get('building');
       var isShowing = (building_id === this._popupid);
@@ -454,12 +455,21 @@ define([
       var state = this.state;
       var city = state.get('city');
       var year = state.get('year');
-      var fieldName = state.get('layer');
-      var cityLayer = _.findWhere(city.get('map_layers'), {field_name: fieldName});
+      var layer = state.get('layer');
+
+      var cityLayer = _.find(city.get('map_layers'), lyr => {
+        if (lyr.id) return lyr.id === layer;
+        return lyr.field_name === layer;
+      });
+
+      var fieldName = cityLayer.field_name;
       var buckets = cityLayer.range_slice_count;
       var colorStops = cityLayer.color_range;
+
+      var thresholds = (cityLayer.thresholds) ? [24.8,29.1,36.0] : null;
       var calculator = new BuildingColorBucketCalculator(
-                              buildings, fieldName, buckets, colorStops, cssFillType);
+                              buildings, fieldName, buckets, colorStops, cssFillType, thresholds);
+
       var stylesheet = new CartoStyleSheet(buildings.tableName, calculator, layerMode);
 
       var sql = (layerMode === 'dots') ?
@@ -473,6 +483,8 @@ define([
 
       var cartocss = stylesheet.toCartoCSS();
       var interactivity = this.state.get('city').get('property_id');
+
+      if (cityLayer.thresholds) console.log(sql);
 
       return {
         sql: sql,

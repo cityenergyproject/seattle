@@ -98,7 +98,7 @@ define([
 
   CityBuildingQuery.prototype.toRangeSql = function(prefix) {
     prefix = prefix || '';
-    return _.map(this.ranges, function(range){
+    return _.map(this.ranges, function(range) {
       // Handle situations where there's only a min or only a max
       if (range.min && range.max)
         return prefix + range.field + " BETWEEN " + range.min + " AND " + range.max;

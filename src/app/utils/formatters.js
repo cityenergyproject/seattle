@@ -1,16 +1,15 @@
 define(['d3'], function($) {
-  var types = {
-    'default': function(d) { return d; },
+  const types = {
+    'default': d => d,
     'integer': d3.format(',.0f'),
-    'fixed': function(precision) {
+    'fixed': precision => {
       precision = precision || 0;
       precision = Math.max(precision, 0);
-
       return d3.format(',.' + precision + 'f');
     }
   };
 
-  var get = function(t) {
+  const get = function(t) {
     if (!t) return types.default;
 
     if (typeof t === 'function') return t;
@@ -29,7 +28,7 @@ define(['d3'], function($) {
     if (types[t]) return types[t];
 
     return types.default;
-  }
+  };
 
   return {
     types: types,

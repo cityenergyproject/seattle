@@ -44,9 +44,10 @@ define([
     },
 
     onLayerChange: function(){
-      var fieldName = this.layer.field_name,
-          currentLayer = this.state.get('layer'),
-          isCurrent = currentLayer == fieldName;
+      const layerID = this.layer.id ? this.layer.id : this.layer.field_name;
+      const currentLayer = this.state.get('layer');
+      const isCurrent = currentLayer == layerID;
+
       this.$el.toggleClass('current', isCurrent);
       this.$section().toggleClass('current', this.$section().find('.current').length > 0);
     },
@@ -177,9 +178,11 @@ define([
         }));
       }
 
+      const thresholds = (this.layer.thresholds) ? [24.8,29.1,36.0] : null;
+
       this.activeBuildings = buildings;
-      this.bucketCalculator = new BuildingBucketCalculator(buildings, fieldName, rangeSliceCount, filterRange);
-      this.gradientCalculator = new BuildingColorBucketCalculator(buildings, fieldName, rangeSliceCount, colorStops);
+      this.bucketCalculator = new BuildingBucketCalculator(buildings, fieldName, rangeSliceCount, filterRange, thresholds);
+      this.gradientCalculator = new BuildingColorBucketCalculator(buildings, fieldName, rangeSliceCount, colorStops, null, thresholds);
       this.gradientStops = this.gradientCalculator.toGradientStops();
       this.buckets = this.bucketCalculator.toBuckets();
 
@@ -205,10 +208,13 @@ define([
       var propTypeTemplate = _.template(FilterPropertyTypeTemplate);
       var template = _.template(FilterContainer);
       var fieldName = this.layer.field_name;
-      var safeFieldName = fieldName.toLowerCase().replace(/\s/g, "-");
-      var $el = $('#' + safeFieldName);
+      var idField = this.layer.id || fieldName.toLowerCase().replace(/\s/g, "-");
+      var $el = $('#' + idField);
+
+      var layerID = this.layer.id ? this.layer.id : fieldName;
       var currentLayer = this.state.get('layer');
-      var isCurrent = currentLayer == fieldName;
+      var isCurrent = currentLayer == layerID;
+
       var $section = this.$section();
       var filterRange = this.layer.filter_range;
       var rangeSliceCount = this.layer.range_slice_count;
@@ -232,13 +238,12 @@ define([
       const [proptype, proptype_val] = this.getPropertyTypeProps(propertyCategory);
       this._lastPropertyType = proptype;
 
-
       if ($el.length === 0) {
         this.$el.html(template(_.defaults(this.layer, {description: null})));
         this.$el.find('.filter-wrapper').html(filterTemplate({id: fieldName}));
         this.$el.find('.building-details').html(tableTemplate({table: tableData.data}));
         this.$el.find('.proptype-median-wrapper').html(propTypeTemplate({proptype, proptype_val}));
-        this.$el.attr('id', safeFieldName);
+        this.$el.attr('id', idField);
       } else {
         this.$el = $el;
       }
@@ -249,47 +254,18 @@ define([
       }
 
 
-      if (!this.$filter || isDirty) {
-        if (this.$filter) {
-          this.$filter.destroy();
-        }
-
-        const slider = this.$el.find('.filter-wrapper').ionRangeSlider({
-          type: 'double',
-          hide_from_to: false,
-          force_edges: true,
-          grid: false,
-          hide_min_max: true,
-          step: (filterRangeMax < 1) ? 0.0001 : 1,
-          prettify_enabled: !(fieldName.match(/year/) || fieldName.match(/energy_star/)), // TODO: don't hardcode this?
-          prettify: this.onPrettifyHandler(filterRangeMin, filterRangeMax),
-          onFinish: _.bind(this.onFilterFinish, this),
-        });
-
-        this.$filter = slider.data("ionRangeSlider");
-      }
-
-      // if this is a slider update, skip
-      // otherwise when user clicks on slider bar
-      // will cause a stack overflow
-      if (!isUpdate){
-        this.$filter.update({
-          from: filterState.min,
-          to: filterState.max,
-          min: filterRangeMin,
-          max: filterRangeMax
-        });
-      }
-
       if (!this.histogram) {
         var histogram_options = {
           gradients: bucketGradients,
           slices: rangeSliceCount,
           filterRange: [filterRangeMin, filterRangeMax],
           quantileScale: gradientCalculator.colorGradient().copy(),
-          selected_value: tableData.selected_value
+          selected_value: tableData.selected_value,
+          fieldName
         };
+
         this.histogram = new HistogramView(histogram_options);
+        this.$el.find('.chart').html(this.histogram.render());
       }
 
       if (isDirty) {
@@ -299,30 +275,93 @@ define([
           filterRange: [filterRangeMin, filterRangeMax],
           quantileScale: gradientCalculator.colorGradient().copy()
         });
+
+        this.$el.find('.chart').html(this.histogram.render());
       }
 
-      this.$el.find('.chart').html(this.histogram.render());
+
+      const scaleRange = this.histogram.xScale.range();
+      const scaleRangeMin = scaleRange[0];
+      const scaleRangeMax = scaleRange[scaleRange.length - 1];
+      if (!this.$filter || isDirty) {
+        if (this.$filter) {
+          this.$filter.destroy();
+        }
+
+        const slideOptions = {
+          type: 'double',
+          hide_from_to: false,
+          force_edges: true,
+          grid: false,
+          hide_min_max: true,
+          step: (filterRangeMax < 1) ? 0.0001 : 1,
+          prettify_enabled: !this.layer.disable_prettify,
+          prettify: this.onPrettifyHandler(filterRangeMin, filterRangeMax, this.histogram),
+          onFinish: _.bind(this.onFilterFinish, this),
+        };
+
+        if (this.layer.thresholds) {
+          slideOptions.values = scaleRange;
+
+          /*
+          slideOptions.grid = true;
+          slideOptions.grid_snap = true;
+          slideOptions.step = scaleRange[1] - scaleRange[0];
+          slideOptions.grid_num = 3;
+          slideOptions.grid_margin = true;
+          */
+
+        }
+        const slider = this.$el.find('.filter-wrapper').ionRangeSlider(slideOptions);
+        this.$filter = slider.data("ionRangeSlider");
+      }
+
+      // if this is a slider update, skip
+      // otherwise when user clicks on slider bar
+      // will cause a stack overflow
+      if (!isUpdate){
+        if (this.layer.thresholds) {
+          this.$filter.update({
+            from: scaleRangeMin,
+            to: scaleRangeMax,
+            min: scaleRangeMin,
+            max: scaleRangeMax
+          });
+        } else {
+          this.$filter.update({
+            from: filterState.min,
+            to: filterState.max,
+            min: filterRangeMin,
+            max: filterRangeMax
+          });
+        }
+      }
 
       this.$el.toggleClass('current', isCurrent);
-      if(isCurrent || $section.find('.current').length > 0) { $section.find('input').prop('checked', true); }
-      $section.toggleClass('current', isCurrent || $section.find('.current').length > 0);
+      if (isCurrent || $section.find('.current').length > 0) {
+        $section.find('input').prop('checked', true);
+      }
+
+      const sectionClass = isCurrent || $section.find('.current').length > 0;
+      $section.toggleClass('current', sectionClass);
 
       if (!isUpdate){
        $section.find('.category-control-container').append(this.$el);
       } else {
-        var positionInCategory;
-        $section.find('.category-control-container > .map-control').each(function(index, el){
-                if ($(el).attr('id') === this.layer.field_name){
-                  positionInCategory = index;
-                }
-               }.bind(this));
+        let positionInCategory;
+        $section.find('.category-control-container > .map-control')
+          .each((index, el) => {
+            if ($(el).attr('id') === idField){
+              positionInCategory = index;
+            }
+          });
 
         switch(positionInCategory){
           case 0:
-              $section.find('.category-control-container').prepend(this.$el);
-              break;
+            $section.find('.category-control-container').prepend(this.$el);
+            break;
           default:
-              $section.find(".category-control-container > div:nth-child(" + positionInCategory + ")").after(this.$el);
+            $section.find(".category-control-container > div:nth-child(" + positionInCategory + ")").after(this.$el);
         }
       }
 
@@ -330,18 +369,35 @@ define([
     },
 
     onFilterFinish: function(rangeSlider) {
-      var filters = this.state.get('filters'),
-          fieldName = this.layer.field_name;
+      const fieldName = this.layer.field_name;
+      const filters = _.reject(this.state.get('filters'), obj => obj.field == fieldName);
 
-      filters = _.reject(filters, function(f){ return f.field == fieldName; });
+      console.log('Slider: ', rangeSlider);
 
-      if (rangeSlider.from !== rangeSlider.min || rangeSlider.to !== rangeSlider.max){
+      const values = {
+        from: rangeSlider.from,
+        to: rangeSlider.to,
+        min: rangeSlider.min,
+        max: rangeSlider.max
+      };
+
+      const thresholds = (this.layer.thresholds) ? [24.8,29.1,36.0] : null;
+
+      if (values.from !== values.min || values.to !== values.max){
         var newFilter = {field: fieldName};
+
+        if (thresholds) newFilter.threshold = true;
+
         // Only include min or max in the filter if it is different from the rangeSlider extent.
         // This is important to the rangeSlider can clip the extreme values off, but we don't
         // want to use the rangeSlider extents to filter the data on the map.
-        if (rangeSlider.from !== rangeSlider.min) newFilter.min = rangeSlider.from;
-        if (rangeSlider.to   !== rangeSlider.max) newFilter.max = rangeSlider.to;
+        if (!thresholds) {
+          if (values.from !== values.min) newFilter.min = values.from;
+          if (values.to   !== values.max) newFilter.max = values.to;
+        } else {
+          if (values.from !== values.min && values.from !== 0) newFilter.min = thresholds[values.from - 1];
+          if (values.to   !== values.max && values.to !== 3) newFilter.max = thresholds[values.to];
+        }
         filters.push(newFilter);
       }
 
@@ -350,7 +406,17 @@ define([
       this.render(true);
     },
 
-    onPrettifyHandler: function(min, max) {
+    onPrettifyHandler: function(min, max, histogram) {
+
+      if (this.layer.thresholds) {
+        const scales = ['1st quartile', '2nd quartile', '3rd quartile', '4th quartile'];
+        return function(num) {
+          const idx = histogram.extentFromValue(num);
+
+          return scales[idx];
+        };
+
+      }
       return function(num) {
         switch(num) {
           case min: return num.toLocaleString();
@@ -366,8 +432,8 @@ define([
     },
 
     showLayer: function(){
-      var fieldName = this.layer.field_name;
-      this.state.set({layer: fieldName, sort: fieldName, order: 'desc'});
+      var layerID = this.layer.id ? this.layer.id : this.layer.field_name;
+      this.state.set({layer: layerID, sort: this.layer.field_name, order: 'desc'});
     },
 
     toggleMoreInfo: function(){
