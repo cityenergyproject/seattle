@@ -1,20 +1,30 @@
 'use strict';
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
 define(['jquery', 'underscore', 'backbone'], function ($, _, Backbone) {
 
   var HistogramView = Backbone.View.extend({
-    className: "histogram",
+    className: 'histogram',
 
     initialize: function initialize(options) {
+
       this.aspectRatio = options.aspectRatio || 7 / 1;
       this.height = 100;
-      this.selected_value = options.selected_value || null;
       this.width = this.height * this.aspectRatio;
+
+      this.selected_value = options.selected_value || null;
       this.gradients = options.gradients;
-      this.quantileScale = options.quantileScale;
+      this.colorScale = options.colorScale;
       this.filterRange = options.filterRange;
+      this.fieldName = options.fieldName;
       this.slices = options.slices; // Not sure why we have slices, when that value can be extrapulated from this.gradients
-      this.chart = d3.select(this.el).append('svg').style({ width: '100%', height: '100%' }).attr('viewBox', '0 0 ' + this.width + ' ' + this.height).attr('preserveAspectRatio', "xMinYMin meet").style('background', 'transparent').append('g');
+
+      this.chart = d3.select(this.el).append('svg').style({ width: '100%', height: '100%' }).attr('viewBox', '0 0 ' + this.width + ' ' + this.height).attr('preserveAspectRatio', "xMinYMin meet").style('background', 'transparent');
+
+      this.g = this.chart.append('g');
     },
 
     update: function update(options) {
@@ -28,7 +38,10 @@ define(['jquery', 'underscore', 'backbone'], function ($, _, Backbone) {
     },
 
     findQuantileIndexForValue: function findQuantileIndexForValue(val, quantiles) {
-      quantiles = quantiles || this.quantileScale.quantiles();
+      if (!quantiles) {
+        quantiles = this.colorScale.quantiles ? [].concat(_toConsumableArray(this.colorScale.quantiles())) : [].concat(_toConsumableArray(this.colorScale.domain()));
+      }
+
       var len = quantiles.length - 1;
 
       return _.reduce(quantiles, function (prev, curr, i) {
@@ -52,12 +65,15 @@ define(['jquery', 'underscore', 'backbone'], function ($, _, Backbone) {
     updateHighlight: function updateHighlight(val) {
       if (!this.chart || this.selected_value === val) return;
       this.selected_value = val;
-
-      this.chart.selectAll("rect").call(this.highlightBar, this);
+      this.chart.selectAll('rect').call(this.highlightBar, this);
     },
 
     highlightBar: function highlightBar(bars, context) {
-      var highlightIndex = context.selected_value !== null ? context.findQuantileIndexForValue(context.selected_value, context.quantileScale.quantiles()) : null;
+      var ctxValue = context.selected_value;
+
+      var quantiles = context.colorScale.quantiles ? [].concat(_toConsumableArray(context.colorScale.quantiles())) : [].concat(_toConsumableArray(context.colorScale.domain()));
+
+      var highlightIndex = ctxValue !== null ? context.findQuantileIndexForValue(ctxValue, quantiles) : null;
 
       bars.classed('highlight', function (d, i) {
         return i === highlightIndex;
@@ -65,41 +81,64 @@ define(['jquery', 'underscore', 'backbone'], function ($, _, Backbone) {
     },
 
     render: function render() {
-      var quantileScale = this.quantileScale;
-      var quantiles = quantileScale.quantiles();
-      var gradients = this.gradients,
-          counts = _.pluck(gradients, 'count'),
-          height = this.height,
-          yScale = d3.scale.linear().domain([0, d3.max(counts)]).range([0, this.height]);
+      var colorScale = this.colorScale;
+      var isThreshold = colorScale.quantiles ? false : true;
 
-      var xScale = d3.scale.ordinal().domain(d3.range(0, this.slices)).rangeBands([0, this.width]);
+      var gradients = this.gradients;
+      var counts = _.pluck(gradients, 'count');
+      var height = this.height;
 
-      var colorizer = d3.scale.linear().range(this.filterRange).domain([0, this.width]);
+      var yScale = d3.scale.linear().domain([0, d3.max(counts)]).range([0, this.height]);
 
-      var bars = this.chart.selectAll("rect").data(gradients, function (d) {
+      var xScale = d3.scale.ordinal().domain(d3.range(0, this.slices)).rangeBands([0, this.width], 0.2, 0);
+
+      // threshold types use rounded bands for convienence
+      if (isThreshold) {
+        xScale.rangeRoundBands([0, this.width], 0.1, 0);
+      }
+
+      var bardata = xScale.domain().map(function (d, i) {
+        return _extends({}, gradients[i], {
+          idx: i,
+          data: d,
+          xpos: xScale(d)
+        });
+      });
+
+      var filterValueForXpos = d3.scale.linear().range(this.filterRange).domain([0, this.width]);
+
+      // make scale available to caller
+      this.xScale = xScale;
+
+      // draw
+      var bars = this.g.selectAll('rect').data(bardata, function (d) {
         return d.color;
       });
 
       bars.enter().append('rect');
 
-      bars.style({ fill: function fill(d, i) {
-          var val = xScale(i);
-          return quantileScale(colorizer(val));
-        } }).attr({
+      bars.style('fill', function (d, i) {
+        // not on a continous scale
+        // so just need the color from data
+        if (isThreshold) return d.color;
+
+        // mapping the color continously
+        // so need to calculate the color for
+        // this xpos
+        return colorScale(filterValueForXpos(d.xpos));
+      }).attr({
         width: function width() {
-          return xScale.rangeBand() - xScale.rangeBand() / 3;
+          return xScale.rangeBand();
         },
-        'stroke-width': function strokeWidth() {
-          return xScale.rangeBand() / 6;
+        'stroke-width': 0,
+        height: function height(d) {
+          return yScale(d.count);
         },
-        height: function height(data) {
-          return yScale(data.count);
+        x: function x(d, i) {
+          return xScale(d.data);
         },
-        x: function x(data, i) {
-          return xScale(i);
-        },
-        y: function y(data) {
-          return height - yScale(data.count);
+        y: function y(d) {
+          return height - yScale(d.count);
         }
       });
 
@@ -107,9 +146,9 @@ define(['jquery', 'underscore', 'backbone'], function ($, _, Backbone) {
 
       bars.call(this.highlightBar, this);
 
-      this.chart.selectAll('rect').filter(function (bucket, index) {
+      this.g.selectAll('rect').filter(function (bucket, index) {
         return bucket.current === index;
-      }).classed("current", true);
+      }).classed('current', true);
 
       return this.el;
     }

@@ -366,6 +366,7 @@ html {
   line-height: 0 !important;
   padding: 0 !important;
   margin: 0 !important;
+  overflow: hidden;
   outline: none !important;
   z-index: -9999 !important;
   background: none !important;
@@ -917,6 +918,7 @@ header {
       #map-controls .control-cell.right .building-details td span {
         display: block; }
         #map-controls .control-cell.right .building-details td span.value {
+          text-transform: uppercase;
           font-size: 1.2em;
           font-weight: 500; }
         #map-controls .control-cell.right .building-details td span.unit {
@@ -926,9 +928,6 @@ header {
     box-shadow: inset 0 -1px #0047ba; }
   .compare-mode #map-controls .control-cell.right {
     left: 0; }
-  #map-controls .chart {
-    margin-top: 0.75em;
-    margin-bottom: 0.25em; }
   #map-controls .control-head {
     margin-bottom: .5em;
     line-height: 1.2em;
@@ -961,9 +960,25 @@ header {
     width: 100%; }
   #map-controls input:checked + label + .category-control-container {
     display: table; }
+  #map-controls .chart {
+    margin-top: 0.75em;
+    margin-bottom: 0.25em;
+    width: 100%;
+    height: 2.9375em;
+    padding: 0 0.5em; }
+  #map-controls .is-threshold.no-thresholds .chart {
+    height: 0; }
   #map-controls .histogram {
-    padding: 0 0.625em;
-    height: 2.9375em; }
+    width: 100%;
+    height: 100%; }
+  #map-controls .is-threshold.no-thresholds .histogram {
+    display: none; }
+  #map-controls .no-threshold-proptype {
+    display: none;
+    font-size: 0.9em;
+    font-style: italic; }
+  #map-controls .is-threshold.no-thresholds .no-threshold-proptype {
+    display: block; }
   #map-controls .proptype-median {
     color: #0047ba;
     font-size: 0.75em;
@@ -973,6 +988,25 @@ header {
     #map-controls .proptype-median > span {
       font-size: 1.25em;
       font-weight: 500; }
+  #map-controls .is-threshold .proptype-median {
+    display: none; }
+  #map-controls .is-threshold.no-thresholds .filter-wrapper {
+    display: none;
+    pointer-events: none; }
+  #map-controls .quartiles {
+    height: 20px;
+    padding: 0 0.5em; }
+    #map-controls .quartiles .inner {
+      position: relative; }
+    #map-controls .quartiles .qlabel {
+      position: absolute;
+      text-align: center;
+      font-size: 0.8em; }
+  #map-controls .quartiles,
+  #map-controls .is-threshold.no-thresholds .quartiles {
+    display: none; }
+  #map-controls .is-threshold .quartiles {
+    display: block; }
 
 #map-controls {
   background-color: transparent; }

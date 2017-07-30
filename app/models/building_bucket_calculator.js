@@ -1,16 +1,17 @@
 'use strict';
 
 define(['underscore', 'd3'], function (_, d3) {
-  var BuildingBucketCalculator = function BuildingBucketCalculator(buildings, fieldName, buckets, filterRange) {
+  var BuildingBucketCalculator = function BuildingBucketCalculator(buildings, fieldName, buckets, filterRange, thresholds) {
     this.buildings = buildings;
     this.fieldName = fieldName;
     this.buckets = buckets;
+    this.thresholds = thresholds;
     this.filterRange = filterRange || {};
   };
 
   BuildingBucketCalculator.prototype.getScale = function () {
-    var extent = this.toExtent(),
-        maxBuckets = this.buckets - 1;
+    var extent = this.toExtent();
+    var maxBuckets = this.buckets - 1;
 
     var scale = d3.scale.linear().domain(extent).rangeRound([0, maxBuckets]);
 
@@ -21,11 +22,15 @@ define(['underscore', 'd3'], function (_, d3) {
   };
 
   BuildingBucketCalculator.prototype.toExtent = function () {
-    var fieldValues = this.buildings.pluck(this.fieldName),
-        extent = d3.extent(fieldValues),
-        min = this.filterRange.min,
-        max = this.filterRange.max;
-    return [min || extent[0], max || extent[1]];
+    var fieldValues = this.buildings.pluck(this.fieldName);
+    var extent = d3.extent(fieldValues);
+    var min = this.filterRange.min;
+    var max = this.filterRange.max;
+
+    if (_.isNaN(min)) min = extent[0];
+    if (_.isNaN(max)) max = extent[1];
+
+    return [min, max];
   };
 
   // Allow for extent & scale to be passed in,
@@ -38,19 +43,43 @@ define(['underscore', 'd3'], function (_, d3) {
   };
 
   BuildingBucketCalculator.prototype.toBuckets = function () {
-    var self = this;
+    var _this = this;
 
     var scale = this.getScale();
     var extent = scale.domain();
 
-    return this.buildings.reduce(function (memo, building) {
-      var value = building.get(self.fieldName);
+    if (this.thresholds) {
+      var thresholdsLength = this.thresholds.length;
+
+      return this.buildings.reduce(function (acc, building) {
+        var value = building.get(_this.fieldName);
+
+        if (!value) {
+          return acc;
+        }
+
+        var bucket = _.findIndex(_this.thresholds, function (d) {
+          return value < d;
+        });
+
+        if (bucket === -1) bucket = thresholdsLength;
+
+        acc[bucket] = acc[bucket] + 1 || 1;
+        return acc;
+      }, {});
+    }
+
+    return this.buildings.reduce(function (acc, building) {
+      var value = building.get(_this.fieldName);
+
       if (!value) {
-        return memo;
+        return acc;
       }
-      var scaled = self.toBucket(value, extent, scale);
-      memo[scaled] = memo[scaled] + 1 || 1;
-      return memo;
+
+      var bucket = _this.toBucket(value, extent, scale);
+      acc[bucket] = acc[bucket] + 1 || 1;
+
+      return acc;
     }, {});
   };
 

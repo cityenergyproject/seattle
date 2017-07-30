@@ -80,9 +80,14 @@ define(['jquery', 'deparam', 'underscore', 'backbone', 'models/city', 'models/sc
 
   StateBuilder.prototype.toLayer = function (year) {
     var currentLayer = this.layer;
-    var availableLayers = _.chain(this.city.map_layers).pluck('field_name');
     var defaultLayer = this.city.years[year].default_layer;
-    return availableLayers.contains(currentLayer).value() ? currentLayer : defaultLayer;
+
+    var match = _.find(this.city.map_layers, function (lyr) {
+      var name = lyr.id || lyr.field_name;
+      return name === currentLayer;
+    });
+
+    return match !== undefined ? currentLayer : defaultLayer;
   };
 
   StateBuilder.prototype.toState = function () {

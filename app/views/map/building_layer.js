@@ -3,6 +3,7 @@
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 define(['jquery', 'underscore', 'backbone', 'collections/city_buildings', 'models/building_color_bucket_calculator', 'text!templates/map/building_info.html'], function ($, _, Backbone, CityBuildings, BuildingColorBucketCalculator, BuildingInfoTemplate) {
+
   var baseCartoCSS = {
     dots: ['{marker-fill: #CCC;' + 'marker-fill-opacity: 0.9;' + 'marker-line-color: #FFF;' + 'marker-line-width: 0.5;' + 'marker-line-opacity: 1;' + 'marker-placement: point;' + 'marker-multi-policy: largest;' + 'marker-type: ellipse;' + 'marker-allow-overlap: true;' + 'marker-clip: false;}'],
     footprints: ['{polygon-fill: #CCC;' + 'polygon-opacity: 0.9;' + 'line-width: 1;' + 'line-color: #FFF;' + 'line-opacity: 0.5;}']
@@ -16,8 +17,9 @@ define(['jquery', 'underscore', 'backbone', 'collections/city_buildings', 'model
 
   CartoStyleSheet.prototype.toCartoCSS = function () {
     var bucketCSS = this.bucketCalculator.toCartoCSS();
-    var styles = [].concat(_toConsumableArray(baseCartoCSS[this.mode])).concat(bucketCSS);
     var tableName = this.tableName;
+
+    var styles = [].concat(_toConsumableArray(baseCartoCSS[this.mode])).concat(bucketCSS);
 
     styles = _.reject(styles, function (s) {
       return !s;
@@ -418,11 +420,20 @@ define(['jquery', 'underscore', 'backbone', 'collections/city_buildings', 'model
       var state = this.state;
       var city = state.get('city');
       var year = state.get('year');
-      var fieldName = state.get('layer');
-      var cityLayer = _.findWhere(city.get('map_layers'), { field_name: fieldName });
+      var layer = state.get('layer');
+      var thresholds = state.get('layer_thresholds');
+
+      var cityLayer = _.find(city.get('map_layers'), function (lyr) {
+        if (lyr.id) return lyr.id === layer;
+        return lyr.field_name === layer;
+      });
+
+      var fieldName = cityLayer.field_name;
       var buckets = cityLayer.range_slice_count;
       var colorStops = cityLayer.color_range;
-      var calculator = new BuildingColorBucketCalculator(buildings, fieldName, buckets, colorStops, cssFillType);
+
+      var calculator = new BuildingColorBucketCalculator(buildings, fieldName, buckets, colorStops, cssFillType, thresholds);
+
       var stylesheet = new CartoStyleSheet(buildings.tableName, calculator, layerMode);
 
       var sql = layerMode === 'dots' ? buildings.toSql(year, state.get('categories'), state.get('filters')) : this.footprintGenerateSql.sql(buildings.toSqlComponents(year, state.get('categories'), state.get('filters'), 'b.'));

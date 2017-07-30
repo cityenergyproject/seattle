@@ -1,16 +1,25 @@
-'use strict';
+"use strict";
 
-define(['d3'], function ($) {
+define(['d3'], function (d3) {
+  var QUARTILES = ["1st quartile", "2nd quartile", "3rd quartile", "4th quartile"];
+
   var types = {
-    'default': function _default(d) {
+    default: function _default(d) {
       return d;
     },
-    'integer': d3.format(',.0f'),
-    'fixed': function fixed(precision) {
+    integer: d3.format(',.0f'),
+    fixed: function fixed(precision) {
       precision = precision || 0;
       precision = Math.max(precision, 0);
-
       return d3.format(',.' + precision + 'f');
+    },
+    quartile: function quartile(idx) {
+      return QUARTILES[idx] || '';
+    },
+    threshold: function threshold(labels) {
+      return function (idx) {
+        return labels[idx] || '';
+      };
     }
   };
 
@@ -29,6 +38,12 @@ define(['d3'], function ($) {
 
       return types.fixed(precision);
     }
+
+    for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+      args[_key - 1] = arguments[_key];
+    }
+
+    if (t === 'threshold') return types[t].apply(types, args);
 
     if (types[t]) return types[t];
 

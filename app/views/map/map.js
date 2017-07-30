@@ -1,6 +1,6 @@
 'use strict';
 
-define(['jquery', 'underscore', 'backbone', 'views/map/building_layer', 'views/map/filter', 'views/map/category', 'selectize', 'text!templates/map_controls/property_type_selectlist.html'], function ($, _, Backbone, BuildingLayer, Filter, Category, selectize, ProptypeSelectListTemplate) {
+define(['jquery', 'underscore', 'backbone', 'views/map/building_layer', 'views/map/filter', 'views/map/category', 'utils/threshold', 'selectize', 'text!templates/map_controls/property_type_selectlist.html'], function ($, _, Backbone, BuildingLayer, Filter, Category, ThresholdUtils, selectize, ProptypeSelectListTemplate) {
   var MapView = Backbone.View.extend({
     el: $('#map'),
 
@@ -52,9 +52,27 @@ define(['jquery', 'underscore', 'backbone', 'views/map/building_layer', 'views/m
             });
           }
 
-          _this.state.set('categories', newCats);
+          _this.state.set({
+            categories: newCats,
+            layer_thresholds: _this.getThreshold(val)
+          });
         }
       });
+    },
+
+    getThreshold: function getThreshold(propType) {
+
+      // TODO: This will fail loudly
+      var availableThresholds = this.state.get('city').get('scorecard').thresholds.eui;
+      var year = this.state.get('year');
+      var threshold = ThresholdUtils.getThresholds(availableThresholds, propType, year);
+
+      if (threshold.error) {
+        console.warn(threshold.error);
+        return null;
+      }
+
+      return threshold.data;
     },
 
     render: function render() {
