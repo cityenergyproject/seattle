@@ -8,21 +8,25 @@ define([
     className: 'histogram',
 
     initialize: function(options){
+
       this.aspectRatio = options.aspectRatio || 7/1;
       this.height = 100;
-      this.selected_value = options.selected_value || null;
       this.width = this.height * this.aspectRatio;
+
+      this.selected_value = options.selected_value || null;
       this.gradients = options.gradients;
       this.colorScale = options.colorScale;
       this.filterRange = options.filterRange;
       this.fieldName = options.fieldName;
       this.slices = options.slices; // Not sure why we have slices, when that value can be extrapulated from this.gradients
+
       this.chart = d3.select(this.el).append('svg')
-                      .style({width: '100%', height: '100%'})
-                      .attr('viewBox', '0 0 ' + this.width + ' ' + this.height)
-                      .attr('preserveAspectRatio', "xMinYMin meet")
-                      .style('background', 'transparent')
-                      .append('g');
+                            .style({width: '100%', height: '100%'})
+                            .attr('viewBox', '0 0 ' + this.width + ' ' + this.height)
+                            .attr('preserveAspectRatio', "xMinYMin meet")
+                            .style('background', 'transparent');
+
+      this.g = this.chart.append('g');
     },
 
     update: function(options) {
@@ -34,12 +38,6 @@ define([
     },
 
     findQuantileIndexForValue: function(val, quantiles) {
-      /*
-      const quantiles = colorScale.quantiles ?
-                [0, ...colorScale.quantiles()] :
-                [0, ...colorScale.domain()];
-       */
-
       if (!quantiles) {
         quantiles = this.colorScale.quantiles ?
                         [...this.colorScale.quantiles()] :
@@ -92,6 +90,7 @@ define([
     render: function(){
       const colorScale = this.colorScale;
       const isThreshold = colorScale.quantiles ? false : true;
+
       const gradients = this.gradients;
       const counts = _.pluck(gradients, 'count');
       const height = this.height;
@@ -106,7 +105,7 @@ define([
 
       // threshold types use rounded bands for convienence
       if (isThreshold) {
-        xScale.rangeRoundBands([0, this.width], 0.1);
+        xScale.rangeRoundBands([0, this.width], 0.1, 0);
       }
 
       const bardata = xScale.domain().map((d,i) => {
@@ -126,7 +125,7 @@ define([
       this.xScale = xScale;
 
       // draw
-      const bars = this.chart.selectAll('rect')
+      const bars = this.g.selectAll('rect')
           .data(bardata, function(d){return d.color;});
 
       bars.enter().append('rect');
@@ -154,9 +153,9 @@ define([
 
       bars.exit().remove();
 
-      if (!isThreshold) bars.call(this.highlightBar, this);
+      bars.call(this.highlightBar, this);
 
-      this.chart.selectAll('rect')
+      this.g.selectAll('rect')
                 .filter((bucket, index) => { return bucket.current === index; })
                 .classed('current', true);
 

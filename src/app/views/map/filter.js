@@ -8,14 +8,16 @@ define([
   'models/building_color_bucket_calculator',
   'views/charts/histogram',
   'utils/formatters',
+  'utils/threshold',
   'text!templates/map_controls/filter_section_header.html',
   'text!templates/map_controls/filter.html',
+  'text!templates/map_controls/filter_quartile.html',
   'text!templates/map_controls/filter_container.html',
   'text!templates/map_controls/filter_building_details.html',
   'text!templates/map_controls/filter_property_type.html'
 ], function($, _, Backbone, d3, Ion, BuildingBucketCalculator,
-            BuildingColorBucketCalculator, HistogramView, Formatters,
-            FilterSectionHeader, FilterTemplate, FilterContainer,
+            BuildingColorBucketCalculator, HistogramView, Formatters, ThresholdUtils,
+            FilterSectionHeader, FilterTemplate, FilterQuartileTemplate, FilterContainer,
             FilterBuildingDetailsTemplate, FilterPropertyTypeTemplate){
 
   var MapControlView = Backbone.View.extend({
@@ -40,6 +42,8 @@ define([
 
       // Hack to keep track of property_type changes
       this._lastPropertyType = null;
+
+      this.isThreshold = this.layer.thresholds ? true : false;
 
       this.memorize();
     },
@@ -113,8 +117,6 @@ define([
       const propertyCategory = this.getPropertyCategory();
       const propertyType = propertyCategory ? propertyCategory.values[0] : null;
 
-      const thresholds = (this.layer.thresholds) ? [24.8,29.1,36.0] : null;
-
       var o = {
         selected_value: null
       };
@@ -148,6 +150,11 @@ define([
     getPropertyCategory: function() {
       const cats = this.state.get('categories');
       return cats.find(cat => cat.field === this.propertyTypeKey);
+    },
+
+    getPropertyType: function() {
+      const propertyCategory = this.getPropertyCategory();
+      return propertyCategory ? propertyCategory.values[0] : null;
     },
 
     getPropertyTypeProps: function(category) {
@@ -190,15 +197,20 @@ define([
         }));
       }
 
-      const thresholds = (this.layer.thresholds) ? [24.8,29.1,36.0] : null;
+      this.threshold_values = null;
+      this.valueToIndex = null;
+      this.threshold_labels = null;
 
-      if (thresholds) {
-        this.valueToIndex = d3.scale.threshold().domain(thresholds).range(d3.range(0, thresholds.length + 1));
+      this.threshold_values = this.isThreshold ? this.state.get('layer_thresholds') : null;
+
+      if (this.threshold_values) {
+        this.valueToIndex = ThresholdUtils.thresholdIndexScale(this.threshold_values);
+        this.threshold_labels = ThresholdUtils.makeLabels(this.threshold_values);
       }
 
       this.activeBuildings = buildings;
-      this.bucketCalculator = new BuildingBucketCalculator(buildings, fieldName, rangeSliceCount, filterRange, thresholds);
-      this.gradientCalculator = new BuildingColorBucketCalculator(buildings, fieldName, rangeSliceCount, colorStops, null, thresholds);
+      this.bucketCalculator = new BuildingBucketCalculator(buildings, fieldName, rangeSliceCount, filterRange, this.threshold_values);
+      this.gradientCalculator = new BuildingColorBucketCalculator(buildings, fieldName, rangeSliceCount, colorStops, null, this.threshold_values);
       this.gradientStops = this.gradientCalculator.toGradientStops();
       this.buckets = this.bucketCalculator.toBuckets();
 
@@ -223,6 +235,7 @@ define([
       const propertyCategory = this.getPropertyCategory();
       var propTypeTemplate = _.template(FilterPropertyTypeTemplate);
       var template = _.template(FilterContainer);
+      var quartileTemplate = _.template(FilterQuartileTemplate);
       var fieldName = this.layer.field_name;
       var idField = this.layer.id || fieldName.toLowerCase().replace(/\s/g, "-");
       var $el = $('#' + idField);
@@ -243,9 +256,9 @@ define([
       var gradientStops = this.gradientStops;
       var filterTemplate = _.template(FilterTemplate);
       var stateFilters = this.state.get('filters');
-      var filterState = _.findWhere(stateFilters, {field: fieldName}) || {min: extent[0], max: extent[1]};
-      var filterRangeMin = (filterRange && filterRange.min) ? filterRange.min : extent[0];
-      var filterRangeMax = (filterRange && filterRange.max) ? filterRange.max : extent[1];
+      var filterState = _.findWhere(stateFilters, {field: idField}) || {min: extent[0], max: extent[1]};
+      var filterRangeMin = (filterRange && _.isNaN(filterRange.min)) ? filterRange.min : extent[0];
+      var filterRangeMax = (filterRange && _.isNaN(filterRange.max)) ? filterRange.max : extent[1];
       var bucketGradients = this.bucketGradients;
 
       var tableTemplate = _.template(FilterBuildingDetailsTemplate);
@@ -254,9 +267,13 @@ define([
       const [proptype, proptype_val] = this.getPropertyTypeProps(propertyCategory);
       this._lastPropertyType = proptype;
 
+      let containerKlass = [];
+      if (this.isThreshold) containerKlass.push('is-threshold');
+      if (this.isThreshold && !this.threshold_values) containerKlass.push('no-thresholds');
+      containerKlass = containerKlass.join(' ');
 
       if ($el.length === 0) {
-        this.$el.html(template(_.defaults(this.layer, {description: null})));
+        this.$el.html(template(_.extend({containerKlass: containerKlass}, _.defaults(this.layer, {description: null}))));
         this.$el.find('.filter-wrapper').html(filterTemplate({id: layerID}));
         this.$el.find('.building-details').html(tableTemplate({table: tableData.data}));
         this.$el.find('.proptype-median-wrapper').html(propTypeTemplate({proptype, proptype_val}));
@@ -266,9 +283,15 @@ define([
       }
 
       if (isDirty) {
+        this.$el.find('.control-cell--inner')[0].className = `control-cell--inner ${containerKlass}`;
         this.$el.find('.building-details').html(tableTemplate({table: tableData.data}));
         this.$el.find('.proptype-median-wrapper').html(propTypeTemplate({proptype, proptype_val}));
       }
+
+      this.domit($section, this.$el, isCurrent, isUpdate, idField);
+
+
+      const chartElm = this.$el.find('.chart');
 
       if (!this.histogram) {
         var histogram_options = {
@@ -277,11 +300,13 @@ define([
           filterRange: [filterRangeMin, filterRangeMax],
           colorScale: gradientCalculator.colorGradient().copy(),
           selected_value: tableData.selected_value,
+          outerwidth: chartElm.width(),
+          outerheight: chartElm.height(),
           fieldName
         };
 
         this.histogram = new HistogramView(histogram_options);
-        this.$el.find('.chart').html(this.histogram.render());
+        chartElm.html(this.histogram.render());
       }
 
       if (isDirty) {
@@ -289,15 +314,29 @@ define([
           gradients: bucketGradients,
           slices: rangeSliceCount,
           filterRange: [filterRangeMin, filterRangeMax],
-          colorScale: gradientCalculator.colorGradient().copy()
+          colorScale: gradientCalculator.colorGradient().copy(),
+          outerwidth: chartElm.width(),
+          outerheight: chartElm.height()
         });
 
-        this.$el.find('.chart').html(this.histogram.render());
+        chartElm.html(this.histogram.render());
+
+        if (this.threshold_labels) {
+          const svg = this.histogram.$el.find('svg')[0];
+          const svgScaleFactor = svg ? svg.getCTM().a : 1;
+          const qlabels = {
+            width: this.histogram.xScale.rangeBand() * svgScaleFactor,
+            labels: this.threshold_labels,
+            positions: this.histogram.xScale.range().map(d => d * svgScaleFactor)
+          }
+
+          this.$el.find('.quartiles').html(quartileTemplate(qlabels));
+        }
       }
 
-      const scaleRange = this.histogram.xScale.range();
-      const scaleRangeMin = 0; //scaleRange[0];
-      const scaleRangeMax = rangeSliceCount; //scaleRange[scaleRange.length - 1];
+
+
+
       if (!this.$filter || isDirty) {
         if (this.$filter) {
           this.$filter.destroy();
@@ -315,17 +354,8 @@ define([
           onFinish: _.bind(this.onFilterFinish, this),
         };
 
-        if (this.layer.thresholds) {
+        if (this.isThreshold) {
           slideOptions.values = d3.range(0, rangeSliceCount);
-
-          /* Grid approach
-          slideOptions.grid = true;
-          slideOptions.grid_snap = true;
-          slideOptions.step = scaleRange[1] - scaleRange[0];
-          slideOptions.grid_num = 3;
-          slideOptions.grid_margin = true;
-          */
-
         }
 
         const slider = this.$el.find('.range.filter').ionRangeSlider(slideOptions);
@@ -344,19 +374,23 @@ define([
         });
       }
 
-      this.$el.toggleClass('current', isCurrent);
-      if (isCurrent || $section.find('.current').length > 0) {
-        $section.find('input').prop('checked', true);
+      return this;
+    },
+
+    domit: function(section, elm, isCurrent, isUpdate, idField) {
+      elm.toggleClass('current', isCurrent);
+      if (isCurrent || section.find('.current').length > 0) {
+        section.find('input').prop('checked', true);
       }
 
-      const sectionClass = isCurrent || $section.find('.current').length > 0;
-      $section.toggleClass('current', sectionClass);
+      const sectionClass = isCurrent || section.find('.current').length > 0;
+      section.toggleClass('current', sectionClass);
 
       if (!isUpdate){
-       $section.find('.category-control-container').append(this.$el);
+       section.find('.category-control-container').append(elm);
       } else {
         let positionInCategory;
-        $section.find('.category-control-container > .map-control')
+        section.find('.category-control-container > .map-control')
           .each((index, el) => {
             if ($(el).attr('id') === idField){
               positionInCategory = index;
@@ -365,21 +399,17 @@ define([
 
         switch(positionInCategory){
           case 0:
-            $section.find('.category-control-container').prepend(this.$el);
+            section.find('.category-control-container').prepend(elm);
             break;
           default:
-            $section.find(".category-control-container > div:nth-child(" + positionInCategory + ")").after(this.$el);
+            section.find(".category-control-container > div:nth-child(" + positionInCategory + ")").after(elm);
         }
       }
-
-      return this;
     },
 
     onFilterFinish: function(rangeSlider) {
       const fieldName = this.layer.field_name;
       const filters = _.reject(this.state.get('filters'), obj => obj.field == fieldName);
-
-      console.log('Slider: ', rangeSlider);
 
       const values = {
         from: rangeSlider.from,
@@ -388,12 +418,12 @@ define([
         max: rangeSlider.max
       };
 
-      const thresholds = (this.layer.thresholds) ? [24.8,29.1,36.0] : null;
+      const thresholds = this.threshold_values;
 
       if (values.from !== values.min || values.to !== values.max){
         var newFilter = {field: fieldName};
 
-        if (thresholds) newFilter.threshold = true;
+        if (this.isThreshold) newFilter.threshold = true;
 
         // Only include min or max in the filter if it is different from the rangeSlider extent.
         // This is important to the rangeSlider can clip the extreme values off, but we don't
@@ -405,6 +435,7 @@ define([
           if (values.from !== values.min && values.from !== 0) newFilter.min = thresholds[values.from - 1];
           if (values.to   !== values.max && values.to !== 3) newFilter.max = thresholds[values.to];
         }
+
         filters.push(newFilter);
       }
 
@@ -415,7 +446,7 @@ define([
 
     onPrettifyHandler: function(min, max, histogram) {
 
-      if (this.layer.thresholds) {
+      if (this.isThreshold) {
         const labels = this.layer.slider_labels;
         return function(num) {
           return labels[num] || '';
@@ -438,7 +469,9 @@ define([
 
     showLayer: function(){
       var layerID = this.layer.id ? this.layer.id : this.layer.field_name;
-      this.state.set({layer: layerID, sort: this.layer.field_name, order: 'desc'});
+
+      ///layer_thresholds: this.threshold_values
+      this.state.set({layer: layerID ,sort: this.layer.field_name, order: 'desc'});
     },
 
     toggleMoreInfo: function(){

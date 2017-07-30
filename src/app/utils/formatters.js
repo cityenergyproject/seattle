@@ -1,4 +1,4 @@
-define(['d3'], function($) {
+define(['d3'], function(d3) {
   const QUARTILES = ["1st quartile", "2nd quartile", "3rd quartile", "4th quartile"];
 
   const types = {

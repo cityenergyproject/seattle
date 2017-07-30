@@ -5,9 +5,10 @@ define([
   'views/map/building_layer',
   'views/map/filter',
   'views/map/category',
+  'utils/threshold',
   'selectize',
   'text!templates/map_controls/property_type_selectlist.html'
-], function($, _, Backbone, BuildingLayer, Filter, Category, selectize, ProptypeSelectListTemplate) {
+], function($, _, Backbone, BuildingLayer, Filter, Category, ThresholdUtils, selectize, ProptypeSelectListTemplate) {
   var MapView = Backbone.View.extend({
     el: $('#map'),
 
@@ -55,9 +56,27 @@ define([
             });
           }
 
-          this.state.set('categories', newCats);
+          this.state.set({
+            categories: newCats,
+            layer_thresholds: this.getThreshold(val)
+          });
         }
       });
+    },
+
+    getThreshold: function(propType) {
+
+      // TODO: This will fail loudly
+      const availableThresholds = this.state.get('city').get('scorecard').thresholds.eui;
+      const year = this.state.get('year');
+      const threshold = ThresholdUtils.getThresholds(availableThresholds, propType, year);
+
+      if (threshold.error) {
+        console.warn(threshold.error);
+        return null;
+      }
+
+      return threshold.data;
     },
 
     render: function(){

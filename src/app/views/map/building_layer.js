@@ -456,6 +456,7 @@ define([
       var city = state.get('city');
       var year = state.get('year');
       var layer = state.get('layer');
+      var thresholds = state.get('layer_thresholds');
 
       var cityLayer = _.find(city.get('map_layers'), lyr => {
         if (lyr.id) return lyr.id === layer;
@@ -466,7 +467,6 @@ define([
       var buckets = cityLayer.range_slice_count;
       var colorStops = cityLayer.color_range;
 
-      var thresholds = (cityLayer.thresholds) ? [24.8,29.1,36.0] : null;
       var calculator = new BuildingColorBucketCalculator(
                               buildings, fieldName, buckets, colorStops, cssFillType, thresholds);
 
@@ -483,8 +483,6 @@ define([
 
       var cartocss = stylesheet.toCartoCSS();
       var interactivity = this.state.get('city').get('property_id');
-
-      if (cityLayer.thresholds) console.log(sql);
 
       return {
         sql: sql,

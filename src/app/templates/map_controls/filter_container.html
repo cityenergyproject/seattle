@@ -1,5 +1,5 @@
 <div class='control-cell left'>
-  <div class='control-cell--inner'>
+  <div class='control-cell--inner <%= containerKlass %>'>
     <div class="control-head">
       <h3 class='show-layer'><%= title %></h3>
       <% if (description) { %>
@@ -8,6 +8,8 @@
     </div>
 
     <div class="chart"></div>
+    <p class="no-threshold-proptype">Building EUI Quartiles cannot be calculated across building types. Select a building type above to view this metric.</p>
+    <div class="quartiles"></div>
     <div class="filter-wrapper"></div>
     <div class="proptype-median-wrapper"></div>
 

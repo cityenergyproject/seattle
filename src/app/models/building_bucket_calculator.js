@@ -27,10 +27,13 @@ define([
   BuildingBucketCalculator.prototype.toExtent = function() {
     const fieldValues = this.buildings.pluck(this.fieldName);
     const extent = d3.extent(fieldValues);
-    const min = this.filterRange.min;
-    const max = this.filterRange.max;
+    let min = this.filterRange.min;
+    let max = this.filterRange.max;
 
-    return [min || extent[0], max || extent[1]];
+    if (_.isNaN(min)) min = extent[0];
+    if (_.isNaN(max)) max = extent[1];
+
+    return [min, max];
   };
 
   // Allow for extent & scale to be passed in,
