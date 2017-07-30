@@ -5,7 +5,7 @@ define([
 ], function($, _, Backbone){
 
   var HistogramView = Backbone.View.extend({
-    className: "histogram",
+    className: 'histogram',
 
     initialize: function(options){
       this.aspectRatio = options.aspectRatio || 7/1;
@@ -13,7 +13,7 @@ define([
       this.selected_value = options.selected_value || null;
       this.width = this.height * this.aspectRatio;
       this.gradients = options.gradients;
-      this.quantileScale = options.quantileScale;
+      this.colorScale = options.colorScale;
       this.filterRange = options.filterRange;
       this.fieldName = options.fieldName;
       this.slices = options.slices; // Not sure why we have slices, when that value can be extrapulated from this.gradients
@@ -34,7 +34,18 @@ define([
     },
 
     findQuantileIndexForValue: function(val, quantiles) {
-      quantiles = quantiles || this.quantileScale.quantiles();
+      /*
+      const quantiles = colorScale.quantiles ?
+                [0, ...colorScale.quantiles()] :
+                [0, ...colorScale.domain()];
+       */
+
+      if (!quantiles) {
+        quantiles = this.colorScale.quantiles ?
+                        [...this.colorScale.quantiles()] :
+                        [...this.colorScale.domain()];
+      }
+
       const len = quantiles.length - 1;
 
       return _.reduce(quantiles, function(prev, curr, i){
@@ -58,15 +69,19 @@ define([
     updateHighlight: function(val) {
       if (!this.chart || this.selected_value === val) return;
       this.selected_value = val;
-
       this.chart.selectAll('rect').call(this.highlightBar, this);
     },
 
     highlightBar: function(bars, context) {
       const ctxValue = context.selected_value;
 
+
+      const quantiles = context.colorScale.quantiles ?
+                [...context.colorScale.quantiles()] :
+                [...context.colorScale.domain()];
+
       const highlightIndex = (ctxValue !== null)
-          ? context.findQuantileIndexForValue(ctxValue, context.quantileScale.quantiles()) :
+          ? context.findQuantileIndexForValue(ctxValue, quantiles) :
             null;
 
       bars.classed('highlight', function(d,i) {
@@ -75,13 +90,8 @@ define([
     },
 
     render: function(){
-      const quantileScale = this.quantileScale;
-      const isThreshold = quantileScale.quantiles ? true : false;
-
-      const quantiles = quantileScale.quantiles ?
-                [0, ...quantileScale.quantiles()] :
-                [0, ...quantileScale.domain()];
-
+      const colorScale = this.colorScale;
+      const isThreshold = colorScale.quantiles ? false : true;
       const gradients = this.gradients;
       const counts = _.pluck(gradients, 'count');
       const height = this.height;
@@ -91,62 +101,54 @@ define([
                      .range([0, this.height]);
 
       const xScale = d3.scale.ordinal()
-                     .domain(quantiles)
-                     .rangeBands([0, this.width]);
+                     .domain(d3.range(0, this.slices))
+                     .rangeBands([0, this.width], 0.2, 0);
 
-
-      if (!isThreshold) {
-        xScale.domain([0, ...quantileScale.domain()]);
+      // threshold types use rounded bands for convienence
+      if (isThreshold) {
         xScale.rangeRoundBands([0, this.width], 0.1);
-
-        console.log(xScale.range());
-        console.log(xScale.rangeBand());
       }
-
-      this.xScale = xScale;
 
       const bardata = xScale.domain().map((d,i) => {
         return {
           ...gradients[i],
           idx: i,
-          pt: d,
-          xpt: xScale(d)
+          data: d,
+          xpos: xScale(d)
         }
       });
 
-      let xBuckets = xScale.range().slice(1);
-      xBuckets = xBuckets.map(d => Math.floor(d));
+      const filterValueForXpos = d3.scale.linear()
+        .range(this.filterRange)
+        .domain([0, this.width]);
 
-      const findIndex = (x) => {
+      // make scale available to caller
+      this.xScale = xScale;
 
-        let bucket = _.findIndex(xBuckets, d => x < d);
-
-        if (bucket === -1) bucket = xBuckets.length;
-
-        return bucket;
-      };
-
-      this.extentFromValue = function(x) {
-        return findIndex(x);
-      };
-
+      // draw
       const bars = this.chart.selectAll('rect')
           .data(bardata, function(d){return d.color;});
 
       bars.enter().append('rect');
 
       bars
-      .style('fill', d => quantileScale(d.pt))
+      .style('fill', (d,i) => {
+        // not on a continous scale
+        // so just need the color from data
+        if (isThreshold) return d.color;
+
+        // mapping the color continously
+        // so need to calculate the color for
+        // this xpos
+        return colorScale(filterValueForXpos(d.xpos));
+      })
       .attr({
         width: () => {
-          if (!isThreshold) {
-            return xScale.rangeBand();
-          }
-          return xScale.rangeBand() - (xScale.rangeBand() / 3);
+          return xScale.rangeBand();
         },
-        'stroke-width': () => xScale.rangeBand() / 6,
+        'stroke-width': 0,
         height: (d) => yScale(d.count),
-        x: (d, i) => xScale(d.pt),
+        x: (d, i) => xScale(d.data),
         y: d => (height - yScale(d.count))
       });
 
@@ -155,7 +157,7 @@ define([
       if (!isThreshold) bars.call(this.highlightBar, this);
 
       this.chart.selectAll('rect')
-                .filter(function(bucket, index) { return bucket.current === index; })
+                .filter((bucket, index) => { return bucket.current === index; })
                 .classed('current', true);
 
       return this.el;

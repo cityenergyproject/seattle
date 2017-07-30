@@ -1,15 +1,25 @@
 define(['d3'], function($) {
+  const QUARTILES = ["1st quartile", "2nd quartile", "3rd quartile", "4th quartile"];
+
   const types = {
-    'default': d => d,
-    'integer': d3.format(',.0f'),
-    'fixed': precision => {
+    default: d => d,
+    integer: d3.format(',.0f'),
+    fixed: precision => {
       precision = precision || 0;
       precision = Math.max(precision, 0);
       return d3.format(',.' + precision + 'f');
+    },
+    quartile: idx => {
+      return QUARTILES[idx] || '';
+    },
+    threshold: (labels) => {
+      return (idx) => {
+        return labels[idx] || '';
+      }
     }
   };
 
-  const get = function(t) {
+  const get = function(t, ...args) {
     if (!t) return types.default;
 
     if (typeof t === 'function') return t;
@@ -24,6 +34,8 @@ define(['d3'], function($) {
 
       return types.fixed(precision);
     }
+
+    if (t === 'threshold') return types[t](...args);
 
     if (types[t]) return types[t];
 

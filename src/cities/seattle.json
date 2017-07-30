@@ -97,11 +97,15 @@
             "field_name": "site_eui",
             "display_type": "range",
             "range_slice_count": 4,
+            "filter_range": {"min": 0, "max" : 4},
             "section": "Energy Performance Metrics",
             "color_range": ["#1F5DBE", "#90AE60", "#F7C34D", "#C04F31"],
-            "formatter": "integer",
+            "formatter": "threshold",
+            "threshold_labels": ["Lowest", "Medium Low", "Medium High", "Highest"],
+            "unit": "ENERGY USE",
             "description": "TBD",
-            "thresholds": "custom"
+            "thresholds": "custom",
+            "slider_labels": ["1st quartile", "2nd quartile", "3rd quartile", "4th quartile"]
         },
         {
             "title": "ENERGY STAR Score",

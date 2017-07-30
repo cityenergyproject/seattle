@@ -186,6 +186,7 @@
         display: block;
 
         &.value {
+          text-transform: uppercase;
           font-size: 1.2em;
           font-weight: 500;
         }

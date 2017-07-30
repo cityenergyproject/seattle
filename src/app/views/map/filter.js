@@ -31,8 +31,9 @@ define([
       this.listenTo(this.state, 'change:selected_buildings', this.updateBuildingDetails);
       this.listenTo(this.state, 'change:categories', this.onCategoryChange);
 
-      this._valueFormatter = Formatters.get(this.layer.formatter);
-      this._medianFormatter = Formatters.get('fixed-0');
+      this._valueFormatter = this.layer.formatter === 'threshold' ?
+                  Formatters.get(this.layer.formatter, this.layer.threshold_labels) :
+                  Formatters.get(this.layer.formatter);
 
       // set key for property_type
       this.propertyTypeKey = 'property_type';
@@ -112,6 +113,8 @@ define([
       const propertyCategory = this.getPropertyCategory();
       const propertyType = propertyCategory ? propertyCategory.values[0] : null;
 
+      const thresholds = (this.layer.thresholds) ? [24.8,29.1,36.0] : null;
+
       var o = {
         selected_value: null
       };
@@ -128,9 +131,13 @@ define([
           klasses.push('disable');
         }
 
+        const value = (this.layer.thresholds && this.valueToIndex) ?
+            formatter(this.valueToIndex(b.data[fieldName])) :
+            formatter(b.data[fieldName]);
+
         return {
-          value: formatter(b.data[fieldName]),
-          unit: unit,
+          value,
+          unit,
           cell_klass: klasses.join(' ')
         }
       });
@@ -146,6 +153,7 @@ define([
     getPropertyTypeProps: function(category) {
       const propertyType = category ? category.values[0] : null;
       const buildings = this.allBuildings;
+      const formatter = this._valueFormatter;
       let median;
 
       if (propertyType) {
@@ -155,9 +163,13 @@ define([
         median = d3.median(buildings.pluck(this.layer.field_name));
       }
 
+      const value = (this.layer.thresholds && this.valueToIndex) ?
+            formatter(this.valueToIndex(median)) :
+            formatter(median);
+
       return [
         propertyType,
-        this._valueFormatter(median)
+        value
       ];
 
     },
@@ -179,6 +191,10 @@ define([
       }
 
       const thresholds = (this.layer.thresholds) ? [24.8,29.1,36.0] : null;
+
+      if (thresholds) {
+        this.valueToIndex = d3.scale.threshold().domain(thresholds).range(d3.range(0, thresholds.length + 1));
+      }
 
       this.activeBuildings = buildings;
       this.bucketCalculator = new BuildingBucketCalculator(buildings, fieldName, rangeSliceCount, filterRange, thresholds);
@@ -238,9 +254,10 @@ define([
       const [proptype, proptype_val] = this.getPropertyTypeProps(propertyCategory);
       this._lastPropertyType = proptype;
 
+
       if ($el.length === 0) {
         this.$el.html(template(_.defaults(this.layer, {description: null})));
-        this.$el.find('.filter-wrapper').html(filterTemplate({id: fieldName}));
+        this.$el.find('.filter-wrapper').html(filterTemplate({id: layerID}));
         this.$el.find('.building-details').html(tableTemplate({table: tableData.data}));
         this.$el.find('.proptype-median-wrapper').html(propTypeTemplate({proptype, proptype_val}));
         this.$el.attr('id', idField);
@@ -253,13 +270,12 @@ define([
         this.$el.find('.proptype-median-wrapper').html(propTypeTemplate({proptype, proptype_val}));
       }
 
-
       if (!this.histogram) {
         var histogram_options = {
           gradients: bucketGradients,
           slices: rangeSliceCount,
           filterRange: [filterRangeMin, filterRangeMax],
-          quantileScale: gradientCalculator.colorGradient().copy(),
+          colorScale: gradientCalculator.colorGradient().copy(),
           selected_value: tableData.selected_value,
           fieldName
         };
@@ -273,16 +289,15 @@ define([
           gradients: bucketGradients,
           slices: rangeSliceCount,
           filterRange: [filterRangeMin, filterRangeMax],
-          quantileScale: gradientCalculator.colorGradient().copy()
+          colorScale: gradientCalculator.colorGradient().copy()
         });
 
         this.$el.find('.chart').html(this.histogram.render());
       }
 
-
       const scaleRange = this.histogram.xScale.range();
-      const scaleRangeMin = scaleRange[0];
-      const scaleRangeMax = scaleRange[scaleRange.length - 1];
+      const scaleRangeMin = 0; //scaleRange[0];
+      const scaleRangeMax = rangeSliceCount; //scaleRange[scaleRange.length - 1];
       if (!this.$filter || isDirty) {
         if (this.$filter) {
           this.$filter.destroy();
@@ -301,9 +316,9 @@ define([
         };
 
         if (this.layer.thresholds) {
-          slideOptions.values = scaleRange;
+          slideOptions.values = d3.range(0, rangeSliceCount);
 
-          /*
+          /* Grid approach
           slideOptions.grid = true;
           slideOptions.grid_snap = true;
           slideOptions.step = scaleRange[1] - scaleRange[0];
@@ -312,7 +327,8 @@ define([
           */
 
         }
-        const slider = this.$el.find('.filter-wrapper').ionRangeSlider(slideOptions);
+
+        const slider = this.$el.find('.range.filter').ionRangeSlider(slideOptions);
         this.$filter = slider.data("ionRangeSlider");
       }
 
@@ -320,21 +336,12 @@ define([
       // otherwise when user clicks on slider bar
       // will cause a stack overflow
       if (!isUpdate){
-        if (this.layer.thresholds) {
-          this.$filter.update({
-            from: scaleRangeMin,
-            to: scaleRangeMax,
-            min: scaleRangeMin,
-            max: scaleRangeMax
-          });
-        } else {
-          this.$filter.update({
-            from: filterState.min,
-            to: filterState.max,
-            min: filterRangeMin,
-            max: filterRangeMax
-          });
-        }
+        this.$filter.update({
+          from: filterState.min,
+          to: filterState.max,
+          min: filterRangeMin,
+          max: filterRangeMax
+        });
       }
 
       this.$el.toggleClass('current', isCurrent);
@@ -409,14 +416,12 @@ define([
     onPrettifyHandler: function(min, max, histogram) {
 
       if (this.layer.thresholds) {
-        const scales = ['1st quartile', '2nd quartile', '3rd quartile', '4th quartile'];
+        const labels = this.layer.slider_labels;
         return function(num) {
-          const idx = histogram.extentFromValue(num);
-
-          return scales[idx];
+          return labels[num] || '';
         };
-
       }
+
       return function(num) {
         switch(num) {
           case min: return num.toLocaleString();
