@@ -289,6 +289,7 @@ define([
     makeSelectedBuildingsState: function(id) {
       var selected_buildings = this.state.get('selected_buildings') || [];
       if (this.isSelectedBuilding(selected_buildings, id)) return null;
+      if (selected_buildings.length === 5) return null;
 
       var out = selected_buildings.map(function(b) {
         b.selected = false;
@@ -314,6 +315,9 @@ define([
       if (!buildingId) return;
 
       this.onClearPopups();
+
+      this.state.set({building_compare_active: true});
+      /*
       $('#compare-building').attr('disabled', 'disabled');
 
       // Add building to selected_buildings
@@ -325,7 +329,7 @@ define([
           building_compare_active: true
         });
       }
-
+      */
       return false;
     },
 
@@ -377,7 +381,8 @@ define([
        .setLatLng(presenter.toLatLng())
        .setContent(template({
           data: presenter.toPopulatedLabels(),
-          compare_disabled: disableCompareBtn ? 'disabled="disable"' : '',
+          compare_disabled: ''
+          // compare_disabled: disableCompareBtn ? 'disabled="disable"' : '',
         }));
 
       this._popupid = building_id;
@@ -397,13 +402,12 @@ define([
         building: buildingId
       };
 
-      /*
+
       var selectedBuildings = this.makeSelectedBuildingsState(buildingId);
 
       if (selectedBuildings) {
-        state.selected_buildings =selectedBuildings;
+        state.selected_buildings = selectedBuildings;
       }
-      */
 
       this.state.set(state);
     },

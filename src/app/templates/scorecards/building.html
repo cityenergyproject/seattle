@@ -90,7 +90,7 @@
       <div class='fc-bars fc-panel'>
         <div class='fc-headers fc-row'>
           <% _.each(fuels.fuels, function(fuel) { %>
-            <span class='fc-header <%= fuel.key %>' style="width: <%= fuel.usage.pct %>%;"><%= fuel.label %></span>
+            <span class='fc-header <%= fuel.key %>' style="width: <%= fuel.usage.pct %>%;"><span><%= fuel.label %></span></span>
           <% }); %>
         </div>
         <div class='fc-row'>
