@@ -1,0 +1,182 @@
+<div class='scorecard--details row'>
+  <div class='col-4'>
+      <ul class='sc-list'>
+        <li class='sc-txt white small light'><%= addr %></li>
+        <li class='sc-txt white small light'><%= sqft %> <span class='sqft'>ft²</span></li>
+        <li class='sc-txt white small light'><%= type %></li>
+        <li class='sc-txt white small light'>Building ID <%= id %></li>
+      </ul>
+      <div class='sc-toggle'>
+        <h4 class='sc-heading small white'>TOGGLE VIEW:</h4>
+        <label class='cb-plain sc-txt white small'><input class="sc-toggle--input" type="checkbox" <%= view === 'eui' ? 'checked' : '' %> data-view='eui'/><span class='cb'></span><span>EUI</span></label>
+        <label class='cb-plain sc-txt white small'><input class="sc-toggle--input" type="checkbox" <%= view === 'ess' ? 'checked' : '' %> data-view='ess'/><span class='cb'></span><span>Energy Star Score</span></label>
+      </div>
+  </div>
+  <div class='col-4 middle'>
+    <div class='circle-bk'>
+      <h4 class='sc-heading'><%= year %> <%= view === 'eui' ? 'EUI' : 'ENERGY STAR' %></h4>
+      <h3 class='sc-heading orange xlarge' ><%= value %></h3>
+      <p class='sc-heading orange small'><%= view === 'eui' ? 'kBtu/ft²' : 'ENERGY STAR SCORE' %></p>
+      <div class='eui-desc'>
+        <p class='sc-txt tiny'><%= view === 'eui' ? 'Energy Use Intensity' : 'Energy Star Score' %></p>
+        <p class='sc-txt tiny'>
+        <% if (view === 'eui') { %>EUI is your building’s annual energy use (all fuel types) per square foot (ft²) in kBtu/ft².
+        <% } else { %>
+        The 1-100 score measures how well the property is performing relative to similar properties, when normalized for climate and operational characteristics.
+        <% } %>
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class='col-4'>
+    <div class='details-box'>
+      <h4 class='sc-heading white'>Cost of Energy</h4>
+      <div>
+        <p class='sc-txt small white light pg'>This building currently spends an estimated <%= costs.per_sqft %>/ft² annually on energy or <span class='bold'><%= costs.annual %></span></p>
+        <h4 class='sc-heading white large'><%= costs.per_sqft %><span class='sc-heading white small'>/ft²</span></h4>
+      </div>
+    </div>
+
+    <div class='details-box'>
+      <h4 class='sc-heading white'>Savings opportunities</h4>
+      <div>
+        <p class='sc-txt small white light pg'>By reducing energy use by <%= costs.save_pct %>, this building could save up to <span class='bold'><%= costs.savings %></span> annually on energy costs.</p>
+        <h4 class='sc-heading white large'><%= costs.savings %></h4>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class='scorecard--section'>
+  <div class='inner'>
+    <div class='section-head'>
+      <h3 class='sc-heading'>Compared to Average</h3>
+      <p class='sc-txt small bold'>See how this building measures up against other buildings of the same type:</p>
+    </div>
+
+    <div class='row'>
+      <div class='col-4 compare-desc'>
+        <p class='compare-logo <%= compare.change_label %> <%= view %>'><span><%= compare.change_pct %></span></p>
+        <p class="sc-txt light pg">This building’s <%= view === 'eui' ? 'EUI' : 'Energy Star Score' %> is <span class='change-txt bold <%= compare.change_label %> <%= view %>'><%= compare.change_pct %> <%= compare.change_label %></span> than the average large office building in Seattle.</p>
+      </div>
+      <div id='compare-chart' class='col-8'></div>
+    </div>
+  </div>
+</div>
+
+<div class='scorecard--section'>
+  <div class='inner'>
+    <div class='section-head'>
+      <h3 class='sc-heading'>Fuel Use</h3>
+      <p class='sc-txt small bold'>See the breakdown of different fuel types contributing to this building’s GHG emissions:</p>
+    </div>
+    <div id='fueluse-chart'>
+      <div class='fc-labels fc-panel'>
+        <div class='fc-headers fc-row'></div>
+        <div class='fc-label fc-row'>
+          <div>
+            <p>USAGE</p>
+            <p>(% kBtu)</p>
+          </div>
+        </div>
+        <div class='fc-label fc-row margin-top'>
+          <div>
+            <p>EMISSIONS</p>
+            <p>(% ghg)</p>
+          </div>
+        </div>
+      </div>
+
+      <div class='fc-bars fc-panel'>
+        <div class='fc-headers fc-row'>
+          <% _.each(fuels.fuels, function(fuel) { %>
+            <span class='fc-header <%= fuel.key %>' style="width: <%= fuel.usage.pct %>%;"><%= fuel.label %></span>
+          <% }); %>
+        </div>
+        <div class='fc-row'>
+          <% _.each(fuels.fuels, function(fuel) { %>
+            <div class='fc-bar <%= fuel.key %>' style="width: <%= fuel.usage.pct %>%;"><span><%= fuel.usage.pct %>%</span></div>
+          <% }); %>
+        </div>
+        <div class='fc-row margin-top'>
+          <% _.each(fuels.fuels, function(fuel) { %>
+            <div class='fc-bar <%= fuel.key %>' style="width: <%= fuel.emissions.pct %>%;"><span><%= fuel.emissions.pct %>%</span></div>
+          <% }); %>
+        </div>
+        <div class='fc-row'>
+          <p><%= fuels.totals.emissions %> metric tons of CO<sub>2</sub>E is the equivalent of <%= fuels.cars %> passenger vehicles driven for one year.</p>
+        </div>
+      </div>
+
+      <div class='fc-totals fc-panel'>
+        <div class='fc-headers fc-row'><span class='fc-header'>TOTAL</span></div>
+        <div class='fc-label fc-row'>
+          <div>
+            <p><%= fuels.totals.usage %></p>
+            <p>million kBtu</p>
+          </div>
+        </div>
+        <div class='fc-label fc-row margin-top'>
+          <div>
+            <p><%= fuels.totals.emissions %></p>
+            <p>metric tons</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class='scorecard--section'>
+  <div class='inner'>
+    <div class='section-head'>
+      <h3 class='sc-heading'>change from last year</h3>
+      <p class='sc-txt small bold'>See how this building’s performance has shifted since last year:</p>
+    </div>
+
+    <div class='row'>
+      <div class='col-4 compare-desc'>
+        <p class='change-arrow <%= change.direction %>'><span><%= change.pct %></span></p>
+        <p class="sc-txt light pg">After adjusting for weather, from <%= change.years[0] %> to <%= change.years[1] %> this building’s site EUI <span class='change-txt bold <%= change.direction %>'><%= change.direction %> by <%= change.pct %></span>.</p>
+      </div>
+      <div id='change-chart' class='col-8'>
+        <div class='change-chart-inner'>
+          <div id='change-chart-years'>
+            <p><%= change.years[0] %></p>
+            <p><%= change.years[1] %></p>
+          </div>
+          <div id='change-chart-vis'></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id='building-information' class='scorecard--section'>
+  <div class='inner'>
+    <div class='scorecard-list-cont'>
+      <div class='scorecard-list'>
+        <h4 class='sc-heading small normalweight'>Building information</h4>
+        <table>
+          <% _.each(building_info, function(item) { %>
+            <tr>
+              <td><%= item.label %></td>
+              <td><%= item.val %></td>
+            </tr>
+          <% }) %>
+        </table>
+      </div>
+      <div class='scorecard-list'>
+        <h4 class='sc-heading small normalweight'>Energy Use</h4>
+        <table>
+          <% _.each(energy_info, function(item) { %>
+            <tr>
+              <td><%= item.label %></td>
+              <td><%= item.val %></td>
+            </tr>
+          <% }) %>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

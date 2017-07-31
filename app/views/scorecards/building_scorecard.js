@@ -2,34 +2,51 @@
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-define(['jquery', 'underscore', 'backbone', './scorecard', 'text!templates/layout/scorecards/scorecard.html'], function ($, _, Backbone, ScoreCardBaseView, ScorecardTemplate) {
-  var BuildingScorecard = ScoreCardBaseView.extend({
-
+define(['jquery', 'underscore', 'backbone', 'text!templates/scorecards/building.html'], function ($, _, Backbone, BuildingTemplate) {
+  var BuildingScorecard = Backbone.View.extend({
     initialize: function initialize(options) {
-      BuildingScorecard.__super__.initialize.apply(this, [options]);
+      this.state = options.state;
+      this.formatters = options.formatters;
 
-      this.listenTo(this.state, 'change:report_active', this.onReportActive);
-      this.template = _.template(ScorecardTemplate);
+      this.template = _.template(BuildingTemplate);
 
-      // this.render();
       return this;
+    },
+
+    events: {
+      'click .sc-toggle--input': 'toggleView'
+    },
+
+    toggleView: function toggleView(evt) {
+      evt.preventDefault();
+
+      var scorecardState = this.state.get('scorecard');
+      var view = scorecardState.get('view');
+
+      var target = evt.target;
+      var value = target.dataset.view;
+
+      if (value === view) {
+        return false;
+      }
+
+      scorecardState.set({ 'view': value });
     },
 
     close: function close() {
       this.scoreCardData = null;
-      this.state.set({ report_active: false });
     },
 
-    isActive: function isActive() {
-      var active = this.state.get('report_active');
-
-      if (!active) this.scoreCardData = null;
-
-      return active;
+    onViewChange: function onViewChange() {
+      var buildings = this.state.get('allbuildings');
+      var year = this.state.get('year');
+      this.processBuilding(buildings, this.scoreCardData.data, year);
     },
 
-    renderScorecard: function renderScorecard() {
+    render: function render() {
       var _this = this;
+
+      if (!this.state.get('report_active')) return;
 
       var id = this.state.get('building');
       var year = this.state.get('year');
@@ -116,19 +133,6 @@ define(['jquery', 'underscore', 'backbone', './scorecard', 'text!templates/layou
 
       this.renderChangeChart(change_data.chart);
       this.renderCompareChart(config, chartdata, view, prop_type, name);
-
-      /*
-      // TODO: switch to use backbone view event approach
-      var inputs = d3.select('.sc-toggle').selectAll('input');
-      inputs.on('click', function() {
-        var value = this.dataset.view;
-        if (value === view) {
-          d3.event.preventDefault();
-          return false;
-        }
-         scorecardState.set({'view': value});
-      });
-      */
     },
 
     full_address: function full_address(building) {
@@ -201,7 +205,6 @@ define(['jquery', 'underscore', 'backbone', './scorecard', 'text!templates/layou
         change_pct = this.formatters.percent(building.percent_from_median);
         change_label = building.higher_or_lower.toLowerCase();
       } else {
-        console.log("ENGER: ", chartdata.building_value, chartdata.mean);
         change_pct = this.formatters.percent((chartdata.building_value - chartdata.mean) / chartdata.building_value);
         change_label = chartdata.building_value >= chartdata.mean ? 'higher' : 'lower';
       }
@@ -281,8 +284,10 @@ define(['jquery', 'underscore', 'backbone', './scorecard', 'text!templates/layou
       var building_value = building.hasOwnProperty(compareField) ? building[compareField] : null;
 
       if (building_value === null) {
+
+        building_value = 0;
         console.warn('Building has a NULL value!');
-        return;
+        // return;
       }
 
       console.log('View: ', view);

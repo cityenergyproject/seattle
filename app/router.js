@@ -2,7 +2,7 @@
 
 // Filename: router.js
 //
-define(['jquery', 'deparam', 'underscore', 'backbone', 'models/city', 'models/scorecard', 'collections/city_buildings', 'views/map/map', 'views/map/address_search_autocomplete', 'views/map/year_control', 'views/layout/activity_indicator', 'views/layout/building_counts', 'views/layout/compare_bar', 'views/scorecards/building_scorecard', 'views/scorecards/city_scorecard', 'views/layout/button'], function ($, deparam, _, Backbone, CityModel, ScorecardModel, CityBuildings, MapView, AddressSearchView, YearControlView, ActivityIndicator, BuildingCounts, CompareBar, BuildingScorecard, CityScorecard, Button) {
+define(['jquery', 'deparam', 'underscore', 'backbone', 'models/city', 'models/scorecard', 'collections/city_buildings', 'views/map/map', 'views/map/address_search_autocomplete', 'views/map/year_control', 'views/layout/activity_indicator', 'views/layout/building_counts', 'views/layout/compare_bar', 'views/scorecards/controller', 'views/layout/button'], function ($, deparam, _, Backbone, CityModel, ScorecardModel, CityBuildings, MapView, AddressSearchView, YearControlView, ActivityIndicator, BuildingCounts, CompareBar, ScorecardController, Button) {
 
   var RouterState = Backbone.Model.extend({
     queryFields: ['filters', 'categories', 'layer', 'metrics', 'sort', 'order', 'lat', 'lng', 'zoom', 'building', 'report_active', 'city_report_active'],
@@ -124,8 +124,8 @@ define(['jquery', 'deparam', 'underscore', 'backbone', 'models/city', 'models/sc
       var addressSearchView = new AddressSearchView({ mapView: mapView, state: this.state });
       var buildingCounts = new BuildingCounts({ state: this.state });
       var compareBar = new CompareBar({ state: this.state });
-      var buildingScorecard = new BuildingScorecard({ state: this.state });
-      var cityScorecard = new CityScorecard({ state: this.state });
+      var scorecardController = new ScorecardController({ state: this.state });
+
       var button = new Button({
         el: '#city-scorcard-toggle',
         onClick: _.bind(this.toggleCityScorecard, this),

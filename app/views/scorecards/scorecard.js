@@ -49,10 +49,6 @@ define(['jquery', 'underscore', 'backbone', 'd3'], function ($, _, Backbone, D3)
 
     initialize: function initialize(options) {
       this.state = options.state;
-      this.listenTo(this.state, 'change:allbuildings', this.onBuildingsChange);
-
-      var scorecard = this.state.get('scorecard');
-      this.listenTo(scorecard, 'change:view', this.onViewChange);
 
       this.formatters = {
         currency: d3.format('$,.2f'),
@@ -81,10 +77,6 @@ define(['jquery', 'underscore', 'backbone', 'd3'], function ($, _, Backbone, D3)
       this.render();
     },
 
-    onBuildingsChange: function onBuildingsChange() {
-      if (this.dirty) this.render();
-    },
-
     toggleView: function toggleView(evt) {
       var scorecardState = this.state.get('scorecard');
       var view = scorecardState.get('view');
@@ -98,10 +90,6 @@ define(['jquery', 'underscore', 'backbone', 'd3'], function ($, _, Backbone, D3)
       }
 
       scorecardState.set({ 'view': value });
-    },
-
-    onViewChange: function onViewChange() {
-      this.renderScorecard();
     },
 
     close: function close() {
@@ -118,7 +106,6 @@ define(['jquery', 'underscore', 'backbone', 'd3'], function ($, _, Backbone, D3)
 
     render: function render() {
       var active = this.isActive();
-      console.log('render: ', active);
       var buildings = this.state.get('allbuildings');
 
       if (active) {

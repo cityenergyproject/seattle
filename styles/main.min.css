@@ -1595,11 +1595,14 @@ header {
   z-index: 999999; }
   #scorecard.active {
     display: block; }
-  #scorecard .scorecard-content {
+  #scorecard .scorecard-wrapper {
     position: relative;
     width: 100%;
     max-width: 960px;
     margin: 0 auto; }
+  #scorecard #scorecard-content {
+    position: relative;
+    width: 100%; }
   #scorecard .sc-heading {
     margin: 0;
     padding: 0;
