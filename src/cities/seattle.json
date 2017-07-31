@@ -22,6 +22,37 @@
     "property_id": "id",
     "property_name": "property_name",
     "building_type": "property_type",
+    "search": {
+        "url": "https://search.mapzen.com/v1/search",
+        "bounds": [38.79163, -77.119766, 38.995853, -76.909363],
+        "api_key": "search-oqsffOQ",
+        "terms": [
+            {
+                "name": "property",
+                "key": "property_name",
+                "hide": false
+            },
+            {
+                "name": "address",
+                "key": "reported_address",
+                "hide": false
+            },
+            {
+                "name": "property_id",
+                "key": "id",
+                "hide": true
+            }
+        ],
+        "fuse_options": {
+            "caseSensitive": false,
+            "include": ["score", "matches"],
+            "location": 0,
+            "distance": 50,
+            "threshold": 0.1,
+            "maxPatternLength": 32,
+            "shouldSort": true
+        }
+    },
     "popup_fields": [
         {"field": "property_name", "label": ""},
         {"field": "reported_address", "template": "{reported_address}"},
