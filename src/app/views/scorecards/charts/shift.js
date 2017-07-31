@@ -13,7 +13,6 @@ define([
       this.template = _.template(ShiftTemplate);
       this.formatters = options.formatters;
       this.data = options.data;
-
     },
 
     calculateChange: function() {
@@ -58,9 +57,11 @@ define([
       };
     },
 
-    renderChangeChart: function(data) {
-      var rootElm = d3.select('#change-chart-vis');
-      var yearsElm = d3.select('#change-chart-years');
+    renderChangeChart: function(data, selector) {
+      const container = d3.select(selector);
+
+      var rootElm = container.select('#change-chart-vis');
+      var yearsElm = container.select('#change-chart-years');
 
       var diameter = 10;
       var yearExtent = d3.extent(data, function(d){ return d.year;});
@@ -190,13 +191,15 @@ define([
 
           cb(this.extractChangeData());
         });
+      } else {
+        cb(this.extractChangeData());
       }
     },
 
-    render: function(cb){
+    render: function(cb, viewSelector){
       this.chartData((d) => {
         cb(this.template(d.template));
-        this.renderChangeChart(d.chart);
+        this.renderChangeChart(d.chart, viewSelector);
       });
     }
   });

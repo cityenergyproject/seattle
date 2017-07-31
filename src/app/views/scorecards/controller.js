@@ -41,7 +41,17 @@ define([
     },
 
     onViewChange: function() {
+      this.updateViewClass();
       if (this.view && this.view.onViewChange) this.view.onViewChange();
+    },
+
+    updateViewClass: function() {
+      var scorecardState = this.state.get('scorecard');
+      var view = scorecardState.get('view');
+
+      const klass = `show-${view}-view`;
+
+      this.$el.attr('class', `active ${klass}`);
     },
 
     onBuildingReportActive: function() {
@@ -103,7 +113,6 @@ define([
     },
 
     showScorecard: function() {
-      console.log('---- Show Scorecard ----- ');
       this.$el.toggleClass('active', true);
 
       const building = this.state.get('building');
@@ -121,13 +130,14 @@ define([
         name
       }));
 
+      this.updateViewClass();
+
       if (!this.viewclass) return;
       const view = new this.viewclass(this.getSubViewOptions());
       this.loadView(view);
     },
 
     hideScorecard: function() {
-      console.log('---- Hide Scorecard ----- ');
       this.$el.toggleClass('active', false);
       this.removeView();
       this.viewclass = null;

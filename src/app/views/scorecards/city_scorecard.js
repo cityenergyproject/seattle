@@ -43,12 +43,15 @@ define([
     },
 
     onViewChange: function() {
-      this.show();
+      this.render();
     },
 
     render: function() {
       if (!this.state.get('city_report_active')) return;
-      this.show();
+
+
+      this.show('eui');
+      this.show('ess');
     },
 
     buildingStats: function(buildings) {
@@ -67,16 +70,16 @@ define([
       }
     },
 
-    show: function() {
+    show: function(view) {
       var scorecardState = this.state.get('scorecard');
       var buildings = this.state.get('allbuildings');
       var year = this.state.get('year');
-      var view = scorecardState.get('view');
       var scorecardConfig = this.state.get('city').get('scorecard');
-
+      var viewSelector = `#${view}-scorecard-view`;
+      var el = this.$el.find(viewSelector);
       var compareField = view === 'eui' ? 'site_eui' : 'energy_star_score';
 
-      this.$el.html(this.template({
+      el.html(this.template({
         stats: this.buildingStats(buildings),
         compliance: this.compliance(buildings),
         year: year,
@@ -91,7 +94,7 @@ define([
         });
       }
 
-      this.$el.find('#fuel-use-chart').html(this.chart_fueluse.render());
+      el.find('#fuel-use-chart').html(this.chart_fueluse.render());
 
 
       if (!this.chart_shift) {
@@ -102,8 +105,8 @@ define([
       }
 
       this.chart_shift.render(t => {
-        this.$el.find('#compare-shift-chart').html(t);
-      });
+        el.find('#compare-shift-chart').html(t);
+      }, viewSelector);
 
       if (!this.building_table) {
         this.building_table = new BuildingTypeTableView({
@@ -115,7 +118,7 @@ define([
         });
       }
 
-      this.$el.find('#building-type-table').html(this.building_table.render())
+      el.find('#building-type-table').html(this.building_table.render())
 
       return this;
     },

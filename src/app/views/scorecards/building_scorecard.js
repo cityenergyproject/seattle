@@ -18,6 +18,10 @@ define([
       'click .sc-toggle--input': 'toggleView'
     },
 
+    close: function() {
+      this.scoreCardData = null;
+    },
+
     toggleView: function(evt) {
       evt.preventDefault();
 
@@ -34,14 +38,8 @@ define([
       scorecardState.set({'view': value});
     },
 
-    close: function() {
-      this.scoreCardData = null;
-    },
-
     onViewChange: function() {
-      const buildings = this.state.get('allbuildings');
-      const year = this.state.get('year');
-      this.processBuilding(buildings, this.scoreCardData.data, year);
+      this.render();
     },
 
     render: function() {
@@ -52,7 +50,7 @@ define([
       var buildings = this.state.get('allbuildings');
 
       if (this.scoreCardData && this.scoreCardData.id === id) {
-        this.processBuilding(buildings, this.scoreCardData.data, year);
+        this.show(buildings, this.scoreCardData.data, year);
       } else {
         // Temporary hack to get yearly data
         d3.json(`https://cityenergy-seattle.carto.com/api/v2/sql?q=SELECT+ST_X(the_geom)+AS+lng%2C+ST_Y(the_geom)+AS+lat%2C*+FROM+table_2015_stamen_phase_ii_v2_w_year+WHERE+id=${id}`, (d) => {
@@ -63,12 +61,17 @@ define([
             data: d
           };
 
-          this.processBuilding(buildings, d, year);
+          this.show(buildings, d, year);
         });
       }
     },
 
-    processBuilding: function(buildings, building_data, selected_year) {
+    show: function(buildings, building_data, selected_year) {
+      this.processBuilding(buildings, building_data, selected_year, 'eui');
+      this.processBuilding(buildings, building_data, selected_year, 'ess');
+    },
+
+    processBuilding: function(buildings, building_data, selected_year, view) {
       var scorecardState = this.state.get('scorecard');
       var data = {};
       building_data.rows.forEach(d => {
@@ -97,7 +100,8 @@ define([
         numfloors: 'Number of Floors'
       };
 
-      var view = scorecardState.get('view');
+      var viewSelector = `#${view}-scorecard-view`;
+      var el = this.$el.find(viewSelector);
       var compareField = view === 'eui' ? 'site_eui' : 'energy_star_score';
       var value = building.hasOwnProperty(compareField) ? building[compareField] : null;
 
@@ -112,7 +116,9 @@ define([
       var fuels = this.renderFuelUseChart(building);
       const change_data = this.extractChangeData(data);
 
-      this.$el.html(this.template({
+      console.log('change_data: ', change_data);
+
+      el.html(this.template({
         active: 'active',
         name: name,
         addr: address,
@@ -130,8 +136,8 @@ define([
         energy_info: this.listdata(building, energy_fields)
       }));
 
-      this.renderChangeChart(change_data.chart);
-      this.renderCompareChart(config, chartdata, view, prop_type, name);
+      this.renderChangeChart(change_data.chart, viewSelector);
+      this.renderCompareChart(config, chartdata, view, prop_type, name, viewSelector);
     },
 
     full_address: function(building) {
@@ -286,8 +292,6 @@ define([
         // return;
       }
 
-      console.log('View: ', view);
-
       var buildingsOfType = buildings.where({property_type: prop_type}).map(function(m) {
         return m.toJSON();
       });
@@ -366,8 +370,8 @@ define([
       }
     },
 
-    renderCompareChart: function(config, chartdata, view, prop_type, name) {
-
+    renderCompareChart: function(config, chartdata, view, prop_type, name, viewSelector) {
+      const container = d3.select(viewSelector);
 
       if (chartdata.selectedIndex === null || chartdata.avgIndex === null) {
         console.warn('Could not find required indexes!');
@@ -387,7 +391,7 @@ define([
           .domain([0, d3.max(chartdata.data, function(d) { return d.y; })])
           .range([height, 0]);
 
-      var svg = d3.select("#compare-chart").append("svg")
+      var svg = container.select("#compare-chart").append("svg")
           .attr("width", width + margin.left + margin.right)
           .attr("height", height + margin.top + margin.bottom)
         .append("g")
@@ -484,7 +488,7 @@ define([
       var ypos = y(chartdata.data[chartdata.selectedIndex].y);
 
 
-      var selectedCityHighlight = d3.select("#compare-chart").append('div')
+      var selectedCityHighlight = container.select("#compare-chart").append('div')
         .attr('class', 'selected-city-highlight-html')
         .style('top', (margin.top - 70) + 'px')
         .style('left', (margin.left + xpos) + 'px');
@@ -512,7 +516,7 @@ define([
       xpos = x(chartdata.data[chartdata.avgIndex].x)  + (x.rangeBand() / 2);
       ypos = y(chartdata.data[chartdata.avgIndex].y); // top of bar
 
-      var avgHighlight = d3.select("#compare-chart").append('div')
+      var avgHighlight = container.select("#compare-chart").append('div')
         .attr('class', 'avg-highlight-html')
         .style('top', (margin.top + ypos) + 'px')
         .style('left', (margin.left + xpos) + 'px')
@@ -607,7 +611,12 @@ define([
         return a.year - b.year;
       });
 
-      let change = ((buildingYearlyEuis[years[1]] - buildingYearlyEuis[years[0]]) / buildingYearlyEuis[years[1]]) * 100;
+      let change;
+      if (buildingYearlyEuis[years[1]] === 0) {
+        change = -buildingYearlyEuis[years[0]];
+      } else {
+        change = ((buildingYearlyEuis[years[1]] - buildingYearlyEuis[years[0]]) / buildingYearlyEuis[years[1]]) * 100;
+      }
 
       const direction = (change < 0) ? 'decreased' : 'increased';
 
@@ -621,9 +630,10 @@ define([
       };
     },
 
-    renderChangeChart: function(data) {
-      var rootElm = d3.select('#change-chart-vis');
-      var yearsElm = d3.select('#change-chart-years');
+    renderChangeChart: function(data, viewSelector) {
+      var container = d3.select(viewSelector);
+      var rootElm = container.select('#change-chart-vis');
+      var yearsElm = container.select('#change-chart-years');
 
       var diameter = 10;
       var yearExtent = d3.extent(data, function(d){ return d.year;});

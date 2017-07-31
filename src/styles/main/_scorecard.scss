@@ -821,4 +821,70 @@ $sc-font-lgr: 3rem;
     }
   }
 
+  #eui-scorecard-view,
+  #ess-scorecard-view {
+    position: relative;
+    top: 0;
+    left: 0;
+    display: none;
+  };
+
+  &.show-eui-view #eui-scorecard-view,
+  &.show-ess-view #ess-scorecard-view  {
+    display: block;
+  }
+
+  @media print {
+    & {
+      overflow: visible;
+    }
+
+    & * {
+      -webkit-print-color-adjust: exact !important;   /* Chrome, Safari */
+      color-adjust: exact !important;                 /*Firefox*/
+    }
+
+    #scorecard .scorecard-wrapper {
+      width: 7in;
+      max-width: 7in;
+    }
+
+    .scorecard--nav {
+      margin-top: 0;
+    }
+
+    #back-to-map-link { display: none; }
+
+    #eui-scorecard-view,
+    #ess-scorecard-view  {
+      display: block !important;
+    }
+
+    #eui-scorecard-view {
+      page-break-after: always;
+      overflow: visible;
+    }
+
+    #ess-scorecard-view {
+      page-break-before: always;
+      overflow: visible;
+    }
+
+    .scorecard--section, .scorecard--details {
+      page-break-inside: avoid;
+    }
+
+    #building-type-table {
+      page-break-after: always;
+    }
+  }
 }
+
+@media print {
+  body {
+    background-color: #fff;
+    overflow: visible;
+  }
+}
+
+
