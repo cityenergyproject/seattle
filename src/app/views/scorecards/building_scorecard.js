@@ -2,35 +2,51 @@ define([
   'jquery',
   'underscore',
   'backbone',
-  './scorecard',
-  'text!templates/layout/scorecards/scorecard.html'
-], function($, _, Backbone, ScoreCardBaseView, ScorecardTemplate){
-  var BuildingScorecard = ScoreCardBaseView.extend({
-
+  'text!templates/scorecards/building.html'
+], function($, _, Backbone,  BuildingTemplate){
+  var BuildingScorecard = Backbone.View.extend({
     initialize: function(options){
-      BuildingScorecard.__super__.initialize.apply(this, [options]);
+      this.state = options.state;
+      this.formatters = options.formatters;
 
-      this.listenTo(this.state, 'change:report_active', this.onReportActive);
-      this.template = _.template(ScorecardTemplate);
+      this.template = _.template(BuildingTemplate);
 
-      // this.render();
       return this;
+    },
+
+    events: {
+      'click .sc-toggle--input': 'toggleView'
+    },
+
+    toggleView: function(evt) {
+      evt.preventDefault();
+
+      var scorecardState = this.state.get('scorecard');
+      var view = scorecardState.get('view');
+
+      var target = evt.target;
+      var value = target.dataset.view;
+
+      if (value === view) {
+        return false;
+      }
+
+      scorecardState.set({'view': value});
     },
 
     close: function() {
       this.scoreCardData = null;
-      this.state.set({report_active: false});
     },
 
-    isActive: function() {
-      var active = this.state.get('report_active');
-
-      if (!active) this.scoreCardData = null;
-
-      return active;
+    onViewChange: function() {
+      const buildings = this.state.get('allbuildings');
+      const year = this.state.get('year');
+      this.processBuilding(buildings, this.scoreCardData.data, year);
     },
 
-    renderScorecard: function() {
+    render: function() {
+      if (!this.state.get('report_active')) return;
+
       var id = this.state.get('building');
       var year = this.state.get('year');
       var buildings = this.state.get('allbuildings');
@@ -116,20 +132,6 @@ define([
 
       this.renderChangeChart(change_data.chart);
       this.renderCompareChart(config, chartdata, view, prop_type, name);
-
-      /*
-      // TODO: switch to use backbone view event approach
-      var inputs = d3.select('.sc-toggle').selectAll('input');
-      inputs.on('click', function() {
-        var value = this.dataset.view;
-        if (value === view) {
-          d3.event.preventDefault();
-          return false;
-        }
-
-        scorecardState.set({'view': value});
-      });
-      */
     },
 
     full_address: function(building) {
@@ -202,7 +204,6 @@ define([
         change_pct = this.formatters.percent(building.percent_from_median);
         change_label = building.higher_or_lower.toLowerCase();
       } else {
-        console.log("ENGER: ", chartdata.building_value, chartdata.mean);
         change_pct = this.formatters.percent( ((chartdata.building_value - chartdata.mean) / chartdata.building_value));
         change_label = (chartdata.building_value >= chartdata.mean) ? 'higher' : 'lower';
       }
@@ -279,8 +280,10 @@ define([
       var building_value = building.hasOwnProperty(compareField) ? building[compareField] : null;
 
       if (building_value === null) {
+
+        building_value = 0;
         console.warn('Building has a NULL value!');
-        return;
+        // return;
       }
 
       console.log('View: ', view);

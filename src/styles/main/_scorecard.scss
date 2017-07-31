@@ -35,13 +35,17 @@ $sc-font-lgr: 3rem;
     display: block;
   }
 
-  .scorecard-content {
+  .scorecard-wrapper {
     position: relative;
     width: 100%;
     max-width: 960px;
     margin: 0 auto;
   }
 
+  #scorecard-content {
+    position: relative;
+    width: 100%;
+  }
 
   .sc-heading {
     margin: 0;

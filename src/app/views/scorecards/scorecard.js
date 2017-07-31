@@ -52,10 +52,6 @@ define([
 
     initialize: function(options) {
       this.state = options.state;
-      this.listenTo(this.state, 'change:allbuildings', this.onBuildingsChange);
-
-      var scorecard = this.state.get('scorecard');
-      this.listenTo(scorecard, 'change:view', this.onViewChange);
 
       this.formatters = {
         currency: d3.format('$,.2f'),
@@ -84,10 +80,6 @@ define([
       this.render();
     },
 
-    onBuildingsChange: function() {
-      if (this.dirty) this.render();
-    },
-
     toggleView: function(evt) {
       var scorecardState = this.state.get('scorecard');
       var view = scorecardState.get('view');
@@ -101,10 +93,6 @@ define([
       }
 
       scorecardState.set({'view': value});
-    },
-
-    onViewChange: function() {
-      this.renderScorecard();
     },
 
     close: function() {
@@ -121,7 +109,6 @@ define([
 
     render: function() {
       var active = this.isActive();
-      console.log('render: ', active);
       var buildings = this.state.get('allbuildings');
 
       if (active) {

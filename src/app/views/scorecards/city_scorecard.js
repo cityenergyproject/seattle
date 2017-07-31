@@ -2,34 +2,52 @@ define([
   'jquery',
   'underscore',
   'backbone',
-  './scorecard',
   './charts/fuel',
   './charts/shift',
   './charts/building_type_table',
-  'text!templates/layout/scorecards/city_scorecard.html'
-], function($, _, Backbone, ScoreCardBaseView, FuelUseView, ShiftView, BuildingTypeTableView, ScorecardTemplate){
-  var CityScorecard = ScoreCardBaseView.extend({
+  'text!templates/scorecards/city.html'
+], function($, _, Backbone, FuelUseView, ShiftView, BuildingTypeTableView, ScorecardTemplate){
+  var CityScorecard = Backbone.View.extend({
 
     initialize: function(options){
-      CityScorecard.__super__.initialize.apply(this, [options]);
+      this.state = options.state;
+      this.formatters = options.formatters;
 
-      this.listenTo(this.state, 'change:city_report_active', this.onReportActive);
       this.template = _.template(ScorecardTemplate);
 
-      // this.render();
       return this;
     },
 
+    events: {
+      'click .sc-toggle--input': 'toggleView'
+    },
+
     close: function() {
-      this.state.set({city_report_active: false});
+      // do some house cleaning before being removed
     },
 
-    isActive: function() {
-      return this.state.get('city_report_active');
+    toggleView: function(evt) {
+      evt.preventDefault();
+
+      var scorecardState = this.state.get('scorecard');
+      var view = scorecardState.get('view');
+
+      var target = evt.target;
+      var value = target.dataset.view;
+
+      if (value === view) {
+        return false;
+      }
+
+      scorecardState.set({'view': value});
     },
 
-    renderScorecard: function() {
-      console.log('City renderScorecard');
+    onViewChange: function() {
+      this.show();
+    },
+
+    render: function() {
+      if (!this.state.get('city_report_active')) return;
       this.show();
     },
 

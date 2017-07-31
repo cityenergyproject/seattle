@@ -14,13 +14,12 @@ define([
   'views/layout/activity_indicator',
   'views/layout/building_counts',
   'views/layout/compare_bar',
-  'views/scorecards/building_scorecard',
-  'views/scorecards/city_scorecard',
+  'views/scorecards/controller',
   'views/layout/button',
 ], function($, deparam, _, Backbone, CityModel, ScorecardModel,
             CityBuildings, MapView, AddressSearchView,
             YearControlView, ActivityIndicator,
-            BuildingCounts, CompareBar, BuildingScorecard, CityScorecard, Button) {
+            BuildingCounts, CompareBar, ScorecardController, Button) {
 
   var RouterState = Backbone.Model.extend({
     queryFields: [
@@ -145,8 +144,8 @@ define([
       var addressSearchView = new AddressSearchView({mapView: mapView, state: this.state});
       var buildingCounts = new BuildingCounts({state: this.state});
       var compareBar = new CompareBar({state: this.state});
-      var buildingScorecard = new BuildingScorecard({state: this.state});
-      var cityScorecard = new CityScorecard({state: this.state});
+      const scorecardController = new ScorecardController({state: this.state});
+
       var button = new Button({
         el: '#city-scorcard-toggle',
         onClick: _.bind(this.toggleCityScorecard, this),
