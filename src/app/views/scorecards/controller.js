@@ -105,7 +105,21 @@ define([
     showScorecard: function() {
       console.log('---- Show Scorecard ----- ');
       this.$el.toggleClass('active', true);
-      this.$el.html(this.template({name: 'test'}));
+
+      const building = this.state.get('building');
+      let name;
+      if (building) {
+        const buildings = this.state.get('allbuildings');
+        const buildingModel = buildings.get(building);
+        name = buildingModel.get('property_name');
+      } else {
+        name = 'Citywide Report';
+      }
+
+      this.$el.html(this.template({
+        building_view: this.viewclass === BuildingScorecard,
+        name
+      }));
 
       if (!this.viewclass) return;
       const view = new this.viewclass(this.getSubViewOptions());
