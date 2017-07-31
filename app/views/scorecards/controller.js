@@ -38,7 +38,17 @@ define(['jquery', 'underscore', 'backbone', './building_scorecard', './city_scor
     },
 
     onViewChange: function onViewChange() {
+      this.updateViewClass();
       if (this.view && this.view.onViewChange) this.view.onViewChange();
+    },
+
+    updateViewClass: function updateViewClass() {
+      var scorecardState = this.state.get('scorecard');
+      var view = scorecardState.get('view');
+
+      var klass = 'show-' + view + '-view';
+
+      this.$el.attr('class', 'active ' + klass);
     },
 
     onBuildingReportActive: function onBuildingReportActive() {
@@ -100,7 +110,6 @@ define(['jquery', 'underscore', 'backbone', './building_scorecard', './city_scor
     },
 
     showScorecard: function showScorecard() {
-      console.log('---- Show Scorecard ----- ');
       this.$el.toggleClass('active', true);
 
       var building = this.state.get('building');
@@ -118,13 +127,14 @@ define(['jquery', 'underscore', 'backbone', './building_scorecard', './city_scor
         name: name
       }));
 
+      this.updateViewClass();
+
       if (!this.viewclass) return;
       var view = new this.viewclass(this.getSubViewOptions());
       this.loadView(view);
     },
 
     hideScorecard: function hideScorecard() {
-      console.log('---- Hide Scorecard ----- ');
       this.$el.toggleClass('active', false);
       this.removeView();
       this.viewclass = null;

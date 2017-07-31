@@ -1,21 +1,13 @@
 'use strict';
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
 define(['jquery', 'underscore', 'backbone', 'toastr', 'fusejs', 'autocomplete', 'text!templates/map/address_search.html', 'text!templates/map/address_search_results.html'], function ($, _, Backbone, toastr, Fuse, AutoComplete, AddressSearchTemplate, AddressSearchResultTemplate) {
 
   var AddressSearchACView = Backbone.View.extend({
     $container: $('#search'),
-
-    SEARCH_URL: 'https://search.mapzen.com/v1/search',
-
-    // top,left,bottom,right
-    SEARCH_BOUNDS: [38.79163, -77.119766, 38.995853, -76.909363],
-
-    SEARCH_API_KEY: 'search-oqsffOQ',
-
-    SEARCH_KEYS: {
-      property: 'property_name',
-      address: 'reported_address'
-    },
 
     SEARCH_KEY_FOR_SELECTED: 'reported_address',
 
@@ -32,6 +24,7 @@ define(['jquery', 'underscore', 'backbone', 'toastr', 'fusejs', 'autocomplete', 
       this.state = options.state;
       this.fuse = null;
       this.autocomplete = null;
+
       this.listenTo(this.state, 'change:city', this.onCityChange);
       this.listenTo(this.state, 'change:allbuildings', this.onBuildingsChange);
       this.listenTo(this.state, 'change:building', this.onBuildingChange);
@@ -43,11 +36,20 @@ define(['jquery', 'underscore', 'backbone', 'toastr', 'fusejs', 'autocomplete', 
       }
     },
 
+    configure: function configure() {
+      var config = this.config = this.state.get('city').get('search');
+      this.SEARCH_URL = config.url;
+      this.SEARCH_BOUNDS = config.bounds;
+      this.SEARCH_API_KEY = config.api_key;
+      this.SEARCH_KEYS = config.terms;
+    },
+
     onCityChange: function onCityChange() {
       this.listenTo(this.state.get('city'), 'sync', this.onCitySync);
     },
 
     onCitySync: function onCitySync() {
+      this.configure();
       this.render();
     },
 
@@ -62,11 +64,14 @@ define(['jquery', 'underscore', 'backbone', 'toastr', 'fusejs', 'autocomplete', 
 
       var building = buildings.find(function (building) {
         return building.get(city.get('property_id')) == property_id;
-      }, this);
+      });
 
       if (building) {
-        var lat = parseFloat(building.get('lat')),
-            lng = parseFloat(building.get('lng'));
+        var _getLatLng = this.getLatLng(building),
+            _getLatLng2 = _slicedToArray(_getLatLng, 2),
+            lat = _getLatLng2[0],
+            lng = _getLatLng2[1];
+
         $('#address-search').val(building.get(this.SEARCH_KEY_FOR_SELECTED));
       } else {
         $('#address-search').val('');
@@ -74,38 +79,20 @@ define(['jquery', 'underscore', 'backbone', 'toastr', 'fusejs', 'autocomplete', 
       }
     },
 
+    getLatLng: function getLatLng(building) {
+      return [parseFloat(building.get('lat')), parseFloat(building.get('lng'))];
+    },
+
     render: function render() {
-      var self = this;
-
-      var searchTemplate = _.template(AddressSearchTemplate);
-      this.$container.html(searchTemplate());
-
-      // clear marker
-      $('#address-search').on('search', function (e) {
-        if (!this.value) {
-          self.clearMarker();
-          if (self.SYNC_WITH_STATE) {
-            self.state.set({ building: null });
-            setTimeout(function () {
-              self.state.trigger('clear_map_popups');
-            }.bind(self), 1);
-          }
-        }
-      });
-
+      this.$container.html(_.template(AddressSearchTemplate));
       return this;
     },
 
-    events: {
-      'search': 'search'
-    },
-
     getBuildingDataForSearch: function getBuildingDataForSearch(building) {
-      var self = this;
-      var keys = _.keys(this.SEARCH_KEYS);
-
-      var lat = parseFloat(building.get('lat')),
-          lng = parseFloat(building.get('lng'));
+      var _getLatLng3 = this.getLatLng(building),
+          _getLatLng4 = _slicedToArray(_getLatLng3, 2),
+          lat = _getLatLng4[0],
+          lng = _getLatLng4[1];
 
       var rsp = {
         id: building.cid,
@@ -113,36 +100,37 @@ define(['jquery', 'underscore', 'backbone', 'toastr', 'fusejs', 'autocomplete', 
       };
 
       var valid = true;
-      keys.forEach(function (k) {
-        var value = building.get(self.SEARCH_KEYS[k]);
-        rsp[k] = value.trim();
+      this.SEARCH_KEYS.forEach(function (obj) {
+        var value = building.get(obj.key) + '';
 
-        if (!rsp[k].length) valid = false;
+        rsp[obj.name] = value.trim();
+
+        if (!rsp[obj.name].length) valid = false;
       });
 
       return valid ? rsp : null;
     },
 
     onBuildingsChange: function onBuildingsChange() {
-      var self = this;
+      var _this = this;
+
       var buildings = this.state.get('allbuildings');
       var things = this.things = [];
+      var skipRender = this.SEARCH_KEYS.filter(function (d) {
+        return d.hide;
+      }).map(function (d) {
+        return d.name;
+      });
 
       buildings.forEach(function (building, i) {
-        var buildingData = self.getBuildingDataForSearch(building);
+        var buildingData = _this.getBuildingDataForSearch(building);
         if (buildingData) things.push(buildingData);
-      }, this);
+      });
 
-      var options = {
-        caseSensitive: false,
-        include: ["score", "matches"],
-        location: 0,
-        distance: 50,
-        threshold: 0.1,
-        maxPatternLength: 32,
-        shouldSort: true,
-        keys: _.keys(this.SEARCH_KEYS)
-      };
+      var options = _extends({}, this.config.fuse_options);
+      options.keys = this.SEARCH_KEYS.map(function (d) {
+        return d.name;
+      });
 
       // fuzzy search engine
       this.fuse = new Fuse(things, options);
@@ -161,29 +149,31 @@ define(['jquery', 'underscore', 'backbone', 'toastr', 'fusejs', 'autocomplete', 
         offsetTop: 10,
         cache: false,
         source: function source(term, suggest, doExternalSearch) {
-          var wrapper = self.wrapper(term, suggest, new Date().getTime(), self);
+          var wrapper = _this.wrapper(term, suggest, new Date().getTime(), _this);
 
-          if (self.$autocompleteHeader) self.$autocompleteHeader.removeClass('show');
+          if (_this.$autocompleteHeader) _this.$autocompleteHeader.removeClass('show');
 
           if (doExternalSearch) {
-            self.search(term, wrapper);
+            _this.search(term, wrapper);
           } else {
             var val = term.toLowerCase();
-            var results = self.fuse.search(val);
+            var results = _this.fuse.search(val);
+
             var matches = results.map(function (d) {
               var m = [];
 
-              _.keys(self.SEARCH_KEYS).forEach(function (opt) {
-                if (!d.item[opt] || !d.item[opt].length) return;
+              _this.SEARCH_KEYS.forEach(function (opt) {
+                var name = opt.name;
+                if (!d.item[name] || !d.item[name].length) return;
 
                 var matched = false;
                 d.matches.forEach(function (mat) {
-                  if (mat.key === opt) matched = true;
+                  if (mat.key === name) matched = true;
                 });
 
                 m.push({
-                  key: opt,
-                  value: d.item[opt],
+                  key: name,
+                  value: d.item[name],
                   matched: matched
                 });
               });
@@ -203,7 +193,9 @@ define(['jquery', 'underscore', 'backbone', 'toastr', 'fusejs', 'autocomplete', 
           var re = new RegExp("(" + search.split(' ').join('|') + ")", "gi");
           var template = _.template(AddressSearchResultTemplate);
 
-          result.items.forEach(function (item) {
+          result.items.filter(function (d) {
+            return skipRender.indexOf(d.key) === -1;
+          }).forEach(function (item) {
             item.formatted_value = item.matched ? item.value.replace(re, "<b>$1</b>") : item.value;
           });
 
@@ -212,18 +204,21 @@ define(['jquery', 'underscore', 'backbone', 'toastr', 'fusejs', 'autocomplete', 
 
         onSelect: function onSelect(e, term, item) {
           if (item) {
-
             var id = item.getAttribute('data-building');
-
             var building = buildings.get(id);
-            var lat = building.get('lat');
-            var lng = building.get('lng');
 
-            var propertyId = self.state.get('city').get('property_id');
-            var propety_id = building.get(propertyId);
+            var _getLatLng5 = _this.getLatLng(building),
+                _getLatLng6 = _slicedToArray(_getLatLng5, 2),
+                lat = _getLatLng6[0],
+                lng = _getLatLng6[1];
 
-            self.centerMapOn([lat, lng]);
-            if (self.SYNC_WITH_STATE) self.state.set({ building: propety_id });
+            var propertyId = _this.state.get('city').get('property_id');
+
+            _this.centerMapOn([lat, lng]);
+
+            if (_this.SYNC_WITH_STATE) {
+              _this.state.set({ building: building.get(propertyId) });
+            }
           }
         }
       });
@@ -233,15 +228,14 @@ define(['jquery', 'underscore', 'backbone', 'toastr', 'fusejs', 'autocomplete', 
       this.$autocompleteHeader.text(this.SEARCH_EXTERNAL_SEARCH_HEADER);
     },
 
-    wrapper: function wrapper(term, suggest, started_at, self) {
-
+    wrapper: function wrapper(term, suggest, started_at, ctx) {
       return function (from_term, items, err) {
         var now = new Date().getTime();
-        if (from_term == term && self.maxReqTimestampRendered > started_at) return;
-        self.maxReqTimestampRendered = started_at;
+        if (from_term == term && ctx.maxReqTimestampRendered > started_at) return;
+        ctx.maxReqTimestampRendered = started_at;
 
         if (err) {
-          self.errorReporter(err);
+          ctx.errorReporter(err);
         }
 
         suggest(items);
@@ -251,9 +245,10 @@ define(['jquery', 'underscore', 'backbone', 'toastr', 'fusejs', 'autocomplete', 
     maxReqTimestampRendered: new Date().getTime(),
 
     search: function search(term, callback) {
+      var _this2 = this;
+
       if (!term) return callback(term, [], null);
 
-      var self = this;
       var url = this.SEARCH_URL;
       var bounds = this.SEARCH_BOUNDS;
       var center = this.state.get('city').get('center');
@@ -279,20 +274,20 @@ define(['jquery', 'underscore', 'backbone', 'toastr', 'fusejs', 'autocomplete', 
         },
 
         error: function error(xhr, status, err) {
-          var errMsg = self.onAjaxAddressError(xhr);
-          self.errorReporter(errMsg);
+          var errMsg = _this2.onAjaxAddressError(xhr);
+          _this2.errorReporter(errMsg);
           callback(term, [], null);
         },
 
         success: function success(data, status) {
-          var results = self.onAjaxAddressSuccess(data, term);
-          if (!results.buildings.length) self.errorReporter(self.ERRORS.noimage);
+          var results = _this2.onAjaxAddressSuccess(data, term);
+          if (!results.buildings.length) _this2.errorReporter(_this2.ERRORS.noimage);
 
           if (results.match) {
-            self.centerMapOn(results.match);
+            _this2.centerMapOn(results.match);
             callback(term, [], null);
           } else {
-            if (self.$autocompleteHeader) self.$autocompleteHeader.addClass('show');
+            if (_this2.$autocompleteHeader) _this2.$autocompleteHeader.addClass('show');
             callback(term, results.buildings, null);
           }
         }
@@ -318,20 +313,24 @@ define(['jquery', 'underscore', 'backbone', 'toastr', 'fusejs', 'autocomplete', 
     },
 
     onAjaxAddressSuccess: function onAjaxAddressSuccess(data, term) {
+      var _this3 = this;
+
+      var regional_context = this.state.get('city').get('address_search_regional_context');
       var features = (data.features || []).filter(function (feat) {
-        return feat.properties.region && feat.properties.region === this.state.get('city').get('address_search_regional_context');
-      }.bind(this));
+        return feat.properties.region && feat.properties.region === regional_context;
+      });
 
-      if (!features.length) return [];
+      if (!features.length) return { match: false, buildings: [] };
 
-      var self = this;
       var buildings = this.state.get('allbuildings');
-      var match = null;
-      var keys = _.keys(self.SEARCH_KEYS);
-
+      var keys = this.SEARCH_KEYS.map(function (d) {
+        return d.name;
+      });
       var closestBuildings = [];
+      var match = null;
+
       features.forEach(function (feature) {
-        var distances = self.getDistances(L.latLng(feature.geometry.coordinates.reverse()));
+        var distances = _this3.getDistances(L.latLng(feature.geometry.coordinates.reverse()));
         closestBuildings = closestBuildings.concat(distances);
       });
 
@@ -339,15 +338,12 @@ define(['jquery', 'underscore', 'backbone', 'toastr', 'fusejs', 'autocomplete', 
         return item.id;
       });
       closestBuildings = _.sortBy(closestBuildings, 'd');
-
       closestBuildings = closestBuildings.slice(0, 10);
-
       closestBuildings = closestBuildings.map(function (item) {
-
         var building = buildings.get(item.id);
-        var buildingData = self.getBuildingDataForSearch(building);
-
+        var buildingData = _this3.getBuildingDataForSearch(building);
         var m = {};
+
         m.building_id = buildingData.id;
         m.items = [];
 
@@ -401,6 +397,8 @@ define(['jquery', 'underscore', 'backbone', 'toastr', 'fusejs', 'autocomplete', 
 
     placeMarker: function placeMarker(coordinates) {
       var map = this.mapView.leafletMap;
+      if (!map) return;
+
       this.clearMarker();
 
       var icon = new L.Icon({
@@ -420,6 +418,8 @@ define(['jquery', 'underscore', 'backbone', 'toastr', 'fusejs', 'autocomplete', 
 
     clearMarker: function clearMarker() {
       var map = this.mapView.leafletMap;
+      if (!map) return;
+
       if (this.marker) {
         map.removeLayer(this.marker);
       }

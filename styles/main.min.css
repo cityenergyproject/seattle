@@ -1256,10 +1256,10 @@ header {
 #map .leaflet-popup-content-wrapper {
   box-shadow: none;
   border-radius: 0;
-  background-color: #ddd; }
+  background-color: #e4e4e4; }
 
 #map .leaflet-popup-tip {
-  background-color: #ddd; }
+  background-color: #e4e4e4; }
 
 .leaflet-popup-content .building-info {
   font-family: "Ubuntu", "Helvetica Neue", "Helvetica", "Roboto", "Arial", sans-serif;
@@ -1456,6 +1456,16 @@ header {
   z-index: 1000;
   cursor: pointer;
   font-size: 1em; }
+  #map-controls-bar:after {
+    content: "";
+    position: absolute;
+    right: 0;
+    bottom: 100%;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 0 10px 10px 10px;
+    border-color: transparent transparent #0047ba transparent; }
   #map-controls-bar button {
     background: transparent;
     border: 0;
@@ -1531,6 +1541,11 @@ header {
 
 .compare-mode #map-controls-bar {
   top: 2.5em; }
+  .compare-mode #map-controls-bar:after {
+    bottom: auto;
+    top: 100%;
+    border-width: 10px 10px 0 10px;
+    border-color: #0047ba transparent transparent transparent; }
 
 .row {
   position: relative;
@@ -2112,6 +2127,48 @@ header {
     background: #f1f1f1; }
   #scorecard #building-type-table .no-border {
     border: 0; }
+  #scorecard #eui-scorecard-view,
+  #scorecard #ess-scorecard-view {
+    position: relative;
+    top: 0;
+    left: 0;
+    display: none; }
+  #scorecard.show-eui-view #eui-scorecard-view,
+  #scorecard.show-ess-view #ess-scorecard-view {
+    display: block; }
+  @media print {
+    #scorecard {
+      overflow: visible; }
+    #scorecard * {
+      -webkit-print-color-adjust: exact !important;
+      /* Chrome, Safari */
+      color-adjust: exact !important;
+      /*Firefox*/ }
+    #scorecard #scorecard .scorecard-wrapper {
+      width: 7in;
+      max-width: 7in; }
+    #scorecard .scorecard--nav {
+      margin-top: 0; }
+    #scorecard #back-to-map-link {
+      display: none; }
+    #scorecard #eui-scorecard-view,
+    #scorecard #ess-scorecard-view {
+      display: block !important; }
+    #scorecard #eui-scorecard-view {
+      page-break-after: always;
+      overflow: visible; }
+    #scorecard #ess-scorecard-view {
+      page-break-before: always;
+      overflow: visible; }
+    #scorecard .scorecard--section, #scorecard .scorecard--details {
+      page-break-inside: avoid; }
+    #scorecard #building-type-table {
+      page-break-after: always; } }
+
+@media print {
+  body {
+    background-color: #fff;
+    overflow: visible; } }
 
 #scorecard .pushdown {
   margin-top: 0.5em; }

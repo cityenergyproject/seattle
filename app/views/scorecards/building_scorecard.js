@@ -17,6 +17,10 @@ define(['jquery', 'underscore', 'backbone', 'text!templates/scorecards/building.
       'click .sc-toggle--input': 'toggleView'
     },
 
+    close: function close() {
+      this.scoreCardData = null;
+    },
+
     toggleView: function toggleView(evt) {
       evt.preventDefault();
 
@@ -33,14 +37,8 @@ define(['jquery', 'underscore', 'backbone', 'text!templates/scorecards/building.
       scorecardState.set({ 'view': value });
     },
 
-    close: function close() {
-      this.scoreCardData = null;
-    },
-
     onViewChange: function onViewChange() {
-      var buildings = this.state.get('allbuildings');
-      var year = this.state.get('year');
-      this.processBuilding(buildings, this.scoreCardData.data, year);
+      this.render();
     },
 
     render: function render() {
@@ -53,7 +51,7 @@ define(['jquery', 'underscore', 'backbone', 'text!templates/scorecards/building.
       var buildings = this.state.get('allbuildings');
 
       if (this.scoreCardData && this.scoreCardData.id === id) {
-        this.processBuilding(buildings, this.scoreCardData.data, year);
+        this.show(buildings, this.scoreCardData.data, year);
       } else {
         // Temporary hack to get yearly data
         d3.json('https://cityenergy-seattle.carto.com/api/v2/sql?q=SELECT+ST_X(the_geom)+AS+lng%2C+ST_Y(the_geom)+AS+lat%2C*+FROM+table_2015_stamen_phase_ii_v2_w_year+WHERE+id=' + id, function (d) {
@@ -64,12 +62,17 @@ define(['jquery', 'underscore', 'backbone', 'text!templates/scorecards/building.
             data: d
           };
 
-          _this.processBuilding(buildings, d, year);
+          _this.show(buildings, d, year);
         });
       }
     },
 
-    processBuilding: function processBuilding(buildings, building_data, selected_year) {
+    show: function show(buildings, building_data, selected_year) {
+      this.processBuilding(buildings, building_data, selected_year, 'eui');
+      this.processBuilding(buildings, building_data, selected_year, 'ess');
+    },
+
+    processBuilding: function processBuilding(buildings, building_data, selected_year, view) {
       var scorecardState = this.state.get('scorecard');
       var data = {};
       building_data.rows.forEach(function (d) {
@@ -98,7 +101,8 @@ define(['jquery', 'underscore', 'backbone', 'text!templates/scorecards/building.
         numfloors: 'Number of Floors'
       };
 
-      var view = scorecardState.get('view');
+      var viewSelector = '#' + view + '-scorecard-view';
+      var el = this.$el.find(viewSelector);
       var compareField = view === 'eui' ? 'site_eui' : 'energy_star_score';
       var value = building.hasOwnProperty(compareField) ? building[compareField] : null;
 
@@ -113,7 +117,9 @@ define(['jquery', 'underscore', 'backbone', 'text!templates/scorecards/building.
       var fuels = this.renderFuelUseChart(building);
       var change_data = this.extractChangeData(data);
 
-      this.$el.html(this.template({
+      console.log('change_data: ', change_data);
+
+      el.html(this.template({
         active: 'active',
         name: name,
         addr: address,
@@ -131,8 +137,8 @@ define(['jquery', 'underscore', 'backbone', 'text!templates/scorecards/building.
         energy_info: this.listdata(building, energy_fields)
       }));
 
-      this.renderChangeChart(change_data.chart);
-      this.renderCompareChart(config, chartdata, view, prop_type, name);
+      this.renderChangeChart(change_data.chart, viewSelector);
+      this.renderCompareChart(config, chartdata, view, prop_type, name, viewSelector);
     },
 
     full_address: function full_address(building) {
@@ -290,8 +296,6 @@ define(['jquery', 'underscore', 'backbone', 'text!templates/scorecards/building.
         // return;
       }
 
-      console.log('View: ', view);
-
       var buildingsOfType = buildings.where({ property_type: prop_type }).map(function (m) {
         return m.toJSON();
       });
@@ -365,7 +369,8 @@ define(['jquery', 'underscore', 'backbone', 'text!templates/scorecards/building.
       };
     },
 
-    renderCompareChart: function renderCompareChart(config, chartdata, view, prop_type, name) {
+    renderCompareChart: function renderCompareChart(config, chartdata, view, prop_type, name, viewSelector) {
+      var container = d3.select(viewSelector);
 
       if (chartdata.selectedIndex === null || chartdata.avgIndex === null) {
         console.warn('Could not find required indexes!');
@@ -385,7 +390,7 @@ define(['jquery', 'underscore', 'backbone', 'text!templates/scorecards/building.
         return d.y;
       })]).range([height, 0]);
 
-      var svg = d3.select("#compare-chart").append("svg").attr("width", width + margin.left + margin.right).attr("height", height + margin.top + margin.bottom).append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+      var svg = container.select("#compare-chart").append("svg").attr("width", width + margin.left + margin.right).attr("height", height + margin.top + margin.bottom).append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
       svg.append("g").attr("class", "y axis").call(d3.svg.axis().scale(y).orient("left").ticks(5).outerTickSize(0).innerTickSize(2));
 
@@ -449,7 +454,7 @@ define(['jquery', 'underscore', 'backbone', 'text!templates/scorecards/building.
       var xpos = x(chartdata.data[chartdata.selectedIndex].x) + x.rangeBand() / 2;
       var ypos = y(chartdata.data[chartdata.selectedIndex].y);
 
-      var selectedCityHighlight = d3.select("#compare-chart").append('div').attr('class', 'selected-city-highlight-html').style('top', margin.top - 70 + 'px').style('left', margin.left + xpos + 'px');
+      var selectedCityHighlight = container.select("#compare-chart").append('div').attr('class', 'selected-city-highlight-html').style('top', margin.top - 70 + 'px').style('left', margin.left + xpos + 'px');
 
       var circle = selectedCityHighlight.append('div').attr('class', 'circle');
 
@@ -467,7 +472,7 @@ define(['jquery', 'underscore', 'backbone', 'text!templates/scorecards/building.
       xpos = x(chartdata.data[chartdata.avgIndex].x) + x.rangeBand() / 2;
       ypos = y(chartdata.data[chartdata.avgIndex].y); // top of bar
 
-      var avgHighlight = d3.select("#compare-chart").append('div').attr('class', 'avg-highlight-html').style('top', margin.top + ypos + 'px').style('left', margin.left + xpos + 'px').append('div');
+      var avgHighlight = container.select("#compare-chart").append('div').attr('class', 'avg-highlight-html').style('top', margin.top + ypos + 'px').style('left', margin.left + xpos + 'px').append('div');
 
       avgHighlight.append('p').text('Building type average');
 
@@ -552,7 +557,12 @@ define(['jquery', 'underscore', 'backbone', 'text!templates/scorecards/building.
         return a.year - b.year;
       });
 
-      var change = (buildingYearlyEuis[years[1]] - buildingYearlyEuis[years[0]]) / buildingYearlyEuis[years[1]] * 100;
+      var change = void 0;
+      if (buildingYearlyEuis[years[1]] === 0) {
+        change = -buildingYearlyEuis[years[0]];
+      } else {
+        change = (buildingYearlyEuis[years[1]] - buildingYearlyEuis[years[0]]) / buildingYearlyEuis[years[1]] * 100;
+      }
 
       var direction = change < 0 ? 'decreased' : 'increased';
 
@@ -566,9 +576,10 @@ define(['jquery', 'underscore', 'backbone', 'text!templates/scorecards/building.
       };
     },
 
-    renderChangeChart: function renderChangeChart(data) {
-      var rootElm = d3.select('#change-chart-vis');
-      var yearsElm = d3.select('#change-chart-years');
+    renderChangeChart: function renderChangeChart(data, viewSelector) {
+      var container = d3.select(viewSelector);
+      var rootElm = container.select('#change-chart-vis');
+      var yearsElm = container.select('#change-chart-years');
 
       var diameter = 10;
       var yearExtent = d3.extent(data, function (d) {

@@ -55,11 +55,13 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
       };
     },
 
-    renderChangeChart: function renderChangeChart(data) {
+    renderChangeChart: function renderChangeChart(data, selector) {
       var _this = this;
 
-      var rootElm = d3.select('#change-chart-vis');
-      var yearsElm = d3.select('#change-chart-years');
+      var container = d3.select(selector);
+
+      var rootElm = container.select('#change-chart-vis');
+      var yearsElm = container.select('#change-chart-years');
 
       var diameter = 10;
       var yearExtent = d3.extent(data, function (d) {
@@ -184,15 +186,17 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
 
           cb(_this2.extractChangeData());
         });
+      } else {
+        cb(this.extractChangeData());
       }
     },
 
-    render: function render(cb) {
+    render: function render(cb, viewSelector) {
       var _this3 = this;
 
       this.chartData(function (d) {
         cb(_this3.template(d.template));
-        _this3.renderChangeChart(d.chart);
+        _this3.renderChangeChart(d.chart, viewSelector);
       });
     }
   });
