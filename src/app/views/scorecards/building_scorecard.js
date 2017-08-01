@@ -2,8 +2,9 @@ define([
   'jquery',
   'underscore',
   'backbone',
+  './charts/fuel',
   'text!templates/scorecards/building.html'
-], function($, _, Backbone,  BuildingTemplate){
+], function($, _, Backbone, FuelUseView, BuildingTemplate){
   var BuildingScorecard = Backbone.View.extend({
     initialize: function(options){
       this.state = options.state;
@@ -113,10 +114,7 @@ define([
       var eui = building.site_eui;
 
       var chartdata = this.prepareCompareChartData(config, buildings, building, view, prop_type, id);
-      var fuels = this.renderFuelUseChart(building);
       const change_data = this.extractChangeData(data);
-
-      console.log('change_data: ', change_data);
 
       el.html(this.template({
         active: 'active',
@@ -130,14 +128,24 @@ define([
         value: value,
         costs: this.costs(building, selected_year),
         compare: this.compare(building, view, config, chartdata),
-        fuels: fuels,
         change: change_data.template,
         building_info: this.listdata(building, building_fields),
         energy_info: this.listdata(building, energy_fields)
       }));
 
+      if (!this.chart_fueluse) {
+        this.chart_fueluse = new FuelUseView({
+          formatters: this.formatters,
+          data: [building]
+        });
+      }
+
+      el.find('#fuel-use-chart').html(this.chart_fueluse.render());
+      this.chart_fueluse.fixlabels(viewSelector);
+
       this.renderChangeChart(change_data.chart, viewSelector);
       this.renderCompareChart(config, chartdata, view, prop_type, name, viewSelector);
+
     },
 
     full_address: function(building) {
