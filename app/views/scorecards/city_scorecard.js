@@ -88,6 +88,7 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
       }
 
       el.find('#fuel-use-chart').html(this.chart_fueluse.render());
+      this.chart_fueluse.fixlabels(viewSelector);
 
       if (!this.chart_shift) {
         this.chart_shift = new ShiftView({

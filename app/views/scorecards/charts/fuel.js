@@ -85,6 +85,76 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
       };
     },
 
+    getLabelSizes: function getLabelSizes(labels) {
+      var sizes = [];
+
+      labels.each(function () {
+        var pw = this.offsetWidth;
+        var cw = this.firstChild.offsetWidth;
+
+        if (pw === 0) return;
+
+        sizes.push({
+          elm: this,
+          pw: pw,
+          cw: cw,
+          dirty: cw > pw,
+          pct: +this.style.width.replace('%', '')
+        });
+      });
+
+      return sizes;
+    },
+
+    adjSizes: function adjSizes(labels, ct) {
+      var sizes = this.getLabelSizes(labels);
+      if (!sizes.length) return;
+
+      var ctr = ct || 0;
+      ctr += 1;
+      if (ctr > 10) return;
+
+      var dirty = _.findIndex(sizes, function (d) {
+        return d.dirty;
+      });
+
+      if (dirty > -1) {
+        var available = sizes.filter(function (d) {
+          return !d.dirty;
+        });
+
+        var additional = 0;
+
+        available.forEach(function (d) {
+          additional += 1;
+          d3.select(d.elm).style('width', d.pct - 1 + '%');
+        });
+
+        d3.select(sizes[dirty].elm).style('width', sizes[dirty].pct + additional + '%');
+
+        this.adjSizes(labels, ctr);
+      }
+    },
+
+    hideLabels: function hideLabels(labels) {
+      var sizes = this.getLabelSizes(labels);
+      sizes.forEach(function (d) {
+        if (d.dirty) {
+          d3.select(d.elm.firstChild).style('display', 'none');
+        }
+      });
+    },
+
+    fixlabels: function fixlabels(selector) {
+      var chart = d3.select(selector).select('#fuel-use-chart');
+
+      var headerLabels = chart.select('.fc-bars').selectAll('.fc-header');
+      this.adjSizes(headerLabels, 0);
+
+      var barLabels = chart.select('.fc-bars').selectAll('.fc-bar');
+      this.hideLabels(barLabels);
+    },
+
     render: function render() {
       var d = this.chartData();
 

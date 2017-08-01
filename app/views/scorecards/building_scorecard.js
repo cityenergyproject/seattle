@@ -2,7 +2,7 @@
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-define(['jquery', 'underscore', 'backbone', 'text!templates/scorecards/building.html'], function ($, _, Backbone, BuildingTemplate) {
+define(['jquery', 'underscore', 'backbone', './charts/fuel', 'text!templates/scorecards/building.html'], function ($, _, Backbone, FuelUseView, BuildingTemplate) {
   var BuildingScorecard = Backbone.View.extend({
     initialize: function initialize(options) {
       this.state = options.state;
@@ -114,10 +114,7 @@ define(['jquery', 'underscore', 'backbone', 'text!templates/scorecards/building.
       var eui = building.site_eui;
 
       var chartdata = this.prepareCompareChartData(config, buildings, building, view, prop_type, id);
-      var fuels = this.renderFuelUseChart(building);
       var change_data = this.extractChangeData(data);
-
-      console.log('change_data: ', change_data);
 
       el.html(this.template({
         active: 'active',
@@ -131,11 +128,20 @@ define(['jquery', 'underscore', 'backbone', 'text!templates/scorecards/building.
         value: value,
         costs: this.costs(building, selected_year),
         compare: this.compare(building, view, config, chartdata),
-        fuels: fuels,
         change: change_data.template,
         building_info: this.listdata(building, building_fields),
         energy_info: this.listdata(building, energy_fields)
       }));
+
+      if (!this.chart_fueluse) {
+        this.chart_fueluse = new FuelUseView({
+          formatters: this.formatters,
+          data: [building]
+        });
+      }
+
+      el.find('#fuel-use-chart').html(this.chart_fueluse.render());
+      this.chart_fueluse.fixlabels(viewSelector);
 
       this.renderChangeChart(change_data.chart, viewSelector);
       this.renderCompareChart(config, chartdata, view, prop_type, name, viewSelector);
