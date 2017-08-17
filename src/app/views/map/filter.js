@@ -359,13 +359,6 @@ define([
         this.$filter = slider.data("ionRangeSlider");
       }
 
-      const sliderWidth = this.$el.find('.control-cell--inner').width();
-
-      if (sliderWidth > 0) {
-        this.histogram.setWidth(sliderWidth);
-      }
-      console.log("**** ", sliderWidth);
-
       // if this is a slider update, skip
       // otherwise when user clicks on slider bar
       // will cause a stack overflow

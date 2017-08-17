@@ -57,7 +57,7 @@
     <div class='row'>
       <div class='col-4 compare-desc'>
         <p class='compare-logo <%= compare.change_label %> <%= view %>'><span><%= compare.change_pct %></span></p>
-        <p class="sc-txt light pg">This building’s <%= view === 'eui' ? 'EUI' : 'Energy Star Score' %> is <span class='change-txt bold <%= compare.change_label %> <%= view %>'><%= compare.change_pct %> <%= compare.change_label %></span> than the average large office building in Seattle.</p>
+        <p class="sc-txt light pg">This building’s <%= view === 'eui' ? 'EUI' : 'Energy Star Score' %> is <span class='change-txt bold <%= compare.change_label %> <%= view %>'><%= compare.change_pct %> <%= compare.change_label %></span> than the average <%= type %> in Seattle.</p>
       </div>
       <div id='compare-chart' class='col-8'></div>
     </div>
