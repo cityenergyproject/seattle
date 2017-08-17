@@ -183,6 +183,7 @@
             "color_range": ["#1f5dbe","#599b67","#ffd552","#da863f","#ab2328"],
             "unit": "kBtu",
             "formatter": "fixed-1",
+            "filter_range": {"min": 1000, "max": 3000000},
             "description": "I need a description"
         },
         {
