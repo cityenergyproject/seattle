@@ -186,30 +186,6 @@
             "description": "I need a description"
         },
         {
-            "title": "Weather Normalized Site EUI",
-            "field_name": "site_eui_wn",
-            "display_type": "range",
-            "range_slice_count": 18,
-            "section": "Energy Performance Metrics",
-            "color_range": ["#1f5dbe","#599b67","#ffd552","#da863f","#ab2328"],
-            "unit": "kBtu/ft²",
-            "filter_range": {"min" : 0, "max" : 200},
-            "formatter": "fixed-1",
-            "description": "I need a description"
-        },
-        {
-            "title": "Weather Normalized Source EUI",
-            "field_name": "source_eui_wn",
-            "display_type": "range",
-            "range_slice_count": 18,
-            "section": "Energy Performance Metrics",
-            "color_range": ["#1f5dbe","#599b67","#ffd552","#da863f","#ab2328"],
-            "unit": "kBtu/ft²",
-            "filter_range": {"min" : 0, "max" : 200},
-            "formatter": "fixed-1",
-            "description": "I need a description"
-        },
-        {
             "title": "Total Seattle GHG Emissions",
             "field_name": "total_ghg_emissions",
             "display_type": "range",
