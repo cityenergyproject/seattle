@@ -598,6 +598,30 @@ $sc-font-lgr: 3rem;
         line-height: 36px;
       }
     }
+
+    .onefuel {
+      .gas {
+        background: rgba(#C04F31, 0.5);
+      }
+
+      .electricity {
+        background: rgba(#DE8F41, 0.5);
+      }
+
+      .steam {
+        background: rgba(#F7C34D, 0.5);
+      }
+    }
+
+    .onefuel-msg {
+      text-transform: none;
+      font-size: 0.75em;
+      text-align: left;
+      padding: 0 10px;
+      position: relative;
+      top: 50%;
+      transform: translateY(-50%);
+    }
   }
 
   #change-chart {

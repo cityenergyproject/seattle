@@ -136,7 +136,9 @@ define([
       if (!this.chart_fueluse) {
         this.chart_fueluse = new FuelUseView({
           formatters: this.formatters,
-          data: [building]
+          data: [building],
+          name: name,
+          year: selected_year
         });
       }
 

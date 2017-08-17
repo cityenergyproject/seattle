@@ -15,7 +15,9 @@
       <div class='fc-label fc-row margin-top'>
         <div>
           <p>EMISSIONS</p>
-          <p>(% ghg)</p>
+          <% if (fuels.length > 1) { %>
+            <p>(% ghg)</p>
+          <% } %>
         </div>
       </div>
     </div>
@@ -31,14 +33,22 @@
           <div class='fc-bar <%= fuel.key %>' style="width: <%= fuel.usage.pct %>%;"><span><%= fuel.usage.pct %>%</span></div>
         <% }); %>
       </div>
-      <div class='fc-row margin-top'>
+      <div class='fc-row margin-top <%= emission_klass %>'>
         <% _.each(fuels, function(fuel) { %>
-          <div class='fc-bar <%= fuel.key %>' style="width: <%= fuel.emissions.pct %>%;"><span><%= fuel.emissions.pct %>%</span></div>
+          <div class='fc-bar <%= fuel.key %>' style="width: <%= fuel.emissions.pct %>%;">
+            <% if (fuels.length > 1) { %>
+              <span><%= fuel.emissions.pct %>%</span>
+            <% } else { %>
+              <div class='onefuel-msg'>The <%= building_name %> consumed <%= totals.usage %> kBtu's of energy in <%= year %>, which equates to <%= totals.emissions %> metric tons of CO<sub>2</sub>E is the equivalent of <%= cars %> passenger vehicles driven for one year.</div>
+            <% } %>
+          </div>
         <% }); %>
       </div>
+      <% if (fuels.length > 1) { %>
       <div class='fc-row'>
         <p><%= totals.emissions %> metric tons of CO<sub>2</sub>E is the equivalent of <%= cars %> passenger vehicles driven for one year.</p>
       </div>
+      <% } %>
     </div>
 
     <div class='fc-totals fc-panel'>
