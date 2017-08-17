@@ -290,7 +290,6 @@ define([
 
       this.domit($section, this.$el, isCurrent, isUpdate, idField);
 
-
       const chartElm = this.$el.find('.chart');
 
       if (!this.histogram) {
@@ -335,8 +334,6 @@ define([
       }
 
 
-
-
       if (!this.$filter || isDirty) {
         if (this.$filter) {
           this.$filter.destroy();
@@ -361,6 +358,13 @@ define([
         const slider = this.$el.find('.range.filter').ionRangeSlider(slideOptions);
         this.$filter = slider.data("ionRangeSlider");
       }
+
+      const sliderWidth = this.$el.find('.control-cell--inner').width();
+
+      if (sliderWidth > 0) {
+        this.histogram.setWidth(sliderWidth);
+      }
+      console.log("**** ", sliderWidth);
 
       // if this is a slider update, skip
       // otherwise when user clicks on slider bar

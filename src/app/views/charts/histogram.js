@@ -23,7 +23,7 @@ define([
       this.chart = d3.select(this.el).append('svg')
                             .style({width: '100%', height: '100%'})
                             .attr('viewBox', '0 0 ' + this.width + ' ' + this.height)
-                            .attr('preserveAspectRatio', "xMinYMin meet")
+                            .attr('preserveAspectRatio', "none")
                             .style('background', 'transparent');
 
       this.g = this.chart.append('g');

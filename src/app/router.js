@@ -220,7 +220,7 @@ define([
     },
 
     root: function () {
-      // TODO: the path should come from config
+      // TODO: This is not needed
       this.navigate('/seattle', {trigger: true, replace: true});
     },
 
