@@ -8,6 +8,9 @@ define([
     this.buckets = buckets;
     this.thresholds = thresholds;
     this.filterRange = filterRange || {};
+
+    this._extent = null;
+    this._tobuckets = null;
   };
 
   BuildingBucketCalculator.prototype.getScale = function() {
@@ -25,15 +28,19 @@ define([
   };
 
   BuildingBucketCalculator.prototype.toExtent = function() {
+    if (this._extent) return this._extent;
     const fieldValues = this.buildings.pluck(this.fieldName);
     const extent = d3.extent(fieldValues);
+
     let min = this.filterRange.min;
     let max = this.filterRange.max;
 
-    if (_.isNaN(min)) min = extent[0];
-    if (_.isNaN(max)) max = extent[1];
+    if (!_.isNumber(min) || _.isNaN(min)) min = extent[0];
+    if (!_.isNumber(max) || _.isNaN(max)) max = extent[1];
 
-    return [min, max];
+    this._extent = [min, max];
+
+    return this._extent;
   };
 
   // Allow for extent & scale to be passed in,
@@ -46,14 +53,17 @@ define([
   };
 
   BuildingBucketCalculator.prototype.toBuckets = function() {
+    if (this._tobuckets) return this._tobuckets;
+
     const scale = this.getScale();
     const extent = scale.domain();
 
+    let buckets;
 
     if (this.thresholds) {
       const thresholdsLength = this.thresholds.length;
 
-      return this.buildings.reduce((acc, building) => {
+      buckets = this.buildings.reduce((acc, building) => {
         const value = building.get(this.fieldName);
 
         if (!value) { return acc; }
@@ -65,19 +75,22 @@ define([
         acc[bucket] = acc[bucket] + 1 || 1;
         return acc;
       }, {});
+    } else {
+      buckets = this.buildings.reduce((acc, building) => {
+        const value = building.get(this.fieldName);
+
+        if (!value) { return acc; }
+
+        let bucket = this.toBucket(value, extent, scale);
+        acc[bucket] = acc[bucket] + 1 || 1;
+
+        return acc;
+      }, {});
     }
 
+    this._tobuckets = buckets;
 
-    return this.buildings.reduce((acc, building) => {
-      const value = building.get(this.fieldName);
-
-      if (!value) { return acc; }
-
-      let bucket = this.toBucket(value, extent, scale);
-      acc[bucket] = acc[bucket] + 1 || 1;
-
-      return acc;
-    }, {});
+    return this._tobuckets;
   };
 
   return BuildingBucketCalculator;

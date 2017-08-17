@@ -259,7 +259,7 @@ define([
       var colorStops = this.layer.color_range;
       var buildings = this.activeBuildings;
       var bucketCalculator = this.bucketCalculator;
-      var extent = bucketCalculator.toExtent();
+      var extent = this.bucketCalculator.toExtent();
       var gradientCalculator = this.gradientCalculator;
       var buckets = this.buckets;
       var gradientStops = this.gradientStops;
