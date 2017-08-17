@@ -216,6 +216,14 @@ define([
 
     onBuildingsSync: function() {
       this.state.set({allbuildings: this.allBuildings});
+
+      /*
+      // energy_star_score
+      const b = this.allBuildings.filter(function(d){
+        return d.get('energy_star_score') < 10;
+      });
+      console.log(b);
+      */
       this.state.trigger("hideActivityLoader");
     },
 

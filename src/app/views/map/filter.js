@@ -109,13 +109,14 @@ define([
     },
 
     getTableData: function() {
-      var buildings = this.getCompareBuildings();
-      var fieldName = this.layer.field_name;
-      var unit = this.layer.unit || '';
-      var formatter = this._valueFormatter;
+      const buildings = this.getCompareBuildings();
+      const fieldName = this.layer.field_name;
+      const formatter = this._valueFormatter;
 
       const propertyCategory = this.getPropertyCategory();
       const propertyType = propertyCategory ? propertyCategory.values[0] : null;
+
+      let unit = this.layer.unit || '';
 
       var o = {
         selected_value: null
@@ -133,9 +134,17 @@ define([
           klasses.push('disable');
         }
 
-        const value = (this.layer.thresholds && this.valueToIndex) ?
-            formatter(this.valueToIndex(b.data[fieldName])) :
-            formatter(b.data[fieldName]);
+        let attr_value = b.data[fieldName];
+        let value;
+
+        if (attr_value === null) {
+          value = 'n/a';
+          unit = '';
+        } else if (this.layer.thresholds && this.valueToIndex) {
+          value = formatter(this.valueToIndex(b.data[fieldName]));
+        } else {
+          value = formatter(b.data[fieldName]);
+        }
 
         return {
           value,

@@ -149,6 +149,9 @@
     z-index: 1;
 
     .control-cell--inner {
+      position: absolute;
+      top: 0;
+      bottom: 0;
       width: calc(100% - 160px);
       padding: 0;
       background-color: lighten(#d0d0d0, 4%);
