@@ -128,6 +128,10 @@
         text-align: right;
       }
     }
+
+    td.nodata {
+      font-size: 0.85em !important;
+    }
   } // end .building-popup-chart
 
   button {

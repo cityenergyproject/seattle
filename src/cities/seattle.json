@@ -65,11 +65,13 @@
     "popup_chart": {
         "lead": {
             "field": "site_eui",
-            "label": "Site EUI (kBTU/ft²)"
+            "label": "Site EUI (kBTU/ft²)",
+            "nodata": "Site EUI data not available."
         },
         "barchart": {
             "field": "energy_star_score",
             "desc": "Energy<br/>Star Score",
+            "nodata": "Energy Star Score data not available.",
             "min": {
                 "value": 0,
                 "label": "least efficient"

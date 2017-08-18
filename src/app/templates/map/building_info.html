@@ -15,32 +15,46 @@
     <div class="inner">
       <table>
         <tr class="lead">
-          <td style="color: <%= data.chart.lead.color %>;"><%= data.chart.lead.value %></td>
-          <td><%= data.chart.lead.label %></td>
+          <% if (data.chart.lead.nodata) { %>
+            <td colspan='2' class='nodata'>
+            <%= data.chart.lead.nodata %>
+            </td>
+          <% } else { %>
+            <td style="color: <%= data.chart.lead.color %>;"><%= data.chart.lead.value %></td>
+            <td><%= data.chart.lead.label %></td>
+          <% } %>
         </tr>
 
+        <% if (data.chart.barchart.nodata) { %>
         <tr class="barchart">
-          <td style="color: <%= data.chart.barchart.color %>"><%= data.chart.barchart.value %></td>
-          <td>
-            <div class="bar">
-              <div class="fill" style="width: <%= data.chart.barchart.value %>%;"></div>
-            </div>
+          <td colspan='2' class='nodata'>
+            <%= data.chart.barchart.nodata %>
           </td>
         </tr>
+        <% } else { %>
+          <tr class="barchart">
+            <td style="color: <%= data.chart.barchart.color %>"><%= data.chart.barchart.value %></td>
+            <td>
+              <div class="bar">
+                <div class="fill" style="width: <%= data.chart.barchart.value %>%;"></div>
+              </div>
+            </td>
+          </tr>
 
-        <tr class="barchart--labels">
-          <td><%= data.chart.barchart.desc %></td>
-          <td>
-              <div class="min">
-                <span><%= data.chart.barchart.min.value %></span>
-                <span><%= data.chart.barchart.min.label %></span>
-              </div>
-              <div class="max">
-                <span><%= data.chart.barchart.max.value %></span>
-                <span><%= data.chart.barchart.max.label %></span>
-              </div>
-          </td>
-        </tr>
+          <tr class="barchart--labels">
+            <td><%= data.chart.barchart.desc %></td>
+            <td>
+                <div class="min">
+                  <span><%= data.chart.barchart.min.value %></span>
+                  <span><%= data.chart.barchart.min.label %></span>
+                </div>
+                <div class="max">
+                  <span><%= data.chart.barchart.max.value %></span>
+                  <span><%= data.chart.barchart.max.label %></span>
+                </div>
+            </td>
+          </tr>
+        <% } %>
 
       </table>
     </div>

@@ -112,8 +112,13 @@ define([
     o.chart.lead = {
       value: building.get(chartData.lead.field),
       color: this.getColor(chartData.lead.field, building.get(chartData.lead.field)),
-      label: chartData.lead.label,
+      label: chartData.lead.label
     };
+
+    if (!_.isNumber(o.chart.lead.value) || _.isNaN(o.chart.lead.value)) {
+      o.chart.lead.nodata = chartData.lead.nodata;
+    }
+
 
     o.chart.barchart = {
       value: building.get(chartData.barchart.field),
@@ -122,6 +127,10 @@ define([
       min: chartData.barchart.min,
       max: chartData.barchart.max
     };
+
+    if (!_.isNumber(o.chart.barchart.value) || _.isNaN(o.chart.barchart.value)) {
+      o.chart.barchart.nodata = chartData.barchart.nodata;
+    }
 
 
     return o;
@@ -377,6 +386,7 @@ define([
         return;
       }
 
+      console.log(presenter.toPopulatedLabels());
       var popup = L.popup()
        .setLatLng(presenter.toLatLng())
        .setContent(template({
