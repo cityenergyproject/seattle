@@ -13,6 +13,8 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
       this.template = _.template(FuelUseTemplate);
       this.formatters = options.formatters;
       this.data = options.data;
+      this.building_name = options.name || '';
+      this.year = options.year || '';
 
       this.fuels = [{
         label: 'Natural Gas',
@@ -81,6 +83,9 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
       return {
         fuels: fuels,
         totals: totals,
+        building_name: this.building_name,
+        year: this.year,
+        emission_klass: fuels.length === 1 ? 'onefuel' : '',
         cars: this.formatters.fixedOne(total_ghg_emissions / this.TYPICAL_CAR_EMMISSION)
       };
     },

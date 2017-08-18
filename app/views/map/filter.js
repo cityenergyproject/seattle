@@ -96,11 +96,12 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'ionrangeslider', 'models/buil
 
       var buildings = this.getCompareBuildings();
       var fieldName = this.layer.field_name;
-      var unit = this.layer.unit || '';
       var formatter = this._valueFormatter;
 
       var propertyCategory = this.getPropertyCategory();
       var propertyType = propertyCategory ? propertyCategory.values[0] : null;
+
+      var unit = this.layer.unit || '';
 
       var o = {
         selected_value: null
@@ -118,7 +119,17 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'ionrangeslider', 'models/buil
           klasses.push('disable');
         }
 
-        var value = _this.layer.thresholds && _this.valueToIndex ? formatter(_this.valueToIndex(b.data[fieldName])) : formatter(b.data[fieldName]);
+        var attr_value = b.data[fieldName];
+        var value = void 0;
+
+        if (attr_value === null) {
+          value = 'n/a';
+          unit = '';
+        } else if (_this.layer.thresholds && _this.valueToIndex) {
+          value = formatter(_this.valueToIndex(b.data[fieldName]));
+        } else {
+          value = formatter(b.data[fieldName]);
+        }
 
         return {
           value: value,
@@ -237,7 +248,7 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'ionrangeslider', 'models/buil
       var colorStops = this.layer.color_range;
       var buildings = this.activeBuildings;
       var bucketCalculator = this.bucketCalculator;
-      var extent = bucketCalculator.toExtent();
+      var extent = this.bucketCalculator.toExtent();
       var gradientCalculator = this.gradientCalculator;
       var buckets = this.buckets;
       var gradientStops = this.gradientStops;
@@ -457,7 +468,13 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'ionrangeslider', 'models/buil
 
     events: {
       'click': 'showLayer',
-      'click .more-info': 'toggleMoreInfo'
+      'click .more-info': 'toggleMoreInfo',
+      'click .compare-closer': 'closeCompare'
+    },
+
+    closeCompare: function closeCompare(evt) {
+      evt.preventDefault();
+      this.state.set({ building_compare_active: false });
     },
 
     showLayer: function showLayer() {

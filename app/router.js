@@ -195,11 +195,19 @@ define(['jquery', 'deparam', 'underscore', 'backbone', 'models/city', 'models/sc
 
     onBuildingsSync: function onBuildingsSync() {
       this.state.set({ allbuildings: this.allBuildings });
+
+      /*
+      // energy_star_score
+      const b = this.allBuildings.filter(function(d){
+        return d.get('energy_star_score') < 10;
+      });
+      console.log(b);
+      */
       this.state.trigger("hideActivityLoader");
     },
 
     root: function root() {
-      // TODO: the path should come from config
+      // TODO: This is not needed
       this.navigate('/seattle', { trigger: true, replace: true });
     },
 

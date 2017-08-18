@@ -7,6 +7,9 @@ define(['underscore', 'd3'], function (_, d3) {
     this.buckets = buckets;
     this.thresholds = thresholds;
     this.filterRange = filterRange || {};
+
+    this._extent = null;
+    this._tobuckets = null;
   };
 
   BuildingBucketCalculator.prototype.getScale = function () {
@@ -22,15 +25,19 @@ define(['underscore', 'd3'], function (_, d3) {
   };
 
   BuildingBucketCalculator.prototype.toExtent = function () {
+    if (this._extent) return this._extent;
     var fieldValues = this.buildings.pluck(this.fieldName);
     var extent = d3.extent(fieldValues);
+
     var min = this.filterRange.min;
     var max = this.filterRange.max;
 
-    if (_.isNaN(min)) min = extent[0];
-    if (_.isNaN(max)) max = extent[1];
+    if (!_.isNumber(min) || _.isNaN(min)) min = extent[0];
+    if (!_.isNumber(max) || _.isNaN(max)) max = extent[1];
 
-    return [min, max];
+    this._extent = [min, max];
+
+    return this._extent;
   };
 
   // Allow for extent & scale to be passed in,
@@ -45,13 +52,17 @@ define(['underscore', 'd3'], function (_, d3) {
   BuildingBucketCalculator.prototype.toBuckets = function () {
     var _this = this;
 
+    if (this._tobuckets) return this._tobuckets;
+
     var scale = this.getScale();
     var extent = scale.domain();
+
+    var buckets = void 0;
 
     if (this.thresholds) {
       var thresholdsLength = this.thresholds.length;
 
-      return this.buildings.reduce(function (acc, building) {
+      buckets = this.buildings.reduce(function (acc, building) {
         var value = building.get(_this.fieldName);
 
         if (!value) {
@@ -67,20 +78,24 @@ define(['underscore', 'd3'], function (_, d3) {
         acc[bucket] = acc[bucket] + 1 || 1;
         return acc;
       }, {});
+    } else {
+      buckets = this.buildings.reduce(function (acc, building) {
+        var value = building.get(_this.fieldName);
+
+        if (!value) {
+          return acc;
+        }
+
+        var bucket = _this.toBucket(value, extent, scale);
+        acc[bucket] = acc[bucket] + 1 || 1;
+
+        return acc;
+      }, {});
     }
 
-    return this.buildings.reduce(function (acc, building) {
-      var value = building.get(_this.fieldName);
+    this._tobuckets = buckets;
 
-      if (!value) {
-        return acc;
-      }
-
-      var bucket = _this.toBucket(value, extent, scale);
-      acc[bucket] = acc[bucket] + 1 || 1;
-
-      return acc;
-    }, {});
+    return this._tobuckets;
   };
 
   return BuildingBucketCalculator;

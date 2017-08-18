@@ -97,6 +97,10 @@ define(['jquery', 'underscore', 'backbone', 'collections/city_buildings', 'model
       label: chartData.lead.label
     };
 
+    if (!_.isNumber(o.chart.lead.value) || _.isNaN(o.chart.lead.value)) {
+      o.chart.lead.nodata = chartData.lead.nodata;
+    }
+
     o.chart.barchart = {
       value: building.get(chartData.barchart.field),
       color: this.getColor(chartData.barchart.field, building.get(chartData.barchart.field)),
@@ -104,6 +108,10 @@ define(['jquery', 'underscore', 'backbone', 'collections/city_buildings', 'model
       min: chartData.barchart.min,
       max: chartData.barchart.max
     };
+
+    if (!_.isNumber(o.chart.barchart.value) || _.isNaN(o.chart.barchart.value)) {
+      o.chart.barchart.nodata = chartData.barchart.nodata;
+    }
 
     return o;
   };
@@ -344,6 +352,7 @@ define(['jquery', 'underscore', 'backbone', 'collections/city_buildings', 'model
         return;
       }
 
+      console.log(presenter.toPopulatedLabels());
       var popup = L.popup().setLatLng(presenter.toLatLng()).setContent(template({
         data: presenter.toPopulatedLabels(),
         compare_disabled: ''

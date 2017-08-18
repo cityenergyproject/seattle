@@ -65,11 +65,13 @@
     "popup_chart": {
         "lead": {
             "field": "site_eui",
-            "label": "Site EUI (kBTU/ft²)"
+            "label": "Site EUI (kBTU/ft²)",
+            "nodata": "Site EUI data not available."
         },
         "barchart": {
             "field": "energy_star_score",
             "desc": "Energy<br/>Star Score",
+            "nodata": "Energy Star Score data not available.",
             "min": {
                 "value": 0,
                 "label": "least efficient"
@@ -143,7 +145,7 @@
             "field_name": "energy_star_score",
             "display_type": "range",
             "range_slice_count": 18,
-            "filter_range": {"min": 0, "max" : 100},
+            "filter_range": {"min": 1, "max" : 100},
             "section": "Energy Performance Metrics",
             "color_range": ["#ab2328","#da863f","#ffd552","#599b67","#1f5dbe"],
             "formatter": "integer",
@@ -183,30 +185,7 @@
             "color_range": ["#1f5dbe","#599b67","#ffd552","#da863f","#ab2328"],
             "unit": "kBtu",
             "formatter": "fixed-1",
-            "description": "I need a description"
-        },
-        {
-            "title": "Weather Normalized Site EUI",
-            "field_name": "site_eui_wn",
-            "display_type": "range",
-            "range_slice_count": 18,
-            "section": "Energy Performance Metrics",
-            "color_range": ["#1f5dbe","#599b67","#ffd552","#da863f","#ab2328"],
-            "unit": "kBtu/ft²",
-            "filter_range": {"min" : 0, "max" : 200},
-            "formatter": "fixed-1",
-            "description": "I need a description"
-        },
-        {
-            "title": "Weather Normalized Source EUI",
-            "field_name": "source_eui_wn",
-            "display_type": "range",
-            "range_slice_count": 18,
-            "section": "Energy Performance Metrics",
-            "color_range": ["#1f5dbe","#599b67","#ffd552","#da863f","#ab2328"],
-            "unit": "kBtu/ft²",
-            "filter_range": {"min" : 0, "max" : 200},
-            "formatter": "fixed-1",
+            "filter_range": {"min": 1000, "max": 3000000},
             "description": "I need a description"
         },
         {

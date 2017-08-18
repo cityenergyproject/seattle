@@ -22,7 +22,7 @@ define(['jquery', 'underscore', 'backbone'], function ($, _, Backbone) {
       this.fieldName = options.fieldName;
       this.slices = options.slices; // Not sure why we have slices, when that value can be extrapulated from this.gradients
 
-      this.chart = d3.select(this.el).append('svg').style({ width: '100%', height: '100%' }).attr('viewBox', '0 0 ' + this.width + ' ' + this.height).attr('preserveAspectRatio', "xMinYMin meet").style('background', 'transparent');
+      this.chart = d3.select(this.el).append('svg').style({ width: '100%', height: '100%' }).attr('viewBox', '0 0 ' + this.width + ' ' + this.height).attr('preserveAspectRatio', "none").style('background', 'transparent');
 
       this.g = this.chart.append('g');
     },
