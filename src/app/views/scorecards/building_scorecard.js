@@ -573,7 +573,7 @@ define([
         .text('Building type average');
 
       avgHighlight.append('p')
-        .text(chartdata.mean.toFixed(2))
+        .text(chartdata.mean.toFixed(1))
         .style('color', chartdata.avgColor);
 
       avgHighlight.append('p')
@@ -617,8 +617,8 @@ define([
       });
 
       var totals = {
-        usage: this.formatters.fixed(building.total_kbtu),
-        emissions: this.formatters.fixed(building.total_ghg_emissions)
+        usage: this.formatters.fixedOne(building.total_kbtu),
+        emissions: this.formatters.fixedOne(building.total_ghg_emissions)
       };
 
       return {
