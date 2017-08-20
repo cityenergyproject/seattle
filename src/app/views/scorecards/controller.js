@@ -11,6 +11,7 @@ define([
 
     initialize: function(options){
       this.state = options.state;
+      this.mapView = options.mapView;
 
       this.listenTo(this.state, 'change:allbuildings', this.onBuildingsChange);
       this.listenTo(this.state, 'change:report_active', this.onBuildingReportActive);
@@ -108,7 +109,8 @@ define([
       return {
         el: '#scorecard-content',
         state: this.state,
-        formatters: this.formatters
+        formatters: this.formatters,
+        metricFilters: this.mapView.getControls()
       };
     },
 

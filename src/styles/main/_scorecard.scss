@@ -360,9 +360,12 @@ $sc-font-lgr: 3rem;
     }
 
     .axis path {
+      shape-rendering: crispEdges;
+    }
+
+    .y.axis path {
       fill: none;
       stroke: #CBCBCB;
-      shape-rendering: crispEdges;
     }
 
     text {

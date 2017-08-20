@@ -15,8 +15,8 @@
   <div class='col-4 middle'>
     <div class='circle-bk'>
       <h4 class='sc-heading'><%= year %> <%= view === 'eui' ? 'EUI' : 'ENERGY STAR' %></h4>
-      <h3 class='sc-heading orange xlarge' ><%= value %></h3>
-      <p class='sc-heading orange small'><%= view === 'eui' ? 'kBtu/ft²' : 'ENERGY STAR SCORE' %></p>
+      <h3 class='sc-heading orange xlarge' style="color:<%= valueColor %>;"><%= value %></h3>
+      <p class='sc-heading orange small' style="color:<%= valueColor %>;"><%= view === 'eui' ? 'kBtu/ft²' : 'ENERGY STAR SCORE' %></p>
       <div class='eui-desc'>
         <p class='sc-txt tiny'><%= view === 'eui' ? 'Energy Use Intensity' : 'Energy Star Score' %></p>
         <p class='sc-txt tiny'>

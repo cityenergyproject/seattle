@@ -9,6 +9,7 @@ define([
     initialize: function(options){
       this.state = options.state;
       this.formatters = options.formatters;
+      this.metricFilters = options.metricFilters;
 
       this.template = _.template(BuildingTemplate);
 
@@ -72,6 +73,21 @@ define([
       this.processBuilding(buildings, building_data, selected_year, 'ess');
     },
 
+    getColor: function(field, value) {
+      if (!this.metricFilters || !this.metricFilters._wrapped) return 'red';
+
+      var filter = this.metricFilters._wrapped.find(function(item) {
+        return item.viewType === 'filter' && item.layer.field_name === field;
+      });
+
+      if (!filter) return 'red';
+      return filter.getColorForValue(value);
+    },
+
+    getViewField: function(view) {
+      return view === 'eui' ? 'site_eui' : 'energy_star_score';
+    },
+
     processBuilding: function(buildings, building_data, selected_year, view) {
       var scorecardState = this.state.get('scorecard');
       var data = {};
@@ -80,7 +96,8 @@ define([
       });
 
       var building = data[selected_year];
-      console.log('building: ', building);
+      // console.log('building: ', building);
+
       var config = this.state.get('city').get('scorecard');
 
       var energy_fields = {
@@ -103,8 +120,9 @@ define([
 
       var viewSelector = `#${view}-scorecard-view`;
       var el = this.$el.find(viewSelector);
-      var compareField = view === 'eui' ? 'site_eui' : 'energy_star_score';
+      var compareField = this.getViewField(view);
       var value = building.hasOwnProperty(compareField) ? building[compareField] : null;
+      var valueColor = this.getColor(compareField, value);
 
       var name = building.property_name; // building.get('property_name');
       var address = this.full_address(building);
@@ -126,6 +144,7 @@ define([
         year: selected_year,
         view: view,
         value: value,
+        valueColor: valueColor,
         costs: this.costs(building, selected_year),
         compare: this.compare(building, view, config, chartdata),
         change: change_data.template,
@@ -292,7 +311,7 @@ define([
 
     prepareCompareChartData: function(config, buildings, building, view, prop_type, id) {
       // view = 'ess';
-      var compareField = view === 'eui' ? 'site_eui' : 'energy_star_score';
+      var compareField = this.getViewField(view);
       var building_value = building.hasOwnProperty(compareField) ? building[compareField] : null;
 
       if (building_value === null) {
@@ -376,17 +395,21 @@ define([
         thresholds: thresholds,
         building_value: building_value,
         compareField: compareField,
+        avgColor: this.getColor(compareField, avg),
+        selectedColor: this.getColor(compareField, building_value),
         mean: avg
       }
     },
 
     renderCompareChart: function(config, chartdata, view, prop_type, name, viewSelector) {
       const container = d3.select(viewSelector);
-
+      var self = this;
       if (chartdata.selectedIndex === null || chartdata.avgIndex === null) {
         console.warn('Could not find required indexes!');
         return;
       }
+
+      var compareField = this.getViewField(view);
 
       var compareChartConfig = config.compare_chart;
       var margin = {top: 80, right: 30, bottom: 40, left: 40},
@@ -434,6 +457,7 @@ define([
           var end = x(chartdata.data[indices[1]].x) + x.rangeBand();
           return end - start;
         })
+        .attr("fill", 'none')
         .attr('stroke', function(d){ return d.clr; });
 
       threshold
@@ -489,6 +513,17 @@ define([
             if (i === chartdata.selectedIndex || i === chartdata.avgIndex) return 'selected';
             return null;
           })
+          .style('fill', function(d, i) {
+            if (i === chartdata.selectedIndex) {
+              return chartdata.selectedColor;
+            }
+
+            if (i === chartdata.avgIndex) {
+              return chartdata.avgColor;
+            }
+
+            return '#F1F1F1';
+          })
           .attr('title', function(d) {
             return '>= ' + d.x + ' && < ' + (d.x + d.dx);
           });
@@ -511,10 +546,12 @@ define([
       var outerCircle = circle.append('div').attr('class', 'outer');
 
       innerCircle.append('p')
-        .text(chartdata.building_value);
+        .text(chartdata.building_value)
+        .style('color', chartdata.selectedColor);
 
       innerCircle.append('p')
-        .html(compareChartConfig.highlight_metric[view]);
+        .html(compareChartConfig.highlight_metric[view])
+        .style('color', chartdata.selectedColor);
 
       outerCircle.append('p')
         .text(name);
@@ -536,10 +573,12 @@ define([
         .text('Building type average');
 
       avgHighlight.append('p')
-        .text(chartdata.mean.toFixed(2));
+        .text(chartdata.mean.toFixed(2))
+        .style('color', chartdata.avgColor);
 
       avgHighlight.append('p')
-        .html(compareChartConfig.highlight_metric[view]);
+        .html(compareChartConfig.highlight_metric[view])
+        .style('color', chartdata.avgColor);
     },
 
     renderFuelUseChart: function(building) {

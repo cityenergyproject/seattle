@@ -144,7 +144,7 @@ define([
       var addressSearchView = new AddressSearchView({mapView: mapView, state: this.state});
       var buildingCounts = new BuildingCounts({state: this.state});
       var compareBar = new CompareBar({state: this.state});
-      const scorecardController = new ScorecardController({state: this.state});
+      const scorecardController = new ScorecardController({state: this.state, mapView: mapView});
 
       var button = new Button({
         el: '#city-scorcard-toggle',
