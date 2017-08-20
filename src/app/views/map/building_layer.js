@@ -132,7 +132,6 @@ define([
       o.chart.barchart.nodata = chartData.barchart.nodata;
     }
 
-
     return o;
   };
 
@@ -198,6 +197,8 @@ define([
       return 'b.' + lyr.field_name;
     });
     this.mapLayerFields.push('b.id');
+
+    this.mapLayerFields = _.uniq(this.mapLayerFields);
     this.mapLayerFields = this.mapLayerFields.join(',');
   };
 
@@ -386,7 +387,6 @@ define([
         return;
       }
 
-      console.log(presenter.toPopulatedLabels());
       var popup = L.popup()
        .setLatLng(presenter.toLatLng())
        .setContent(template({
