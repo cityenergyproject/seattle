@@ -60,12 +60,18 @@ define([
       let fuels = [...this.fuels];
 
       fuels.forEach(d => {
+
+        const emmission_pct = this.getMean(d.key + '_ghg_percent', data);
+        const usage_pct = this.getMean(d.key + '_pct', data);
+
         d.emissions = {};
-        d.emissions.pct = this.pctFormat(this.getMean(d.key + '_ghg_percent', data));
+        d.emissions.pct = this.pctFormat(emmission_pct);
+        d.emissions.pct_raw = Math.round(emmission_pct * 100);
         d.emissions.amt = this.getMean(d.key + '_ghg', data);
 
         d.usage = {};
-        d.usage.pct = this.pctFormat(this.getMean(d.key + '_pct', data));
+        d.usage.pct = this.pctFormat(usage_pct);
+        d.usage.pct_raw = Math.round(usage_pct * 100);
         d.usage.amt = this.getMean(d.key, data);
       });
 
@@ -73,12 +79,32 @@ define([
         return d.usage.amt > 0 && d.emissions.amt > 0;
       });
 
+      const emission_total = d3.sum(fuels, d => d.emissions.pct_raw);
+      const usage_total = d3.sum(fuels, d => d.usage.pct_raw);
+
+      let diff;
+      if (emission_total !== 100) {
+        diff = 100 - emission_total;
+        fuels.forEach(d => {
+          d.emissions.pct_raw += diff;
+        });
+      }
+
+      if (usage_total !== 100) {
+        diff = 100 - usage_total;
+        fuels.forEach(d => {
+          d.usage.pct_raw += diff;
+        });
+      }
+
       var total_ghg_emissions = this.getSum('total_ghg_emissions', data);
 
       var totals = {
         usage: this.formatters.fixed(this.getSum('total_kbtu', data)),
         emissions: this.formatters.fixed(total_ghg_emissions)
       };
+
+      console.log(fuels);
 
       return {
         fuels,
