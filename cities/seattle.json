@@ -232,19 +232,19 @@
                 "short": "EUI"
             },
             "ess": {
-                "long": "Energy Star Score",
-                "short": "Energy Star"
+                "long": "ENERGY STAR SCORE",
+                "short": "ENERGY STAR"
             }
         },
         "compare_chart": {
             "y_label": "Number of buildings",
             "x_label": {
                 "eui": "Energy use Intensity (EUI)",
-                "ess": "Energy Star Score"
+                "ess": "ENERGY STAR SCORE"
             },
             "highlight_metric": {
                 "eui": "kBtu/ft²",
-                "ess": "Energy Star"
+                "ess": "ENERGY STAR"
             }
         },
         "thresholds": {

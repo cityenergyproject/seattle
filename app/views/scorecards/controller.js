@@ -8,6 +8,7 @@ define(['jquery', 'underscore', 'backbone', './building_scorecard', './city_scor
 
     initialize: function initialize(options) {
       this.state = options.state;
+      this.mapView = options.mapView;
 
       this.listenTo(this.state, 'change:allbuildings', this.onBuildingsChange);
       this.listenTo(this.state, 'change:report_active', this.onBuildingReportActive);
@@ -105,7 +106,8 @@ define(['jquery', 'underscore', 'backbone', './building_scorecard', './city_scor
       return {
         el: '#scorecard-content',
         state: this.state,
-        formatters: this.formatters
+        formatters: this.formatters,
+        metricFilters: this.mapView.getControls()
       };
     },
 
@@ -114,7 +116,7 @@ define(['jquery', 'underscore', 'backbone', './building_scorecard', './city_scor
 
       var building = this.state.get('building');
       var name = void 0;
-      if (building) {
+      if (this.viewclass === BuildingScorecard) {
         var buildings = this.state.get('allbuildings');
         var buildingModel = buildings.get(building);
         name = buildingModel.get('property_name');

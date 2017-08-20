@@ -7,6 +7,7 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', 'text!templates/sco
     initialize: function initialize(options) {
       this.state = options.state;
       this.formatters = options.formatters;
+      this.metricFilters = options.metricFilters;
 
       this.template = _.template(BuildingTemplate);
 
@@ -72,6 +73,21 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', 'text!templates/sco
       this.processBuilding(buildings, building_data, selected_year, 'ess');
     },
 
+    getColor: function getColor(field, value) {
+      if (!this.metricFilters || !this.metricFilters._wrapped) return 'red';
+
+      var filter = this.metricFilters._wrapped.find(function (item) {
+        return item.viewType === 'filter' && item.layer.field_name === field;
+      });
+
+      if (!filter) return 'red';
+      return filter.getColorForValue(value);
+    },
+
+    getViewField: function getViewField(view) {
+      return view === 'eui' ? 'site_eui' : 'energy_star_score';
+    },
+
     processBuilding: function processBuilding(buildings, building_data, selected_year, view) {
       var scorecardState = this.state.get('scorecard');
       var data = {};
@@ -80,7 +96,8 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', 'text!templates/sco
       });
 
       var building = data[selected_year];
-      console.log('building: ', building);
+      // console.log('building: ', building);
+
       var config = this.state.get('city').get('scorecard');
 
       var energy_fields = {
@@ -103,8 +120,9 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', 'text!templates/sco
 
       var viewSelector = '#' + view + '-scorecard-view';
       var el = this.$el.find(viewSelector);
-      var compareField = view === 'eui' ? 'site_eui' : 'energy_star_score';
+      var compareField = this.getViewField(view);
       var value = building.hasOwnProperty(compareField) ? building[compareField] : null;
+      var valueColor = this.getColor(compareField, value);
 
       var name = building.property_name; // building.get('property_name');
       var address = this.full_address(building);
@@ -126,6 +144,7 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', 'text!templates/sco
         year: selected_year,
         view: view,
         value: value,
+        valueColor: valueColor,
         costs: this.costs(building, selected_year),
         compare: this.compare(building, view, config, chartdata),
         change: change_data.template,
@@ -294,7 +313,7 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', 'text!templates/sco
 
     prepareCompareChartData: function prepareCompareChartData(config, buildings, building, view, prop_type, id) {
       // view = 'ess';
-      var compareField = view === 'eui' ? 'site_eui' : 'energy_star_score';
+      var compareField = this.getViewField(view);
       var building_value = building.hasOwnProperty(compareField) ? building[compareField] : null;
 
       if (building_value === null) {
@@ -373,17 +392,21 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', 'text!templates/sco
         thresholds: thresholds,
         building_value: building_value,
         compareField: compareField,
+        avgColor: this.getColor(compareField, avg),
+        selectedColor: this.getColor(compareField, building_value),
         mean: avg
       };
     },
 
     renderCompareChart: function renderCompareChart(config, chartdata, view, prop_type, name, viewSelector) {
       var container = d3.select(viewSelector);
-
+      var self = this;
       if (chartdata.selectedIndex === null || chartdata.avgIndex === null) {
         console.warn('Could not find required indexes!');
         return;
       }
+
+      var compareField = this.getViewField(view);
 
       var compareChartConfig = config.compare_chart;
       var margin = { top: 80, right: 30, bottom: 40, left: 40 },
@@ -415,7 +438,7 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', 'text!templates/sco
         var start = x(chartdata.data[indices[0]].x);
         var end = x(chartdata.data[indices[1]].x) + x.rangeBand();
         return end - start;
-      }).attr('stroke', function (d) {
+      }).attr("fill", 'none').attr('stroke', function (d) {
         return d.clr;
       });
 
@@ -455,6 +478,16 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', 'text!templates/sco
       }).attr('class', function (d, i) {
         if (i === chartdata.selectedIndex || i === chartdata.avgIndex) return 'selected';
         return null;
+      }).style('fill', function (d, i) {
+        if (i === chartdata.selectedIndex) {
+          return chartdata.selectedColor;
+        }
+
+        if (i === chartdata.avgIndex) {
+          return chartdata.avgColor;
+        }
+
+        return '#F1F1F1';
       }).attr('title', function (d) {
         return '>= ' + d.x + ' && < ' + (d.x + d.dx);
       });
@@ -469,9 +502,9 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', 'text!templates/sco
       var innerCircle = circle.append('div').attr('class', 'inner');
       var outerCircle = circle.append('div').attr('class', 'outer');
 
-      innerCircle.append('p').text(chartdata.building_value);
+      innerCircle.append('p').text(chartdata.building_value).style('color', chartdata.selectedColor);
 
-      innerCircle.append('p').html(compareChartConfig.highlight_metric[view]);
+      innerCircle.append('p').html(compareChartConfig.highlight_metric[view]).style('color', chartdata.selectedColor);
 
       outerCircle.append('p').text(name);
 
@@ -484,9 +517,9 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', 'text!templates/sco
 
       avgHighlight.append('p').text('Building type average');
 
-      avgHighlight.append('p').text(chartdata.mean.toFixed(2));
+      avgHighlight.append('p').text(chartdata.mean.toFixed(1)).style('color', chartdata.avgColor);
 
-      avgHighlight.append('p').html(compareChartConfig.highlight_metric[view]);
+      avgHighlight.append('p').html(compareChartConfig.highlight_metric[view]).style('color', chartdata.avgColor);
     },
 
     renderFuelUseChart: function renderFuelUseChart(building) {
@@ -521,8 +554,8 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', 'text!templates/sco
       });
 
       var totals = {
-        usage: this.formatters.fixed(building.total_kbtu),
-        emissions: this.formatters.fixed(building.total_ghg_emissions)
+        usage: this.formatters.fixedOne(building.total_kbtu),
+        emissions: this.formatters.fixedOne(building.total_ghg_emissions)
       };
 
       return {

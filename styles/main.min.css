@@ -1848,9 +1848,10 @@ header {
       #scorecard #compare-chart .bar rect.selected {
         fill: #DE8F41; }
     #scorecard #compare-chart .axis path {
-      fill: none;
-      stroke: #CBCBCB;
       shape-rendering: crispEdges; }
+    #scorecard #compare-chart .y.axis path {
+      fill: none;
+      stroke: #CBCBCB; }
     #scorecard #compare-chart text {
       font-family: "Ubuntu", "Helvetica Neue", "Helvetica", "Roboto", "Arial", sans-serif;
       font-size: 10px;

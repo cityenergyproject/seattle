@@ -212,6 +212,8 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'ionrangeslider', 'models/buil
       this.gradientStops = this.gradientCalculator.toGradientStops();
       this.buckets = this.bucketCalculator.toBuckets();
 
+      //if (fieldName === 'site_eui') console.log(this.gradientStops);
+
       this.bucketGradients = _.map(this.gradientStops, function (stop, bucketIndex) {
         return {
           color: stop,

@@ -60,18 +60,46 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
       var fuels = [].concat(_toConsumableArray(this.fuels));
 
       fuels.forEach(function (d) {
+
+        var emmission_pct = _this.getMean(d.key + '_ghg_percent', data);
+        var usage_pct = _this.getMean(d.key + '_pct', data);
+
         d.emissions = {};
-        d.emissions.pct = _this.pctFormat(_this.getMean(d.key + '_ghg_percent', data));
+        d.emissions.pct = _this.pctFormat(emmission_pct);
+        d.emissions.pct_raw = Math.round(emmission_pct * 100);
         d.emissions.amt = _this.getMean(d.key + '_ghg', data);
 
         d.usage = {};
-        d.usage.pct = _this.pctFormat(_this.getMean(d.key + '_pct', data));
+        d.usage.pct = _this.pctFormat(usage_pct);
+        d.usage.pct_raw = Math.round(usage_pct * 100);
         d.usage.amt = _this.getMean(d.key, data);
       });
 
       fuels = fuels.filter(function (d) {
         return d.usage.amt > 0 && d.emissions.amt > 0;
       });
+
+      var emission_total = d3.sum(fuels, function (d) {
+        return d.emissions.pct_raw;
+      });
+      var usage_total = d3.sum(fuels, function (d) {
+        return d.usage.pct_raw;
+      });
+
+      var diff = void 0;
+      if (emission_total !== 100) {
+        diff = 100 - emission_total;
+        fuels.forEach(function (d) {
+          d.emissions.pct_raw += diff;
+        });
+      }
+
+      if (usage_total !== 100) {
+        diff = 100 - usage_total;
+        fuels.forEach(function (d) {
+          d.usage.pct_raw += diff;
+        });
+      }
 
       var total_ghg_emissions = this.getSum('total_ghg_emissions', data);
 

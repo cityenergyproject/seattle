@@ -124,7 +124,7 @@ define(['jquery', 'deparam', 'underscore', 'backbone', 'models/city', 'models/sc
       var addressSearchView = new AddressSearchView({ mapView: mapView, state: this.state });
       var buildingCounts = new BuildingCounts({ state: this.state });
       var compareBar = new CompareBar({ state: this.state });
-      var scorecardController = new ScorecardController({ state: this.state });
+      var scorecardController = new ScorecardController({ state: this.state, mapView: mapView });
 
       var button = new Button({
         el: '#city-scorcard-toggle',
