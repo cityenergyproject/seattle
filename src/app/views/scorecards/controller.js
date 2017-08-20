@@ -117,7 +117,7 @@ define([
 
       const building = this.state.get('building');
       let name;
-      if (building) {
+      if (this.viewclass === BuildingScorecard) {
         const buildings = this.state.get('allbuildings');
         const buildingModel = buildings.get(building);
         name = buildingModel.get('property_name');
