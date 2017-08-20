@@ -104,8 +104,6 @@ define([
         emissions: this.formatters.fixed(total_ghg_emissions)
       };
 
-      console.log(fuels);
-
       return {
         fuels,
         totals,
