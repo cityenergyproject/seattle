@@ -1847,6 +1847,8 @@ header {
       shape-rendering: crispEdges; }
       #scorecard #compare-chart .bar rect.selected {
         fill: #DE8F41; }
+      #scorecard #compare-chart .bar rect.avg-bar {
+        opacity: 0.5; }
     #scorecard #compare-chart .axis path {
       shape-rendering: crispEdges; }
     #scorecard #compare-chart .y.axis path {
@@ -1868,21 +1870,15 @@ header {
     #scorecard #compare-chart .x.axis line {
       stroke-width: 1.5; }
     #scorecard #compare-chart .avg-highlight-html {
-      position: absolute; }
+      position: absolute;
+      opacity: 0.5; }
       #scorecard #compare-chart .avg-highlight-html > div {
-        position: absolute;
-        bottom: calc(100% + 10px);
+        position: relative;
         width: 100px; }
-        #scorecard #compare-chart .avg-highlight-html > div:after {
-          content: ' ';
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 1px;
-          height: calc(100% + 10px);
-          background: #CBCBCB; }
+      #scorecard #compare-chart .avg-highlight-html.align-right > div {
+        text-align: right; }
       #scorecard #compare-chart .avg-highlight-html p {
-        margin: 0 0 0 10px;
+        margin: 0;
         padding: 0;
         line-height: 1;
         font-size: 24px;
@@ -1893,7 +1889,7 @@ header {
         font-weight: 400;
         text-transform: uppercase; }
       #scorecard #compare-chart .avg-highlight-html p:first-child {
-        color: #CBCBCB; }
+        color: #666; }
       #scorecard #compare-chart .avg-highlight-html p:last-child {
         margin-top: -2px; }
     #scorecard #compare-chart .selected-city-highlight-html {

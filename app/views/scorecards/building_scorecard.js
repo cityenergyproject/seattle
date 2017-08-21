@@ -476,7 +476,8 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', 'text!templates/sco
       bar.append("rect").attr("x", 1).attr("width", x.rangeBand()).attr("height", function (d) {
         return height - y(d.y);
       }).attr('class', function (d, i) {
-        if (i === chartdata.selectedIndex || i === chartdata.avgIndex) return 'selected';
+        if (i === chartdata.selectedIndex) return 'building-bar selected';
+        if (i === chartdata.avgIndex) return 'avg-bar selected';
         return null;
       }).style('fill', function (d, i) {
         if (i === chartdata.selectedIndex) {
@@ -492,7 +493,8 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', 'text!templates/sco
         return '>= ' + d.x + ' && < ' + (d.x + d.dx);
       });
 
-      var xpos = x(chartdata.data[chartdata.selectedIndex].x) + x.rangeBand() / 2;
+      var xBandWidth = x.rangeBand();
+      var xpos = x(chartdata.data[chartdata.selectedIndex].x) + xBandWidth / 2;
       var ypos = y(chartdata.data[chartdata.selectedIndex].y);
 
       var selectedCityHighlight = container.select("#compare-chart").append('div').attr('class', 'selected-city-highlight-html').style('top', margin.top - 70 + 'px').style('left', margin.left + xpos + 'px');
@@ -510,16 +512,37 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', 'text!templates/sco
 
       selectedCityHighlight.append('div').attr('class', 'line').style('height', ypos + 5 + 'px');
 
-      xpos = x(chartdata.data[chartdata.avgIndex].x) + x.rangeBand() / 2;
+      xpos = x(chartdata.data[chartdata.avgIndex].x);
+
+      var avgPadding = 5;
+      var leftEdge = xpos + 100 + xBandWidth;
+      var avgClass = 'avg-highlight-html';
+      if (chartdata.avgIndex >= chartdata.selectedIndex) {
+        xpos += xBandWidth + avgPadding;
+      } else {
+        xpos -= 100 + avgPadding;
+        avgClass += ' align-right';
+      }
+
       ypos = y(chartdata.data[chartdata.avgIndex].y); // top of bar
 
-      var avgHighlight = container.select("#compare-chart").append('div').attr('class', 'avg-highlight-html').style('top', margin.top + ypos + 'px').style('left', margin.left + xpos + 'px').append('div');
+      var avgHighlight = container.select("#compare-chart").append('div').attr('class', avgClass).style('top', margin.top + ypos + 'px').style('left', margin.left + xpos + 'px');
 
-      avgHighlight.append('p').text('Building type average');
+      var avgHighlightContent = avgHighlight.append('div');
 
-      avgHighlight.append('p').text(chartdata.mean.toFixed(1)).style('color', chartdata.avgColor);
+      avgHighlightContent.append('p').text('Building type average');
 
-      avgHighlight.append('p').html(compareChartConfig.highlight_metric[view]).style('color', chartdata.avgColor);
+      avgHighlightContent.append('p').text(chartdata.mean.toFixed(1)).style('color', chartdata.avgColor);
+
+      avgHighlightContent.append('p').html(compareChartConfig.highlight_metric[view]).style('color', chartdata.avgColor);
+
+      // fix avgHighlight going to deep
+      var avgBoxHeight = avgHighlight.node().offsetHeight;
+      if (ypos + avgBoxHeight > height) {
+        ypos += height - (ypos + avgBoxHeight);
+
+        avgHighlight.style('top', margin.top + ypos + 'px');
+      }
     },
 
     renderFuelUseChart: function renderFuelUseChart(building) {
@@ -702,6 +725,42 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', 'text!templates/sco
       }).text(function (d) {
         return d.label;
       });
+
+      var me = this;
+      var prev;
+      label.each(function (d) {
+        if (prev) {
+          var rect1 = me.makeRect(prev);
+          var rect2 = me.makeRect(this);
+          var attempts = 10;
+
+          while (me.collision(rect1, rect2) && attempts > 0) {
+            attempts--;
+            prev.style.top = rect1.top - 2 + 'px';
+            this.style.top = rect2.top + 2 + 'px';
+
+            rect1 = me.makeRect(prev);
+            rect2 = me.makeRect(this);
+          }
+        }
+        prev = this;
+      });
+    },
+
+    makeRect: function makeRect(el) {
+      var t = el.offsetTop;
+      var l = el.offsetLeft;
+
+      return {
+        top: t,
+        right: l + el.offsetWidth,
+        bottom: t + el.offsetHeight,
+        left: l
+      };
+    },
+
+    collision: function collision(rect1, rect2) {
+      return !(rect1.right < rect2.left || rect1.left > rect2.right || rect1.bottom < rect2.top || rect1.top > rect2.bottom);
     }
   });
 

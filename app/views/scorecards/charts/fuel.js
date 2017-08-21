@@ -59,6 +59,8 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
       var data = this.data;
       var fuels = [].concat(_toConsumableArray(this.fuels));
 
+      console.log(data);
+
       fuels.forEach(function (d) {
 
         var emmission_pct = _this.getMean(d.key + '_ghg_percent', data);
