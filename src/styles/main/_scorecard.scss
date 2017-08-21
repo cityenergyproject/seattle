@@ -357,6 +357,10 @@ $sc-font-lgr: 3rem;
       &.selected {
         fill: #DE8F41;
       }
+
+      &.avg-bar {
+        opacity: 0.5;
+      }
     }
 
     .axis path {
@@ -397,25 +401,19 @@ $sc-font-lgr: 3rem;
 
     .avg-highlight-html {
       position: absolute;
+      opacity: 0.5;
 
       & > div {
-        position: absolute;
-        bottom: calc(100% + 10px);
+        position: relative;
         width: 100px;
+      }
 
-        &:after {
-          content: ' ';
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 1px;
-          height: calc(100% + 10px);
-          background: #CBCBCB;
-        }
+      &.align-right > div {
+        text-align: right;
       }
 
       p {
-        margin: 0 0 0 10px;
+        margin: 0;
         padding: 0;
         line-height: 1;
         font-size: 24px;
@@ -430,7 +428,7 @@ $sc-font-lgr: 3rem;
       }
 
       p:first-child {
-        color: #CBCBCB;
+        color: #666;
       }
 
       p:last-child {

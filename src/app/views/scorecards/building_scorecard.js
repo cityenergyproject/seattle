@@ -510,7 +510,8 @@ define([
           .attr("width", x.rangeBand())
           .attr("height", function(d) { return height - y(d.y); })
           .attr('class', function(d, i) {
-            if (i === chartdata.selectedIndex || i === chartdata.avgIndex) return 'selected';
+            if (i === chartdata.selectedIndex) return 'building-bar selected'
+            if(i === chartdata.avgIndex) return 'avg-bar selected';
             return null;
           })
           .style('fill', function(d, i) {
@@ -528,8 +529,8 @@ define([
             return '>= ' + d.x + ' && < ' + (d.x + d.dx);
           });
 
-
-      var xpos = x(chartdata.data[chartdata.selectedIndex].x)  + (x.rangeBand() / 2);
+      var xBandWidth = x.rangeBand();
+      var xpos = x(chartdata.data[chartdata.selectedIndex].x)  + (xBandWidth / 2);
       var ypos = y(chartdata.data[chartdata.selectedIndex].y);
 
 
@@ -560,25 +561,45 @@ define([
         .attr('class', 'line')
         .style('height', (ypos + 5) + 'px');
 
-      xpos = x(chartdata.data[chartdata.avgIndex].x)  + (x.rangeBand() / 2);
-      ypos = y(chartdata.data[chartdata.avgIndex].y); // top of bar
+      xpos = x(chartdata.data[chartdata.avgIndex].x);
+
+      var avgPadding = 5;
+      var leftEdge = xpos + 100 + xBandWidth;
+      var avgClass = 'avg-highlight-html';
+      if (chartdata.avgIndex >= chartdata.selectedIndex) {
+        xpos += xBandWidth + avgPadding;
+      } else {
+        xpos -= (100 + avgPadding);
+        avgClass += ' align-right';
+      }
+
+      ypos =  y(chartdata.data[chartdata.avgIndex].y); // top of bar
 
       var avgHighlight = container.select("#compare-chart").append('div')
-        .attr('class', 'avg-highlight-html')
+        .attr('class', avgClass)
         .style('top', (margin.top + ypos) + 'px')
-        .style('left', (margin.left + xpos) + 'px')
-        .append('div');
+        .style('left', (margin.left + xpos) + 'px');
 
-      avgHighlight.append('p')
+      var avgHighlightContent = avgHighlight.append('div');
+
+      avgHighlightContent.append('p')
         .text('Building type average');
 
-      avgHighlight.append('p')
+      avgHighlightContent.append('p')
         .text(chartdata.mean.toFixed(1))
         .style('color', chartdata.avgColor);
 
-      avgHighlight.append('p')
+      avgHighlightContent.append('p')
         .html(compareChartConfig.highlight_metric[view])
         .style('color', chartdata.avgColor);
+
+      // fix avgHighlight going to deep
+      var avgBoxHeight = avgHighlight.node().offsetHeight;
+      if ((ypos + avgBoxHeight) > height) {
+        ypos += (height - (ypos + avgBoxHeight));
+
+        avgHighlight.style('top', (margin.top + ypos) + 'px')
+      }
     },
 
     renderFuelUseChart: function(building) {
