@@ -5,12 +5,47 @@ define(['jquery', 'underscore', 'backbone', 'views/map/building_layer', 'views/m
     el: $('#map'),
 
     initialize: function initialize(options) {
+      var _this = this;
+
       this.state = options.state;
       this.listenTo(this.state, 'change:city', this.onCityChange);
       this.listenTo(this.state, 'change:allbuildings', this.onBuildings, this);
       this.listenTo(this.state, 'change:lat', this.onMapChange);
       this.listenTo(this.state, 'change:lng', this.onMapChange);
       this.listenTo(this.state, 'change:zoom', this.onMapChange);
+      this.listenTo(this.state, 'change:reset_all', this.onResetAll);
+
+      // reset all
+      // TODO: fix slowness when resetting
+      $('.reset-all-filters').on('click', function (e) {
+        if (e.preventDefault) e.preventDefault();
+
+        var city = _this.state.get('city').toJSON();
+        var year = _this.state.get('year');
+
+        var cat_defaults = city.categoryDefaults || [];
+        var default_layer = city.years[year].default_layer;
+
+        _this.state.set({
+          'categories': cat_defaults,
+          'filters': [],
+          'metrics': [default_layer],
+          'layer': default_layer,
+          sort: default_layer,
+          'reset_all': true
+        });
+
+        return false;
+      });
+    },
+
+    onResetAll: function onResetAll() {
+      var val = this.state.get('reset_all');
+
+      if (val) {
+        this.state.set('reset_all', false, { silent: true });
+        this.onBuildings();
+      }
     },
 
     onCityChange: function onCityChange() {
@@ -18,7 +53,7 @@ define(['jquery', 'underscore', 'backbone', 'views/map/building_layer', 'views/m
     },
 
     createPropTypeSelector: function createPropTypeSelector(buildings) {
-      var _this = this;
+      var _this2 = this;
 
       var items = _.uniq(buildings.pluck('property_type')).sort();
 
@@ -31,7 +66,7 @@ define(['jquery', 'underscore', 'backbone', 'views/map/building_layer', 'views/m
         onChange: function onChange(val) {
           if (val === '*') val = null;
 
-          var currentCategories = _this.state.get('categories');
+          var currentCategories = _this2.state.get('categories');
           var match = currentCategories.find(function (cat) {
             return cat.field === 'property_type';
           });
@@ -52,9 +87,9 @@ define(['jquery', 'underscore', 'backbone', 'views/map/building_layer', 'views/m
             });
           }
 
-          _this.state.set({
+          _this2.state.set({
             categories: newCats,
-            layer_thresholds: _this.getThreshold(val)
+            layer_thresholds: _this2.getThreshold(val)
           });
         }
       });

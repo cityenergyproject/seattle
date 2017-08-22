@@ -59,8 +59,6 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
       var data = this.data;
       var fuels = [].concat(_toConsumableArray(this.fuels));
 
-      console.log(data);
-
       fuels.forEach(function (d) {
 
         var emmission_pct = _this.getMean(d.key + '_ghg_percent', data);
@@ -143,11 +141,12 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
 
     adjSizes: function adjSizes(labels, ct) {
       var sizes = this.getLabelSizes(labels);
+
       if (!sizes.length) return;
 
       var ctr = ct || 0;
       ctr += 1;
-      if (ctr > 10) return;
+      if (ctr > 100) return;
 
       var dirty = _.findIndex(sizes, function (d) {
         return d.dirty;
