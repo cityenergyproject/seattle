@@ -150,6 +150,46 @@ define([
           .attr('class', 'building')
           .classed('avg', d => d.isAvg)
           .text(d => d.label);
+
+      const me = this;
+      let prev;
+      label.each(function(d) {
+        if (prev) {
+          let rect1 = me.makeRect(prev);
+          let rect2 = me.makeRect(this);
+          let attempts = 10;
+
+          while(me.collision(rect1, rect2) && attempts > 0) {
+            attempts--;
+            prev.style.top = (rect1.top - 2) + 'px';
+            this.style.top = (rect2.top + 2) + 'px';
+
+            rect1 = me.makeRect(prev);
+            rect2 = me.makeRect(this);
+          }
+
+        }
+        prev = this;
+      });
+    },
+
+    makeRect: function(el) {
+      const t = el.offsetTop;
+      const l = el.offsetLeft;
+
+      return {
+        top: t,
+        right: l + el.offsetWidth,
+        bottom: t + el.offsetHeight,
+        left: l
+      }
+    },
+
+    collision: function(rect1, rect2) {
+      return !(rect1.right < rect2.left ||
+              rect1.left > rect2.right ||
+              rect1.bottom < rect2.top ||
+              rect1.top > rect2.bottom);
     },
 
     query: function() {

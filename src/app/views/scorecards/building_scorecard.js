@@ -833,11 +833,7 @@ define([
               rect1.left > rect2.right ||
               rect1.bottom < rect2.top ||
               rect1.top > rect2.bottom);
-    },
-
-    fixChangeOverlaps: function() {
-
-    },
+    }
   });
 
   return BuildingScorecard;

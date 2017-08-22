@@ -138,11 +138,12 @@ define([
 
     adjSizes: function(labels, ct) {
       const sizes = this.getLabelSizes(labels);
+
       if (!sizes.length) return;
 
       let ctr = ct || 0;
       ctr += 1;
-      if (ctr > 10) return;
+      if (ctr > 100) return;
 
       const dirty = _.findIndex(sizes, d => d.dirty);
 
