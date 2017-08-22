@@ -19,6 +19,39 @@ define([
       this.listenTo(this.state, 'change:lat', this.onMapChange);
       this.listenTo(this.state, 'change:lng', this.onMapChange);
       this.listenTo(this.state, 'change:zoom', this.onMapChange);
+      this.listenTo(this.state, 'change:reset_all', this.onResetAll);
+
+      // reset all
+      // TODO: fix slowness when resetting
+      $('.reset-all-filters').on('click', (e) => {
+        if (e.preventDefault) e.preventDefault();
+
+        var city = this.state.get('city').toJSON();
+        var year = this.state.get('year');
+
+        var cat_defaults = city.categoryDefaults || [];
+        var default_layer = city.years[year].default_layer;
+
+        this.state.set({
+          'categories': cat_defaults,
+          'filters': [],
+          'metrics': [default_layer],
+          'layer': default_layer,
+          sort: default_layer,
+          'reset_all': true
+        });
+
+        return false;
+      });
+    },
+
+    onResetAll: function() {
+      var val = this.state.get('reset_all');
+
+      if (val) {
+        this.state.set('reset_all', false, {silent: true});
+        this.onBuildings();
+      }
     },
 
     onCityChange: function(){
