@@ -232,7 +232,7 @@
                 "short": "EUI"
             },
             "ess": {
-                "long": "ENERGY STAR SCORE",
+                "long": "ENERGY STAR Score",
                 "short": "ENERGY STAR"
             }
         },
@@ -240,7 +240,7 @@
             "y_label": "Number of buildings",
             "x_label": {
                 "eui": "Energy use Intensity (EUI)",
-                "ess": "ENERGY STAR SCORE"
+                "ess": "ENERGY STAR Score"
             },
             "highlight_metric": {
                 "eui": "kBtu/ft²",
