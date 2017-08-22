@@ -70,8 +70,8 @@
         },
         "barchart": {
             "field": "energy_star_score",
-            "desc": "Energy<br/>Star Score",
-            "nodata": "Energy Star Score data not available.",
+            "desc": "ENERGY<br/>STAR Score",
+            "nodata": "ENERGY STAR Score data not available.",
             "min": {
                 "value": 0,
                 "label": "least efficient"
