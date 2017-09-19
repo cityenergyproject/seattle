@@ -186,7 +186,7 @@
             "unit": "kBtu",
             "formatter": "fixed-1",
             "filter_range": {"min": 1000, "max": 3000000},
-            "description": "I need a description"
+            "description": "Non-normalized site energy use is the total amount of all the energy a property consumes on-site annually, as reported on utility bills. Site energy use is measured in thousands of British thermal units (kBtu)."
         },
         {
             "title": "Total Seattle GHG Emissions",
@@ -232,7 +232,7 @@
                 "short": "EUI"
             },
             "ess": {
-                "long": "ENERGY STAR SCORE",
+                "long": "ENERGY STAR Score",
                 "short": "ENERGY STAR"
             }
         },
@@ -240,7 +240,7 @@
             "y_label": "Number of buildings",
             "x_label": {
                 "eui": "Energy use Intensity (EUI)",
-                "ess": "ENERGY STAR SCORE"
+                "ess": "ENERGY STAR Score"
             },
             "highlight_metric": {
                 "eui": "kBtu/ft²",
