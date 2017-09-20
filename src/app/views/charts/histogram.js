@@ -139,6 +139,7 @@ define([
         // mapping the color continously
         // so need to calculate the color for
         // this xpos
+        //
         return colorScale(filterValueForXpos(d.xpos));
       })
       .attr({

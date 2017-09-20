@@ -57,8 +57,14 @@ define([
 
     const scale = this.getScale();
     const extent = scale.domain();
+    const range = scale.range();
 
     let buckets;
+
+    let init = {};
+    d3.range(range[0], range[1]+1).forEach(x => {
+      return init[x] = 0;
+    });
 
     if (this.thresholds) {
       const thresholdsLength = this.thresholds.length;
@@ -74,19 +80,21 @@ define([
 
         acc[bucket] = acc[bucket] + 1 || 1;
         return acc;
-      }, {});
+      }, init);
     } else {
       buckets = this.buildings.reduce((acc, building) => {
         const value = building.get(this.fieldName);
 
-        if (!value) { return acc; }
+        if (!_.isNumber(value)) { return acc; }
 
         let bucket = this.toBucket(value, extent, scale);
         acc[bucket] = acc[bucket] + 1 || 1;
 
         return acc;
-      }, {});
+      }, init);
+
     }
+
 
     this._tobuckets = buckets;
 

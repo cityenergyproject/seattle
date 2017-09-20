@@ -58,12 +58,21 @@ define([
       this.render();
     },
 
+    getCurrentCatValue: function() {
+      const currentCategories = this.state.get('categories');
+      const match = currentCategories.find(cat => {
+        return cat.field === 'property_type';
+      });
+
+      return match ? match.values[0] : null;
+    },
+
     createPropTypeSelector: function(buildings) {
       const items = _.uniq(buildings.pluck('property_type')).sort();
 
       var template = _.template(ProptypeSelectListTemplate);
 
-      $('#building-proptype-selector').html(template({items}));
+      $('#building-proptype-selector').html(template({items, current: this.getCurrentCatValue()}));
 
       var me = this;
       const selector = $('#building-proptype-selector > select').selectize({

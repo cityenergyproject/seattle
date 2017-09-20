@@ -44,17 +44,19 @@ define([
 
     styles = _.reject(styles, function(s) { return !s; });
     styles = _.map(styles, function(s) { return `#${tableName} ${s}`; });
+
     return styles.join('\n');
   };
 
 
   var BuildingInfoPresenter = function(city, allBuildings,
-                    buildingId, idKey, controls, defaultColor) {
+                    buildingId, idKey, controls, layerName, defaultColor) {
     this.city = city;
     this.allBuildings = allBuildings;
     this.buildingId = buildingId;
     this.idKey = idKey;
     this.controls = controls;
+    this.layerName = layerName;
     this.defaultColor = defaultColor || 'blue';
   };
 
@@ -138,11 +140,19 @@ define([
   BuildingInfoPresenter.prototype.getColor = function(field, value) {
     if (!this.controls || !this.controls._wrapped) return this.defaultColor;
 
-    var filter = this.controls._wrapped.find(function(item) {
+    // TODO: fix hacky way to deal w/ quartiles
+    var filter = this.controls._wrapped.find((item) => {
+      if (item.viewType !== 'filter') return false;
+
+      if (item.layer.id === 'site_eui_quartiles') {
+        return field === 'site_eui' && this.layerName  === 'site_eui_quartiles';
+      }
+
       return item.viewType === 'filter' && item.layer.field_name === field;
     });
 
     if (!filter) return this.defaultColor;
+
     return filter.getColorForValue(value);
   };
 
@@ -376,7 +386,8 @@ define([
           this.allBuildings,
           building_id,
           propertyId,
-          this.mapView.getControls());
+          this.mapView.getControls(),
+          this.state.get('layer'));
 
       if (!presenter.toLatLng()) {
         console.warn('No building (%s) found for presenter!', presenter.buildingId);
@@ -470,7 +481,6 @@ define([
       var city = state.get('city');
       var year = state.get('year');
       var layer = state.get('layer');
-      var thresholds = state.get('layer_thresholds');
 
       var cityLayer = _.find(city.get('map_layers'), lyr => {
         if (lyr.id) return lyr.id === layer;
@@ -481,8 +491,11 @@ define([
       var buckets = cityLayer.range_slice_count;
       var colorStops = cityLayer.color_range;
 
+      var thresholds = cityLayer.thresholds ? state.get('layer_thresholds') : null;
+
       var calculator = new BuildingColorBucketCalculator(
-                              buildings, fieldName, buckets, colorStops, cssFillType, thresholds);
+                              buildings, fieldName, buckets,
+                              colorStops, cssFillType, thresholds);
 
       var stylesheet = new CartoStyleSheet(buildings.tableName, calculator, layerMode);
 

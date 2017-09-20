@@ -30,7 +30,7 @@ define([
 
     defaults: {
       metrics: [],
-      categories: {},
+      categories: [],
       filters: [],
       selected_buildings: [],
       scorecard: new ScorecardModel()
@@ -85,10 +85,12 @@ define([
     }
   });
 
-  var StateBuilder = function(city, year, layer) {
+  var StateBuilder = function(city, year, layer, categories) {
     this.city = city;
     this.year = year;
     this.layer = layer;
+    this.categories = categories;
+    this.layer_thresholds = null;
   };
 
   StateBuilder.prototype.toYear = function() {
@@ -110,9 +112,27 @@ define([
     return match !== undefined ? currentLayer : defaultLayer;
   };
 
+  StateBuilder.prototype.toCategory = function() {
+    if (!this.categories || !this.categories.length) return this.city.categoryDefaults || [];
+    this.categories.forEach(c => {
+      if (c.field === 'property_type') {
+        const val = c.values[0];
+        const thresholds = this.city.scorecard.thresholds.eui;
+        if (!thresholds.hasOwnProperty(val)) {
+          c.kill = true;
+        }
+        this.layer_thresholds = thresholds[val]['2015'];
+      }
+    });
+
+    return this.categories.filter(d => !d.kill);
+  };
+
+
   StateBuilder.prototype.toState = function() {
     var year = this.toYear(),
-        layer = this.toLayer(year);
+        layer = this.toLayer(year),
+        categories = this.toCategory();
 
     return {
       year: year,
@@ -121,7 +141,8 @@ define([
       layer: layer,
       sort: layer,
       order: 'desc',
-      categories: this.city.categoryDefaults || [],
+      categories: categories,
+      layer_thresholds: this.layer_thresholds
     }
   };
 
@@ -192,7 +213,10 @@ define([
     onCitySync: function(city, results) {
       var year = this.state.get('year');
       var layer = this.state.get('layer');
-      var newState = new StateBuilder(results, year, layer).toState();
+
+      var categories = this.state.get('categories');
+
+      var newState = new StateBuilder(results, year, layer, categories).toState();
       var defaultMapState = {lat: city.get('center')[0], lng: city.get('center')[1], zoom: city.get('zoom')};
       var mapState = this.state.pick('lat', 'lng', 'zoom');
 
@@ -238,7 +262,6 @@ define([
 
     year: function(cityname, year, params){
       params = params ? deparam(params) : {};
-
       this.state.set(_.extend({}, this.state.mapParamsToState(params), {url_name: cityname, year: year}));
     }
   });
