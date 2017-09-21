@@ -9,16 +9,16 @@
       <div class='sc-toggle'>
         <h4 class='sc-heading small white'>TOGGLE VIEW:</h4>
         <label class='cb-plain sc-txt white small'><input class="sc-toggle--input" type="checkbox" <%= view === 'eui' ? 'checked' : '' %> data-view='eui'/><span class='cb'></span><span>EUI</span></label>
-        <label class='cb-plain sc-txt white small'><input class="sc-toggle--input" type="checkbox" <%= view === 'ess' ? 'checked' : '' %> data-view='ess'/><span class='cb'></span><span>ENERGY STAR Score®</span></label>
+        <label class='cb-plain sc-txt white small'><input class="sc-toggle--input" type="checkbox" <%= view === 'ess' ? 'checked' : '' %> data-view='ess'/><span class='cb'></span><span>ENERGY STAR Score</span></label>
       </div>
   </div>
   <div class='col-4 middle'>
     <div class='circle-bk'>
-      <h4 class='sc-heading'><%= year %> <%= view === 'eui' ? 'EUI' : 'ENERGY STAR' %></h4>
+      <h4 class='sc-heading'><%= year %> <%= view === 'eui' ? 'EUI' : 'ENERGY STAR ®' %></h4>
       <h3 class='sc-heading orange xlarge' style="color:<%= valueColor %>;"><%= value %></h3>
-      <p class='sc-heading orange small' style="color:<%= valueColor %>;"><%= view === 'eui' ? 'kBtu/ft²' : 'ENERGY STAR Score' %></p>
+      <p class='sc-heading orange small' style="color:<%= valueColor %>;"><%= view === 'eui' ? 'kBtu/ft²' : 'Score' %></p>
       <div class='eui-desc'>
-        <p class='sc-txt tiny'><%= view === 'eui' ? 'Energy Use Intensity' : 'ENERGY STAR Score' %></p>
+        <p class='sc-txt tiny'><%= view === 'eui' ? 'Energy Use Intensity' : ' ' %></p>
         <p class='sc-txt tiny'>
         <% if (view === 'eui') { %>EUI is your building’s annual energy use (all fuel types) per square foot (ft²) in kBtu/ft².
         <% } else { %>
