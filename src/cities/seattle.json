@@ -252,25 +252,25 @@
                 {
                     "label": "Poor",
                     "range": [1, 50],
-                    "steps": 7,
+                    "steps": 9,
                     "color": "#C04F31"
                 },
                 {
                     "label": "Fair",
                     "range": [51, 75],
-                    "steps": 2,
+                    "steps": 4,
                     "color": "#F7C34D"
                 },
                 {
                     "label": "Good",
                     "range": [76, 90],
-                    "steps": 1,
+                    "steps": 2,
                     "color": "#90AE60"
                 },
                 {
                     "label": "Excellent",
                     "range": [91, 100],
-                    "steps": 7,
+                    "steps": 1,
                     "color": "#1F5DBE"
                 }
             ],
