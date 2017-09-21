@@ -256,8 +256,10 @@ define([
 
       // building has a different handler
       this.listenTo(this.state, 'change:building', this.onBuildingChange);
-      this.listenTo(this.state, 'clear_map_popups', this.onClearPopups);
       this.listenTo(this.allBuildings, 'sync', this.render);
+
+      this.listenTo(this.state, 'clearMapPopup', this.onClearMapPopupTrigger, this);
+
 
       var self = this;
       this.leafletMap.on('popupclose', function(e) {
@@ -289,6 +291,10 @@ define([
       if (top < 0) {
         this.leafletMap.panBy([0, top]);
       }
+    },
+
+    onClearMapPopupTrigger: function() {
+      this.onClearPopups();
     },
 
     onClearPopups: function() {

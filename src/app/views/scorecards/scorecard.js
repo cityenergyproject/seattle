@@ -51,6 +51,7 @@ define([
     },
 
     initialize: function(options) {
+      console.log("SCORE");
       this.state = options.state;
 
       this.formatters = {
@@ -68,7 +69,15 @@ define([
 
     events: {
       "click #back-to-map-link": "closeReport",
+      "click #comparison-view-link": "showComparisonView",
       "click .sc-toggle--input": "toggleView"
+    },
+
+    showComparisonView: function(evt) {
+      console.log('********* Comparison View');
+      evt.preventDefault();
+      this.close();
+      this.state.set({building_compare_active: true});
     },
 
     closeReport: function(evt) {

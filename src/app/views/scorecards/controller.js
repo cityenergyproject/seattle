@@ -34,7 +34,8 @@ define([
     },
 
     events: {
-      'click #back-to-map-link': 'closeReport'
+      'click #back-to-map-link': 'closeReport',
+      'click #comparison-view-link': 'showComparisonView',
     },
 
     onBuildingsChange: function() {
@@ -65,6 +66,16 @@ define([
       this.activekey = 'city_report_active';
       this.viewclass = CityScorecard;
       this.render();
+    },
+
+    showComparisonView: function(evt) {
+      evt.preventDefault();
+      this.state.trigger('clearMapPopup');
+      this.state.set({
+        [this.activekey]: false,
+        building: null,
+        building_compare_active: true
+      });
     },
 
     closeReport: function(evt) {
