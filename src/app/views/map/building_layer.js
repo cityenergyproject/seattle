@@ -264,6 +264,8 @@ define([
         // so close.  Otherwise were probably closing an old popup
         // to open a new one for a new building
         if (e.popup._buildingid === self.state.get('building')) {
+          e.popup._buildingid = null;
+          self._popupid = undefined;
           self.state.set({building: null});
         }
       });

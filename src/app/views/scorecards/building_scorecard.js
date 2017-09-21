@@ -400,7 +400,6 @@ define([
       let avgColor, selectedColor;
 
       if (compareField === 'site_eui') {
-
         thresholds.forEach(d => {
           if (selectedIndex >= d.indices[0] && selectedIndex <= d.indices[1]) {
             selectedColor = d.clr;
@@ -410,9 +409,6 @@ define([
             avgColor = d.clr;
           }
         });
-
-        console.log(selectedIndex, selectedColor);
-        console.log(avgIndex, avgColor);
 
       } else {
         avgColor = this.getColor(compareField, avg);
