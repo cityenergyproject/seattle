@@ -476,6 +476,7 @@ define([
 
     closeCompare: function(evt) {
       evt.preventDefault();
+      evt.stopImmediatePropagation();
       this.state.set({building_compare_active: false});
     },
 
