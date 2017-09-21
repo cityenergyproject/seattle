@@ -76,11 +76,18 @@ define([
     getColor: function(field, value) {
       if (!this.metricFilters || !this.metricFilters._wrapped) return 'red';
 
+      // TODO: fix hacky way to deal w/ quartiles
       var filter = this.metricFilters._wrapped.find(function(item) {
+        if (item.layer.id === 'site_eui_quartiles') {
+          if (field === 'site_eui_quartiles') return true;
+          return false;
+        }
+
         return item.viewType === 'filter' && item.layer.field_name === field;
       });
 
       if (!filter) return 'red';
+
       return filter.getColorForValue(value);
     },
 
@@ -361,6 +368,7 @@ define([
 
       var selectedIndex = null;
       var avgIndex = null;
+
       data.forEach(function(d, i) {
         if (selectedIndex !== null) return;
 
@@ -388,6 +396,29 @@ define([
         if (avg >= d.min && avg < next.min) avgIndex = i;
       });
 
+
+      let avgColor, selectedColor;
+
+      if (compareField === 'site_eui') {
+
+        thresholds.forEach(d => {
+          if (selectedIndex >= d.indices[0] && selectedIndex <= d.indices[1]) {
+            selectedColor = d.clr;
+          }
+
+          if (avgIndex >= d.indices[0] && avgIndex <= d.indices[1]) {
+            avgColor = d.clr;
+          }
+        });
+
+        console.log(selectedIndex, selectedColor);
+        console.log(avgIndex, avgColor);
+
+      } else {
+        avgColor = this.getColor(compareField, avg);
+        selectedColor = this.getColor(compareField, building_value);
+      }
+
       return {
         selectedIndex: selectedIndex,
         avgIndex: avgIndex,
@@ -395,8 +426,8 @@ define([
         thresholds: thresholds,
         building_value: building_value,
         compareField: compareField,
-        avgColor: this.getColor(compareField, avg),
-        selectedColor: this.getColor(compareField, building_value),
+        avgColor,
+        selectedColor,
         mean: avg
       }
     },
@@ -404,6 +435,7 @@ define([
     renderCompareChart: function(config, chartdata, view, prop_type, name, viewSelector) {
       const container = d3.select(viewSelector);
       var self = this;
+
       if (chartdata.selectedIndex === null || chartdata.avgIndex === null) {
         console.warn('Could not find required indexes!');
         return;
