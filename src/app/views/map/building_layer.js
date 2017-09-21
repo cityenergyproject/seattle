@@ -145,10 +145,11 @@ define([
       if (item.viewType !== 'filter') return false;
 
       if (item.layer.id === 'site_eui_quartiles') {
-        return field === 'site_eui' && this.layerName  === 'site_eui_quartiles';
+        return false;
+        // return field === 'site_eui' && this.layerName  === 'site_eui_quartiles';
       }
 
-      return item.viewType === 'filter' && item.layer.field_name === field;
+      return item.layer.field_name === field;
     });
 
     if (!filter) return this.defaultColor;
