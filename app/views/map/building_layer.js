@@ -27,15 +27,17 @@ define(['jquery', 'underscore', 'backbone', 'collections/city_buildings', 'model
     styles = _.map(styles, function (s) {
       return '#' + tableName + ' ' + s;
     });
+
     return styles.join('\n');
   };
 
-  var BuildingInfoPresenter = function BuildingInfoPresenter(city, allBuildings, buildingId, idKey, controls, defaultColor) {
+  var BuildingInfoPresenter = function BuildingInfoPresenter(city, allBuildings, buildingId, idKey, controls, layerName, defaultColor) {
     this.city = city;
     this.allBuildings = allBuildings;
     this.buildingId = buildingId;
     this.idKey = idKey;
     this.controls = controls;
+    this.layerName = layerName;
     this.defaultColor = defaultColor || 'blue';
   };
 
@@ -119,11 +121,20 @@ define(['jquery', 'underscore', 'backbone', 'collections/city_buildings', 'model
   BuildingInfoPresenter.prototype.getColor = function (field, value) {
     if (!this.controls || !this.controls._wrapped) return this.defaultColor;
 
+    // TODO: fix hacky way to deal w/ quartiles
     var filter = this.controls._wrapped.find(function (item) {
-      return item.viewType === 'filter' && item.layer.field_name === field;
+      if (item.viewType !== 'filter') return false;
+
+      if (item.layer.id === 'site_eui_quartiles') {
+        return false;
+        // return field === 'site_eui' && this.layerName  === 'site_eui_quartiles';
+      }
+
+      return item.layer.field_name === field;
     });
 
     if (!filter) return this.defaultColor;
+
     return filter.getColorForValue(value);
   };
 
@@ -219,8 +230,9 @@ define(['jquery', 'underscore', 'backbone', 'collections/city_buildings', 'model
 
       // building has a different handler
       this.listenTo(this.state, 'change:building', this.onBuildingChange);
-      this.listenTo(this.state, 'clear_map_popups', this.onClearPopups);
       this.listenTo(this.allBuildings, 'sync', this.render);
+
+      this.listenTo(this.state, 'clearMapPopup', this.onClearMapPopupTrigger, this);
 
       var self = this;
       this.leafletMap.on('popupclose', function (e) {
@@ -228,6 +240,8 @@ define(['jquery', 'underscore', 'backbone', 'collections/city_buildings', 'model
         // so close.  Otherwise were probably closing an old popup
         // to open a new one for a new building
         if (e.popup._buildingid === self.state.get('building')) {
+          e.popup._buildingid = null;
+          self._popupid = undefined;
           self.state.set({ building: null });
         }
       });
@@ -250,6 +264,10 @@ define(['jquery', 'underscore', 'backbone', 'collections/city_buildings', 'model
       if (top < 0) {
         this.leafletMap.panBy([0, top]);
       }
+    },
+
+    onClearMapPopupTrigger: function onClearMapPopupTrigger() {
+      this.onClearPopups();
     },
 
     onClearPopups: function onClearPopups() {
@@ -343,7 +361,7 @@ define(['jquery', 'underscore', 'backbone', 'collections/city_buildings', 'model
 
       var template = _.template(BuildingInfoTemplate);
 
-      var presenter = new BuildingInfoPresenter(this.state.get('city'), this.allBuildings, building_id, propertyId, this.mapView.getControls());
+      var presenter = new BuildingInfoPresenter(this.state.get('city'), this.allBuildings, building_id, propertyId, this.mapView.getControls(), this.state.get('layer'));
 
       if (!presenter.toLatLng()) {
         console.warn('No building (%s) found for presenter!', presenter.buildingId);
@@ -433,7 +451,6 @@ define(['jquery', 'underscore', 'backbone', 'collections/city_buildings', 'model
       var city = state.get('city');
       var year = state.get('year');
       var layer = state.get('layer');
-      var thresholds = state.get('layer_thresholds');
 
       var cityLayer = _.find(city.get('map_layers'), function (lyr) {
         if (lyr.id) return lyr.id === layer;
@@ -443,6 +460,8 @@ define(['jquery', 'underscore', 'backbone', 'collections/city_buildings', 'model
       var fieldName = cityLayer.field_name;
       var buckets = cityLayer.range_slice_count;
       var colorStops = cityLayer.color_range;
+
+      var thresholds = cityLayer.thresholds ? state.get('layer_thresholds') : null;
 
       var calculator = new BuildingColorBucketCalculator(buildings, fieldName, buckets, colorStops, cssFillType, thresholds);
 

@@ -52,6 +52,15 @@ define(['jquery', 'underscore', 'backbone', 'views/map/building_layer', 'views/m
       this.render();
     },
 
+    getCurrentCatValue: function getCurrentCatValue() {
+      var currentCategories = this.state.get('categories');
+      var match = currentCategories.find(function (cat) {
+        return cat.field === 'property_type';
+      });
+
+      return match ? match.values[0] : null;
+    },
+
     createPropTypeSelector: function createPropTypeSelector(buildings) {
       var _this2 = this;
 
@@ -59,7 +68,7 @@ define(['jquery', 'underscore', 'backbone', 'views/map/building_layer', 'views/m
 
       var template = _.template(ProptypeSelectListTemplate);
 
-      $('#building-proptype-selector').html(template({ items: items }));
+      $('#building-proptype-selector').html(template({ items: items, current: this.getCurrentCatValue() }));
 
       var me = this;
       var selector = $('#building-proptype-selector > select').selectize({

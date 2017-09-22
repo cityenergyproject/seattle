@@ -31,7 +31,8 @@ define(['jquery', 'underscore', 'backbone', './building_scorecard', './city_scor
     },
 
     events: {
-      'click #back-to-map-link': 'closeReport'
+      'click #back-to-map-link': 'closeReport',
+      'click #comparison-view-link': 'showComparisonView'
     },
 
     onBuildingsChange: function onBuildingsChange() {
@@ -62,6 +63,14 @@ define(['jquery', 'underscore', 'backbone', './building_scorecard', './city_scor
       this.activekey = 'city_report_active';
       this.viewclass = CityScorecard;
       this.render();
+    },
+
+    showComparisonView: function showComparisonView(evt) {
+      var _state$set;
+
+      evt.preventDefault();
+      this.state.trigger('clearMapPopup');
+      this.state.set((_state$set = {}, _defineProperty(_state$set, this.activekey, false), _defineProperty(_state$set, 'building', null), _defineProperty(_state$set, 'building_compare_active', true), _state$set));
     },
 
     closeReport: function closeReport(evt) {

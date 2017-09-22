@@ -56,8 +56,14 @@ define(['underscore', 'd3'], function (_, d3) {
 
     var scale = this.getScale();
     var extent = scale.domain();
+    var range = scale.range();
 
     var buckets = void 0;
+
+    var init = {};
+    d3.range(range[0], range[1] + 1).forEach(function (x) {
+      return init[x] = 0;
+    });
 
     if (this.thresholds) {
       var thresholdsLength = this.thresholds.length;
@@ -77,12 +83,12 @@ define(['underscore', 'd3'], function (_, d3) {
 
         acc[bucket] = acc[bucket] + 1 || 1;
         return acc;
-      }, {});
+      }, init);
     } else {
       buckets = this.buildings.reduce(function (acc, building) {
         var value = building.get(_this.fieldName);
 
-        if (!value) {
+        if (!_.isNumber(value)) {
           return acc;
         }
 
@@ -90,7 +96,7 @@ define(['underscore', 'd3'], function (_, d3) {
         acc[bucket] = acc[bucket] + 1 || 1;
 
         return acc;
-      }, {});
+      }, init);
     }
 
     this._tobuckets = buckets;

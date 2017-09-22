@@ -48,6 +48,7 @@ define(['jquery', 'underscore', 'backbone', 'd3'], function ($, _, Backbone, D3)
     },
 
     initialize: function initialize(options) {
+      console.log("SCORE");
       this.state = options.state;
 
       this.formatters = {
@@ -65,7 +66,15 @@ define(['jquery', 'underscore', 'backbone', 'd3'], function ($, _, Backbone, D3)
 
     events: {
       "click #back-to-map-link": "closeReport",
+      "click #comparison-view-link": "showComparisonView",
       "click .sc-toggle--input": "toggleView"
+    },
+
+    showComparisonView: function showComparisonView(evt) {
+      console.log('********* Comparison View');
+      evt.preventDefault();
+      this.close();
+      this.state.set({ building_compare_active: true });
     },
 
     closeReport: function closeReport(evt) {

@@ -208,11 +208,9 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'ionrangeslider', 'models/buil
 
       this.activeBuildings = buildings;
       this.bucketCalculator = new BuildingBucketCalculator(buildings, fieldName, rangeSliceCount, filterRange, this.threshold_values);
-      this.gradientCalculator = new BuildingColorBucketCalculator(buildings, fieldName, rangeSliceCount, colorStops, null, this.threshold_values);
+      this.gradientCalculator = new BuildingColorBucketCalculator(this.allBuildings, fieldName, rangeSliceCount, colorStops, null, this.threshold_values);
       this.gradientStops = this.gradientCalculator.toGradientStops();
       this.buckets = this.bucketCalculator.toBuckets();
-
-      //if (fieldName === 'site_eui') console.log(this.gradientStops);
 
       this.bucketGradients = _.map(this.gradientStops, function (stop, bucketIndex) {
         return {
@@ -476,6 +474,7 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'ionrangeslider', 'models/buil
 
     closeCompare: function closeCompare(evt) {
       evt.preventDefault();
+      evt.stopImmediatePropagation();
       this.state.set({ building_compare_active: false });
     },
 

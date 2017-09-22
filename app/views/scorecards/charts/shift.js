@@ -9,6 +9,7 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
       this.template = _.template(ShiftTemplate);
       this.formatters = options.formatters;
       this.data = options.data;
+      this.view = options.view;
     },
 
     calculateChange: function calculateChange() {
@@ -83,6 +84,13 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
           height = rootElm.node().offsetHeight - margin.top - margin.bottom;
 
       var svg = rootElm.append('svg').attr('width', width + margin.left + margin.right).attr('height', height + margin.top + margin.bottom).append('g').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+      var gradientID = 'gradient-' + this.view;
+      var gradient = rootElm.select('svg').append('defs').append('linearGradient').attr('id', gradientID).attr('x1', '0%').attr('y1', '0%').attr('x2', '100%').attr('y2', '100%').attr('spreadMethod', 'pad');
+
+      gradient.append('stop').attr('offset', '0%').attr('stop-color', '#0c0').attr('stop-opacity', 1);
+
+      gradient.append('stop').attr('offset', '100%').attr('stop-color', '#c00').attr('stop-opacity', 1);
 
       var x = d3.scale.ordinal().range([0, width]).domain(yearExtent);
 

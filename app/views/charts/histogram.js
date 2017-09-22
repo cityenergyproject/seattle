@@ -125,6 +125,7 @@ define(['jquery', 'underscore', 'backbone'], function ($, _, Backbone) {
         // mapping the color continously
         // so need to calculate the color for
         // this xpos
+        //
         return colorScale(filterValueForXpos(d.xpos));
       }).attr({
         width: function width() {

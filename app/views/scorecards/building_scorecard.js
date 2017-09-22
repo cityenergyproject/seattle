@@ -2,7 +2,7 @@
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-define(['jquery', 'underscore', 'backbone', './charts/fuel', 'text!templates/scorecards/building.html'], function ($, _, Backbone, FuelUseView, BuildingTemplate) {
+define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', 'text!templates/scorecards/building.html'], function ($, _, Backbone, FuelUseView, ShiftView, BuildingTemplate) {
   var BuildingScorecard = Backbone.View.extend({
     initialize: function initialize(options) {
       this.state = options.state;
@@ -76,11 +76,18 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', 'text!templates/sco
     getColor: function getColor(field, value) {
       if (!this.metricFilters || !this.metricFilters._wrapped) return 'red';
 
+      // TODO: fix hacky way to deal w/ quartiles
       var filter = this.metricFilters._wrapped.find(function (item) {
+        if (item.layer.id === 'site_eui_quartiles') {
+          if (field === 'site_eui_quartiles') return true;
+          return false;
+        }
+
         return item.viewType === 'filter' && item.layer.field_name === field;
       });
 
       if (!filter) return 'red';
+
       return filter.getColorForValue(value);
     },
 
@@ -147,7 +154,7 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', 'text!templates/sco
         valueColor: valueColor,
         costs: this.costs(building, selected_year),
         compare: this.compare(building, view, config, chartdata),
-        change: change_data.template,
+        // change: change_data.template,
         building_info: this.listdata(building, building_fields),
         energy_info: this.listdata(building, energy_fields)
       }));
@@ -164,7 +171,19 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', 'text!templates/sco
       el.find('#fuel-use-chart').html(this.chart_fueluse.render());
       this.chart_fueluse.fixlabels(viewSelector);
 
-      this.renderChangeChart(change_data.chart, viewSelector);
+      if (!this.chart_shift) {
+        this.chart_shift = new ShiftView({
+          formatters: this.formatters,
+          data: change_data.chart,
+          view: view
+        });
+      }
+
+      this.chart_shift.render(function (t) {
+        el.find('#compare-shift-chart').html(t);
+      }, viewSelector);
+
+      // this.renderChangeChart(change_data.chart, viewSelector);
       this.renderCompareChart(config, chartdata, view, prop_type, name, viewSelector);
     },
 
@@ -358,6 +377,7 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', 'text!templates/sco
 
       var selectedIndex = null;
       var avgIndex = null;
+
       data.forEach(function (d, i) {
         if (selectedIndex !== null) return;
 
@@ -385,6 +405,24 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', 'text!templates/sco
         if (avg >= d.min && avg < next.min) avgIndex = i;
       });
 
+      var avgColor = void 0,
+          selectedColor = void 0;
+
+      if (compareField === 'site_eui') {
+        thresholds.forEach(function (d) {
+          if (selectedIndex >= d.indices[0] && selectedIndex <= d.indices[1]) {
+            selectedColor = d.clr;
+          }
+
+          if (avgIndex >= d.indices[0] && avgIndex <= d.indices[1]) {
+            avgColor = d.clr;
+          }
+        });
+      } else {
+        avgColor = this.getColor(compareField, avg);
+        selectedColor = this.getColor(compareField, building_value);
+      }
+
       return {
         selectedIndex: selectedIndex,
         avgIndex: avgIndex,
@@ -392,8 +430,8 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', 'text!templates/sco
         thresholds: thresholds,
         building_value: building_value,
         compareField: compareField,
-        avgColor: this.getColor(compareField, avg),
-        selectedColor: this.getColor(compareField, building_value),
+        avgColor: avgColor,
+        selectedColor: selectedColor,
         mean: avg
       };
     },
@@ -401,6 +439,7 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', 'text!templates/sco
     renderCompareChart: function renderCompareChart(config, chartdata, view, prop_type, name, viewSelector) {
       var container = d3.select(viewSelector);
       var self = this;
+
       if (chartdata.selectedIndex === null || chartdata.avgIndex === null) {
         console.warn('Could not find required indexes!');
         return;

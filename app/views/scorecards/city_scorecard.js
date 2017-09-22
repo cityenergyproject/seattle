@@ -93,7 +93,8 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
       if (!this.chart_shift) {
         this.chart_shift = new ShiftView({
           formatters: this.formatters,
-          data: null
+          data: null,
+          view: view
         });
       }
 
