@@ -3,8 +3,9 @@ define([
   'underscore',
   'backbone',
   './charts/fuel',
+  './charts/shift',
   'text!templates/scorecards/building.html'
-], function($, _, Backbone, FuelUseView, BuildingTemplate){
+], function($, _, Backbone, FuelUseView, ShiftView, BuildingTemplate){
   var BuildingScorecard = Backbone.View.extend({
     initialize: function(options){
       this.state = options.state;
@@ -154,7 +155,7 @@ define([
         valueColor: valueColor,
         costs: this.costs(building, selected_year),
         compare: this.compare(building, view, config, chartdata),
-        change: change_data.template,
+        // change: change_data.template,
         building_info: this.listdata(building, building_fields),
         energy_info: this.listdata(building, energy_fields)
       }));
@@ -171,7 +172,20 @@ define([
       el.find('#fuel-use-chart').html(this.chart_fueluse.render());
       this.chart_fueluse.fixlabels(viewSelector);
 
-      this.renderChangeChart(change_data.chart, viewSelector);
+      if (!this.chart_shift) {
+        this.chart_shift = new ShiftView({
+          formatters: this.formatters,
+          data: change_data.chart,
+          view
+        });
+      }
+
+      this.chart_shift.render(t => {
+        el.find('#compare-shift-chart').html(t);
+      }, viewSelector);
+
+
+      // this.renderChangeChart(change_data.chart, viewSelector);
       this.renderCompareChart(config, chartdata, view, prop_type, name, viewSelector);
 
     },

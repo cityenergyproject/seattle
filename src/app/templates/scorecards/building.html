@@ -66,30 +66,7 @@
 
 <div id='fuel-use-chart' class='scorecard--section avoid-break'></div>
 
-<div class='scorecard--section'>
-  <div class='inner'>
-    <div class='section-head'>
-      <h3 class='sc-heading'>change from last year</h3>
-      <p class='sc-txt small bold'>See how this building’s performance has shifted since last year:</p>
-    </div>
-
-    <div class='row'>
-      <div class='col-4 compare-desc'>
-        <p class='change-arrow <%= change.direction %>'><span><%= change.pct %></span></p>
-        <p class="sc-txt light pg">After adjusting for weather, from <%= change.years[0] %> to <%= change.years[1] %> this building’s site EUI <span class='change-txt bold <%= change.direction %>'><%= change.direction %> by <%= change.pct %></span>.</p>
-      </div>
-      <div id='change-chart' class='col-8'>
-        <div class='change-chart-inner'>
-          <div id='change-chart-years'>
-            <p><%= change.years[0] %></p>
-            <p><%= change.years[1] %></p>
-          </div>
-          <div id='change-chart-vis'></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+<div id='compare-shift-chart' class='scorecard--section avoid-break'></div>
 
 <div id='building-information' class='scorecard--section'>
   <div class='inner'>
