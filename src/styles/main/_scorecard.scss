@@ -515,6 +515,10 @@ $sc-font-lgr: 3rem;
       height: 36px;
       overflow: hidden;
 
+      &.notes {
+        height: auto;
+      }
+
       &.fc-headers {
         height: 24px;
         line-height: 24px;
@@ -572,6 +576,10 @@ $sc-font-lgr: 3rem;
           text-align: center;
           font-size: 0.75rem;
           font-weight: 500;
+        }
+
+        p:last-child {
+          font-weight: normal;
         }
       }
     }

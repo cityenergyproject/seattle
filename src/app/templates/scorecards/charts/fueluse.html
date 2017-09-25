@@ -45,8 +45,9 @@
         <% }); %>
       </div>
       <% if (fuels.length > 1) { %>
-      <div class='fc-row'>
+      <div class='fc-row notes'>
         <p><%= totals.emissions %> metric tons of CO<sub>2</sub>E is the equivalent of <%= cars %> passenger vehicles driven for one year.</p>
+        <p>The emissions values reported here use custom emissions factors provided by Seattle City Light and Enwave for electricity and steam, respectively. Natural gas calculations use a standard emissions factor from Portfolio Manager. Seattle City Light (SCL) secures carbon offsets equal to the greenhouse gas emissions resulting from all aspects of SCL’s operations, including those created by the generation of electricity the utility buys, employees’ travel, and the trucks and other equipment used in its operations.</p>
       </div>
       <% } %>
     </div>
