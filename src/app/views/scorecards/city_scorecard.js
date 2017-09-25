@@ -101,6 +101,7 @@ define([
         this.chart_shift = new ShiftView({
           formatters: this.formatters,
           data: null,
+          change_filter_key: null,
           view
         });
       }

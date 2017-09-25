@@ -677,7 +677,7 @@ $sc-font-lgr: 3rem;
       }
 
       circle {
-        fill: #CF6F39;
+        // fill: #CF6F39;
         stroke: none;
       }
 
@@ -689,6 +689,16 @@ $sc-font-lgr: 3rem;
         position: absolute;
         color: #CF6F39;
         transform: translateY(-50%);
+
+        table {
+          margin: 0;
+          table-layout: auto;
+
+          td {
+            padding: 0;
+            border: none;
+          }
+        }
 
         &.avg {
           color: #d8d8d8;
@@ -707,20 +717,20 @@ $sc-font-lgr: 3rem;
         }
 
         .building {
-          position: absolute;
-          left: 100%;
-          top: 50%;
+          position: relative;
+          display: inline-block;
+          left: 0;
+          top: 0;
           width: 75px;
           margin-left: 15px;
           line-height: 1.2;
           font-size: 12px;
           color: #0047BA;
-          text-transform: uppercase;
-          transform: translateY(-50%);
 
           &.avg {
             color: #d8d8d8;
             font-size: 8px;
+            text-transform: uppercase;
           }
         }
       }

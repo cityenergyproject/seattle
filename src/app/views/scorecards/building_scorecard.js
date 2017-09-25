@@ -4,8 +4,9 @@ define([
   'backbone',
   './charts/fuel',
   './charts/shift',
+  'models/building_color_bucket_calculator',
   'text!templates/scorecards/building.html'
-], function($, _, Backbone, FuelUseView, ShiftView, BuildingTemplate){
+], function($, _, Backbone, FuelUseView, ShiftView, BuildingColorBucketCalculator, BuildingTemplate){
   var BuildingScorecard = Backbone.View.extend({
     initialize: function(options){
       this.state = options.state;
@@ -173,9 +174,28 @@ define([
       this.chart_fueluse.fixlabels(viewSelector);
 
       if (!this.chart_shift) {
+        var shiftConfig = config.change_chart.building;
+
+        var gradientCalculator = new BuildingColorBucketCalculator(
+          buildings,
+          shiftConfig.field_name,
+          shiftConfig.range_slice_count,
+          shiftConfig.color_range, null, null);
+
+        var shiftScale = gradientCalculator.colorGradient().copy();
+
+        var shiftScaleDomain = shiftScale.domain();
+        if (building[shiftConfig.field_name] > shiftScaleDomain[shiftScaleDomain.length - 1]) {
+          shiftScaleDomain[shiftScaleDomain.length - 1] = building[shiftConfig.field_name];
+        }
+
+        shiftScale.domain(shiftScaleDomain);
+
         this.chart_shift = new ShiftView({
           formatters: this.formatters,
           data: change_data.chart,
+          change_filter_key: null,
+          color_scale: shiftScale,
           view
         });
       }
@@ -703,14 +723,14 @@ define([
         o.push({
           label: building.property_name,
           value: +(building.site_eui_wn.toFixed(1)),
-          year: year,
+          year: +year,
           isAvg: false
         });
 
         o.push({
           label: 'Building Type Average',
           value: +(building.building_type_eui.toFixed(1)),
-          year: year,
+          year: +year,
           isAvg: true
         });
       });

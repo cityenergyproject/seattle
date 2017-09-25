@@ -14,14 +14,19 @@ define([
       this.formatters = options.formatters;
       this.data = options.data;
       this.view = options.view;
+      this.colorScale = options.color_scale;
+      this.change_filter_key = options.change_filter_key;
     },
 
     calculateChange: function() {
       const years = [];
 
-      const change_key = 'emissions';
+      const change_filter_key = this.change_filter_key; // 'emissions';
       this.data.filter(o => {
-        return o.key === change_key;
+        if (!change_filter_key) {
+          return !o.isAvg;
+        }
+        return o.key === change_filter_key;
       }).forEach(o => {
         years.push({
           yr: o.year,
@@ -34,6 +39,7 @@ define([
       });
 
       var last = years.length - 1;
+
       return ((years[last].val - years[last - 1].val) / years[last].val) * 100;
     },
 
@@ -58,6 +64,33 @@ define([
       };
     },
 
+    setSVGGradient: function(rootElm, id, colorScale, data) {
+
+      var stops = data.filter(d => !d.isAvg).sort((a,b) => {
+        return a.year - b.year;
+      });
+
+      if (stops.length < 2) return;
+
+      var gradient = rootElm.select('svg').append('defs')
+        .append('linearGradient')
+        .attr('id', id)
+        .attr('x1', '0%')
+        .attr('y1', '0%')
+        .attr('x2', '100%')
+        .attr('y2', '0%');
+
+      gradient.append('stop')
+          .attr('offset', '0%')
+          .attr('stop-color', colorScale(stops[0].value))
+          .attr('stop-opacity', 1);
+
+      gradient.append('stop')
+          .attr('offset', '100%')
+          .attr('stop-color', colorScale(stops[stops.length -1].value))
+          .attr('stop-opacity', 1);
+    },
+
     renderChangeChart: function(data, selector) {
       const container = d3.select(selector);
 
@@ -70,6 +103,8 @@ define([
 
       var yearWidth = yearsElm.select('p').node().offsetWidth;
       var baseWidth = yearsElm.node().offsetWidth - (yearWidth * 2);
+
+      var colorScale = this.colorScale;
 
       baseWidth += diameter;
 
@@ -85,25 +120,11 @@ define([
         .append('g')
           .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
+
+
       var gradientID = 'gradient-' + this.view;
-      var gradient = rootElm.select('svg').append('defs')
-        .append('linearGradient')
-        .attr('id', gradientID)
-        .attr('x1', '0%')
-        .attr('y1', '0%')
-        .attr('x2', '100%')
-        .attr('y2', '100%')
-        .attr('spreadMethod', 'pad');
+      this.setSVGGradient(rootElm, gradientID, colorScale, data);
 
-      gradient.append('stop')
-          .attr('offset', '0%')
-          .attr('stop-color', '#0c0')
-          .attr('stop-opacity', 1);
-
-      gradient.append('stop')
-          .attr('offset', '100%')
-          .attr('stop-color', '#c00')
-          .attr('stop-opacity', 1);
 
       var x = d3.scale.ordinal()
           .range([0, width])
@@ -125,6 +146,11 @@ define([
         .data(connections)
       .enter().append('path')
         .attr('class', 'line')
+        .style('stroke', d => {
+          var isAvg = d.values[0].isAvg;
+          if (isAvg) return null;
+          return 'url(#' + gradientID + ')';
+        })
         .attr('d', d => line(d.values));
 
       var bar = svg.selectAll('.dot')
@@ -135,7 +161,11 @@ define([
           .attr('transform', d => { return 'translate(' + x(d.year) + ',' + y(d.value) + ')'; });
 
       bar.append('circle')
-        .attr('r', 5);
+        .attr('r', 5)
+        .attr('fill', d => {
+          if (d.isAvg) return null;
+          return colorScale(d.value);
+        });
 
       var firstyear = x.domain()[0];
       var lastyear = x.domain()[1];
@@ -144,6 +174,10 @@ define([
         .data(data)
       .enter().append('div')
         .attr('class', 'label')
+        .style('color', d => {
+          if (d.isAvg) return null;
+          return colorScale(d.value);
+        })
         .classed('avg', d => d.isAvg)
         .style('left', d => {
           if (d.year === firstyear) return x(d.year) + 'px';
@@ -151,9 +185,13 @@ define([
         })
         .style('top',  d => { return y(d.value) + 'px'; });
 
-      label.append('p')
+      var innerLabel = label.append('table').append('td');
+
+      innerLabel
+        .append('p')
         .text(d => this.formatters.fixedOne(d.value));
-      label.append('p')
+      innerLabel
+        .append('p')
         .attr('class','metric small')
         .text('kbtu/sf');
 
@@ -167,6 +205,8 @@ define([
       });
 
       label.filter(d => d.year === lastyear)
+        .select('table')
+        .append('td')
         .append('span')
           .attr('class', 'building')
           .classed('avg', d => d.isAvg)
@@ -192,6 +232,7 @@ define([
         }
         prev = this;
       });
+
     },
 
     makeRect: function(el) {
@@ -237,7 +278,7 @@ define([
               label: 'Citywide GHG emissions',
               key: 'emissions',
               value: +(obj.emissions.toFixed(1)),
-              year: obj.year,
+              year: +obj.year,
               isAvg: false
             });
 
@@ -245,10 +286,12 @@ define([
               label: 'Citywide Total Energy Consumption',
               key: 'consumption',
               value: +(obj.consumption.toFixed(1)),
-              year: obj.year,
+              year: +obj.year,
               isAvg: false
             });
           });
+
+          this.change_filter_key = 'emissions';
 
           cb(this.extractChangeData());
         });
