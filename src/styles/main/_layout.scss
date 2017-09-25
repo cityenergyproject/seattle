@@ -118,10 +118,13 @@ header {
   }
 }
 
-#year-select {
-  position: absolute;
-  right: 1em;
-  top: 0.5em;
+#year-select-container {
+  position: relative;
+  display: inline-block;
+  margin: 0 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  vertical-align: top;
 }
 
 #map-controls {

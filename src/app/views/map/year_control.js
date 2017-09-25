@@ -5,7 +5,7 @@ define([
   'text!templates/map/year_control.html',
 ], function($, _, Backbone, YearControlTemplate) {
   var YearControlView = Backbone.View.extend({
-    $container: $('#year-select'),
+    $container: $('#year-select-container'),
     className: 'year-control',
 
     initialize: function(options) {

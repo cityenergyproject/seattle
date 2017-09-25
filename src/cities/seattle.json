@@ -214,6 +214,10 @@
         }
     ],
     "years": {
+        "2015": {
+            "table_name": "table_2015_stamen_phase_ii_v2_w_year",
+            "default_layer": "energy_star_score"
+        },
         "2016": {
             "table_name": "table_2015_stamen_phase_ii_v2_w_year",
             "default_layer": "energy_star_score"

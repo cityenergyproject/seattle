@@ -1,4 +1,11 @@
 .toolbar {
   background-color: $orange;
   color: $inverse-font-color;
+
+  .tbar-right {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+  }
 }

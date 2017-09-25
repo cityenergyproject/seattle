@@ -1,5 +1,6 @@
 .year-control {
   border-bottom: 0.1em solid transparent;
+  line-height: 1;
 
   li {
     position: relative;
@@ -11,6 +12,8 @@
   }
 
   label {
+    line-height: 1;
+
     &::after {
       height: 0.5em;
       width: 0.5em;
@@ -20,7 +23,7 @@
       position: absolute;
       top: 100%;
       left: 50%;
-      margin-top: -0.25em;
+      margin-top: -0.2em;
       margin-left: -0.25em;
     }
   }
@@ -43,6 +46,7 @@
     cursor: pointer;
     color: darken($orange, 10);
     opacity: 0.85;
+    margin-bottom: 0.4em;
 
     &::after {
       opacity: 0.6;
