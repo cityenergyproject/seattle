@@ -2,18 +2,24 @@ define([
   'underscore',
   'd3'
 ], function(_, d3) {
-  var BuildingBucketCalculator = function(buildings, fieldName, buckets, filterRange) {
+  const BuildingBucketCalculator = function(buildings, fieldName, buckets, filterRange, thresholds) {
     this.buildings = buildings;
     this.fieldName = fieldName;
     this.buckets = buckets;
+    this.thresholds = thresholds;
     this.filterRange = filterRange || {};
+
+    this._extent = null;
+    this._tobuckets = null;
   };
 
   BuildingBucketCalculator.prototype.getScale = function() {
-    var extent = this.toExtent(),
-        maxBuckets = this.buckets - 1;
+    const extent = this.toExtent();
+    const maxBuckets = this.buckets - 1;
 
-    var scale = d3.scale.linear().domain(extent).rangeRound([0, maxBuckets]);
+    let scale = d3.scale.linear()
+                  .domain(extent)
+                  .rangeRound([0, maxBuckets]);
 
     // stuff maxBuckets into scale, for future reference
     scale._maxBuckets = maxBuckets;
@@ -22,11 +28,19 @@ define([
   };
 
   BuildingBucketCalculator.prototype.toExtent = function() {
-    var fieldValues = this.buildings.pluck(this.fieldName),
-        extent = d3.extent(fieldValues),
-        min = this.filterRange.min,
-        max = this.filterRange.max;
-    return [min || extent[0], max || extent[1]];
+    if (this._extent) return this._extent;
+    const fieldValues = this.buildings.pluck(this.fieldName);
+    const extent = d3.extent(fieldValues);
+
+    let min = this.filterRange.min;
+    let max = this.filterRange.max;
+
+    if (!_.isNumber(min) || _.isNaN(min)) min = extent[0];
+    if (!_.isNumber(max) || _.isNaN(max)) max = extent[1];
+
+    this._extent = [min, max];
+
+    return this._extent;
   };
 
   // Allow for extent & scale to be passed in,
@@ -39,18 +53,52 @@ define([
   };
 
   BuildingBucketCalculator.prototype.toBuckets = function() {
-    var self = this;
+    if (this._tobuckets) return this._tobuckets;
 
-    var scale =  this.getScale();
-    var extent = scale.domain();
+    const scale = this.getScale();
+    const extent = scale.domain();
+    const range = scale.range();
 
-    return this.buildings.reduce(function(memo, building){
-      var value = building.get(self.fieldName);
-      if (!value) {return memo;}
-      var scaled = self.toBucket(value, extent, scale);
-      memo[scaled] = memo[scaled] + 1 || 1;
-      return memo;
-    }, {});
+    let buckets;
+
+    let init = {};
+    d3.range(range[0], range[1]+1).forEach(x => {
+      return init[x] = 0;
+    });
+
+    if (this.thresholds) {
+      const thresholdsLength = this.thresholds.length;
+
+      buckets = this.buildings.reduce((acc, building) => {
+        const value = building.get(this.fieldName);
+
+        if (!value) { return acc; }
+
+        let bucket = _.findIndex(this.thresholds, d => value < d);
+
+        if (bucket === -1) bucket = thresholdsLength;
+
+        acc[bucket] = acc[bucket] + 1 || 1;
+        return acc;
+      }, init);
+    } else {
+      buckets = this.buildings.reduce((acc, building) => {
+        const value = building.get(this.fieldName);
+
+        if (!_.isNumber(value)) { return acc; }
+
+        let bucket = this.toBucket(value, extent, scale);
+        acc[bucket] = acc[bucket] + 1 || 1;
+
+        return acc;
+      }, init);
+
+    }
+
+
+    this._tobuckets = buckets;
+
+    return this._tobuckets;
   };
 
   return BuildingBucketCalculator;

@@ -37,7 +37,7 @@ define([
 
     search: function(){
       var self = this;
-      var url = "https://search.mapzen.com/v1/search";
+      var url = 'https://search.mapzen.com/v1/search';
       var search = this.$el.val();
       var center = this.state.get('city').get('center');
       if (search === ""){
@@ -68,7 +68,10 @@ define([
 
     centerMapOn: function(location){
       var hits = location.features.filter(function(feat) {
-        return feat.properties.region && feat.properties.region === this.state.get('city').get('address_search_regional_context');
+        const ctx = this.state.get('city').get('address_search_regional_context');
+        const region = feat.properties.region;
+
+        return region && region === ctx;
       }.bind(this));
 
       if (hits.length > 0 ){
@@ -78,24 +81,24 @@ define([
       }
       else{
         toastr.options = {
-          "closeButton": true,
-          "debug": false,
-          "newestOnTop": false,
-          "progressBar": false,
-          "positionClass": "toast-top-right",
-          "preventDuplicates": false,
-          "onclick": null,
-          "showDuration": "300",
-          "hideDuration": "1000",
-          "timeOut": "5000",
-          "extendedTimeOut": "1000",
-          "showEasing": "swing",
-          "hideEasing": "linear",
-          "showMethod": "fadeIn",
-          "hideMethod": "fadeOut"
+          'closeButton': true,
+          'debug': false,
+          'newestOnTop': false,
+          'progressBar': false,
+          'positionClass': 'toast-top-right',
+          'preventDuplicates': false,
+          'onclick': null,
+          'showDuration': '300',
+          'hideDuration': '1000',
+          'timeOut': '5000',
+          'extendedTimeOut': '1000',
+          'showEasing': 'swing',
+          'hideEasing': 'linear',
+          'showMethod': 'fadeIn',
+          'hideMethod': 'fadeOut'
         };
 
-        toastr.error("Addresses not found!");
+        toastr.error('Addresses not found!');
       }
     },
     placeMarker: function(coordinates){

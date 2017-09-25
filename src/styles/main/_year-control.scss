@@ -1,5 +1,6 @@
 .year-control {
   border-bottom: 0.1em solid transparent;
+
   li {
     position: relative;
     display: inline-block;
@@ -8,8 +9,8 @@
   input {
     display: none;
   }
-  label {
 
+  label {
     &::after {
       height: 0.5em;
       width: 0.5em;

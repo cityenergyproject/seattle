@@ -96,8 +96,8 @@ define([
   };
 
   BuildingMetricCalculator.prototype.renderField = function(field) {
-    var fieldName = field.field_name,
-        gradients = this.gradientCalculators[fieldName],
+    var fieldName = field.field_name;
+    var gradients = this.gradientCalculators[fieldName];
         slices = field.range_slice_count,
         aspectRatio = 4/1;
         gradientStops = gradients.toGradientStops(),

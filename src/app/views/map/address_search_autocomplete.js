@@ -12,18 +12,6 @@ define([
   var AddressSearchACView = Backbone.View.extend({
     $container: $('#search'),
 
-    SEARCH_URL: 'https://search.mapzen.com/v1/search',
-
-    // top,left,bottom,right
-    SEARCH_BOUNDS: [38.79163, -77.119766, 38.995853, -76.909363],
-
-    SEARCH_API_KEY: 'search-oqsffOQ',
-
-    SEARCH_KEYS: {
-      property: 'property_name',
-      address: 'reported_address'
-    },
-
     SEARCH_KEY_FOR_SELECTED: 'reported_address',
 
     SEARCH_EXTERNAL_SEARCH_HEADER: 'Nearby buildings...',
@@ -39,6 +27,7 @@ define([
       this.state = options.state;
       this.fuse = null;
       this.autocomplete = null;
+
       this.listenTo(this.state, 'change:city', this.onCityChange);
       this.listenTo(this.state, 'change:allbuildings', this.onBuildingsChange);
       this.listenTo(this.state, 'change:building', this.onBuildingChange);
@@ -50,31 +39,40 @@ define([
       }
     },
 
+    configure: function() {
+      const config = this.config = this.state.get('city').get('search');
+      this.SEARCH_URL = config.url;
+      this.SEARCH_BOUNDS = config.bounds;
+      this.SEARCH_API_KEY = config.api_key;
+      this.SEARCH_KEYS = config.terms;
+    },
+
     onCityChange: function(){
       this.listenTo(this.state.get('city'), 'sync', this.onCitySync);
     },
 
     onCitySync: function(){
+      this.configure();
       this.render();
     },
 
     onBuildingChange: function() {
       if (!this.SYNC_WITH_STATE) return;
 
-      var buildings = this.state.get('allbuildings');
-      var property_id = this.state.get('building');
-      var city = this.state.get('city');
+      const buildings = this.state.get('allbuildings');
+      const property_id = this.state.get('building');
+      const city = this.state.get('city');
 
       if (_.isUndefined(buildings) ||
           _.isUndefined(city) ) return;
 
-      var building = buildings.find(function(building) {
-          return building.get(city.get('property_id')) == property_id;
-        }, this);
+      const building = buildings.find(building => {
+        return building.get(city.get('property_id')) == property_id;
+      });
 
       if (building) {
-        var lat = parseFloat(building.get('lat')),
-            lng = parseFloat(building.get('lng'));
+        const [lat,lng] = this.getLatLng(building);
+
         $('#address-search').val(building.get(this.SEARCH_KEY_FOR_SELECTED));
       } else {
         $('#address-search').val('');
@@ -82,75 +80,50 @@ define([
       }
     },
 
+    getLatLng: function(building) {
+      return [
+        parseFloat(building.get('lat')),
+        parseFloat(building.get('lng'))
+      ]
+    },
+
     render: function(){
-      var self = this;
-
-      var searchTemplate = _.template(AddressSearchTemplate);
-      this.$container.html(searchTemplate());
-
-      // clear marker
-      $('#address-search').on('search', function (e) {
-        if (!this.value) {
-          self.clearMarker();
-           if (self.SYNC_WITH_STATE) {
-              self.state.set({building: null});
-              setTimeout(function(){
-                self.state.trigger('clear_map_popups');
-              }.bind(self),1);
-           }
-        }
-      });
-
+      this.$container.html(_.template(AddressSearchTemplate));
       return this;
     },
 
-    events: {
-      'search' : 'search',
-    },
-
     getBuildingDataForSearch: function(building) {
-      var self = this;
-      var keys = _.keys(this.SEARCH_KEYS);
+      const [lat,lng] = this.getLatLng(building);
 
-      var lat = parseFloat(building.get('lat')),
-          lng = parseFloat(building.get('lng'));
-
-      var rsp = {
+      const rsp = {
         id: building.cid,
         latlng: L.latLng(lat, lng)
       };
 
-      var valid = true;
-      keys.forEach(function(k){
-        var value = building.get(self.SEARCH_KEYS[k]);
-        rsp[k] = value.trim();
+      let valid = true;
+      this.SEARCH_KEYS.forEach((obj) => {
+        let value = building.get(obj.key) + '';
 
-        if (!rsp[k].length) valid = false;
+        rsp[obj.name] = value.trim();
+
+        if (!rsp[obj.name].length) valid = false;
       });
 
       return (valid) ? rsp : null;
     },
 
     onBuildingsChange: function() {
-      var self = this;
-      var buildings = this.state.get('allbuildings');
-      var things = this.things = [];
+      const buildings = this.state.get('allbuildings');
+      const things = this.things = [];
+      const skipRender = this.SEARCH_KEYS.filter(d => d.hide).map(d => d.name);
 
-      buildings.forEach(function(building, i){
-        var buildingData = self.getBuildingDataForSearch(building);
+      buildings.forEach((building, i) => {
+        const buildingData = this.getBuildingDataForSearch(building);
         if (buildingData) things.push(buildingData);
-      }, this);
+      });
 
-      var options = {
-        caseSensitive: false,
-        include: ["score", "matches"],
-        location: 0,
-        distance: 50,
-        threshold: 0.1,
-        maxPatternLength: 32,
-        shouldSort: true,
-        keys: _.keys(this.SEARCH_KEYS)
-      };
+      const options = {...this.config.fuse_options};
+      options.keys = this.SEARCH_KEYS.map(d => d.name)
 
       // fuzzy search engine
       this.fuse = new Fuse(things, options);
@@ -168,30 +141,32 @@ define([
           delay: 200,
           offsetTop: 10,
           cache: false,
-          source: function(term, suggest, doExternalSearch){
-            var wrapper = self.wrapper(term, suggest, new Date().getTime(), self);
+          source: (term, suggest, doExternalSearch) => {
+            var wrapper = this.wrapper(term, suggest, new Date().getTime(), this);
 
-            if (self.$autocompleteHeader) self.$autocompleteHeader.removeClass('show');
+            if (this.$autocompleteHeader) this.$autocompleteHeader.removeClass('show');
 
             if (doExternalSearch) {
-              self.search(term, wrapper);
+              this.search(term, wrapper);
             } else {
-              var val = term.toLowerCase();
-              var results = self.fuse.search(val);
-              var matches = results.map(function(d) {
-                var m = [];
+              const val = term.toLowerCase();
+              const results = this.fuse.search(val);
 
-                _.keys(self.SEARCH_KEYS).forEach(function(opt) {
-                  if (!d.item[opt] || !d.item[opt].length) return;
+              const matches = results.map((d) => {
+                const m = [];
 
-                  var matched = false;
-                  d.matches.forEach(function(mat) {
-                    if (mat.key === opt) matched = true;
+                this.SEARCH_KEYS.forEach((opt) => {
+                  const name = opt.name;
+                  if (!d.item[name] || !d.item[name].length) return;
+
+                  let matched = false;
+                  d.matches.forEach((mat) => {
+                    if (mat.key === name) matched = true;
                   });
 
                   m.push({
-                    key: opt,
-                    value: d.item[opt],
+                    key: name,
+                    value: d.item[name],
                     matched: matched
                   });
                 });
@@ -207,33 +182,34 @@ define([
 
           },
 
-          renderItem: function (result, search){
+          renderItem: (result, search) => {
             search = search.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-            var re = new RegExp("(" + search.split(' ').join('|') + ")", "gi");
-            var template = _.template(AddressSearchResultTemplate);
+            const re = new RegExp("(" + search.split(' ').join('|') + ")", "gi");
+            const template = _.template(AddressSearchResultTemplate);
 
-            result.items.forEach(function(item) {
-              item.formatted_value = (item.matched) ? item.value.replace(re, "<b>$1</b>") : item.value;
-            });
-
+            result.items
+              .filter(d => skipRender.indexOf(d.key) === -1)
+              .forEach(item => {
+                item.formatted_value = (item.matched) ?
+                    item.value.replace(re, "<b>$1</b>") :
+                    item.value;
+              });
 
             return template(result);
           },
 
-          onSelect: function(e, term, item) {
+          onSelect: (e, term, item) => {
             if (item) {
+              const id = item.getAttribute('data-building');
+              const building = buildings.get(id);
+              const [lat,lng] = this.getLatLng(building);
+              const propertyId = this.state.get('city').get('property_id');
 
-              var id = item.getAttribute('data-building');
+              this.centerMapOn([lat,lng]);
 
-              var building = buildings.get(id);
-              var lat = building.get('lat');
-              var lng = building.get('lng');
-
-              var propertyId = self.state.get('city').get('property_id');
-              var propety_id = building.get(propertyId);
-
-              self.centerMapOn([lat,lng]);
-              if (self.SYNC_WITH_STATE) self.state.set({building: propety_id});
+              if (this.SYNC_WITH_STATE) {
+                this.state.set({building: building.get(propertyId)});
+              }
             }
           }
       });
@@ -243,19 +219,17 @@ define([
       this.$autocompleteHeader.text(this.SEARCH_EXTERNAL_SEARCH_HEADER);
     },
 
-    wrapper: function(term, suggest, started_at, self) {
-
+    wrapper: function(term, suggest, started_at, ctx) {
       return function(from_term, items, err) {
         var now = new Date().getTime();
-        if (from_term == term && self.maxReqTimestampRendered > started_at) return;
-        self.maxReqTimestampRendered = started_at;
+        if (from_term == term && ctx.maxReqTimestampRendered > started_at) return;
+        ctx.maxReqTimestampRendered = started_at;
 
         if (err) {
-          self.errorReporter(err);
+          ctx.errorReporter(err);
         }
 
         suggest(items);
-
       }
     },
 
@@ -264,11 +238,10 @@ define([
     search: function(term, callback){
       if (!term) return callback(term, [], null);
 
-      var self = this;
-      var url = this.SEARCH_URL;
-      var bounds = this.SEARCH_BOUNDS;
-      var center = this.state.get('city').get('center');
-      var api_key = this.SEARCH_API_KEY;
+      const url = this.SEARCH_URL;
+      const bounds = this.SEARCH_BOUNDS;
+      const center = this.state.get('city').get('center');
+      const api_key = this.SEARCH_API_KEY;
 
       try { this.xhr.abort(); } catch(e){}
 
@@ -287,21 +260,21 @@ define([
           layers: 'address',
         },
 
-        error: function(xhr, status, err) {
-          var errMsg = self.onAjaxAddressError(xhr);
-          self.errorReporter(errMsg);
+        error: (xhr, status, err) => {
+          const errMsg = this.onAjaxAddressError(xhr);
+          this.errorReporter(errMsg);
           callback(term, [], null);
         },
 
-        success: function(data, status){
-          var results = self.onAjaxAddressSuccess(data, term);
-          if (!results.buildings.length) self.errorReporter(self.ERRORS.noimage);
+        success: (data, status) => {
+          const results = this.onAjaxAddressSuccess(data, term);
+          if (!results.buildings.length) this.errorReporter(this.ERRORS.noimage);
 
           if (results.match) {
-            self.centerMapOn(results.match);
+            this.centerMapOn(results.match);
             callback(term, [], null);
           } else {
-            if (self.$autocompleteHeader) self.$autocompleteHeader.addClass('show');
+            if (this.$autocompleteHeader) this.$autocompleteHeader.addClass('show');
             callback(term, results.buildings, null);
           }
         }
@@ -312,7 +285,7 @@ define([
       var limit = 400;
       var distances = [];
 
-      this.things.forEach(function(thing) {
+      this.things.forEach(thing => {
         var d = loc.distanceTo(thing.latlng);
         if (d < limit) distances.push({id: thing.id, d: d});
       });
@@ -327,40 +300,36 @@ define([
     },
 
     onAjaxAddressSuccess: function(data, term) {
-      var features = (data.features || []).filter(
-        function(feat) {
-          return feat.properties.region && feat.properties.region === this.state.get('city').get('address_search_regional_context');
-        }.bind(this));
+      const regional_context = this.state.get('city').get('address_search_regional_context');
+      const features = (data.features || []).filter((feat) => {
+        return feat.properties.region && feat.properties.region === regional_context;
+      });
 
-      if (!features.length) return [];
+      if (!features.length) return {match: false, buildings:[]};
 
-      var self = this;
-      var buildings = this.state.get('allbuildings');
-      var match = null;
-      var keys = _.keys(self.SEARCH_KEYS);
+      const buildings = this.state.get('allbuildings');
+      const keys = this.SEARCH_KEYS.map(d => d.name);
+      let closestBuildings = [];
+      let match = null;
 
-      var closestBuildings = [];
-      features.forEach(function(feature) {
-        var distances = self.getDistances(L.latLng(feature.geometry.coordinates.reverse()));
+      features.forEach(feature => {
+        const distances = this.getDistances(L.latLng(feature.geometry.coordinates.reverse()));
         closestBuildings = closestBuildings.concat(distances);
       });
 
       closestBuildings = _.uniq(closestBuildings, false, function(item) { return item.id; })
       closestBuildings = _.sortBy(closestBuildings, 'd');
-
       closestBuildings = closestBuildings.slice(0,10);
+      closestBuildings = closestBuildings.map(item => {
+        const building = buildings.get(item.id);
+        const buildingData = this.getBuildingDataForSearch(building);
+        const m = {};
 
-      closestBuildings = closestBuildings.map(function(item) {
-
-        var building = buildings.get(item.id);
-        var buildingData = self.getBuildingDataForSearch(building);
-
-        var m = {};
         m.building_id = buildingData.id;
         m.items = [];
 
-        keys.forEach(function(k) {
-          var value = buildingData[k] || null;
+        keys.forEach(k => {
+          const value = buildingData[k] || null;
           if (!value) return;
 
           if (k in buildingData && buildingData[k] === term) {
@@ -409,10 +378,12 @@ define([
     },
 
     placeMarker: function(coordinates){
-      var map = this.mapView.leafletMap;
+      const map = this.mapView.leafletMap;
+      if (!map) return;
+
       this.clearMarker();
 
-      var icon = new L.Icon({
+      const icon = new L.Icon({
           iconUrl: 'images/marker.svg',
           iconRetinaUrl: 'images/marker.svg',
           iconSize: [16, 28],
@@ -428,7 +399,9 @@ define([
     },
 
     clearMarker: function(){
-      var map = this.mapView.leafletMap;
+      const map = this.mapView.leafletMap;
+      if (!map) return;
+
       if (this.marker){
         map.removeLayer(this.marker);
       }

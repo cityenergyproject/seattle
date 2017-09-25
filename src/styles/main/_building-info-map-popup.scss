@@ -2,53 +2,147 @@
   a.leaflet-popup-close-button {
     display: none
   }
-  .leaflet-popup-content-wrapper{
+  .leaflet-popup-content-wrapper {
     box-shadow: none;
     border-radius: 0;
-    background-color: $light-gray;
+    background-color: #e4e4e4;
   }
   .leaflet-popup-tip{
-    background-color: $light-gray;
+    background-color: #e4e4e4;
   }
 }
 
-.leaflet-popup-content .building-info{
+.leaflet-popup-content .building-info {
+  font-family: $base-font-family;
   line-height: 1;
+  font-size: 1em;
+
   li + li {
     padding-top: .5em;
   }
+
   li:first-child{
     font-size: 1.2em;
     font-weight: bold;
     margin-bottom: -0.2em;
   }
+
   li:nth-child(2){
     margin-bottom: -0.3em;
   }
-  .show-more-container{
-    &.hide {
-      li {
-        display: none;
+
+  .building-popup-chart {
+    min-width: 200px;
+    max-width: 300px;
+    margin: 20px 0 0 0;
+
+    & > h3 {
+      text-transform: uppercase;
+      font-size: 1.2em;
+      line-height: 1;
+      margin: 0 0 5px 0;
+    }
+
+    .inner {
+      border: 1px solid $base-font-color;
+      padding: 10px;
+    }
+
+    table {
+      margin: 0;
+      table-layout: auto;
+
+      td {
+        padding: 0;
+        border: 0;
+      }
+
+      td:first-child {
+        width: auto;
+        padding-right: 10px;
+      }
+      td:last-child {
+        width: 100%;
       }
     }
-    &.show {
-      li {
-        display: block;
+
+    .lead td {
+      padding-bottom: 1rem;
+      vertical-align: baseline;
+    }
+
+    .lead td:first-child {
+      font-size: 2.5em;
+      font-weight: 500;
+      line-height: 1;
+    }
+
+    .barchart td {
+      vertical-align: bottom;
+    }
+
+    .barchart td:first-child {
+      font-size: 1.5em;
+      font-weight: 500;
+    }
+
+    .bar {
+      position: relative;
+      width: 100%;
+      height: 16px;
+      border: 1px solid $base-font-color;
+    }
+
+    .fill {
+      height: 100%;
+      background: $base-font-color;
+    }
+
+    .barchart--labels {
+      overflow: hidden;
+
+      td {
+        position: relative;
+        padding: 5px 0 0;
+      }
+
+      td:first-child {
+        white-space: nowrap;
+        vertical-align: top;
+      }
+
+      .min, .max {
+        position: relative;
+        top: 0;
+        width: 40%;
+        float: left;
+
+        span {
+          display: inline-block;
+          width: 100%;
+        }
+      }
+
+      .max {
+        float: right;
+        text-align: right;
       }
     }
-    li:first-child{
-      font-size: inherit;
-      font-weight: inherit;
-      margin-bottom: 0;
-      margin-top: .5em;
+
+    td.nodata {
+      font-size: 0.85em !important;
     }
-    li:nth-child(2){
-      margin-bottom: 0;
-    }
-  }
-  .show-hide-attrs {
-    display: inline-block;
-    margin: 10px 0px 0px;
-    cursor: pointer;
+  } // end .building-popup-chart
+
+  button {
+    width: 100%;
+    margin: 1rem 0 0;
+    padding: 0.5em 1em;
+    border: 1px solid #0047ba;
+    border-radius: 1em;
+    background: #0047ba;
+    color: white;
+    font-size: 0.75rem;
+    text-transform: uppercase;
   }
 }

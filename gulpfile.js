@@ -1,6 +1,6 @@
 /*!
  * gulp
- * $ npm install gulp-sass gulp-autoprefixer gulp-minify-css gulp-jshint gulp-concat gulp-uglify gulp-notify gulp-rename gulp-livereload gulp-cache del --save-dev
+ * $ npm install gulp-sass gulp-autoprefixer gulp-minify-css gulp-eslint gulp-concat gulp-uglify gulp-notify gulp-rename gulp-livereload gulp-cache del --save-dev
  */
 
 // Load plugins
@@ -8,7 +8,7 @@ var gulp = require('gulp'),
     mainBowerFiles = require('main-bower-files');
     sass = require('gulp-sass'),
     autoprefixer = require('gulp-autoprefixer'),
-    jshint = require('gulp-jshint'),
+    eslint = require('gulp-eslint'),
     rename = require('gulp-rename'),
     concat = require('gulp-concat'),
     notify = require('gulp-notify'),
@@ -16,18 +16,19 @@ var gulp = require('gulp'),
     connect = require('gulp-connect'),
     livereload = require('gulp-livereload'),
     del = require('del'),
-    deploy = require('gulp-gh-pages');
+    deploy = require('gulp-gh-pages'),
+    babel = require('gulp-babel');
 
 gulp.task('fileinclude', function() {
   return  gulp.src(['src/index.html', 'src/iframe.html', 'src/CNAME'])
     .pipe(gulp.dest('dist'))
-    .pipe(notify({ message: 'Index Copied' }));
+    .pipe(notify({onLast: true, message: 'Index Copied' }));
 });
 
 gulp.task('templates', function() {
   return gulp.src('src/app/templates/**/*.html')
     .pipe(gulp.dest('dist/app/templates'))
-    .pipe(notify({ message: 'templates copied' }));
+    .pipe(notify({onLast: true, message: 'templates copied' }));
 });
 
 // Styles
@@ -37,32 +38,33 @@ gulp.task('styles', function() {
     .pipe(autoprefixer('last 2 version'))
     .pipe(rename({ suffix: '.min' }))
     .pipe(gulp.dest('dist/styles'))
-    .pipe(notify({ message: 'Styles task complete' }));
+    .pipe(notify({onLast: true, message: 'Styles task complete' }));
 });
 
 // Scripts
 gulp.task('scripts', function() {
   return gulp.src('src/app/**/*.js')
-    .pipe(jshint())
-    .pipe(jshint.reporter('default'))
+    .pipe(eslint('./.eslintrc'))
+    .pipe(eslint.format())
+    .pipe(babel())
     .pipe(gulp.dest('dist/app'))
-    .pipe(notify({ message: 'Scripts task complete' }));
+    .pipe(notify({onLast: true, message: 'Scripts task complete' }));
 });
 
 // Cities Config
 gulp.task('cities_config', function() {
   return gulp.src('src/cities/*.json')
-    .pipe(jshint())
-    .pipe(jshint.reporter('default'))
+    .pipe(eslint('./.eslintrc'))
+    .pipe(eslint.format())
     .pipe(gulp.dest('dist/cities'))
-    .pipe(notify({ message: 'Cities config task complete' }));
+    .pipe(notify({message: 'Cities config task complete' }));
 });
 
 // Images
 gulp.task('images', function() {
   return gulp.src('src/images/**/*')
     .pipe(gulp.dest('dist/images'))
-    .pipe(notify({ message: 'Images task complete' }));
+    .pipe(notify({onLast: true, message: 'Images task complete' }));
 });
 
 gulp.task('copy-bower', function() {
@@ -78,12 +80,13 @@ gulp.task('clean', function(cb) {
 gulp.task('copy-lib', function() {
   return gulp.src('src/lib/**/*')
     .pipe(gulp.dest('dist/lib'))
-    .pipe(notify({ message: 'lib copied' }));
+    .pipe(notify({onLast: true, message: 'lib copied' }));
 });
 
 // Default task
 gulp.task('default', ['clean'], function() {
-    gulp.start('fileinclude', 'styles', 'scripts', 'images', 'templates', 'cities_config', 'copy-lib');
+  //gulp.start('scripts');
+  gulp.start('fileinclude', 'styles', 'scripts', 'images', 'templates', 'cities_config', 'copy-lib');
 });
 
 gulp.task('connect', function() {

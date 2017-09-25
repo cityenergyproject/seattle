@@ -1,0 +1,74 @@
+#scorecard {
+
+  .pushdown {
+    margin-top: 0.5em;
+  }
+
+  .sm {
+    font-size: 0.8em;
+    font-weight: 300;
+  }
+
+  .lg {
+    font-size: 1.5em;
+    font-weight: 500;
+  }
+
+  .unit {
+    font-size: 0.6em;
+    font-weight: 300;
+    vertical-align: baseline;
+  }
+
+  .datatable {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    font-size: 1rem;
+
+    td {
+      padding: 0 0 0.5em 0;
+      margin: 0;
+      border: 0;
+      vertical-align: top;
+      line-height: 1.1;
+    }
+
+    tr:last-child td {
+      padding-bottom: 0;
+    }
+
+    td:first-child { text-align: right; }
+    td:last-child {
+      text-align: left;
+      padding-left: 10px;
+    }
+  }
+
+  .vertical-datatable {
+    p, h3 {
+      margin: 0;
+      padding: 0;
+      line-height: 1;
+    }
+
+    p { margin-bottom: 0.25em; }
+
+  }
+}
+
+#city-scorcard-toggle {
+  position: absolute;
+  top: 50%;
+  right: 5em;
+  z-index: 2;
+  transform: translateY(-50%);
+
+  button {
+    background-color: #001488;
+    color: white;
+    border: 0;
+    padding: 0.4em 1.2em;
+    outline: 0;
+  }
+}

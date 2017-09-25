@@ -6,27 +6,71 @@ define([
   'underscore',
   'backbone',
   'models/city',
+  'models/scorecard',
   'collections/city_buildings',
   'views/map/map',
   'views/map/address_search_autocomplete',
   'views/map/year_control',
-  'views/building_comparison/building_comparison',
   'views/layout/activity_indicator',
-], function($, deparam, _, Backbone, CityModel, CityBuildings, MapView, AddressSearchView, YearControlView, BuildingComparisonView, ActivityIndicator) {
+  'views/layout/building_counts',
+  'views/layout/compare_bar',
+  'views/scorecards/controller',
+  'views/layout/button',
+], function($, deparam, _, Backbone, CityModel, ScorecardModel,
+            CityBuildings, MapView, AddressSearchView,
+            YearControlView, ActivityIndicator,
+            BuildingCounts, CompareBar, ScorecardController, Button) {
 
   var RouterState = Backbone.Model.extend({
-    queryFields: ['filters', 'categories', 'layer', 'metrics', 'sort', 'order', 'lat', 'lng', 'zoom', 'building'],
+    queryFields: [
+      'filters', 'categories', 'layer',
+      'metrics', 'sort', 'order', 'lat',
+      'lng', 'zoom', 'building', 'report_active', 'city_report_active'
+    ],
+
     defaults: {
       metrics: [],
-      categories: {},
-      filters: []
+      categories: [],
+      filters: [],
+      selected_buildings: [],
+      scorecard: new ScorecardModel()
     },
-    toQuery: function(){
+
+    toQuery: function () {
       var query, attributes = this.pick(this.queryFields);
-      query = $.param(attributes);
+      query = $.param(this.mapAttributesToParams(attributes));
       return '?' + query;
     },
-    toUrl: function(){
+
+    mapAttributesToParams: function(attributes) {
+      if (attributes.hasOwnProperty('report_active') && !attributes.report_active) {
+        delete attributes.report_active;
+      }
+
+      if (attributes.hasOwnProperty('city_report_active') && !attributes.city_report_active) {
+        delete attributes.city_report_active;
+      }
+
+      if (attributes.hasOwnProperty('building') && _.isNull(attributes.building))  {
+        delete attributes.building;
+      }
+
+      return attributes;
+    },
+
+    mapParamsToState: function(params) {
+      if (params.hasOwnProperty('report_active') && !_.isBoolean(params.report_active)) {
+        params.report_active = (params.report_active === 'true');
+      }
+
+      if (params.hasOwnProperty('city_report_active') && !_.isBoolean(params.city_report_active)) {
+        params.city_report_active = (params.city_report_active === 'true');
+      }
+
+      return params;
+    },
+
+    toUrl: function (){
       var path;
       if (this.get('year')) {
         path = "/" + this.get('url_name') + "/" + this.get('year') + this.toQuery();
@@ -35,15 +79,18 @@ define([
       }
       return path;
     },
-    asBuildings: function() {
+
+    asBuildings: function () {
       return new CityBuildings(null, this.pick('tableName', 'cartoDbUser'));
     }
   });
 
-  var StateBuilder = function(city, year, layer) {
+  var StateBuilder = function(city, year, layer, categories) {
     this.city = city;
     this.year = year;
     this.layer = layer;
+    this.categories = categories;
+    this.layer_thresholds = null;
   };
 
   StateBuilder.prototype.toYear = function() {
@@ -54,15 +101,38 @@ define([
   };
 
   StateBuilder.prototype.toLayer = function(year) {
-    var currentLayer = this.layer;
-    var availableLayers = _.chain(this.city.map_layers).pluck('field_name');
-    var defaultLayer = this.city.years[year].default_layer;
-    return availableLayers.contains(currentLayer).value() ? currentLayer : defaultLayer;
+    const currentLayer = this.layer;
+    const defaultLayer = this.city.years[year].default_layer;
+
+    const match = _.find(this.city.map_layers, (lyr) => {
+      const name = lyr.id || lyr.field_name;
+      return name === currentLayer;
+    });
+
+    return match !== undefined ? currentLayer : defaultLayer;
   };
+
+  StateBuilder.prototype.toCategory = function() {
+    if (!this.categories || !this.categories.length) return this.city.categoryDefaults || [];
+    this.categories.forEach(c => {
+      if (c.field === 'property_type') {
+        const val = c.values[0];
+        const thresholds = this.city.scorecard.thresholds.eui;
+        if (!thresholds.hasOwnProperty(val)) {
+          c.kill = true;
+        }
+        this.layer_thresholds = thresholds[val]['2015'];
+      }
+    });
+
+    return this.categories.filter(d => !d.kill);
+  };
+
 
   StateBuilder.prototype.toState = function() {
     var year = this.toYear(),
-        layer = this.toLayer(year);
+        layer = this.toLayer(year),
+        categories = this.toCategory();
 
     return {
       year: year,
@@ -71,7 +141,8 @@ define([
       layer: layer,
       sort: layer,
       order: 'desc',
-      categories: this.city.categoryDefaults || [],
+      categories: categories,
+      layer_thresholds: this.layer_thresholds
     }
   };
 
@@ -92,10 +163,25 @@ define([
       var yearControlView = new YearControlView({state: this.state});
       var mapView = new MapView({state: this.state});
       var addressSearchView = new AddressSearchView({mapView: mapView, state: this.state});
-      var comparisonView = new BuildingComparisonView({state: this.state});
+
+      var buildingCounts = new BuildingCounts({state: this.state});
+      var compareBar = new CompareBar({state: this.state});
+      const scorecardController = new ScorecardController({state: this.state, mapView: mapView});
+
+      var button = new Button({
+        el: '#city-scorcard-toggle',
+        onClick: _.bind(this.toggleCityScorecard, this),
+        value: 'Citywide Report'
+      });
+
 
       this.state.on('change', this.onChange, this);
     },
+
+    toggleCityScorecard: function() {
+      this.state.set({city_report_active: true});
+    },
+
     onChange: function(){
       var changed = _.keys(this.state.changed);
 
@@ -127,34 +213,48 @@ define([
     },
 
     onCitySync: function(city, results) {
-      var year = this.state.get('year'),
-          layer = this.state.get('layer'),
-          newState = new StateBuilder(results, year, layer).toState(),
-          defaultMapState = {lat: city.get('center')[0], lng: city.get('center')[1], zoom: city.get('zoom')},
-          mapState = this.state.pick('lat', 'lng', 'zoom');
+      var year = this.state.get('year');
+      var layer = this.state.get('layer');
+
+      var categories = this.state.get('categories');
+
+      var newState = new StateBuilder(results, year, layer, categories).toState();
+      var defaultMapState = {lat: city.get('center')[0], lng: city.get('center')[1], zoom: city.get('zoom')};
+      var mapState = this.state.pick('lat', 'lng', 'zoom');
 
       _.defaults(mapState, defaultMapState);
 
       // set this to silent because we need to load buildings
       this.state.set(_.extend({city: city}, newState, mapState));
 
-      this.fetchBuildings();
+      var thisYear = this.state.get('year');
+      if (!thisYear) console.error('Uh no, there is no year available!');
+
+      this.fetchBuildings(thisYear);
     },
 
-    fetchBuildings: function() {
+    fetchBuildings: function(year) {
       this.allBuildings = this.state.asBuildings();
       this.listenToOnce(this.allBuildings, 'sync', this.onBuildingsSync, this);
 
-      this.allBuildings.fetch();
+      this.allBuildings.fetch(year);
     },
 
     onBuildingsSync: function() {
       this.state.set({allbuildings: this.allBuildings});
+
+      /*
+      // energy_star_score
+      const b = this.allBuildings.filter(function(d){
+        return d.get('energy_star_score') < 10;
+      });
+      console.log(b);
+      */
       this.state.trigger("hideActivityLoader");
     },
 
     root: function () {
-      // TODO: the path should come from config
+      // TODO: This is not needed
       this.navigate('/seattle', {trigger: true, replace: true});
     },
 
@@ -164,7 +264,7 @@ define([
 
     year: function(cityname, year, params){
       params = params ? deparam(params) : {};
-      this.state.set(_.extend({}, params, {url_name: cityname, year: year}));
+      this.state.set(_.extend({}, this.state.mapParamsToState(params), {url_name: cityname, year: year}));
     }
   });
 

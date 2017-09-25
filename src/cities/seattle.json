@@ -19,29 +19,69 @@
     "zoom": 12,
     "categoryDefaults": [],
     "cartoDbUser": "cityenergy-seattle",
-    "property_id": "cartodb_id",
+    "property_id": "id",
     "property_name": "property_name",
     "building_type": "property_type",
+    "search": {
+        "url": "https://search.mapzen.com/v1/search",
+        "bounds": [38.79163, -77.119766, 38.995853, -76.909363],
+        "api_key": "search-oqsffOQ",
+        "terms": [
+            {
+                "name": "property",
+                "key": "property_name",
+                "hide": false
+            },
+            {
+                "name": "address",
+                "key": "reported_address",
+                "hide": false
+            },
+            {
+                "name": "property_id",
+                "key": "id",
+                "hide": true
+            }
+        ],
+        "fuse_options": {
+            "caseSensitive": false,
+            "include": ["score", "matches"],
+            "location": 0,
+            "distance": 50,
+            "threshold": 0.1,
+            "maxPatternLength": 32,
+            "shouldSort": true
+        }
+    },
     "popup_fields": [
         {"field": "property_name", "label": ""},
-        {"field": "reported_address", "label": ""},
-        {"field": "zip", "label": ""},
-        {"field": "id", "label": "Seattle Benchmarking building ID: "},
-        {"field": "property_type", "label": "Property Type: "},
-        {"field": "reported_gross_floor_area", "label": "Property Size (ft²): "},
-        {"field": "yearbuilt", "label": "Year Built: ", "isYear": true},
-        {"field": "total_ghg_emissions", "label": "Total GHG Emissions (Metric Tons CO₂e): "},
-        {"field": "total_ghg_emissions_intensity", "label": "GHG Intensity (Kilograms CO₂e/ft²): "},
-        {"field": "energy_star_score", "label": "ENERGY STAR Score: "},
-        {"field": "site_eui", "label": "Site Energy Use Intensity (kBTU/ft²): "},
-        {"field": "source_eui", "label": "Source EUI (kBTU/ft²): "},
-        {"field": "comments", "label": "Comments: "},
-        {"field": "neighborhood", "label": "Neighborhood: ", "start_hidden": true},
-        {"field": "councildistrict", "label": "Council District: "},
-        {"field": "numbuildings", "label": "Number of Buildings: ", "suppress_unless_field": "property_type", "suppress_unless_values": ["Multifamily Housing","High-Rise Multifamily","Mid-Rise Multifamily","Low-Rise Multifamily","Small- and Mid-Sized Office","Large Office","Medical Office"]},
-        {"field": "numfloors", "label": "Number of Floors: ", "suppress_unless_field": "property_type", "suppress_unless_values": ["Multifamily Housing","High-Rise Multifamily","Mid-Rise Multifamily","Low-Rise Multifamily","Small- and Mid-Sized Office","Large Office","Medical Office"]},
-        {"field": "numunits", "label": "Number of Units: ", "suppress_unless_field": "property_type", "suppress_unless_values": ["Multifamily Housing","High-Rise Multifamily","Mid-Rise Multifamily","Low-Rise Multifamily","Small- and Mid-Sized Office","Large Office","Medical Office"]}
+        {"field": "reported_address", "template": "{reported_address}"},
+        {"field": "zip", "template": "Seattle, WA {zip}", "skipFormatter": true},
+        {"field": "property_type", "template": "<strong>{property_type}</strong>"},
+        {"field": "reported_gross_floor_area", "template": "<strong>{reported_gross_floor_area}</strong> ft²"},
+        {"field": "id", "label": "Building ID "},
+        {"field": "yearbuilt", "label": "Built in ", "skipFormatter": true}
     ],
+    "popup_chart": {
+        "lead": {
+            "field": "site_eui",
+            "label": "Site EUI (kBTU/ft²)",
+            "nodata": "Site EUI data not available."
+        },
+        "barchart": {
+            "field": "energy_star_score",
+            "desc": "ENERGY<br/>STAR Score",
+            "nodata": "ENERGY STAR Score data not available.",
+            "min": {
+                "value": 0,
+                "label": "least efficient"
+            },
+            "max": {
+                "value": 100,
+                "label": "most efficient"
+            }
+        }
+    },
     "map_layers": [
         {
             "title": "Neighborhood",
@@ -62,15 +102,6 @@
             "description": "Council District"
         },
         {
-            "title": "Property Type",
-            "field_name": "property_type",
-            "display_type": "category",
-            "sort_by_key": true,
-            "hide_other_category": true,
-            "section": "Property Information",
-            "description": "The Primary Use of the Property, as calculated by Portfolio Manager based on the owner's selections."
-        },
-        {
             "title": "Property Size",
             "field_name": "reported_gross_floor_area",
             "display_type": "range",
@@ -78,6 +109,7 @@
             "color_range": ["#b8cba9","#007749"],
             "unit": "ft²",
             "filter_range": {"min": 20000, "max" : 500000},
+            "formatter": "integer",
             "section": "Property Information",
             "description": "The Gross Floor Area (GFA) is the total property square footage, measured between the outside surface of the exterior walls of the building(s). This includes all areas inside the building(s) including supporting areas. GFA is not the same as rentable space, but rather includes all area inside the building(s)."
         },
@@ -88,16 +120,36 @@
             "range_slice_count": 18,
             "color_range": ["#b8cba9","#007749"],
             "section": "Property Information",
-            "description": "The year property was constructed, as reported by owner"
+            "formatter": "none",
+            "description": "The year property was constructed, as reported by owner",
+            "disable_prettify": true
+        },
+        {
+            "title": "Building EUI Quartiles",
+            "id": "site_eui_quartiles",
+            "field_name": "site_eui",
+            "display_type": "range",
+            "range_slice_count": 4,
+            "filter_range": {"min": 0, "max" : 4},
+            "section": "Energy Performance Metrics",
+            "color_range": ["#1F5DBE", "#90AE60", "#F7C34D", "#C04F31"],
+            "formatter": "threshold",
+            "threshold_labels": ["Lowest", "Medium Low", "Medium High", "Highest"],
+            "unit": "ENERGY USE",
+            "description": "TBD",
+            "thresholds": "custom",
+            "slider_labels": ["1st quartile", "2nd quartile", "3rd quartile", "4th quartile"]
         },
         {
             "title": "ENERGY STAR Score",
             "field_name": "energy_star_score",
             "display_type": "range",
             "range_slice_count": 18,
-            "filter_range": {"min": 0, "max" : 100},
+            "filter_range": {"min": 1, "max" : 100},
             "section": "Energy Performance Metrics",
             "color_range": ["#ab2328","#da863f","#ffd552","#599b67","#1f5dbe"],
+            "formatter": "integer",
+            "disable_prettify": true,
             "description": "The 1-100 score calculated by ENERGY STAR® Portfolio Manager® that measures how well the property is performing relative to similar properties, when normalized for climate and operational characteristics. The 1-100 scale is set so that 1 represents the worst performing buildings and 100 represents the best performing buildings. A score of 50 indicates that a building is performing at the national median, taking into account its size, location, and operating parameters. A score of 75 indicates that at a property is performing in the 75th percentile and may be eligible to earn ENERGY STAR® Certification."
         },
         {
@@ -109,6 +161,7 @@
             "color_range": ["#1f5dbe","#599b67","#ffd552","#da863f","#ab2328"],
             "unit": "kBTU/ft²",
             "filter_range": {"min": 0, "max" : 200},
+            "formatter": "fixed-1",
             "description": "Non-Normalized Site Energy Use Intensity (EUI) is a property's Site Energy Use divided by its gross floor area. Site Energy Use is the annual amount of all the energy consumed by the property on-site, as reported on utility bills. Site EUI is measured in thousands of British thermal units (kBtu) per square foot."
         },
         {
@@ -120,7 +173,20 @@
             "color_range": ["#1f5dbe","#599b67","#ffd552","#da863f","#ab2328"],
             "unit": "kBTU/ft²",
             "filter_range": {"min" : 0, "max" : 200},
+            "formatter": "fixed-1",
             "description": "Non-Normalized Source Energy Use is a property’s Source Energy Use divided by property square footage. Source Energy Use is the total amount of raw fuel that is required to operate the property. In addition to what the property consumes on-site, source energy includes losses that take place during generation, transmission, and distribution of the energy, thereby enabling a complete assessment of energy consumption resulting from building operations. Source EUI is measured in thousands of British thermal units (kBtu) per square foot."
+        },
+        {
+            "title": "Site Total Energy Use",
+            "field_name": "total_kbtu",
+            "display_type": "range",
+            "range_slice_count": 18,
+            "section": "Energy Performance Metrics",
+            "color_range": ["#1f5dbe","#599b67","#ffd552","#da863f","#ab2328"],
+            "unit": "kBtu",
+            "formatter": "fixed-1",
+            "filter_range": {"min": 1000, "max": 3000000},
+            "description": "Non-normalized site energy use is the total amount of all the energy a property consumes on-site annually, as reported on utility bills. Site energy use is measured in thousands of British thermal units (kBtu)."
         },
         {
             "title": "Total Seattle GHG Emissions",
@@ -131,6 +197,7 @@
             "color_range": ["#1f5dbe","#599b67","#ffd552","#da863f","#ab2328"],
             "unit": "Metric Tons CO₂e",
             "filter_range": {"min" : 0, "max" : 500},
+            "formatter": "fixed-1",
             "description": "Greenhouse Gas (GHG) Emissions are the carbon dioxide (CO2), methane (CH4), and nitrous oxide (N2O) gases released into the atmosphere as a result of energy consumption at the property. GHG emissions are expressed in Metric Tons of carbon dioxide equivalent (CO2e), a universal unit of measure that combines the quantity and global warming potential of each greenhouse gas. Total Emissions is the sum of Direct Emissions (emissions associated with onsite fuel combustion) and Indirect Emissions (emissions associated with purchases of electricity, district steam, district hot water, or district chilled water). These emissions estimates are calculated from site electricity, natural gas, and steam energy use using GHG emissions factors. The calculation includes a custom factor from Seattle City Light for electricity, a default natural gas factor from the EPA, and a custom emissions factor from Enwave for steam."
         },
         {
@@ -141,14 +208,174 @@
             "section": "Greenhouse Gas Emissions",
             "color_range": ["#1f5dbe","#599b67","#ffd552","#da863f","#ab2328"],
             "unit": "Kilograms CO₂e/ft²",
+            "formatter": "fixed-1",
             "filter_range": {"min" : 0, "max" : 10},
             "description": "The  total Greenhouse Gas (GHG) Emissions, divided by the floor area of the building, in kilograms of carbon dioxide equivalent (CO2e) per square foot."
         }
     ],
     "years": {
-        "2015": {
-            "table_name": "table_2015_stamen_phase_i_final",
+        "2016": {
+            "table_name": "table_2015_stamen_phase_ii_v2_w_year",
             "default_layer": "energy_star_score"
+        }
+    },
+    "building_footprints": {
+        "allowable": true,
+        "atZoom": 15,
+        "property_id": "id",
+        "table_name": "seattle_building_outlines_05_16_17"
+    },
+    "scorecard": {
+        "labels": {
+            "eui": {
+                "long": "Energy use Intensity (EUI)",
+                "short": "EUI"
+            },
+            "ess": {
+                "long": "ENERGY STAR Score",
+                "short": "ENERGY STAR"
+            }
+        },
+        "compare_chart": {
+            "y_label": "Number of buildings",
+            "x_label": {
+                "eui": "Energy use Intensity (EUI)",
+                "ess": "ENERGY STAR Score"
+            },
+            "highlight_metric": {
+                "eui": "kBtu/ft²",
+                "ess": "ENERGY STAR"
+            }
+        },
+        "change_chart": {
+            "building": {
+                "color_range": ["#1f5dbe","#599b67","#ffd552","#da863f","#ab2328"],
+                "filter_range": {"min": 0, "max" : 200},
+                "field_name": "site_eui_wn",
+                "range_slice_count": 18
+            },
+            "city": {}
+        },
+        "thresholds": {
+            "energy_star": [
+                {
+                    "label": "Poor",
+                    "range": [1, 50],
+                    "steps": 9,
+                    "color": "#C04F31"
+                },
+                {
+                    "label": "Fair",
+                    "range": [51, 75],
+                    "steps": 4,
+                    "color": "#F7C34D"
+                },
+                {
+                    "label": "Good",
+                    "range": [76, 90],
+                    "steps": 2,
+                    "color": "#90AE60"
+                },
+                {
+                    "label": "Excellent",
+                    "range": [91, 100],
+                    "steps": 1,
+                    "color": "#1F5DBE"
+                }
+            ],
+            "eui_schema": [
+                {
+                    "label": "Lowest",
+                    "steps": 1,
+                    "color": "#1F5DBE"
+                },
+                {
+                    "label": "Medium Low",
+                    "steps": 1,
+                    "color": "#90AE60"
+                },
+                {
+                    "label": "Medium High",
+                    "steps": 1,
+                    "color": "#F7C34D"
+                },
+                {
+                    "label": "Highest",
+                    "steps": 15,
+                    "color": "#C04F31"
+                }
+            ],
+            "eui": {
+              "Distribution Center": {
+                "2015": [18.8,27.2,40.7]
+              },
+              "High-Rise Multifamily": {
+                "2015": [37.0,47.3,56.4]
+              },
+              "Hospital": {
+                "2015": [196.6,209.7,218.3]
+              },
+              "Hotel": {
+                "2015": [60.3,77.2,96.0]
+              },
+              "K-12 School": {
+                "2015": [31.3,36.4,48.9]
+              },
+              "Laboratory": {
+                "2015": [247.4,247.4,247.4]
+              },
+              "Large Office": {
+                "2015": [47.1,55.5,71.1]
+              },
+              "Low-Rise Multifamily": {
+                "2015": [24.8,29.1,36.0]
+              },
+              "Medical Office": {
+                "2015": [64.1,79.6,105.4]
+              },
+              "Mid-Rise Multifamily": {
+                "2015": [27.3,33.0,42.3]
+              },
+              "Mixed Use Property": {
+                "2015": [38.4,57.4,94.3]
+              },
+              "Other": {
+                "2015": [42.5,77.8,124.7]
+              },
+              "Refrigerated Warehouse": {
+                "2015": [28.9,47.9,90.2]
+              },
+              "Residence Hall / Dorm": {
+                "2015": [31.0,54.9,76.9]
+              },
+              "Restaurant": {
+                "2015": [91.2,150.7,203.3]
+              },
+              "Retail Store": {
+                "2015": [37.5,55.4,80.1]
+              },
+              "Self-Storage Facility": {
+                "2015": [9.1,14.3,29.4]
+              },
+              "Senior Care Community": {
+                "2015": [48.1,70.4,104.8]
+              },
+              "Small- and Mid-Sized Office": {
+                "2015": [39.4,53.1,69.1]
+              },
+              "Supermarket / Grocery": {
+                "2015": [214.6,264.9,297.1]
+              },
+              "University": {
+                "2015": [44.0,77.5,150.8]
+              },
+              "Warehouse": {
+                "2015": [13.2,24.7,43.2]
+              },
+              "Worship Facility": {
+                "2015": [20.9,29.9,39.5]
+              }
+            }
         }
     }
 }

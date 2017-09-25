@@ -2,14 +2,14 @@ define([
   'jquery',
   'underscore',
   'backbone',
-  'ionrangeslider',
   'models/city',
   'text!templates/map_controls/category.html',
-], function($, _, Backbone, Ion, CityModel, MapCategoryControlTemplate){
+], function($, _, Backbone, CityModel, MapCategoryControlTemplate){
   var OTHER_LABEL = "Other";
 
   var MapCategoryControlView = Backbone.View.extend({
     $container: $('#map-category-controls'),
+    viewType: 'category',
 
     initialize: function(options){
       this.layer = options.layer;

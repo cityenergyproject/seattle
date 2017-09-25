@@ -28,16 +28,17 @@ $building-comparison-metric-row-height: 4em;
 .main-container {
   position: absolute;
   top: $header-height + $toolbar-height;
-  bottom: $building-comparison-header-height + $building-comparison-metric-row-height;
+  bottom: $metric-footer-height;
   width: 100%;
+  z-index: 1;
   @include outer-container(100%);
 
   @include media($medium-screen-up) {
-    bottom: $building-comparison-header-height + $building-comparison-metric-row-height + 1em;
+    bottom: $metric-footer-height;
   }
 
   @include media($large-screen-up) {
-    bottom: $building-comparison-header-height + $building-comparison-metric-row-height;
+    bottom: $metric-footer-height;
   }
 }
 
@@ -56,6 +57,7 @@ header {
 #toolbar {
   height: $toolbar-height;
   position: relative;
+  z-index: 2;
 }
 
 .iframed #toolbar {
@@ -116,7 +118,7 @@ header {
   }
 }
 
-#year-select{
+#year-select {
   position: absolute;
   right: 1em;
   top: 0.5em;
@@ -125,19 +127,15 @@ header {
 #map-controls {
   position: absolute;
   height: 100%;
-  overflow-y: scroll;
-  overflow-x: hidden;
+  width: 100%;
+  overflow: hidden;
   left: 0;
+  z-index: 10;
 
   .irs {
     height: 21px;
   }
 
-  width: $nav-col-fixed-width;
-
-  @include media($large-screen-up) {
-    width: $large-nav-col-fixed-width;
-  }
 }
 
 #map-wrapper{
@@ -207,5 +205,48 @@ header {
     content: "";
     display: table;
     clear: both;
+  }
+}
+
+#building-proptype-selector {
+  width: 70%;
+  margin-top: 0.5rem;
+
+  .selectize-control.single {}
+
+  .selectize-input {
+    background: $base-font-color;
+    color: #fff;
+    border: 0;
+    border-radius: 18px;
+
+    &:after {
+      border-color: #fff transparent transparent;
+    }
+
+    &.dropdown-active {
+      border-radius: 18px 18px 0 0;
+    }
+
+    &.dropdown-active:after {
+      border-color: transparent transparent #fff;
+    }
+  }
+
+  .selectize-dropdown {
+    background: $base-font-color;
+    color: #fff;
+    border: 0;
+    white-space: nowrap;
+    border-radius: 0 0 18px 18px;
+  }
+
+  .selectize-dropdown .active {
+    background-color: #001488;
+    color: #fff;
+  }
+
+  .selectize-dropdown, .selectize-input, .selectize-input input {
+    font-size: 0.9em;
   }
 }

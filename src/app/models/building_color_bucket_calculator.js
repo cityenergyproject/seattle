@@ -2,11 +2,13 @@ define([
   'underscore',
   'd3'
 ], function(_, d3) {
-  var BuildingColorBucketCalculator = function(buildings, fieldName, buckets, colorStops) {
+  const BuildingColorBucketCalculator = function(buildings, fieldName, buckets, colorStops, cssFillType, thresholds) {
     this.buildings = buildings;
     this.fieldName = fieldName;
     this.buckets = buckets;
+    this.thresholds = thresholds;
     this.colorStops = colorStops;
+    this.cssFillType = cssFillType || 'marker-fill';
 
 
     this.memoized = {};
@@ -21,10 +23,10 @@ define([
 
 
   BuildingColorBucketCalculator.prototype.calcBucketStops = function() {
-    var range = this.colorStops,
-        buckets = this.buckets,
-        rangeCount = _.max([range.length - 1, 1]),
-        domain = _.range(0, buckets, buckets / rangeCount).concat(buckets);
+    const range = this.colorStops;
+    const buckets = this.buckets;
+    const rangeCount = _.max([range.length - 1, 1]);
+    const domain = _.range(0, buckets, buckets / rangeCount).concat(buckets);
 
     return _.map(domain, function(bucket) { return _.max([0, bucket - 1]); });
   };
@@ -44,20 +46,35 @@ define([
       return this.memoized.cartoCSS[this.fieldName];
     }
 
-    var stops = this.toGradientStops(),
-        fieldName = this.fieldName,
-        fieldValues = this.getFieldValues(),
-        gradient = this.colorGradient();
+    const stops = this.toGradientStops();
+    const fieldName = this.fieldName;
+    const fieldValues = this.getFieldValues();
+    const gradient = this.colorGradient();
+    const cssFillType = this.cssFillType;
+    let css;
+
+    if (this.thresholds) {
+      css = this.memoized.cartoCSS[this.fieldName] = _.map(stops, (stop, i) => {
+        const min = _.min(gradient.invertExtent(stop));
+        if (i === 0) {
+          return `[${fieldName}<${min}]{${cssFillType}:${stop}}`;
+        }
+        return `[${fieldName}>=${min}]{${cssFillType}:${stop}}`;
+      });
+
+    } else {
+      css = this.memoized.cartoCSS[this.fieldName] = _.map(stops, (stop) => {
+        const min = _.min(gradient.invertExtent(stop));
+        return `[${fieldName}>=${min}]{${cssFillType}:${stop}}`;
+      });
+    }
+
     /*
     console.log('FieldName: ', fieldName);
     console.log("CartoCSS stops", stops);
     console.log("CartoCSS stops", _.map(stops, function(stop) { return gradient.invertExtent(stop);}));
+    console.log('CartoCSS rules: ', css);
     */
-
-    var css = this.memoized.cartoCSS[this.fieldName] = _.map(stops, function(stop){
-      var min = _.min(gradient.invertExtent(stop));
-      return "[" + fieldName + ">=" + min + "]{marker-fill:" + stop + "}";
-    });
 
     return css;
   }
@@ -67,9 +84,12 @@ define([
       return this.memoized.fieldValues[this.fieldName];
     }
 
-    var fieldValues = this.memoized.fieldValues[this.fieldName] = this.buildings.pluck(this.fieldName);
+    this.memoized.fieldValues[this.fieldName] = this.buildings.pluck(this.fieldName);
 
-    return fieldValues;
+    this._minFieldValue = _.min(this.memoized.fieldValues[this.fieldName]);
+    this._maxFieldValue = _.max(this.memoized.fieldValues[this.fieldName]);
+
+    return this.memoized.fieldValues[this.fieldName];
   };
 
   BuildingColorBucketCalculator.prototype.colorGradient = function() {
@@ -86,11 +106,28 @@ define([
     var stops = this.toGradientStops();
     var fieldValues = this.getFieldValues();
 
-    //var scale = this.memoized.colorGradients[this.fieldName] = d3.scale.linear().domain(fieldValues).range(stops);
-    var scale = this.memoized.colorGradients[this.fieldName] = d3.scale.quantile().domain(fieldValues).range(stops);
+    let scale;
+    if (this.thresholds) {
+      scale = d3.scale.threshold().domain(this.thresholds).range(stops);
+    } else {
+      scale = d3.scale.quantile().domain(fieldValues).range(stops);
+    }
 
+    /*
+
+    var r = [min, 24.8,29.1,36.0, max];
+    var h = d3.layout.histogram().bins(r);
+    console.log(h(fieldValues.filter(d => d !== null)));
+
+    var c = ["#1f5dbe", "#c4b957", "#e9a646", "#c04f31"]
+    var r =  [24.8,29.1,36.0];
+    var s = d3.scale.threshold().domain(r).range(c);
+
+    */
+
+    this.memoized.colorGradients[this.fieldName] = scale;
     return scale;
-  }
+  };
 
   // Calculated in constructor
   BuildingColorBucketCalculator.prototype.toBucketStops = function() {
