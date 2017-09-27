@@ -248,7 +248,8 @@ define([
 
       this.footprintGenerateSql = new FootprintGenerateSql(
         this.footprints_cfg,
-        this.state.get('city').get('map_layers'));
+        this.state.get('city').get('map_layers')
+      );
 
       // Listen for all changes but filter in the handler for these
       // attributes: layer, filters, categories, and tableName
@@ -374,6 +375,8 @@ define([
       var isShowing = (building_id === this._popupid);
 
       if (!building_id || isShowing) return;
+
+      if (!this.mapView.getControls()) return;
 
       this.popup_dirty = false;
 
