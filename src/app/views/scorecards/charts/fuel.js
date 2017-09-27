@@ -62,14 +62,17 @@ define([
       fuels.forEach(d => {
 
         const emmission_pct = this.getMean(d.key + '_ghg_percent', data);
+        const emmission_amt = this.getMean(d.key + '_ghg', data);
         const usage_pct = this.getMean(d.key + '_pct', data);
 
         d.emissions = {};
+        d.emissions.isValid = _.isNumber(emmission_pct) && _.isFinite(emmission_pct);
         d.emissions.pct = this.pctFormat(emmission_pct);
         d.emissions.pct_raw = Math.round(emmission_pct * 100);
-        d.emissions.amt = this.getMean(d.key + '_ghg', data);
+        d.emissions.amt = emmission_amt;
 
         d.usage = {};
+        d.usage.isValid = _.isNumber(usage_pct) && _.isFinite(usage_pct);
         d.usage.pct = this.pctFormat(usage_pct);
         d.usage.pct_raw = Math.round(usage_pct * 100);
         d.usage.amt = this.getMean(d.key, data);
@@ -79,20 +82,30 @@ define([
         return d.usage.amt > 0 && d.emissions.amt > 0;
       });
 
-      const emission_total = d3.sum(fuels, d => d.emissions.pct_raw);
-      const usage_total = d3.sum(fuels, d => d.usage.pct_raw);
+      const emission_total = d3.sum(fuels, d => {
+        if (d.emissions.isValid) return d.emissions.pct_raw;
+        return 0;
+      });
+
+      const usage_total = d3.sum(fuels, d => {
+        if (d.usage.isValid) return d.usage.pct_raw;
+        return 0;
+      });
+
 
       let diff;
       if (emission_total !== 100) {
-        diff = 100 - emission_total;
+        diff = (100 - emission_total) / fuels.length;
         fuels.forEach(d => {
+          if (!d.emissions.isValid) return d.emissions.pct_raw = diff;
           d.emissions.pct_raw += diff;
         });
       }
 
       if (usage_total !== 100) {
-        diff = 100 - usage_total;
+        diff = (100 - usage_total) / fuels.length;
         fuels.forEach(d => {
+          if (!d.usage.isValid) return;
           d.usage.pct_raw += diff;
         });
       }
@@ -179,6 +192,9 @@ define([
       const headerLabels = chart.select('.fc-bars').selectAll('.fc-header');
       this.adjSizes(headerLabels, 0);
 
+      // const emissionBars = chart.select('.emission-bars').selectAll('.fc-bar');
+      // this.adjSizes(emissionBars, 0);
+
       const barLabels = chart.select('.fc-bars').selectAll('.fc-bar');
       this.hideLabels(barLabels);
 
@@ -186,7 +202,6 @@ define([
 
     render: function(){
       var d = this.chartData();
-
       return this.template(d);
     }
   });

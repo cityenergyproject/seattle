@@ -15,7 +15,11 @@
   <div class='col-4 middle'>
     <div class='circle-bk'>
       <h4 class='sc-heading'><%= year %> <%= view === 'eui' ? 'EUI' : 'ENERGY STAR ®' %></h4>
-      <h3 class='sc-heading orange xlarge' style="color:<%= valueColor %>;"><%= value %></h3>
+      <% if (value !== null) { %>
+        <h3 class='sc-heading orange xlarge' style="color:<%= valueColor %>;"><%= value %></h3>
+      <% } else { %>
+        <h3 class='sc-heading xlarge nodata' style="color:<%= valueColor %>;">n/a</h3>
+      <% } %>
       <p class='sc-heading orange small' style="color:<%= valueColor %>;"><%= view === 'eui' ? 'kBtu/ft²' : 'Score' %></p>
       <div class='eui-desc'>
         <p class='sc-txt tiny'><%= view === 'eui' ? 'Energy Use Intensity' : ' ' %></p>
@@ -56,8 +60,12 @@
 
     <div class='row'>
       <div class='col-4 compare-desc'>
-        <p class='compare-logo <%= compare.change_label %> <%= view %>'><span><%= compare.change_pct %></span></p>
-        <p class="sc-txt light pg">This building’s <%= view === 'eui' ? 'EUI' : 'ENERGY STAR Score' %> is <span class='change-txt bold <%= compare.change_label %> <%= view %>'><%= compare.change_pct %> <%= compare.change_label %></span> than the average <%= type %> in Seattle.</p>
+        <% if(compare.isValid) { %>
+          <p class='compare-logo <%= compare.change_label %> <%= view %>'><span><%= compare.change_pct %></span></p>
+          <p class="sc-txt light pg">This building’s <%= view === 'eui' ? 'EUI' : 'ENERGY STAR Score' %> is <span class='change-txt bold <%= compare.change_label %> <%= view %>'><%= compare.change_pct %> <%= compare.change_label %></span> than the average <%= type %> in Seattle.</p>
+        <% } else { %>
+          <p class='not-available'><%= compare.error %></p>
+        <% } %>
       </div>
       <div id='compare-chart' class='col-8'></div>
     </div>
@@ -67,32 +75,3 @@
 <div id='fuel-use-chart' class='scorecard--section avoid-break'></div>
 
 <div id='compare-shift-chart' class='scorecard--section avoid-break'></div>
-
-<div id='building-information' class='scorecard--section'>
-  <div class='inner'>
-    <div class='scorecard-list-cont'>
-      <div class='scorecard-list'>
-        <h4 class='sc-heading small normalweight'>Building information</h4>
-        <table>
-          <% _.each(building_info, function(item) { %>
-            <tr>
-              <td><%= item.label %></td>
-              <td><%= item.val %></td>
-            </tr>
-          <% }) %>
-        </table>
-      </div>
-      <div class='scorecard-list'>
-        <h4 class='sc-heading small normalweight'>Energy Use</h4>
-        <table>
-          <% _.each(energy_info, function(item) { %>
-            <tr>
-              <td><%= item.label %></td>
-              <td><%= item.val %></td>
-            </tr>
-          <% }) %>
-        </table>
-      </div>
-    </div>
-  </div>
-</div>

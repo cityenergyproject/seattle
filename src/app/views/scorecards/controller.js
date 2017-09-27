@@ -105,7 +105,6 @@ define([
       this.view = view;
 
       this.view.render();
-      // this.$el.find('#scorecard-content').html(view.render());
     },
 
     removeView: function() {
@@ -121,7 +120,8 @@ define([
         el: '#scorecard-content',
         state: this.state,
         formatters: this.formatters,
-        metricFilters: this.mapView.getControls()
+        metricFilters: this.mapView.getControls(),
+        parentEl: this.$el
       };
     },
 

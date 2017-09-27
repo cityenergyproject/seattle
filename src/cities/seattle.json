@@ -249,16 +249,101 @@
             "highlight_metric": {
                 "eui": "kBtu/ft²",
                 "ess": "ENERGY STAR"
+            },
+            "nodata": {
+                "eui": "EUI data not available",
+                "ess": "ENERGY STAR Score data not available"
             }
         },
         "change_chart": {
             "building": {
-                "color_range": ["#1f5dbe","#599b67","#ffd552","#da863f","#ab2328"],
-                "filter_range": {"min": 0, "max" : 200},
-                "field_name": "site_eui_wn",
-                "range_slice_count": 18
+                "metrics": [
+                    {
+                        "field": "site_eui_wn",
+                        "label": "{property_name}",
+                        "color_range": ["#1f5dbe","#599b67","#ffd552","#da863f","#ab2328"],
+                        "range_slice_count": 18,
+                        "colorize": true,
+                        "influencer": true
+                    },
+                    {
+                        "field": "building_type_eui",
+                        "label": "Building Type Average",
+                        "colorize": false
+                    }
+
+                ]
             },
             "city": {}
+        },
+        "list": {
+            "building": [
+                {
+                    "label": "Building Information",
+                    "fields": [
+                        {
+                            "label": "Primary Property Type",
+                            "field": "property_type"
+                        },
+                        {
+                            "label": "Neighborhood",
+                            "field": "neighborhood"
+                        },
+                        {
+                            "label": "Council District",
+                            "field": "councildistrict"
+                        },
+                        {
+                            "label": "Year Built",
+                            "field": "yearbuilt"
+                        },
+                        {
+                            "label": "Number of Buildings",
+                            "field": "numbuildings",
+                            "fmtr": "fixedZero"
+                        },
+                        {
+                            "label": "Number of Floors",
+                            "field": "numfloors",
+                            "fmtr": "fixedZero"
+                        }
+                    ]
+                },
+                {
+                    "label": "Energy Use",
+                    "fields": [
+                        {
+                            "label": "Source EUI (kBtu/ft²)",
+                            "field": "source_eui",
+                            "fmtr": "fixedOne"
+                        },
+                        {
+                            "label": "WN Source EUI (kBtu/ft²)",
+                            "field": "source_eui_wn",
+                            "fmtr": "fixedOne"
+                        },
+                        {
+                            "label": "Total Energy Use (kBtu)",
+                            "field": "total_kbtu",
+                            "fmtr": "fixedOne"
+                        },
+                        {
+                            "label": "Total Emissions (ghg)",
+                            "field": "total_ghg_emissions",
+                            "fmtr": "fixedOne"
+                        },
+                        {
+                            "label": "Emissions Intensity (Kilograms CO₂e/ft²)",
+                            "field": "total_ghg_emissions_intensity",
+                            "fmtr": "fixedOne"
+                        },
+                        {
+                            "label": "Comments",
+                            "field": "comments"
+                        }
+                    ]
+                }
+            ]
         },
         "thresholds": {
             "energy_star": [

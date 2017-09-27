@@ -4,19 +4,37 @@
     <p class='sc-txt small bold'>See how this building’s performance has shifted since last year:</p>
   </div>
 
-  <div class='row'>
-    <div class='col-4 compare-desc'>
-      <p class='change-arrow <%= direction %>'><span><%= pct %></span></p>
-      <p class="sc-txt light pg">After adjusting for weather, from <%= years[0] %> to <%= years[1] %> this building’s site EUI <span class='change-txt bold <%= direction %>'><%= direction %> by <%= pct %></span>.</p>
-    </div>
-    <div id='change-chart' class='col-8'>
-      <div class='change-chart-inner'>
-        <div id='change-chart-years'>
-          <p><%= years[0] %></p>
-          <p><%= years[1] %></p>
-        </div>
-        <div id='change-chart-vis'></div>
+  <% if (!isValid) { %>
+    <div class='row not-valid'>
+      <div class='col-4 compare-desc'>
+        <p>No data available</p>
       </div>
     </div>
-  </div>
+  <% } else { %>
+    <div class='row'>
+      <div class='col-4 compare-desc'>
+        <% if (change !== 0) { %>
+        <p class='change-arrow <%= direction %>'><span><%= pct %></span></p>
+        <% } %>
+        <p class="sc-txt light pg">
+          After adjusting for weather, from <%= years[0] %> to <%= years[1] %> this building’s site EUI
+          <% if (change === 0) { %>
+            <span class='change-txt bold'> remained the same</span>.
+          <% } else { %>
+            <span class='change-txt bold <%= direction %>'><%= direction %> by <%= pct %></span>.
+          <% } %>
+        </p>
+      </div>
+      <div id='change-chart' class='col-8'>
+        <div class='change-chart-inner'>
+          <div id='change-chart-years'>
+            <p><%= years[0] %></p>
+            <p><%= years[1] %></p>
+          </div>
+          <div id='change-chart-vis'></div>
+        </div>
+      </div>
+    </div>
+  <% } %>
+
 </div>
