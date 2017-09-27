@@ -63,19 +63,17 @@ define([
 
         d.emissions = {};
         d.emissions.isValid = _.isNumber(emmission_pct) && _.isFinite(emmission_pct);
-        d.emissions.pct = this.pctFormat(emmission_pct);
-        d.emissions.pct_raw = Math.round(emmission_pct * 100);
+        d.emissions.pct = d.emissions.pct_raw = emmission_pct * 100;
         d.emissions.amt = emmission_amt;
 
         d.usage = {};
         d.usage.isValid = _.isNumber(usage_pct) && _.isFinite(usage_pct);
-        d.usage.pct = this.pctFormat(usage_pct);
-        d.usage.pct_raw = Math.round(usage_pct * 100);
+        d.usage.pct = d.usage.pct_raw = usage_pct * 100;
         d.usage.amt = this.getMean(d.key, data);
       });
 
       return fuels.filter(d => {
-        return d.usage.amt > 0 && d.emissions.amt > 0;
+        return d.usage.isValid && d.emissions.isValid;
       });
     },
 
@@ -99,16 +97,42 @@ define([
         const usage_pct = d.usage.amt / total_usage;
 
         d.emissions.isValid = _.isNumber(emmission_pct) && _.isFinite(emmission_pct);
-        d.emissions.pct = this.pctFormat(emmission_pct);
-        d.emissions.pct_raw = Math.round(emmission_pct * 100);
+        d.emissions.pct = d.emissions.pct_raw = emmission_pct * 100;
 
         d.usage.isValid = _.isNumber(usage_pct) && _.isFinite(usage_pct);
-        d.usage.pct = this.pctFormat(usage_pct);
-        d.usage.pct_raw = Math.round(usage_pct * 100);
+        d.usage.pct = d.usage.pct_raw = usage_pct * 100;
       });
 
       return fuels.filter(d => {
-        return d.usage.amt > 0 && d.emissions.amt > 0;
+        return d.usage.isValid && d.emissions.isValid;
+      });
+    },
+
+    fixPercents: function(fuels, prop) {
+      const values = fuels.map((d,i) => {
+        const decimal = +((d[prop].pct_raw % 1).toFixed(1));
+        return {
+          idx: i,
+          val: Math.floor(d[prop].pct_raw),
+          decimal
+        }
+      }).sort((a,b) => {
+        return b.decimal - a.decimal;
+      });
+
+      const sum = d3.sum(values, d => d.val);
+
+      let diff = 100 - sum;
+
+      values.forEach(d => {
+        if (diff === 0) return;
+        diff = diff - 1;
+        d.val += 1;
+      });
+
+      values.forEach(d => {
+        fuels[d.idx][prop].pct = d.val;
+        fuels[d.idx][prop].pct_raw = d.val;
       });
     },
 
@@ -125,6 +149,10 @@ define([
         fuels = this.getCityWideFuels([...this.fuels], data);
       }
 
+      this.fixPercents(fuels, 'emissions');
+      this.fixPercents(fuels, 'usage');
+
+      /*
       const emission_total = d3.sum(fuels, d => {
         if (d.emissions.isValid) return d.emissions.pct_raw;
         return 0;
@@ -152,6 +180,7 @@ define([
           d.usage.pct_raw += diff;
         });
       }
+      */
 
       // console.log(this.formatters.abbreviate(total_usage, this.formatters.fixed));
       var totals = {
