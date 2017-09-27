@@ -153,6 +153,7 @@ define([
         });
       }
 
+      // console.log(this.formatters.abbreviate(total_usage, this.formatters.fixed));
       var totals = {
         usage: this.formatters.fixed(total_usage),
         emissions: this.formatters.fixed(total_ghg_emissions)
@@ -243,7 +244,6 @@ define([
 
     render: function(){
       var d = this.chartData();
-      console.log(d);
       return this.template(d);
     }
   });

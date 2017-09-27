@@ -29,7 +29,18 @@ define([
         percent: d3.format('.0%'),
         fixed: d3.format(',.2f'),
         fixedOne: d3.format(',.1f'),
-        fixedZero: d3.format(',.0f')
+        fixedZero: d3.format(',.0f'),
+        abbreviate: (n, fmtr) => {
+          if (n >= 1000000) {
+            return [fmtr(n/1000000), 'million'];
+          }
+
+          if (n > 1000) {
+            return [fmtr(n/1000), 'thousand'];
+          }
+
+          return fmtr(n, '');
+        }
       };
     },
 
