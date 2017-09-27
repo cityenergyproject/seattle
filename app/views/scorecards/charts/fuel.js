@@ -53,66 +53,151 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
       return d3.format('.0f')(val);
     },
 
-    chartData: function chartData() {
+    validNumber: function validNumber(n) {
+      return _.isNumber(n) && _.isFinite(n);
+    },
+
+    validFuel: function validFuel(pct, amt) {
+      return this.validNumber(pct) && pct > 0 && this.validNumber(amt) && amt > 0;
+    },
+
+    getBuildingFuels: function getBuildingFuels(fuels, data) {
       var _this = this;
 
-      var data = this.data;
-      var fuels = [].concat(_toConsumableArray(this.fuels));
-
       fuels.forEach(function (d) {
-
         var emmission_pct = _this.getMean(d.key + '_ghg_percent', data);
         var emmission_amt = _this.getMean(d.key + '_ghg', data);
         var usage_pct = _this.getMean(d.key + '_pct', data);
+        var usage_amt = _this.getMean(d.key, data);
 
         d.emissions = {};
-        d.emissions.isValid = _.isNumber(emmission_pct) && _.isFinite(emmission_pct);
-        d.emissions.pct = _this.pctFormat(emmission_pct);
-        d.emissions.pct_raw = Math.round(emmission_pct * 100);
+        d.emissions.isValid = _this.validFuel(emmission_pct, emmission_amt);
+        d.emissions.pct = d.emissions.pct_raw = emmission_pct * 100;
+        d.emissions.pct_actual = emmission_pct;
         d.emissions.amt = emmission_amt;
 
         d.usage = {};
-        d.usage.isValid = _.isNumber(usage_pct) && _.isFinite(usage_pct);
-        d.usage.pct = _this.pctFormat(usage_pct);
-        d.usage.pct_raw = Math.round(usage_pct * 100);
-        d.usage.amt = _this.getMean(d.key, data);
+        d.usage.isValid = _this.validFuel(usage_pct, usage_amt);
+        d.usage.pct = d.usage.pct_raw = usage_pct * 100;
+        d.usage.pct_actual = usage_pct;
+        d.usage.amt = usage_amt;
       });
 
-      fuels = fuels.filter(function (d) {
-        return d.usage.amt > 0 && d.emissions.amt > 0;
+      return fuels.filter(function (d) {
+        return d.usage.isValid && d.emissions.isValid;
+      });
+    },
+
+    getCityWideFuels: function getCityWideFuels(fuels, data) {
+      var _this2 = this;
+
+      var total_emissions = 0;
+      var total_usage = 0;
+
+      fuels.forEach(function (d) {
+        d.emissions = {};
+        d.usage = {};
+
+        d.emissions.amt = _this2.getSum(d.key + '_ghg', data);
+        d.usage.amt = _this2.getSum(d.key, data);
+
+        total_emissions += d.emissions.amt;
+        total_usage += d.usage.amt;
       });
 
-      var emission_total = d3.sum(fuels, function (d) {
-        if (d.emissions.isValid) return d.emissions.pct_raw;
-        return 0;
+      fuels.forEach(function (d) {
+        var emmission_pct = d.emissions.amt / total_emissions;
+        var usage_pct = d.usage.amt / total_usage;
+
+        d.emissions.isValid = _this2.validFuel(emmission_pct, d.emissions.amt);
+        d.emissions.pct = d.emissions.pct_raw = emmission_pct * 100;
+        d.emissions.pct_actual = emmission_pct;
+
+        d.usage.isValid = _this2.validFuel(usage_pct, d.usage.amt);
+        d.usage.pct = d.usage.pct_raw = usage_pct * 100;
+        d.usage.pct_actual = usage_pct;
       });
 
-      var usage_total = d3.sum(fuels, function (d) {
-        if (d.usage.isValid) return d.usage.pct_raw;
-        return 0;
+      return fuels.filter(function (d) {
+        return d.usage.isValid && d.emissions.isValid;
+      });
+    },
+
+    fixPercents: function fixPercents(fuels, prop) {
+      var values = fuels.map(function (d, i) {
+        var decimal = +(d[prop].pct_raw % 1);
+        var val = Math.floor(d[prop].pct_raw);
+        return {
+          idx: i,
+          val: val,
+          iszero: val === 0,
+          decimal: val === 0 ? 1 : decimal
+        };
+      }).sort(function (a, b) {
+        return b.decimal - a.decimal;
       });
 
-      var diff = void 0;
-      if (emission_total !== 100) {
-        diff = (100 - emission_total) / fuels.length;
-        fuels.forEach(function (d) {
-          if (!d.emissions.isValid) return d.emissions.pct_raw = diff;
-          d.emissions.pct_raw += diff;
-        });
+      var sum = d3.sum(values, function (d) {
+        return d.val;
+      });
+
+      var diff = 100 - sum;
+
+      values.forEach(function (d) {
+        if (diff === 0) return;
+
+        diff -= 1;
+        d.val += 1;
+
+        d.iszero = false;
+      });
+
+      // we need to bump up zero values
+      var zeros = values.filter(function (d) {
+        return d.iszero;
+      });
+      var zeros_length = zeros.length;
+
+      if (zeros_length > 0) {
+        while (zeros_length > 0) {
+          zeros_length--;
+          values.forEach(function (d) {
+            if (!d.iszero && d.val > 1) {
+              d.val -= 1;
+            }
+
+            if (d.iszero) {
+              d.val += 1;
+            }
+          });
+        }
       }
 
-      if (usage_total !== 100) {
-        diff = (100 - usage_total) / fuels.length;
-        fuels.forEach(function (d) {
-          if (!d.usage.isValid) return;
-          d.usage.pct_raw += diff;
-        });
-      }
+      values.forEach(function (d) {
+        fuels[d.idx][prop].pct = d.val;
+        fuels[d.idx][prop].pct_raw = d.val;
+      });
+    },
+
+    chartData: function chartData() {
+      var data = this.data;
 
       var total_ghg_emissions = this.getSum('total_ghg_emissions', data);
+      var total_usage = this.getSum('total_kbtu', data);
 
+      var fuels = void 0;
+      if (data.length === 1) {
+        fuels = this.getBuildingFuels([].concat(_toConsumableArray(this.fuels)), data);
+      } else {
+        fuels = this.getCityWideFuels([].concat(_toConsumableArray(this.fuels)), data);
+      }
+
+      this.fixPercents(fuels, 'emissions');
+      this.fixPercents(fuels, 'usage');
+
+      // console.log(this.formatters.abbreviate(total_usage, this.formatters.fixed));
       var totals = {
-        usage: this.formatters.fixed(this.getSum('total_kbtu', data)),
+        usage: this.formatters.fixed(total_usage),
         emissions: this.formatters.fixed(total_ghg_emissions)
       };
 

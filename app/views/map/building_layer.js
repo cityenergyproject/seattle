@@ -346,6 +346,8 @@ define(['jquery', 'underscore', 'backbone', 'collections/city_buildings', 'model
 
       if (!building_id || isShowing) return;
 
+      if (!this.mapView.getControls()) return;
+
       this.popup_dirty = false;
 
       var propertyId = this.state.get('city').get('property_id');

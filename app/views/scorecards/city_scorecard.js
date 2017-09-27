@@ -53,8 +53,6 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
         return d !== null;
       });
 
-      console.log(reporting);
-
       return {
         reporting: this.formatters.fixedZero(reporting.length),
         required: this.formatters.fixedZero(required),
@@ -73,8 +71,14 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
     show: function show(view) {
       var scorecardState = this.state.get('scorecard');
       var buildings = this.state.get('allbuildings');
+      var city = this.state.get('city');
+      var years = _.keys(city.get('years')).map(function (d) {
+        return +d;
+      }).sort(function (a, b) {
+        return a - b;
+      });
       var year = this.state.get('year');
-      var scorecardConfig = this.state.get('city').get('scorecard');
+      var scorecardConfig = city.get('scorecard');
       var viewSelector = '#' + view + '-scorecard-view';
       var el = this.$el.find(viewSelector);
       var compareField = view === 'eui' ? 'site_eui' : 'energy_star_score';
@@ -98,11 +102,16 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
       this.chart_fueluse.fixlabels(viewSelector);
 
       if (!this.chart_shift) {
+        var previousYear = year - 1;
+        var hasPreviousYear = years.indexOf(previousYear) > -1;
+
         this.chart_shift = new ShiftView({
+          view: view,
           formatters: this.formatters,
           data: null,
-          change_filter_key: null,
-          view: view
+          no_year: !hasPreviousYear,
+          selected_year: year,
+          previous_year: previousYear
         });
       }
 

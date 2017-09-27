@@ -53,26 +53,48 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
       var year = this.state.get('year');
       var buildings = this.state.get('allbuildings');
 
+      var city = this.state.get('city');
+      var years = _.keys(city.get('years')).map(function (d) {
+        return +d;
+      }).sort(function (a, b) {
+        return a - b;
+      });
+
       if (this.scoreCardData && this.scoreCardData.id === id) {
-        this.show(buildings, this.scoreCardData.data, year);
+        this.show(buildings, this.scoreCardData.data, year, years);
       } else {
-        // Temporary hack to get yearly data
-        d3.json('https://cityenergy-seattle.carto.com/api/v2/sql?q=SELECT+ST_X(the_geom)+AS+lng%2C+ST_Y(the_geom)+AS+lat%2C*+FROM+table_2015_stamen_phase_ii_v2_w_year+WHERE+id=' + id, function (d) {
+        var yearWhereClause = years.reduce(function (a, b) {
+          if (!a.length) return 'year=' + b;
+          return a + (' OR year=' + b);
+        }, '');
+
+        // Get building data for all years
+        d3.json('https://cityenergy-seattle.carto.com/api/v2/sql?q=SELECT+ST_X(the_geom)+AS+lng%2C+ST_Y(the_geom)+AS+lat%2C*+FROM+table_2015_stamen_phase_ii_v2_w_year+WHERE+id=' + id + ' AND(' + yearWhereClause + ')', function (payload) {
           if (!_this.state.get('report_active')) return;
+
+          if (!payload) {
+            console.error('There was an error loading building data for the scorecard');
+            return;
+          }
+
+          var data = {};
+          payload.rows.forEach(function (d) {
+            data[d.year] = _extends({}, d);
+          });
 
           _this.scoreCardData = {
             id: _this.state.get('building'),
-            data: d
+            data: data
           };
 
-          _this.show(buildings, d, year);
+          _this.show(buildings, data, year, years);
         });
       }
     },
 
-    show: function show(buildings, building_data, selected_year) {
-      this.processBuilding(buildings, building_data, selected_year, 'eui');
-      this.processBuilding(buildings, building_data, selected_year, 'ess');
+    show: function show(buildings, building_data, selected_year, avail_years) {
+      this.processBuilding(buildings, building_data, selected_year, avail_years, 'eui');
+      this.processBuilding(buildings, building_data, selected_year, avail_years, 'ess');
     },
 
     getColor: function getColor(field, value) {
@@ -97,16 +119,12 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
       return view === 'eui' ? 'site_eui' : 'energy_star_score';
     },
 
-    processBuilding: function processBuilding(buildings, building_data, selected_year, view) {
+    processBuilding: function processBuilding(buildings, building_data, selected_year, avail_years, view) {
       var _this2 = this;
 
       var scorecardState = this.state.get('scorecard');
-      var data = {};
-      building_data.rows.forEach(function (d) {
-        data[d.year] = _extends({}, d);
-      });
 
-      var building = data[selected_year];
+      var building = building_data[selected_year];
 
       var config = this.state.get('city').get('scorecard');
 
@@ -162,13 +180,20 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
       this.charts[view].chart_fueluse.fixlabels(viewSelector);
 
       // render Change from Last Year chart
+      // selected_year, avail_years
       if (!this.charts[view].chart_shift) {
         var shiftConfig = config.change_chart.building;
-        var change_data = this.extractChangeData(data, buildings, building, shiftConfig);
+        var previousYear = selected_year - 1;
+        var hasPreviousYear = avail_years.indexOf(previousYear) > -1;
+
+        var change_data = hasPreviousYear ? this.extractChangeData(building_data, buildings, building, shiftConfig) : null;
 
         this.charts[view].chart_shift = new ShiftView({
           formatters: this.formatters,
           data: change_data,
+          no_year: !hasPreviousYear,
+          selected_year: selected_year,
+          previous_year: previousYear,
           view: view
         });
       }
@@ -433,7 +458,6 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
 
       if (!this.validNumber(avg)) avg = null;
 
-      console.log('>>>> ', view, building_value, avg);
       return {
         selectedIndex: selectedIndex,
         avgIndex: avgIndex,

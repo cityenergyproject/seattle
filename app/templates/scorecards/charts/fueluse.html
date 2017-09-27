@@ -4,65 +4,69 @@
     <p class='sc-txt small bold'>See the breakdown of different fuel types contributing to this building’s GHG emissions:</p>
   </div>
   <div id='fueluse-chart'>
-    <div class='fc-labels fc-panel'>
-      <div class='fc-headers fc-row'></div>
-      <div class='fc-label fc-row'>
-        <div>
-          <p>USAGE</p>
-          <p>(% kBtu)</p>
+    <% if (fuels.length === 0) { %>
+      <p class='nodata'>Insufficient data</p>
+    <% } else { %>
+      <div class='fc-labels fc-panel'>
+        <div class='fc-headers fc-row'></div>
+        <div class='fc-label fc-row'>
+          <div>
+            <p>USAGE</p>
+            <p>(% kBtu)</p>
+          </div>
+        </div>
+        <div class='fc-label fc-row margin-top'>
+          <div>
+            <p>EMISSIONS</p>
+            <% if (fuels.length > 1) { %>
+              <p>(% ghg)</p>
+            <% } %>
+          </div>
         </div>
       </div>
-      <div class='fc-label fc-row margin-top'>
-        <div>
-          <p>EMISSIONS</p>
-          <% if (fuels.length > 1) { %>
-            <p>(% ghg)</p>
+
+      <div class='fc-bars fc-panel'>
+        <div class='fc-headers fc-row'>
+          <% _.each(fuels, function(fuel) { %>
+            <span class='fc-header <%= fuel.key %>' style="width: <%= fuel.usage.pct_raw %>%;"><span><%= fuel.label %></span></span>
+          <% }); %>
+        </div>
+        <div class='fc-row'>
+          <% _.each(fuels, function(fuel) { %>
+            <div class='fc-bar usage <%= fuel.key %>' style="width: <%= fuel.usage.pct_raw %>%;"><span><%= fuel.usage.pct %>%</span></div>
+          <% }); %>
+        </div>
+        <div class='fc-row emission-bars margin-top <%= emission_klass %>'>
+          <% _.each(fuels, function(fuel) { %>
+            <div class='fc-bar emission <%= fuel.key %>' style="width: <%= fuel.emissions.pct_raw %>%;"><% if (fuels.length > 1) {%><% if (fuel.emissions.isValid) { %><span><%= fuel.emissions.pct %>%</span><% } else { %><span class='nodata'>n/a</span><% } %> <% } else { %><div class='onefuel-msg'>The <%= building_name %> consumed <%= totals.usage %> kBtu's of energy in <%= year %>, which equates to <%= totals.emissions %> metric tons of CO<sub>2</sub>E is the equivalent of <%= cars %> passenger vehicles driven for one year.</div><% } %></div> <% }); %>
+        </div>
+        <% if (fuels.length > 1) { %>
+        <div class='fc-row notes'>
+          <% if(totals.emissions > 0) { %>
+            <p><%= totals.emissions %> metric tons of CO<sub>2</sub>E is the equivalent of <%= cars %> passenger vehicles driven for one year.</p>
+          <% } else { %>
+            <p></p>
           <% } %>
+          <p>The emissions values reported here use custom emissions factors provided by Seattle City Light and Enwave for electricity and steam, respectively. Natural gas calculations use a standard emissions factor from Portfolio Manager. Seattle City Light (SCL) secures carbon offsets equal to the greenhouse gas emissions resulting from all aspects of SCL’s operations, including those created by the generation of electricity the utility buys, employees’ travel, and the trucks and other equipment used in its operations.</p>
         </div>
-      </div>
-    </div>
-
-    <div class='fc-bars fc-panel'>
-      <div class='fc-headers fc-row'>
-        <% _.each(fuels, function(fuel) { %>
-          <span class='fc-header <%= fuel.key %>' style="width: <%= fuel.usage.pct_raw %>%;"><span><%= fuel.label %></span></span>
-        <% }); %>
-      </div>
-      <div class='fc-row'>
-        <% _.each(fuels, function(fuel) { %>
-          <div class='fc-bar usage <%= fuel.key %>' style="width: <%= fuel.usage.pct_raw %>%;"><span><%= fuel.usage.pct %>%</span></div>
-        <% }); %>
-      </div>
-      <div class='fc-row emission-bars margin-top <%= emission_klass %>'>
-        <% _.each(fuels, function(fuel) { %>
-          <div class='fc-bar emission <%= fuel.key %>' style="width: <%= fuel.emissions.pct_raw %>%;"><% if (fuels.length > 1) {%><% if (fuel.emissions.isValid) { %><span><%= fuel.emissions.pct %>%</span><% } else { %><span class='nodata'>n/a</span><% } %> <% } else { %><div class='onefuel-msg'>The <%= building_name %> consumed <%= totals.usage %> kBtu's of energy in <%= year %>, which equates to <%= totals.emissions %> metric tons of CO<sub>2</sub>E is the equivalent of <%= cars %> passenger vehicles driven for one year.</div><% } %></div> <% }); %>
-      </div>
-      <% if (fuels.length > 1) { %>
-      <div class='fc-row notes'>
-        <% if(totals.emissions > 0) { %>
-          <p><%= totals.emissions %> metric tons of CO<sub>2</sub>E is the equivalent of <%= cars %> passenger vehicles driven for one year.</p>
-        <% } else { %>
-          <p></p>
         <% } %>
-        <p>The emissions values reported here use custom emissions factors provided by Seattle City Light and Enwave for electricity and steam, respectively. Natural gas calculations use a standard emissions factor from Portfolio Manager. Seattle City Light (SCL) secures carbon offsets equal to the greenhouse gas emissions resulting from all aspects of SCL’s operations, including those created by the generation of electricity the utility buys, employees’ travel, and the trucks and other equipment used in its operations.</p>
       </div>
-      <% } %>
-    </div>
 
-    <div class='fc-totals fc-panel'>
-      <div class='fc-headers fc-row'><span class='fc-header'>TOTAL</span></div>
-      <div class='fc-label fc-row'>
-        <div>
-          <p><%= totals.usage %></p>
-          <p>million kBtu</p>
+      <div class='fc-totals fc-panel'>
+        <div class='fc-headers fc-row'><span class='fc-header'>TOTAL</span></div>
+        <div class='fc-label fc-row'>
+          <div>
+            <p><%= totals.usage %></p>
+            <p>kBtu</p>
+          </div>
+        </div>
+        <div class='fc-label fc-row margin-top'>
+          <div>
+            <p><%= totals.emissions %></p>
+            <p>metric tons</p>
+          </div>
         </div>
       </div>
-      <div class='fc-label fc-row margin-top'>
-        <div>
-          <p><%= totals.emissions %></p>
-          <p>metric tons</p>
-        </div>
-      </div>
-    </div>
+    <% } %>
   </div>
 </div>

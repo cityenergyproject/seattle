@@ -8,8 +8,11 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
     initialize: function initialize(options) {
       this.template = _.template(ShiftTemplate);
       this.formatters = options.formatters;
-      this.data = options.data;
+      this.data = options.data || [];
       this.view = options.view;
+      this.no_year = options.no_year || false;
+      this.selected_year = options.selected_year;
+      this.previous_year = options.previous_year;
     },
 
     validNumber: function validNumber(x) {
@@ -17,6 +20,8 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
     },
 
     calculateChange: function calculateChange() {
+      if (!this.data || !this.data.length) return null;
+
       var years = [];
 
       this.data.filter(function (d) {
@@ -59,6 +64,7 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
           direction: direction,
           years: years,
           change: change,
+          noyear: false,
           pct: this.formatters.fixedOne(Math.abs(change)) + '%'
         }
       };
@@ -261,73 +267,35 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
       return !(rect1.right < rect2.left || rect1.left > rect2.right || rect1.bottom < rect2.top || rect1.top > rect2.bottom);
     },
 
-    query: function query() {
-      return 'SELECT year,SUM(total_ghg_emissions) as emissions,SUM(total_kbtu) as consumption FROM (SELECT year, COALESCE(total_ghg_emissions, 0) as total_ghg_emissions, COALESCE(total_kbtu, 0) as total_kbtu FROM table_2015_stamen_phase_ii_v2_w_year)q GROUP BY year';
-    },
-
-    loadData: function loadData(cb) {
-      d3.json('https://cityenergy-seattle.carto.com/api/v2/sql?q=' + this.query(), function (d) {
-        return cb(d);
-      });
-    },
-
     chartData: function chartData(cb) {
-      var _this3 = this;
-
-      if (!this.data) {
-        /*
-           o.push({
-            label,
-            field: metric.field,
-            value,
-            clr,
-            year: +year,
-            colorize: metric.colorize,
-            influencer: metric.influencer
-          });
-          */
-        this.loadData(function (data) {
-          if (!data) {
-            console.error('Problem loading citywide change data!');
-            return;
-          }
-
-          _this3.data = [];
-          data.rows.forEach(function (obj) {
-            _this3.data.push({
-              label: 'Citywide GHG emissions',
-              field: 'emissions',
-              value: +obj.emissions.toFixed(1),
-              clr: '#aaa',
-              year: +obj.year,
-              colorize: true,
-              influencer: true
-            });
-
-            _this3.data.push({
-              label: 'Citywide Total Energy Consumption',
-              field: 'consumption',
-              value: +obj.consumption.toFixed(1),
-              year: +obj.year,
-              clr: '#666',
-              isAvg: false,
-              colorize: true
-            });
-          });
-
-          cb(_this3.extractChangeData());
-        });
-      } else {
-        cb(this.extractChangeData());
-      }
+      /*
+         {
+          label,
+          field: metric.field,
+          value,
+          clr,
+          year: +year,
+          colorize: metric.colorize,
+          influencer: metric.influencer
+        }
+         */
+      cb(this.extractChangeData());
     },
 
     render: function render(cb, viewSelector) {
-      var _this4 = this;
+      var _this3 = this;
+
+      if (this.no_year) {
+        cb(this.template({
+          noyear: true,
+          year_needed: this.previous_year
+        }));
+        return;
+      }
 
       this.chartData(function (d) {
-        cb(_this4.template(d.template));
-        _this4.renderChangeChart(d.template.isValid, d.chart, viewSelector);
+        cb(_this3.template(d.template));
+        _this3.renderChangeChart(d.template.isValid, d.chart, viewSelector);
       });
     }
   });
