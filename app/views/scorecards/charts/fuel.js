@@ -62,14 +62,17 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
       fuels.forEach(function (d) {
 
         var emmission_pct = _this.getMean(d.key + '_ghg_percent', data);
+        var emmission_amt = _this.getMean(d.key + '_ghg', data);
         var usage_pct = _this.getMean(d.key + '_pct', data);
 
         d.emissions = {};
+        d.emissions.isValid = _.isNumber(emmission_pct) && _.isFinite(emmission_pct);
         d.emissions.pct = _this.pctFormat(emmission_pct);
         d.emissions.pct_raw = Math.round(emmission_pct * 100);
-        d.emissions.amt = _this.getMean(d.key + '_ghg', data);
+        d.emissions.amt = emmission_amt;
 
         d.usage = {};
+        d.usage.isValid = _.isNumber(usage_pct) && _.isFinite(usage_pct);
         d.usage.pct = _this.pctFormat(usage_pct);
         d.usage.pct_raw = Math.round(usage_pct * 100);
         d.usage.amt = _this.getMean(d.key, data);
@@ -80,23 +83,28 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
       });
 
       var emission_total = d3.sum(fuels, function (d) {
-        return d.emissions.pct_raw;
+        if (d.emissions.isValid) return d.emissions.pct_raw;
+        return 0;
       });
+
       var usage_total = d3.sum(fuels, function (d) {
-        return d.usage.pct_raw;
+        if (d.usage.isValid) return d.usage.pct_raw;
+        return 0;
       });
 
       var diff = void 0;
       if (emission_total !== 100) {
-        diff = 100 - emission_total;
+        diff = (100 - emission_total) / fuels.length;
         fuels.forEach(function (d) {
+          if (!d.emissions.isValid) return d.emissions.pct_raw = diff;
           d.emissions.pct_raw += diff;
         });
       }
 
       if (usage_total !== 100) {
-        diff = 100 - usage_total;
+        diff = (100 - usage_total) / fuels.length;
         fuels.forEach(function (d) {
+          if (!d.usage.isValid) return;
           d.usage.pct_raw += diff;
         });
       }
@@ -185,13 +193,15 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
       var headerLabels = chart.select('.fc-bars').selectAll('.fc-header');
       this.adjSizes(headerLabels, 0);
 
+      // const emissionBars = chart.select('.emission-bars').selectAll('.fc-bar');
+      // this.adjSizes(emissionBars, 0);
+
       var barLabels = chart.select('.fc-bars').selectAll('.fc-bar');
       this.hideLabels(barLabels);
     },
 
     render: function render() {
       var d = this.chartData();
-
       return this.template(d);
     }
   });

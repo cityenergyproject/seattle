@@ -2,14 +2,16 @@
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', 'text!templates/scorecards/building.html'], function ($, _, Backbone, FuelUseView, ShiftView, BuildingTemplate) {
+define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', './charts/list', 'models/building_color_bucket_calculator', 'text!templates/scorecards/building.html'], function ($, _, Backbone, FuelUseView, ShiftView, ListView, BuildingColorBucketCalculator, BuildingTemplate) {
   var BuildingScorecard = Backbone.View.extend({
     initialize: function initialize(options) {
       this.state = options.state;
       this.formatters = options.formatters;
       this.metricFilters = options.metricFilters;
-
+      this.parentEl = options.parentEl;
       this.template = _.template(BuildingTemplate);
+
+      this.charts = {};
 
       return this;
     },
@@ -74,7 +76,7 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
     },
 
     getColor: function getColor(field, value) {
-      if (!this.metricFilters || !this.metricFilters._wrapped) return 'red';
+      if (!this.metricFilters || !this.metricFilters._wrapped) return '#f1f1f1';
 
       // TODO: fix hacky way to deal w/ quartiles
       var filter = this.metricFilters._wrapped.find(function (item) {
@@ -96,6 +98,8 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
     },
 
     processBuilding: function processBuilding(buildings, building_data, selected_year, view) {
+      var _this2 = this;
+
       var scorecardState = this.state.get('scorecard');
       var data = {};
       building_data.rows.forEach(function (d) {
@@ -103,33 +107,19 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
       });
 
       var building = data[selected_year];
-      // console.log('building: ', building);
 
       var config = this.state.get('city').get('scorecard');
-
-      var energy_fields = {
-        source_eui: 'Source EUI',
-        source_eui_wn: 'WN Source EUI',
-        total_kbtu: 'Total Energy Use (kBtu)',
-        total_ghg_emissions: 'Total Emisions',
-        total_ghg_emissions_intensity: 'Emissions Intensity',
-        comments: 'Comments'
-      };
-
-      var building_fields = {
-        property_type: 'Primary Property Type',
-        neighborhood: 'Neighborhood',
-        councildistrict: 'Council District',
-        yearbuilt: 'Year Built',
-        numbuildings: 'Number of Buildings',
-        numfloors: 'Number of Floors'
-      };
 
       var viewSelector = '#' + view + '-scorecard-view';
       var el = this.$el.find(viewSelector);
       var compareField = this.getViewField(view);
+
       var value = building.hasOwnProperty(compareField) ? building[compareField] : null;
       var valueColor = this.getColor(compareField, value);
+      if (!_.isNumber(value) || !_.isFinite(value)) {
+        value = null;
+        valueColor = '#aaa';
+      }
 
       var name = building.property_name; // building.get('property_name');
       var address = this.full_address(building);
@@ -139,7 +129,6 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
       var eui = building.site_eui;
 
       var chartdata = this.prepareCompareChartData(config, buildings, building, view, prop_type, id);
-      var change_data = this.extractChangeData(data);
 
       el.html(this.template({
         active: 'active',
@@ -153,14 +142,15 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
         value: value,
         valueColor: valueColor,
         costs: this.costs(building, selected_year),
-        compare: this.compare(building, view, config, chartdata),
-        // change: change_data.template,
-        building_info: this.listdata(building, building_fields),
-        energy_info: this.listdata(building, energy_fields)
+        compare: this.compare(building, view, config, chartdata)
       }));
 
-      if (!this.chart_fueluse) {
-        this.chart_fueluse = new FuelUseView({
+      // set chart hash
+      if (!this.charts.hasOwnProperty(view)) this.charts[view] = {};
+
+      // render fuel use chart
+      if (!this.charts[view].chart_fueluse) {
+        this.charts[view].chart_fueluse = new FuelUseView({
           formatters: this.formatters,
           data: [building],
           name: name,
@@ -168,23 +158,42 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
         });
       }
 
-      el.find('#fuel-use-chart').html(this.chart_fueluse.render());
-      this.chart_fueluse.fixlabels(viewSelector);
+      el.find('#fuel-use-chart').html(this.charts[view].chart_fueluse.render());
+      this.charts[view].chart_fueluse.fixlabels(viewSelector);
 
-      if (!this.chart_shift) {
-        this.chart_shift = new ShiftView({
+      // render Change from Last Year chart
+      if (!this.charts[view].chart_shift) {
+        var shiftConfig = config.change_chart.building;
+        var change_data = this.extractChangeData(data, buildings, building, shiftConfig);
+
+        this.charts[view].chart_shift = new ShiftView({
           formatters: this.formatters,
-          data: change_data.chart,
+          data: change_data,
           view: view
         });
       }
 
-      this.chart_shift.render(function (t) {
+      this.charts[view].chart_shift.render(function (t) {
         el.find('#compare-shift-chart').html(t);
       }, viewSelector);
 
-      // this.renderChangeChart(change_data.chart, viewSelector);
+      // render compare chart
+      // TODO: move into seperate Backbone View
       this.renderCompareChart(config, chartdata, view, prop_type, name, viewSelector);
+
+      // render list view
+      // only need to render once since it's not split across view's
+      if (!this.listview) {
+        this.listview = new ListView({
+          building: building,
+          formatters: this.formatters,
+          config: config.list.building
+        });
+
+        this.listview.render(function (markup) {
+          _this2.parentEl.find('#building-information').html(markup);
+        });
+      }
     },
 
     full_address: function full_address(building) {
@@ -234,15 +243,6 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
       };
     },
 
-    listdata: function listdata(building, fields) {
-      return Object.keys(fields).map(function (f) {
-        return {
-          label: fields[f],
-          val: building.hasOwnProperty(f) ? building[f] : ''
-        };
-      });
-    },
-
     viewlabels: function viewlabels(view, config) {
       return {
         view: view,
@@ -253,18 +253,26 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
 
     compare: function compare(building, view, config, chartdata) {
       var change_pct, change_label;
+      var compareConfig = config.compare_chart;
+
       if (view === 'eui') {
-        change_pct = this.formatters.percent(building.percent_from_median);
+        change_pct = building.percent_from_median;
         change_label = building.higher_or_lower.toLowerCase();
       } else {
-        change_pct = this.formatters.percent((chartdata.building_value - chartdata.mean) / chartdata.building_value);
+        change_pct = (chartdata.building_value - chartdata.mean) / chartdata.building_value;
         change_label = chartdata.building_value >= chartdata.mean ? 'higher' : 'lower';
       }
 
-      return {
+      var isValid = _.isNumber(change_pct) && _.isFinite(change_pct);
+
+      var o = {
+        isValid: isValid,
         change_label: change_label,
-        change_pct: change_pct
+        change_pct: this.formatters.percent(change_pct),
+        error: !isValid ? compareConfig.nodata[view] : ''
       };
+
+      return o;
     },
 
     calculateEuiBins: function calculateEuiBins(data_min, data_max, thresholds, schema) {
@@ -330,16 +338,16 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
       });
     },
 
+    validNumber: function validNumber(x) {
+      return _.isNumber(x) && _.isFinite(x);
+    },
+
     prepareCompareChartData: function prepareCompareChartData(config, buildings, building, view, prop_type, id) {
-      // view = 'ess';
       var compareField = this.getViewField(view);
       var building_value = building.hasOwnProperty(compareField) ? building[compareField] : null;
 
-      if (building_value === null) {
-
-        building_value = 0;
-        console.warn('Building has a NULL value!');
-        // return;
+      if (!this.validNumber(building_value)) {
+        building_value = null;
       }
 
       var buildingsOfType = buildings.where({ property_type: prop_type }).map(function (m) {
@@ -423,6 +431,9 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
         selectedColor = this.getColor(compareField, building_value);
       }
 
+      if (!this.validNumber(avg)) avg = null;
+
+      console.log('>>>> ', view, building_value, avg);
       return {
         selectedIndex: selectedIndex,
         avgIndex: avgIndex,
@@ -440,8 +451,8 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
       var container = d3.select(viewSelector);
       var self = this;
 
-      if (chartdata.selectedIndex === null || chartdata.avgIndex === null) {
-        console.warn('Could not find required indexes!');
+      if (chartdata.selectedIndex === null && (chartdata.avgIndex === null || chartdata.mean === null)) {
+        console.warn('Could not find required data!', view, chartdata);
         return;
       }
 
@@ -451,6 +462,8 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
       var margin = { top: 80, right: 30, bottom: 40, left: 40 },
           width = 620 - margin.left - margin.right,
           height = 300 - margin.top - margin.bottom;
+
+      if (chartdata.building_value === null) margin.top = 20;
 
       var x = d3.scale.ordinal().rangeRoundBands([0, width], 0.3, 0).domain(chartdata.data.map(function (d) {
         return d.x;
@@ -520,6 +533,7 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
         return null;
       }).style('fill', function (d, i) {
         if (i === chartdata.selectedIndex) {
+          if (chartdata.building_value === null) return '#F1F1F1';
           return chartdata.selectedColor;
         }
 
@@ -532,11 +546,14 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
         return '>= ' + d.x + ' && < ' + (d.x + d.dx);
       });
 
+      //// Set selected building marker
       var xBandWidth = x.rangeBand();
-      var xpos = x(chartdata.data[chartdata.selectedIndex].x) + xBandWidth / 2;
-      var ypos = y(chartdata.data[chartdata.selectedIndex].y);
+      var xpos = chartdata.selectedIndex === null ? 0 : x(chartdata.data[chartdata.selectedIndex].x) + xBandWidth / 2;
+      var ypos = chartdata.selectedIndex === null ? 0 : y(chartdata.data[chartdata.selectedIndex].y);
 
-      var selectedCityHighlight = container.select("#compare-chart").append('div').attr('class', 'selected-city-highlight-html').style('top', margin.top - 70 + 'px').style('left', margin.left + xpos + 'px');
+      var selectedCityHighlight = container.select("#compare-chart").append('div').attr('class', 'selected-city-highlight-html').style('top', margin.top - 70 + 'px').style('left', margin.left + xpos + 'px').style('display', function (d) {
+        return chartdata.selectedIndex === null || chartdata.building_value === null ? 'none' : null;
+      });
 
       var circle = selectedCityHighlight.append('div').attr('class', 'circle');
 
@@ -550,6 +567,10 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
       outerCircle.append('p').text(name);
 
       selectedCityHighlight.append('div').attr('class', 'line').style('height', ypos + 5 + 'px');
+
+      //// Set average label and fill
+      if (chartdata.avgIndex === null) return;
+      if (chartdata.mean === null) return;
 
       xpos = x(chartdata.data[chartdata.avgIndex].x);
 
@@ -579,228 +600,71 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
       var avgBoxHeight = avgHighlight.node().offsetHeight;
       if (ypos + avgBoxHeight > height) {
         ypos += height - (ypos + avgBoxHeight);
-
         avgHighlight.style('top', margin.top + ypos + 'px');
       }
     },
 
-    renderFuelUseChart: function renderFuelUseChart(building) {
-      var fuels = [{
-        label: 'Natural Gas',
-        key: 'gas'
-      }, {
-        label: 'Electric',
-        key: 'electricity'
-      }, {
-        label: 'Steam',
-        key: 'steam'
-      }];
+    extractChangeData: function extractChangeData(yearly, buildings, building, config) {
+      var _this3 = this;
 
-      var pctFormat = function pctFormat(n) {
-        var val = n * 100;
-        return d3.format('.0f')(val);
-      };
-
-      fuels.forEach(function (d) {
-        d.emissions = {};
-        d.emissions.pct = pctFormat(building[d.key + '_ghg_percent']);
-        d.emissions.amt = building[d.key + '_ghg'];
-
-        d.usage = {};
-        d.usage.pct = pctFormat(building[d.key + '_pct']);
-        d.usage.amt = building[d.key];
-      });
-
-      fuels = fuels.filter(function (d) {
-        return d.usage.amt > 0 && d.emissions.amt > 0;
-      });
-
-      var totals = {
-        usage: this.formatters.fixedOne(building.total_kbtu),
-        emissions: this.formatters.fixedOne(building.total_ghg_emissions)
-      };
-
-      return {
-        fuels: fuels,
-        totals: totals,
-        cars: this.formatters.fixedOne(building.total_ghg_emissions * 0.211)
-      };
-    },
-
-    extractChangeData: function extractChangeData(buildings) {
       var o = [];
-      var buildingYearlyEuis = {};
-      Object.keys(buildings).forEach(function (year) {
-        var building = buildings[year];
+      var colorScales = {};
+      config.metrics.forEach(function (metric) {
+        if (metric.colorize && !colorScales.hasOwnProperty(metric.field)) {
+          var gradientCalculator = new BuildingColorBucketCalculator(buildings, metric.field, metric.range_slice_count, metric.color_range, null, null);
 
-        buildingYearlyEuis[year] = building.site_eui_wn;
+          var scale = gradientCalculator.colorGradient().copy();
+          var domain = scale.domain();
+          var len = domain.length - 1;
 
-        o.push({
-          label: building.property_name,
-          value: +building.site_eui_wn.toFixed(1),
-          year: year,
-          isAvg: false
-        });
-
-        o.push({
-          label: 'Building Type Average',
-          value: +building.building_type_eui.toFixed(1),
-          year: year,
-          isAvg: true
-        });
-      });
-
-      o.sort(function (a, b) {
-        return a.year - b.year;
-      });
-
-      var years = d3.extent(o, function (d) {
-        return d.year;
-      }).sort(function (a, b) {
-        return a.year - b.year;
-      });
-
-      var change = void 0;
-      if (buildingYearlyEuis[years[1]] === 0) {
-        change = -buildingYearlyEuis[years[0]];
-      } else {
-        change = (buildingYearlyEuis[years[1]] - buildingYearlyEuis[years[0]]) / buildingYearlyEuis[years[1]] * 100;
-      }
-
-      var direction = change < 0 ? 'decreased' : 'increased';
-
-      return {
-        chart: o,
-        template: {
-          pct: this.formatters.fixedOne(Math.abs(change)) + '%',
-          direction: direction,
-          years: years
-        }
-      };
-    },
-
-    renderChangeChart: function renderChangeChart(data, viewSelector) {
-      var container = d3.select(viewSelector);
-      var rootElm = container.select('#change-chart-vis');
-      var yearsElm = container.select('#change-chart-years');
-
-      var diameter = 10;
-      var yearExtent = d3.extent(data, function (d) {
-        return d.year;
-      });
-      var valueExtent = d3.extent(data, function (d) {
-        return d.value;
-      });
-
-      var yearWidth = yearsElm.select('p').node().offsetWidth;
-      var baseWidth = yearsElm.node().offsetWidth - yearWidth * 2;
-
-      baseWidth += diameter;
-
-      rootElm.style('margin-left', yearWidth - diameter / 2 + 'px');
-
-      var margin = { top: 0, right: 0, bottom: 0, left: 0 },
-          width = baseWidth - margin.left - margin.right,
-          height = rootElm.node().offsetHeight - margin.top - margin.bottom;
-
-      var svg = rootElm.append('svg').attr('width', width + margin.left + margin.right).attr('height', height + margin.top + margin.bottom).append('g').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
-
-      var x = d3.scale.ordinal().range([0, width]).domain(yearExtent);
-
-      var y = d3.scale.linear().domain(valueExtent).range([height, 0]);
-
-      var line = d3.svg.line().x(function (d) {
-        return x(d.year);
-      }).y(function (d) {
-        return y(d.value);
-      });
-
-      var connections = d3.nest().key(function (d) {
-        return d.label;
-      }).entries(data);
-
-      svg.selectAll('.line').data(connections).enter().append('path').attr('class', 'line').attr('d', function (d) {
-        return line(d.values);
-      });
-
-      var bar = svg.selectAll('.dot').data(data).enter().append('g').attr('class', 'dot').classed('avg', function (d) {
-        return d.isAvg;
-      }).attr('transform', function (d) {
-        return 'translate(' + x(d.year) + ',' + y(d.value) + ')';
-      });
-
-      bar.append('circle').attr('r', 5);
-
-      var firstyear = x.domain()[0];
-      var lastyear = x.domain()[1];
-
-      var label = rootElm.selectAll('.label').data(data).enter().append('div').attr('class', 'label').classed('avg', function (d) {
-        return d.isAvg;
-      }).style('left', function (d) {
-        if (d.year === firstyear) return x(d.year) + 'px';
-        return x(d.year) + 10 + 'px';
-      }).style('top', function (d) {
-        return y(d.value) + 'px';
-      });
-
-      label.append('p').text(function (d) {
-        return d.value;
-      });
-      label.append('p').attr('class', 'metric small').text('kbtu/sf');
-
-      label.each(function (d) {
-        var el = d3.select(this);
-        var w = el.node().offsetWidth;
-
-        if (d.year === firstyear) {
-          el.style('margin-left', -(w + 10) + 'px');
-        }
-      });
-
-      label.filter(function (d) {
-        return d.year === lastyear;
-      }).append('span').attr('class', 'building').classed('avg', function (d) {
-        return d.isAvg;
-      }).text(function (d) {
-        return d.label;
-      });
-
-      var me = this;
-      var prev;
-      label.each(function (d) {
-        if (prev) {
-          var rect1 = me.makeRect(prev);
-          var rect2 = me.makeRect(this);
-          var attempts = 10;
-
-          while (me.collision(rect1, rect2) && attempts > 0) {
-            attempts--;
-            prev.style.top = rect1.top - 2 + 'px';
-            this.style.top = rect2.top + 2 + 'px';
-
-            rect1 = me.makeRect(prev);
-            rect2 = me.makeRect(this);
+          if (building[metric.field] > domain[len]) {
+            domain[len] = building[metric.field];
           }
+
+          scale.domain(domain);
+
+          colorScales[metric.field] = scale;
         }
-        prev = this;
       });
-    },
 
-    makeRect: function makeRect(el) {
-      var t = el.offsetTop;
-      var l = el.offsetLeft;
+      Object.keys(yearly).forEach(function (year) {
+        var bldings = yearly[year];
+        config.metrics.forEach(function (metric) {
+          var label = '';
+          if (metric.label.charAt(0) === '{') {
+            var labelKey = metric.label.replace(/\{|\}/gi, '');
+            label = bldings[labelKey];
+          } else {
+            label = metric.label;
+          }
 
-      return {
-        top: t,
-        right: l + el.offsetWidth,
-        bottom: t + el.offsetHeight,
-        left: l
-      };
-    },
+          var value = bldings[metric.field];
 
-    collision: function collision(rect1, rect2) {
-      return !(rect1.right < rect2.left || rect1.left > rect2.right || rect1.bottom < rect2.top || rect1.top > rect2.bottom);
+          if (!_this3.validNumber(value)) {
+            value = null;
+          } else {
+            value = +value.toFixed(1);
+          }
+
+          var clr = colorScales.hasOwnProperty(metric.field) && metric.colorize ? colorScales[metric.field](value) : null;
+
+          o.push({
+            label: label,
+            field: metric.field,
+            value: value,
+            clr: clr,
+            year: +year,
+            colorize: metric.colorize,
+            influencer: metric.influencer
+          });
+        });
+      });
+
+      return o.sort(function (a, b) {
+        return a.year - b.year;
+      });
     }
+
   });
 
   return BuildingScorecard;

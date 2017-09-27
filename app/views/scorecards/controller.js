@@ -100,7 +100,6 @@ define(['jquery', 'underscore', 'backbone', './building_scorecard', './city_scor
       this.view = view;
 
       this.view.render();
-      // this.$el.find('#scorecard-content').html(view.render());
     },
 
     removeView: function removeView() {
@@ -116,7 +115,8 @@ define(['jquery', 'underscore', 'backbone', './building_scorecard', './city_scor
         el: '#scorecard-content',
         state: this.state,
         formatters: this.formatters,
-        metricFilters: this.mapView.getControls()
+        metricFilters: this.mapView.getControls(),
+        parentEl: this.$el
       };
     },
 

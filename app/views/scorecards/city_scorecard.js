@@ -48,10 +48,17 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
     },
 
     buildingStats: function buildingStats(buildings) {
+      var required = buildings.length;
+      var reporting = buildings.pluck('site_eui').filter(function (d) {
+        return d !== null;
+      });
+
+      console.log(reporting);
+
       return {
-        reporting: this.formatters.fixedZero(buildings.length),
-        required: '???',
-        pct: '??'
+        reporting: this.formatters.fixedZero(reporting.length),
+        required: this.formatters.fixedZero(required),
+        pct: this.formatters.fixedZero(reporting.length / required * 100)
       };
     },
 
@@ -94,6 +101,7 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
         this.chart_shift = new ShiftView({
           formatters: this.formatters,
           data: null,
+          change_filter_key: null,
           view: view
         });
       }

@@ -146,6 +146,7 @@ define(['jquery', 'deparam', 'underscore', 'backbone', 'models/city', 'models/sc
       var yearControlView = new YearControlView({ state: this.state });
       var mapView = new MapView({ state: this.state });
       var addressSearchView = new AddressSearchView({ mapView: mapView, state: this.state });
+
       var buildingCounts = new BuildingCounts({ state: this.state });
       var compareBar = new CompareBar({ state: this.state });
       var scorecardController = new ScorecardController({ state: this.state, mapView: mapView });
