@@ -55,21 +55,33 @@ define([
       return d3.format('.0f')(val);
     },
 
+    validNumber: function(n) {
+      return _.isNumber(n) && _.isFinite(n);
+    },
+
+    validFuel: function(pct, amt) {
+      return this.validNumber(pct) && pct > 0 &&
+            this.validNumber(amt) && amt > 0;
+    },
+
     getBuildingFuels: function(fuels, data) {
       fuels.forEach(d => {
         const emmission_pct = this.getMean(d.key + '_ghg_percent', data);
         const emmission_amt = this.getMean(d.key + '_ghg', data);
         const usage_pct = this.getMean(d.key + '_pct', data);
+        const usage_amt = this.getMean(d.key, data);
 
         d.emissions = {};
-        d.emissions.isValid = _.isNumber(emmission_pct) && _.isFinite(emmission_pct);
+        d.emissions.isValid = this.validFuel(emmission_pct, emmission_amt);
         d.emissions.pct = d.emissions.pct_raw = emmission_pct * 100;
+        d.emissions.pct_actual = emmission_pct;
         d.emissions.amt = emmission_amt;
 
         d.usage = {};
-        d.usage.isValid = _.isNumber(usage_pct) && _.isFinite(usage_pct);
+        d.usage.isValid = this.validFuel(usage_pct, usage_amt);
         d.usage.pct = d.usage.pct_raw = usage_pct * 100;
-        d.usage.amt = this.getMean(d.key, data);
+        d.usage.pct_actual = usage_pct;
+        d.usage.amt = usage_amt;
       });
 
       return fuels.filter(d => {
@@ -96,11 +108,13 @@ define([
         const emmission_pct = d.emissions.amt / total_emissions;
         const usage_pct = d.usage.amt / total_usage;
 
-        d.emissions.isValid = _.isNumber(emmission_pct) && _.isFinite(emmission_pct);
+        d.emissions.isValid = this.validFuel(emmission_pct, d.emissions.amt);
         d.emissions.pct = d.emissions.pct_raw = emmission_pct * 100;
+        d.emissions.pct_actual = emmission_pct;
 
-        d.usage.isValid = _.isNumber(usage_pct) && _.isFinite(usage_pct);
+        d.usage.isValid = this.validFuel(usage_pct, d.usage.amt);
         d.usage.pct = d.usage.pct_raw = usage_pct * 100;
+        d.usage.pct_actual = usage_pct;
       });
 
       return fuels.filter(d => {
@@ -110,11 +124,13 @@ define([
 
     fixPercents: function(fuels, prop) {
       const values = fuels.map((d,i) => {
-        const decimal = +((d[prop].pct_raw % 1).toFixed(1));
+        const decimal = +((d[prop].pct_raw % 1));
+        const val = Math.floor(d[prop].pct_raw);
         return {
           idx: i,
-          val: Math.floor(d[prop].pct_raw),
-          decimal
+          val,
+          iszero: val === 0,
+          decimal: val === 0 ? 1 : decimal
         }
       }).sort((a,b) => {
         return b.decimal - a.decimal;
@@ -126,9 +142,31 @@ define([
 
       values.forEach(d => {
         if (diff === 0) return;
-        diff = diff - 1;
+
+        diff -= 1;
         d.val += 1;
+
+        d.iszero = false;
       });
+
+      // we need to bump up zero values
+      const zeros = values.filter(d => d.iszero);
+      let zeros_length = zeros.length;
+
+      if (zeros_length > 0) {
+        while(zeros_length > 0) {
+          zeros_length--;
+          values.forEach(d => {
+            if (!d.iszero && d.val > 1) {
+              d.val -= 1;
+            }
+
+            if (d.iszero) {
+              d.val += 1;
+            }
+          });
+        }
+      }
 
       values.forEach(d => {
         fuels[d.idx][prop].pct = d.val;
@@ -151,36 +189,6 @@ define([
 
       this.fixPercents(fuels, 'emissions');
       this.fixPercents(fuels, 'usage');
-
-      /*
-      const emission_total = d3.sum(fuels, d => {
-        if (d.emissions.isValid) return d.emissions.pct_raw;
-        return 0;
-      });
-
-      const usage_total = d3.sum(fuels, d => {
-        if (d.usage.isValid) return d.usage.pct_raw;
-        return 0;
-      });
-
-
-      let diff;
-      if (emission_total !== 100) {
-        diff = (100 - emission_total) / fuels.length;
-        fuels.forEach(d => {
-          if (!d.emissions.isValid) return d.emissions.pct_raw = diff;
-          d.emissions.pct_raw += diff;
-        });
-      }
-
-      if (usage_total !== 100) {
-        diff = (100 - usage_total) / fuels.length;
-        fuels.forEach(d => {
-          if (!d.usage.isValid) return;
-          d.usage.pct_raw += diff;
-        });
-      }
-      */
 
       // console.log(this.formatters.abbreviate(total_usage, this.formatters.fixed));
       var totals = {
