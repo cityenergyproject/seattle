@@ -55,10 +55,17 @@ define([
     },
 
     buildingStats: function(buildings) {
+      const required = buildings.length;
+      const reporting = (buildings.pluck('site_eui')).filter(d => {
+        return d !== null;
+      });
+
+      console.log(reporting);
+
       return {
-        reporting: this.formatters.fixedZero(buildings.length),
-        required: '???',
-        pct: '??'
+        reporting: this.formatters.fixedZero(reporting.length),
+        required: this.formatters.fixedZero(required),
+        pct: this.formatters.fixedZero((reporting.length / required) * 100)
       };
     },
 
