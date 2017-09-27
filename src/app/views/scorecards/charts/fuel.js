@@ -55,12 +55,8 @@ define([
       return d3.format('.0f')(val);
     },
 
-    chartData: function() {
-      const data = this.data;
-      let fuels = [...this.fuels];
-
+    getBuildingFuels: function(fuels, data) {
       fuels.forEach(d => {
-
         const emmission_pct = this.getMean(d.key + '_ghg_percent', data);
         const emmission_amt = this.getMean(d.key + '_ghg', data);
         const usage_pct = this.getMean(d.key + '_pct', data);
@@ -78,9 +74,56 @@ define([
         d.usage.amt = this.getMean(d.key, data);
       });
 
-      fuels = fuels.filter(d => {
+      return fuels.filter(d => {
         return d.usage.amt > 0 && d.emissions.amt > 0;
       });
+    },
+
+    getCityWideFuels: function(fuels, data) {
+      let total_emissions = 0;
+      let total_usage = 0;
+
+      fuels.forEach(d => {
+        d.emissions = {};
+        d.usage = {};
+
+        d.emissions.amt = this.getSum(d.key + '_ghg', data);
+        d.usage.amt = this.getSum(d.key, data);
+
+        total_emissions += d.emissions.amt;
+        total_usage += d.usage.amt;
+      });
+
+      fuels.forEach(d => {
+        const emmission_pct = d.emissions.amt / total_emissions;
+        const usage_pct = d.usage.amt / total_usage;
+
+        d.emissions.isValid = _.isNumber(emmission_pct) && _.isFinite(emmission_pct);
+        d.emissions.pct = this.pctFormat(emmission_pct);
+        d.emissions.pct_raw = Math.round(emmission_pct * 100);
+
+        d.usage.isValid = _.isNumber(usage_pct) && _.isFinite(usage_pct);
+        d.usage.pct = this.pctFormat(usage_pct);
+        d.usage.pct_raw = Math.round(usage_pct * 100);
+      });
+
+      return fuels.filter(d => {
+        return d.usage.amt > 0 && d.emissions.amt > 0;
+      });
+    },
+
+    chartData: function() {
+      const data = this.data;
+
+      var total_ghg_emissions = this.getSum('total_ghg_emissions', data);
+      var total_usage = this.getSum('total_kbtu', data);
+
+      let fuels;
+      if (data.length === 1) {
+        fuels = this.getBuildingFuels([...this.fuels], data);
+      } else {
+        fuels = this.getCityWideFuels([...this.fuels], data);
+      }
 
       const emission_total = d3.sum(fuels, d => {
         if (d.emissions.isValid) return d.emissions.pct_raw;
@@ -110,10 +153,8 @@ define([
         });
       }
 
-      var total_ghg_emissions = this.getSum('total_ghg_emissions', data);
-
       var totals = {
-        usage: this.formatters.fixed(this.getSum('total_kbtu', data)),
+        usage: this.formatters.fixed(total_usage),
         emissions: this.formatters.fixed(total_ghg_emissions)
       };
 
@@ -202,6 +243,7 @@ define([
 
     render: function(){
       var d = this.chartData();
+      console.log(d);
       return this.template(d);
     }
   });

@@ -12,7 +12,7 @@ define([
     initialize: function(options){
       this.template = _.template(ShiftTemplate);
       this.formatters = options.formatters;
-      this.data = options.data;
+      this.data = options.data || [];
       this.view = options.view;
       this.no_year = options.no_year || false;
       this.selected_year = options.selected_year;
@@ -24,6 +24,8 @@ define([
     },
 
     calculateChange: function() {
+      if (!this.data || !this.data.length) return null;
+
       const years = [];
 
       this.data.filter(d => {
@@ -64,6 +66,7 @@ define([
           direction,
           years,
           change,
+          noyear: false,
           pct: this.formatters.fixedOne(Math.abs(change)) + '%'
         }
       };
@@ -290,76 +293,33 @@ define([
               rect1.top > rect2.bottom);
     },
 
-    query: function() {
-      return 'SELECT year,SUM(total_ghg_emissions) as emissions,SUM(total_kbtu) as consumption FROM (SELECT year, COALESCE(total_ghg_emissions, 0) as total_ghg_emissions, COALESCE(total_kbtu, 0) as total_kbtu FROM table_2015_stamen_phase_ii_v2_w_year)q GROUP BY year';
-    },
-
-    loadData: function(cb) {
-      d3.json(`https://cityenergy-seattle.carto.com/api/v2/sql?q=${this.query()}`, (d) => {
-        return cb(d);
-      });
-    },
-
     chartData: function(cb) {
-      if (!this.data) {
-        /*
+    /*
 
-          o.push({
-            label,
-            field: metric.field,
-            value,
-            clr,
-            year: +year,
-            colorize: metric.colorize,
-            influencer: metric.influencer
-          });
-
-         */
-        this.loadData((data) => {
-          if (!data) {
-            console.error('Problem loading citywide change data!');
-            return;
-          }
-
-          this.data = [];
-          data.rows.forEach(obj => {
-            this.data.push({
-              label: 'Citywide GHG emissions',
-              field: 'emissions',
-              value: +(obj.emissions.toFixed(1)),
-              clr: '#aaa',
-              year: +obj.year,
-              colorize: true,
-              influencer: true
-            });
-
-            this.data.push({
-              label: 'Citywide Total Energy Consumption',
-              field: 'consumption',
-              value: +(obj.consumption.toFixed(1)),
-              year: +obj.year,
-              clr: '#666',
-              isAvg: false,
-              colorize: true
-            });
-          });
-
-          cb(this.extractChangeData());
-        });
-      } else {
-        cb(this.extractChangeData());
+      {
+        label,
+        field: metric.field,
+        value,
+        clr,
+        year: +year,
+        colorize: metric.colorize,
+        influencer: metric.influencer
       }
+
+      */
+      cb(this.extractChangeData());
+
     },
 
     render: function(cb, viewSelector){
       if (this.no_year) {
-        console.log('NO YEAR');
         cb(this.template({
           noyear: true,
           year_needed: this.previous_year
         }));
         return;
       }
+
       this.chartData((d) => {
         cb(this.template(d.template));
         this.renderChangeChart(d.template.isValid, d.chart, viewSelector);
