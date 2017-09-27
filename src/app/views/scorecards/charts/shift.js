@@ -14,6 +14,9 @@ define([
       this.formatters = options.formatters;
       this.data = options.data;
       this.view = options.view;
+      this.no_year = options.no_year || false;
+      this.selected_year = options.selected_year;
+      this.previous_year = options.previous_year;
     },
 
     validNumber: function(x) {
@@ -349,6 +352,14 @@ define([
     },
 
     render: function(cb, viewSelector){
+      if (this.no_year) {
+        console.log('NO YEAR');
+        cb(this.template({
+          noyear: true,
+          year_needed: this.previous_year
+        }));
+        return;
+      }
       this.chartData((d) => {
         cb(this.template(d.template));
         this.renderChangeChart(d.template.isValid, d.chart, viewSelector);
