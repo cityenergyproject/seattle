@@ -182,7 +182,21 @@ $sc-font-lgr: 3rem;
       right: 0;
     }
   }
+  .ess-certified {
+    .ess-logo {
+      display: inline-block;
+      width: 40px;
+      height: 40px;
+    }
 
+    span {
+      display: inline-block;
+      vertical-align: top;
+      padding-left: 5px;
+      width: 100px;
+      line-height: 1.15;
+    }
+  }
 
   .scorecard--details {
     position: relative;

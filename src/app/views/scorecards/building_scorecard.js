@@ -120,6 +120,20 @@ define([
       return view === 'eui' ? 'site_eui' : 'energy_star_score';
     },
 
+    energyStarCertified: function(view, building, config) {
+      if (view === 'eui') return false;
+
+      const certifiedField = config.certified_field || null;
+
+      // Temporarily check energy star score
+      // while the field is being added to the data
+      if (certifiedField === null || !building.hasOwnProperty(certifiedField)) {
+        return building['energy_star_score'] >= 75;
+      }
+
+      return !!building[certifiedField];
+    },
+
     processBuilding: function(buildings, building_data, selected_year, avail_years, view) {
       var scorecardState = this.state.get('scorecard');
 
@@ -156,6 +170,7 @@ define([
         id: id,
         year: selected_year,
         view: view,
+        ess_logo: this.energyStarCertified(view, building, config),
         value: value,
         valueColor: valueColor,
         costs: this.costs(building, selected_year),

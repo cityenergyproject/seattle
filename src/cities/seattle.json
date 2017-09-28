@@ -230,6 +230,7 @@
         "table_name": "seattle_building_outlines_05_16_17"
     },
     "scorecard": {
+        "certified_field": "ess_certified",
         "labels": {
             "eui": {
                 "long": "Energy use Intensity (EUI)",
