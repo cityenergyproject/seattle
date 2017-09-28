@@ -136,7 +136,7 @@
             "formatter": "threshold",
             "threshold_labels": ["Lowest", "Medium Low", "Medium High", "Highest"],
             "unit": "ENERGY USE",
-            "description": "TBD",
+            "description": "To better understand the reasonable range of site EUIs, each building type was broken into four energy use categories: lowest, medium-low, medium-high, and highest. These categories represent the four “quartiles” within the data for each building type. The first quartile represents the 25% of buildings with the lowest EUIs of that building type. The second quartile represents the range of EUIs for the next lowest 25%, and so on.",
             "thresholds": "custom",
             "slider_labels": ["1st quartile", "2nd quartile", "3rd quartile", "4th quartile"]
         },
