@@ -1,7 +1,6 @@
 'use strict';
 
 define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/charts/shift.html'], function ($, _, Backbone, d3, ShiftTemplate) {
-
   var ShiftView = Backbone.View.extend({
     className: 'shift-chart',
 
@@ -140,9 +139,9 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
 
       rootElm.style('margin-left', yearWidth - diameter / 2 + 'px');
 
-      var margin = { top: 0, right: 0, bottom: 0, left: 0 },
-          width = baseWidth - margin.left - margin.right,
-          height = rootElm.node().offsetHeight - margin.top - margin.bottom;
+      var margin = { top: 0, right: 0, bottom: 0, left: 0 };
+      var width = baseWidth - margin.left - margin.right;
+      var height = rootElm.node().offsetHeight - margin.top - margin.bottom;
 
       var svg = rootElm.append('svg').attr('width', width + margin.left + margin.right).attr('height', height + margin.top + margin.bottom).append('g').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
@@ -171,8 +170,8 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
       }).style('stroke', function (d) {
         var colorize = d.values[0].colorize;
         if (!colorize) return null;
-        var field = d.values[0].field;
 
+        var field = d.values[0].field;
         return 'url(#' + _this2.getGradientId(gradientID, field);+')';
       }).attr('d', function (d) {
         return line(d.values);

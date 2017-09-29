@@ -30,7 +30,7 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
     getThresholds: function getThresholds(typ, schema) {
       var _this = this;
 
-      var thresholds = this.thresholds[typ] ? this.thresholds[typ]['2015'] : null;
+      var thresholds = this.thresholds[typ] ? this.thresholds[typ][this.year] : null;
 
       return this.schema.map(function (d, i) {
         var clr = d.color;

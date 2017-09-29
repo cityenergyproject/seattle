@@ -29,6 +29,8 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'ionrangeslider', 'models/buil
 
       this.isThreshold = this.layer.thresholds ? true : false;
 
+      this.initRender = true;
+
       this.memorize();
     },
 
@@ -321,20 +323,20 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'ionrangeslider', 'models/buil
         });
 
         chartElm.html(this.histogram.render());
+      }
 
-        if (this.threshold_labels) {
-          var svg = this.histogram.$el.find('svg')[0];
-          var svgScaleFactor = svg ? svg.getCTM().a : 1;
-          var qlabels = {
-            width: this.histogram.xScale.rangeBand() * svgScaleFactor,
-            labels: this.threshold_labels,
-            positions: this.histogram.xScale.range().map(function (d) {
-              return d * svgScaleFactor;
-            })
-          };
+      if (this.threshold_labels && (isDirty || this.initRender)) {
+        var svg = this.histogram.$el.find('svg')[0];
+        var svgScaleFactor = svg ? svg.getCTM().a : 1;
+        var qlabels = {
+          width: this.histogram.xScale.rangeBand() * svgScaleFactor,
+          labels: this.threshold_labels,
+          positions: this.histogram.xScale.range().map(function (d) {
+            return d * svgScaleFactor;
+          })
+        };
 
-          this.$el.find('.quartiles').html(quartileTemplate(qlabels));
-        }
+        this.$el.find('.quartiles').html(quartileTemplate(qlabels));
       }
 
       if (!this.$filter || isDirty) {
@@ -374,6 +376,7 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'ionrangeslider', 'models/buil
         });
       }
 
+      this.initRender = false;
       return this;
     },
 

@@ -119,6 +119,16 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
       return view === 'eui' ? 'site_eui' : 'energy_star_score';
     },
 
+    energyStarCertified: function energyStarCertified(view, building, config) {
+      if (view === 'eui') return false;
+
+      var certifiedField = config.certified_field || null;
+
+      if (certifiedField === null) return false;
+
+      return !!building[certifiedField];
+    },
+
     processBuilding: function processBuilding(buildings, building_data, selected_year, avail_years, view) {
       var _this2 = this;
 
@@ -146,7 +156,7 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
       var id = building.id;
       var eui = building.site_eui;
 
-      var chartdata = this.prepareCompareChartData(config, buildings, building, view, prop_type, id);
+      var chartdata = this.prepareCompareChartData(config, buildings, building, selected_year, view, prop_type, id);
 
       el.html(this.template({
         active: 'active',
@@ -157,6 +167,7 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
         id: id,
         year: selected_year,
         view: view,
+        ess_logo: this.energyStarCertified(view, building, config),
         value: value,
         valueColor: valueColor,
         costs: this.costs(building, selected_year),
@@ -367,7 +378,7 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
       return _.isNumber(x) && _.isFinite(x);
     },
 
-    prepareCompareChartData: function prepareCompareChartData(config, buildings, building, view, prop_type, id) {
+    prepareCompareChartData: function prepareCompareChartData(config, buildings, building, selected_year, view, prop_type, id) {
       var compareField = this.getViewField(view);
       var building_value = building.hasOwnProperty(compareField) ? building[compareField] : null;
 
@@ -392,7 +403,7 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
       var _bins;
       var thresholds;
       if (view === 'eui') {
-        _bins = this.calculateEuiBins(buildingsOfType_min, buildingsOfType_max, config.thresholds.eui[prop_type]['2015'], config.thresholds.eui_schema);
+        _bins = this.calculateEuiBins(buildingsOfType_min, buildingsOfType_max, config.thresholds.eui[prop_type][selected_year], config.thresholds.eui_schema);
         thresholds = this.getThresholdLabels(config.thresholds.eui_schema);
       } else {
         thresholds = this.getThresholdLabels(config.thresholds.energy_star);

@@ -103,7 +103,8 @@ define(['jquery', 'deparam', 'underscore', 'backbone', 'models/city', 'models/sc
         if (!thresholds.hasOwnProperty(val)) {
           c.kill = true;
         }
-        _this.layer_thresholds = thresholds[val]['2015'];
+
+        _this.layer_thresholds = thresholds[val][_this.year];
       }
     });
 

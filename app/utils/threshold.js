@@ -3,9 +3,6 @@
 define(['underscore', 'd3'], function (_, d3) {
 
   var getThresholds = function getThresholds(thresholds, proptype, yr) {
-    // TODO: hard coding yr for now until data comes in
-    yr = "2015";
-
     if (!thresholds[proptype]) return {
       error: 'No threshold for property type'
     };

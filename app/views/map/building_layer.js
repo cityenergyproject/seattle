@@ -344,8 +344,8 @@ define(['jquery', 'underscore', 'backbone', 'collections/city_buildings', 'model
       var building_id = this.state.get('building');
       var isShowing = building_id === this._popupid;
 
+      if (!this.allBuildings.length) return;
       if (!building_id || isShowing) return;
-
       if (!this.mapView.getControls()) return;
 
       this.popup_dirty = false;
@@ -365,14 +365,7 @@ define(['jquery', 'underscore', 'backbone', 'collections/city_buildings', 'model
 
       var presenter = new BuildingInfoPresenter(this.state.get('city'), this.allBuildings, building_id, propertyId, this.mapView.getControls(), this.state.get('layer'));
 
-      if (!presenter.toLatLng()) {
-        console.warn('No building (%s) found for presenter!', presenter.buildingId);
-        console.warn(presenter);
-        console.warn(presenter.toLatLng());
-        console.warn(presenter.toBuilding());
-        console.warn('');
-        return;
-      }
+      if (!presenter.toLatLng()) return;
 
       var popup = L.popup().setLatLng(presenter.toLatLng()).setContent(template({
         data: presenter.toPopulatedLabels(),

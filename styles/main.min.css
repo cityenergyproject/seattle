@@ -1739,6 +1739,16 @@ header {
       position: absolute;
       bottom: 0;
       right: 0; }
+  #scorecard .ess-certified .ess-logo {
+    display: inline-block;
+    width: 40px;
+    height: 40px; }
+  #scorecard .ess-certified span {
+    display: inline-block;
+    vertical-align: top;
+    padding-left: 5px;
+    width: 100px;
+    line-height: 1.15; }
   #scorecard .scorecard--details {
     position: relative;
     padding: 0 1rem;
