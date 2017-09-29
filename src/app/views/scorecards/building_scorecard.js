@@ -125,11 +125,7 @@ define([
 
       const certifiedField = config.certified_field || null;
 
-      // Temporarily check energy star score
-      // while the field is being added to the data
-      if (certifiedField === null || !building.hasOwnProperty(certifiedField)) {
-        return building['energy_star_score'] >= 75;
-      }
+      if (certifiedField === null) return false;
 
       return !!building[certifiedField];
     },
@@ -159,7 +155,7 @@ define([
       var id = building.id;
       var eui = building.site_eui;
 
-      var chartdata = this.prepareCompareChartData(config, buildings, building, view, prop_type, id);
+      var chartdata = this.prepareCompareChartData(config, buildings, building, selected_year, view, prop_type, id);
 
       el.html(this.template({
         active: 'active',
@@ -380,7 +376,7 @@ define([
       return _.isNumber(x) && _.isFinite(x);
     },
 
-    prepareCompareChartData: function(config, buildings, building, view, prop_type, id) {
+    prepareCompareChartData: function(config, buildings, building, selected_year, view, prop_type, id) {
       var compareField = this.getViewField(view);
       var building_value = building.hasOwnProperty(compareField) ? building[compareField] : null;
 
@@ -405,7 +401,7 @@ define([
       var _bins;
       var thresholds;
       if (view === 'eui') {
-       _bins = this.calculateEuiBins(buildingsOfType_min, buildingsOfType_max, config.thresholds.eui[prop_type]['2015'], config.thresholds.eui_schema);
+       _bins = this.calculateEuiBins(buildingsOfType_min, buildingsOfType_max, config.thresholds.eui[prop_type][selected_year], config.thresholds.eui_schema);
        thresholds = this.getThresholdLabels(config.thresholds.eui_schema);
 
       } else {

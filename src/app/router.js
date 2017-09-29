@@ -121,7 +121,8 @@ define([
         if (!thresholds.hasOwnProperty(val)) {
           c.kill = true;
         }
-        this.layer_thresholds = thresholds[val]['2015'];
+
+        this.layer_thresholds = thresholds[val][this.year];
       }
     });
 

@@ -32,7 +32,7 @@ define([
     },
 
     getThresholds: function(typ, schema) {
-      const thresholds = this.thresholds[typ] ? this.thresholds[typ]['2015'] : null;
+      const thresholds = this.thresholds[typ] ? this.thresholds[typ][this.year] : null;
 
       return this.schema.map((d,i) => {
         let clr = d.color;

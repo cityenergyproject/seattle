@@ -5,7 +5,6 @@ define([
   'd3',
   'text!templates/scorecards/charts/shift.html'
 ], function($, _, Backbone, d3, ShiftTemplate){
-
   var ShiftView = Backbone.View.extend({
     className: 'shift-chart',
 
@@ -37,7 +36,7 @@ define([
         });
       });
 
-      years.sort((a,b) => {
+      years.sort((a, b) => {
         return a.yr - b.yr;
       });
 
@@ -47,7 +46,7 @@ define([
     },
 
     extractChangeData: function() {
-      this.data.sort((a,b) => {
+      this.data.sort((a, b) => {
         return a.year - b.year;
       });
 
@@ -79,7 +78,7 @@ define([
     setSVGGradient: function(rootElm, id, data) {
       const defs = rootElm.select('svg').append('defs');
 
-      const fields = data.filter(d => d.colorize).reduce((a,b) => {
+      const fields = data.filter(d => d.colorize).reduce((a, b) => {
         if (!a.hasOwnProperty(b.field)) {
           a[b.field] = {
             min: b.year,
@@ -96,11 +95,11 @@ define([
           a[b.field].minclr = b.clr;
         } else if (b.year > a[b.field].max) {
           a[b.field].max = b.year;
-          a[b.field].maxclr = b.clr
+          a[b.field].maxclr = b.clr;
         }
 
         return a;
-      }, {})
+      }, {});
 
       Object.keys(fields).forEach(k => {
         const field = fields[k];
@@ -127,48 +126,48 @@ define([
     renderChangeChart: function(isValid, data, selector) {
       const container = d3.select(selector);
 
-      var rootElm = container.select('#change-chart-vis');
-      var yearsElm = container.select('#change-chart-years');
+      const rootElm = container.select('#change-chart-vis');
+      const yearsElm = container.select('#change-chart-years');
 
       if (!isValid) return;
 
-      var diameter = 10;
-      var yearExtent = d3.extent(data, function(d){ return d.year;});
-      var valueExtent = d3.extent(data, function(d) { return d.value; });
+      const diameter = 10;
+      const yearExtent = d3.extent(data, function(d){ return d.year; });
+      const valueExtent = d3.extent(data, function(d) { return d.value; });
 
-      var yearWidth = yearsElm.select('p').node().offsetWidth;
-      var baseWidth = yearsElm.node().offsetWidth - (yearWidth * 2);
+      const yearWidth = yearsElm.select('p').node().offsetWidth;
+      let baseWidth = yearsElm.node().offsetWidth - (yearWidth * 2);
 
       baseWidth += diameter;
 
       rootElm.style('margin-left', (yearWidth - diameter/2) + 'px');
 
-      var margin = {top: 0, right: 0, bottom: 0, left: 0},
-          width = baseWidth - margin.left - margin.right,
-          height = rootElm.node().offsetHeight - margin.top - margin.bottom;
+      const margin = {top: 0, right: 0, bottom: 0, left: 0};
+      let width = baseWidth - margin.left - margin.right;
+      let height = rootElm.node().offsetHeight - margin.top - margin.bottom;
 
-      var svg = rootElm.append('svg')
+      const svg = rootElm.append('svg')
           .attr('width', width + margin.left + margin.right)
           .attr('height', height + margin.top + margin.bottom)
         .append('g')
           .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
-      var gradientID = 'gradient-' + this.view;
+      const gradientID = 'gradient-' + this.view;
       this.setSVGGradient(rootElm, gradientID, data);
 
-      var x = d3.scale.ordinal()
+      const x = d3.scale.ordinal()
           .range([0, width])
           .domain(yearExtent);
 
-      var y = d3.scale.linear()
+      const y = d3.scale.linear()
           .domain(valueExtent)
           .range([height, 0]);
 
-      var line = d3.svg.line()
+      const line = d3.svg.line()
           .x(function(d) { return x(d.year); })
           .y(function(d) { return y(d.value); });
 
-      var connections = d3.nest()
+      const connections = d3.nest()
         .key(d => d.label)
         .entries(data);
 
@@ -184,8 +183,8 @@ define([
         .style('stroke', d => {
           const colorize = d.values[0].colorize;
           if (!colorize) return null;
-          const field = d.values[0].field;
 
+          const field = d.values[0].field;
           return 'url(#' + this.getGradientId(gradientID, field); + ')';
         })
         .attr('d', d => line(d.values));
@@ -223,7 +222,7 @@ define([
           if (d.year === firstyear) return x(d.year) + 'px';
           return x(d.year) + 10 +'px';
         })
-        .style('top',  d => { return y(d.value) + 'px'; });
+        .style('top', d => { return y(d.value) + 'px'; });
 
       var innerLabel = label.append('table').append('td');
 
@@ -232,7 +231,7 @@ define([
         .text(d => this.formatters.fixedOne(d.value));
       innerLabel
         .append('p')
-        .attr('class','metric small')
+        .attr('class', 'metric small')
         .text('kbtu/sf');
 
       label.each(function(d) {
@@ -259,7 +258,7 @@ define([
           let rect2 = me.makeRect(this);
           let attempts = 10;
 
-          while(me.collision(rect1, rect2) && attempts > 0) {
+          while (me.collision(rect1, rect2) && attempts > 0) {
             attempts--;
             prev.style.top = (rect1.top - 2) + 'px';
             this.style.top = (rect2.top + 2) + 'px';
@@ -267,11 +266,9 @@ define([
             rect1 = me.makeRect(prev);
             rect2 = me.makeRect(this);
           }
-
         }
         prev = this;
       });
-
     },
 
     makeRect: function(el) {
@@ -283,7 +280,7 @@ define([
         right: l + el.offsetWidth,
         bottom: t + el.offsetHeight,
         left: l
-      }
+      };
     },
 
     collision: function(rect1, rect2) {
@@ -308,7 +305,6 @@ define([
 
       */
       cb(this.extractChangeData());
-
     },
 
     render: function(cb, viewSelector){
@@ -320,7 +316,7 @@ define([
         return;
       }
 
-      this.chartData((d) => {
+      this.chartData(d => {
         cb(this.template(d.template));
         this.renderChangeChart(d.template.isValid, d.chart, viewSelector);
       });

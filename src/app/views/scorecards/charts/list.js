@@ -4,7 +4,6 @@ define([
   'backbone',
   'text!templates/scorecards/charts/list.html'
 ], function($, _, Backbone, ListTemplate){
-
   var ListView = Backbone.View.extend({
     className: 'list-view',
 

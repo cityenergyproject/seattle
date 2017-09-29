@@ -45,6 +45,8 @@ define([
 
       this.isThreshold = this.layer.thresholds ? true : false;
 
+      this.initRender = true;
+
       this.memorize();
     },
 
@@ -328,18 +330,18 @@ define([
         });
 
         chartElm.html(this.histogram.render());
+      }
 
-        if (this.threshold_labels) {
-          const svg = this.histogram.$el.find('svg')[0];
-          const svgScaleFactor = svg ? svg.getCTM().a : 1;
-          const qlabels = {
-            width: this.histogram.xScale.rangeBand() * svgScaleFactor,
-            labels: this.threshold_labels,
-            positions: this.histogram.xScale.range().map(d => d * svgScaleFactor)
-          }
-
-          this.$el.find('.quartiles').html(quartileTemplate(qlabels));
+      if (this.threshold_labels && (isDirty || this.initRender)) {
+        const svg = this.histogram.$el.find('svg')[0];
+        const svgScaleFactor = svg ? svg.getCTM().a : 1;
+        const qlabels = {
+          width: this.histogram.xScale.rangeBand() * svgScaleFactor,
+          labels: this.threshold_labels,
+          positions: this.histogram.xScale.range().map(d => d * svgScaleFactor)
         }
+
+        this.$el.find('.quartiles').html(quartileTemplate(qlabels));
       }
 
 
@@ -380,6 +382,7 @@ define([
         });
       }
 
+      this.initRender = false;
       return this;
     },
 
