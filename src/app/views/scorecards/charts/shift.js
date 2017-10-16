@@ -293,19 +293,6 @@ define([
     },
 
     chartData: function(cb) {
-    /*
-
-      {
-        label,
-        field: metric.field,
-        value,
-        clr,
-        year: +year,
-        colorize: metric.colorize,
-        influencer: metric.influencer
-      }
-
-      */
       cb(this.extractChangeData());
     },
 

@@ -91,29 +91,24 @@ define([
     },
 
     getCityWideFuels: function(fuels, data) {
-      let total_emissions = 0;
-      let total_usage = 0;
+      let total_emissions = data.total_emissions;
+      let total_usage = data.total_consump;
+
 
       fuels.forEach(d => {
+        const emission_key = `pct_${d.key}_ghg`;
+        const usage_key = `pct_${d.key}`;
+
+        const emmission_pct = data[emission_key];
+        const usage_pct = data[usage_key];
+
         d.emissions = {};
-        d.usage = {};
-
-        d.emissions.amt = this.getSum(d.key + '_ghg', data);
-        d.usage.amt = this.getSum(d.key, data);
-
-        total_emissions += d.emissions.amt;
-        total_usage += d.usage.amt;
-      });
-
-      fuels.forEach(d => {
-        const emmission_pct = d.emissions.amt / total_emissions;
-        const usage_pct = d.usage.amt / total_usage;
-
-        d.emissions.isValid = this.validFuel(emmission_pct, d.emissions.amt);
+        d.emissions.isValid = this.validFuel(emmission_pct, total_emissions);
         d.emissions.pct = d.emissions.pct_raw = emmission_pct * 100;
         d.emissions.pct_actual = emmission_pct;
 
-        d.usage.isValid = this.validFuel(usage_pct, d.usage.amt);
+        d.usage = {};
+        d.usage.isValid = this.validFuel(usage_pct, total_usage);
         d.usage.pct = d.usage.pct_raw = usage_pct * 100;
         d.usage.pct_actual = usage_pct;
       });
@@ -178,14 +173,18 @@ define([
     chartData: function() {
       const data = this.data;
 
-      var total_ghg_emissions = this.getSum('total_ghg_emissions', data);
-      var total_usage = this.getSum('total_kbtu', data);
+      let total_ghg_emissions;
+      let total_usage;
 
       let fuels;
-      if (data.length === 1) {
-        fuels = this.getBuildingFuels([...this.fuels], data);
-      } else {
+      if (this.isCity) {
         fuels = this.getCityWideFuels([...this.fuels], data);
+        total_ghg_emissions = data.total_emissions;
+        total_usage = data.total_consump;
+      } else {
+        fuels = this.getBuildingFuels([...this.fuels], data);
+        total_ghg_emissions = this.getSum('total_ghg_emissions', data);
+        total_usage = this.getSum('total_kbtu', data);
       }
 
       this.fixPercents(fuels, 'emissions');

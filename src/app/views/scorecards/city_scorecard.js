@@ -5,8 +5,9 @@ define([
   './charts/fuel',
   './charts/shift',
   './charts/building_type_table',
+  'models/building_color_bucket_calculator',
   'text!templates/scorecards/city.html'
-], function($, _, Backbone, FuelUseView, ShiftView, BuildingTypeTableView, ScorecardTemplate){
+], function($, _, Backbone, FuelUseView, ShiftView, BuildingTypeTableView, BuildingColorBucketCalculator, ScorecardTemplate){
   var CityScorecard = Backbone.View.extend({
 
     initialize: function(options){
@@ -49,33 +50,65 @@ define([
     render: function() {
       if (!this.state.get('city_report_active')) return;
 
+      if (this.scoreCardData) return this.postRender();
 
+      // load data from carto
+      var city = this.state.get('city');
+      var scorecardConfig = city.get('scorecard');
+      var table = scorecardConfig.citywide.table;
+
+      // Get building data for all years
+      d3.json(`https://cityenergy-seattle.carto.com/api/v2/sql?q=SELECT * FROM ${table} WHERE year is not null`, (payload) => {
+        if (!this.state.get('city_report_active')) return;
+
+        if (!payload) {
+          console.error('There was an error loading citywide data for the scorecard');
+          return;
+        }
+
+        var data = {};
+        payload.rows.forEach(d => {
+          data[d.year] = {...d};
+        });
+
+        console.log(payload);
+
+        this.scoreCardData = data;
+
+        this.postRender();
+      });
+    },
+
+    postRender: function() {
       this.show('eui');
       this.show('ess');
     },
 
-    buildingStats: function(buildings) {
-      const required = buildings.length;
-      const reporting = (buildings.pluck('site_eui')).filter(d => {
-        return d !== null;
-      });
+    validNumber: function(x) {
+      return _.isNumber(x) && _.isFinite(x);
+    },
 
+    buildingStats: function(data) {
       return {
-        reporting: this.formatters.fixedZero(reporting.length),
-        required: this.formatters.fixedZero(required),
-        pct: this.formatters.fixedZero((reporting.length / required) * 100)
+        reporting: this.formatters.fixedZero(data.reporting),
+        required: this.formatters.fixedZero(data.required),
+        pct: data.compliance_rate
       };
     },
 
-    compliance: function(buildings) {
+    compliance: function(data) {
       return {
-        consumption: this.formatters.fixedZero(d3.sum(buildings.pluck('total_kbtu'))),
-        ghg: this.formatters.fixedZero(d3.sum(buildings.pluck('total_ghg_emissions'))),
-        gfa: this.formatters.fixedZero(d3.sum(buildings.pluck('reported_gross_floor_area')))
+        consumption: this.formatters.fixedZero(data.total_consump),
+        ghg: this.formatters.fixedZero(data.total_emissions),
+        gfa: this.formatters.fixedZero(data.total_gfa)
       }
     },
 
     show: function(view) {
+      if (!this.scoreCardData) {
+        return console.error('No city scorecard data found');
+      }
+
       var scorecardState = this.state.get('scorecard');
       var buildings = this.state.get('allbuildings');
       var city = this.state.get('city');
@@ -86,22 +119,25 @@ define([
       var scorecardConfig = city.get('scorecard');
       var viewSelector = `#${view}-scorecard-view`;
       var el = this.$el.find(viewSelector);
-      var compareField = view === 'eui' ? 'site_eui' : 'energy_star_score';
-      var valueFormatter = view === 'eui' ? this.formatters.fixedOne : this.formatters.fixedZero;
+      var compareField = view === 'eui' ? 'med_eui' : 'med_ess';
+      var data = this.scoreCardData;
 
+      if (!data.hasOwnProperty(year)) {
+        return console.error('No year found in citywide data!');
+      }
 
       el.html(this.template({
-        stats: this.buildingStats(buildings),
-        compliance: this.compliance(buildings),
+        stats: this.buildingStats(data[year]),
+        compliance: this.compliance(data[year]),
         year: year,
         view: view,
-        value: valueFormatter(d3.median(buildings.pluck(compareField)))
+        value: data[year][compareField]
       }));
 
       if (!this.chart_fueluse) {
         this.chart_fueluse = new FuelUseView({
           formatters: this.formatters,
-          data: buildings,
+          data: data[year],
           isCity: true
         });
       }
@@ -110,15 +146,17 @@ define([
       this.chart_fueluse.fixlabels(viewSelector);
 
 
-
       if (!this.chart_shift) {
+        var shiftConfig = scorecardConfig.change_chart.city;
         var previousYear = year - 1;
         var hasPreviousYear = years.indexOf(previousYear) > -1;
+
+        const shift_data = hasPreviousYear ? this.extractChangeData(data, shiftConfig) : null;
 
         this.chart_shift = new ShiftView({
           view,
           formatters: this.formatters,
-          data: null,
+          data: shift_data,
           no_year: !hasPreviousYear,
           selected_year: year,
           previous_year: previousYear,
@@ -144,6 +182,50 @@ define([
 
       return this;
     },
+
+    extractChangeData: function(data, config) {
+      const o = [];
+
+      Object.keys(data).forEach(year => {
+        const bldings = data[year];
+        config.metrics.forEach(metric => {
+          let label = '';
+          if (metric.label.charAt(0) === '{') {
+            const labelKey = metric.label.replace(/\{|\}/gi, '');
+            label = bldings[labelKey];
+          } else {
+            label = metric.label;
+          }
+
+          console.log(bldings, metric.field);
+
+          let value = bldings[metric.field];
+
+          if (!this.validNumber(value)) {
+            value = null;
+          } else {
+            value = +(value.toFixed(1))
+          }
+
+          const clr = '#999';
+
+          o.push({
+            label,
+            field: metric.field,
+            value,
+            clr,
+            year: +year,
+            colorize: metric.colorize,
+            influencer: metric.influencer
+          });
+        });
+
+      });
+
+      return o.sort((a,b) => {
+        return a.year - b.year;
+      });
+    }
   });
 
   return CityScorecard;
