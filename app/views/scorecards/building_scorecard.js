@@ -54,6 +54,7 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
       var buildings = this.state.get('allbuildings');
 
       var city = this.state.get('city');
+      var table = city.get('table_name');
       var years = _.keys(city.get('years')).map(function (d) {
         return +d;
       }).sort(function (a, b) {
@@ -69,7 +70,7 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
         }, '');
 
         // Get building data for all years
-        d3.json('https://cityenergy-seattle.carto.com/api/v2/sql?q=SELECT+ST_X(the_geom)+AS+lng%2C+ST_Y(the_geom)+AS+lat%2C*+FROM+table_2015_stamen_phase_ii_v2_w_year+WHERE+id=' + id + ' AND(' + yearWhereClause + ')', function (payload) {
+        d3.json('https://cityenergy-seattle.carto.com/api/v2/sql?q=SELECT+ST_X(the_geom)+AS+lng%2C+ST_Y(the_geom)+AS+lat%2C*+FROM+' + table + '+WHERE+id=' + id + ' AND(' + yearWhereClause + ')', function (payload) {
           if (!_this.state.get('report_active')) return;
 
           if (!payload) {
@@ -93,6 +94,7 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
     },
 
     show: function show(buildings, building_data, selected_year, avail_years) {
+      console.info("RENDER BUILDING");
       this.processBuilding(buildings, building_data, selected_year, avail_years, 'eui');
       this.processBuilding(buildings, building_data, selected_year, avail_years, 'ess');
     },
