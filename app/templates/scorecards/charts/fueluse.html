@@ -1,7 +1,11 @@
 <div class='inner'>
   <div class='section-head'>
     <h3 class='sc-heading'>Fuel Use</h3>
-    <p class='sc-txt small bold'>See the breakdown of different fuel types contributing to this building’s GHG emissions:</p>
+    <% if (!isCity) { %>
+      <p class='sc-txt small bold'>See the breakdown of different fuel types contributing to this building’s GHG emissions:</p>
+    <% } else { %>
+      <p class='sc-txt small bold'>See the breakdown of different fuel types contributing to citywide GHG emissions:</p>
+    <% } %>
   </div>
   <div id='fueluse-chart'>
     <% if (fuels.length === 0) { %>

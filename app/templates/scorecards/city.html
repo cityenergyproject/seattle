@@ -1,6 +1,6 @@
 <div class='scorecard--details row'>
   <div class='col-4'>
-    <h4 class='sc-heading white'>Total Usage and Emissions</h4>
+    <h4 class='sc-heading white'>Compliance Summary</h4>
     <div class='pushdown'>
       <table class='datatable'>
         <tr>
@@ -25,11 +25,11 @@
   </div>
   <div class='col-4 middle'>
     <div class='circle-bk'>
-      <h4 class='sc-heading'><%= year %> Median <%= view === 'eui' ? 'EUI' : 'ENERGY STAR' %></h4>
+      <h4 class='sc-heading'><%= year %> Median <%= view === 'eui' ? 'EUI' : '' %></h4>
       <h3 class='sc-heading orange xlarge' ><%= value %></h3>
-      <p class='sc-heading orange small'><%= view === 'eui' ? 'kBtu/ft²' : 'ENERGY STAR Score' %></p>
+      <p class='sc-heading orange small'><%= view === 'eui' ? 'kBtu/ft²' : 'ENERGY STAR Score ®' %></p>
       <div class='eui-desc'>
-        <p class='sc-txt tiny'><%= view === 'eui' ? 'Energy Use Intensity' : 'ENERGY STAR Score' %></p>
+        <p class='sc-txt tiny'><%= view === 'eui' ? 'Energy Use Intensity' : '' %></p>
         <p class='sc-txt tiny'>
         <% if (view === 'eui') { %>EUI is your building’s annual energy use (all fuel types) per square foot (ft²) in kBtu/ft².
         <% } else { %>
@@ -40,7 +40,7 @@
     </div>
   </div>
   <div class='col-4'>
-    <h2 class='sc-heading white'>Compliance Summary</h2>
+    <h2 class='sc-heading white'>Total Usage and Emissions</h2>
     <div class='pushdown vertical-datatable'>
       <div class='details-box'>
         <p class='sm'>Total Consumption</p>

@@ -12,6 +12,7 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
       this.no_year = options.no_year || false;
       this.selected_year = options.selected_year;
       this.previous_year = options.previous_year;
+      this.isCity = options.isCity || false;
     },
 
     validNumber: function validNumber(x) {
@@ -64,6 +65,7 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
           years: years,
           change: change,
           noyear: false,
+          isCity: this.isCity,
           pct: this.formatters.fixedOne(Math.abs(change)) + '%'
         }
       };
@@ -267,17 +269,6 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
     },
 
     chartData: function chartData(cb) {
-      /*
-         {
-          label,
-          field: metric.field,
-          value,
-          clr,
-          year: +year,
-          colorize: metric.colorize,
-          influencer: metric.influencer
-        }
-         */
       cb(this.extractChangeData());
     },
 
@@ -287,7 +278,8 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
       if (this.no_year) {
         cb(this.template({
           noyear: true,
-          year_needed: this.previous_year
+          year_needed: this.previous_year,
+          isCity: this.isCity
         }));
         return;
       }

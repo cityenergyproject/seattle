@@ -1,6 +1,8 @@
 'use strict';
 
-define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', './charts/building_type_table', 'text!templates/scorecards/city.html'], function ($, _, Backbone, FuelUseView, ShiftView, BuildingTypeTableView, ScorecardTemplate) {
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', './charts/building_type_table', 'models/building_color_bucket_calculator', 'text!templates/scorecards/city.html'], function ($, _, Backbone, FuelUseView, ShiftView, BuildingTypeTableView, BuildingColorBucketCalculator, ScorecardTemplate) {
   var CityScorecard = Backbone.View.extend({
 
     initialize: function initialize(options) {
@@ -41,34 +43,69 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
     },
 
     render: function render() {
+      var _this = this;
+
       if (!this.state.get('city_report_active')) return;
 
+      if (this.scoreCardData) return this.postRender();
+
+      // load data from carto
+      var city = this.state.get('city');
+      var scorecardConfig = city.get('scorecard');
+      var table = scorecardConfig.citywide.table;
+
+      // Get building data for all years
+      d3.json('https://cityenergy-seattle.carto.com/api/v2/sql?q=SELECT * FROM ' + table + ' WHERE year is not null', function (payload) {
+        if (!_this.state.get('city_report_active')) return;
+
+        if (!payload) {
+          console.error('There was an error loading citywide data for the scorecard');
+          return;
+        }
+
+        var data = {};
+        payload.rows.forEach(function (d) {
+          data[d.year] = _extends({}, d);
+        });
+
+        console.log(payload);
+
+        _this.scoreCardData = data;
+
+        _this.postRender();
+      });
+    },
+
+    postRender: function postRender() {
       this.show('eui');
       this.show('ess');
     },
 
-    buildingStats: function buildingStats(buildings) {
-      var required = buildings.length;
-      var reporting = buildings.pluck('site_eui').filter(function (d) {
-        return d !== null;
-      });
+    validNumber: function validNumber(x) {
+      return _.isNumber(x) && _.isFinite(x);
+    },
 
+    buildingStats: function buildingStats(data) {
       return {
-        reporting: this.formatters.fixedZero(reporting.length),
-        required: this.formatters.fixedZero(required),
-        pct: this.formatters.fixedZero(reporting.length / required * 100)
+        reporting: this.formatters.fixedZero(data.reporting),
+        required: this.formatters.fixedZero(data.required),
+        pct: data.compliance_rate
       };
     },
 
-    compliance: function compliance(buildings) {
+    compliance: function compliance(data) {
       return {
-        consumption: this.formatters.fixedZero(d3.sum(buildings.pluck('total_kbtu'))),
-        ghg: this.formatters.fixedZero(d3.sum(buildings.pluck('total_ghg_emissions'))),
-        gfa: this.formatters.fixedZero(d3.sum(buildings.pluck('reported_gross_floor_area')))
+        consumption: this.formatters.fixedZero(data.total_consump),
+        ghg: this.formatters.fixedZero(data.total_emissions),
+        gfa: this.formatters.fixedZero(data.total_gfa)
       };
     },
 
     show: function show(view) {
+      if (!this.scoreCardData) {
+        return console.error('No city scorecard data found');
+      }
+
       var scorecardState = this.state.get('scorecard');
       var buildings = this.state.get('allbuildings');
       var city = this.state.get('city');
@@ -81,20 +118,26 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
       var scorecardConfig = city.get('scorecard');
       var viewSelector = '#' + view + '-scorecard-view';
       var el = this.$el.find(viewSelector);
-      var compareField = view === 'eui' ? 'site_eui' : 'energy_star_score';
+      var compareField = view === 'eui' ? 'med_eui' : 'med_ess';
+      var data = this.scoreCardData;
+
+      if (!data.hasOwnProperty(year)) {
+        return console.error('No year found in citywide data!');
+      }
 
       el.html(this.template({
-        stats: this.buildingStats(buildings),
-        compliance: this.compliance(buildings),
+        stats: this.buildingStats(data[year]),
+        compliance: this.compliance(data[year]),
         year: year,
         view: view,
-        value: this.formatters.fixedOne(d3.median(buildings.pluck(compareField)))
+        value: data[year][compareField]
       }));
 
       if (!this.chart_fueluse) {
         this.chart_fueluse = new FuelUseView({
           formatters: this.formatters,
-          data: buildings
+          data: data[year],
+          isCity: true
         });
       }
 
@@ -102,16 +145,20 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
       this.chart_fueluse.fixlabels(viewSelector);
 
       if (!this.chart_shift) {
+        var shiftConfig = scorecardConfig.change_chart.city;
         var previousYear = year - 1;
         var hasPreviousYear = years.indexOf(previousYear) > -1;
+
+        var shift_data = hasPreviousYear ? this.extractChangeData(data, shiftConfig) : null;
 
         this.chart_shift = new ShiftView({
           view: view,
           formatters: this.formatters,
-          data: null,
+          data: shift_data,
           no_year: !hasPreviousYear,
           selected_year: year,
-          previous_year: previousYear
+          previous_year: previousYear,
+          isCity: true
         });
       }
 
@@ -132,6 +179,51 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
       el.find('#building-type-table').html(this.building_table.render());
 
       return this;
+    },
+
+    extractChangeData: function extractChangeData(data, config) {
+      var _this2 = this;
+
+      var o = [];
+
+      Object.keys(data).forEach(function (year) {
+        var bldings = data[year];
+        config.metrics.forEach(function (metric) {
+          var label = '';
+          if (metric.label.charAt(0) === '{') {
+            var labelKey = metric.label.replace(/\{|\}/gi, '');
+            label = bldings[labelKey];
+          } else {
+            label = metric.label;
+          }
+
+          console.log(bldings, metric.field);
+
+          var value = bldings[metric.field];
+
+          if (!_this2.validNumber(value)) {
+            value = null;
+          } else {
+            value = +value.toFixed(1);
+          }
+
+          var clr = '#999';
+
+          o.push({
+            label: label,
+            field: metric.field,
+            value: value,
+            clr: clr,
+            year: +year,
+            colorize: metric.colorize,
+            influencer: metric.influencer
+          });
+        });
+      });
+
+      return o.sort(function (a, b) {
+        return a.year - b.year;
+      });
     }
   });
 

@@ -230,6 +230,9 @@
         "table_name": "seattle_building_outlines_05_16_17"
     },
     "scorecard": {
+        "citywide": {
+            "table": "citywide_scorecard_data"
+        },
         "certified_field": "ess_cert",
         "labels": {
             "eui": {
@@ -275,7 +278,27 @@
 
                 ]
             },
-            "city": {}
+            "city": {
+                "metrics": [
+                    {
+                        "field": "total_consump_wn",
+                        "label": "Usage",
+                        "color_range": ["#1f5dbe","#599b67","#ffd552","#da863f","#ab2328"],
+                        "range_slice_count": 18,
+                        "colorize": true,
+                        "influencer": true
+                    },
+                    {
+                        "field": "total_emissions",
+                        "label": "Emissions",
+                        "color_range": ["#1f5dbe","#599b67","#ffd552","#da863f","#ab2328"],
+                        "range_slice_count": 18,
+                        "colorize": true,
+                        "influencer": false
+                    }
+
+                ]
+            }
         },
         "list": {
             "building": [

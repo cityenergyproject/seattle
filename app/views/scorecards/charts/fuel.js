@@ -15,6 +15,7 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
       this.data = options.data;
       this.building_name = options.name || '';
       this.year = options.year || '';
+      this.isCity = options.isCity || false;
 
       this.fuels = [{
         label: 'Natural Gas',
@@ -91,29 +92,23 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
     getCityWideFuels: function getCityWideFuels(fuels, data) {
       var _this2 = this;
 
-      var total_emissions = 0;
-      var total_usage = 0;
+      var total_emissions = data.total_emissions;
+      var total_usage = data.total_consump;
 
       fuels.forEach(function (d) {
+        var emission_key = 'pct_' + d.key + '_ghg';
+        var usage_key = 'pct_' + d.key;
+
+        var emmission_pct = data[emission_key];
+        var usage_pct = data[usage_key];
+
         d.emissions = {};
-        d.usage = {};
-
-        d.emissions.amt = _this2.getSum(d.key + '_ghg', data);
-        d.usage.amt = _this2.getSum(d.key, data);
-
-        total_emissions += d.emissions.amt;
-        total_usage += d.usage.amt;
-      });
-
-      fuels.forEach(function (d) {
-        var emmission_pct = d.emissions.amt / total_emissions;
-        var usage_pct = d.usage.amt / total_usage;
-
-        d.emissions.isValid = _this2.validFuel(emmission_pct, d.emissions.amt);
+        d.emissions.isValid = _this2.validFuel(emmission_pct, total_emissions);
         d.emissions.pct = d.emissions.pct_raw = emmission_pct * 100;
         d.emissions.pct_actual = emmission_pct;
 
-        d.usage.isValid = _this2.validFuel(usage_pct, d.usage.amt);
+        d.usage = {};
+        d.usage.isValid = _this2.validFuel(usage_pct, total_usage);
         d.usage.pct = d.usage.pct_raw = usage_pct * 100;
         d.usage.pct_actual = usage_pct;
       });
@@ -182,14 +177,18 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
     chartData: function chartData() {
       var data = this.data;
 
-      var total_ghg_emissions = this.getSum('total_ghg_emissions', data);
-      var total_usage = this.getSum('total_kbtu', data);
+      var total_ghg_emissions = void 0;
+      var total_usage = void 0;
 
       var fuels = void 0;
-      if (data.length === 1) {
-        fuels = this.getBuildingFuels([].concat(_toConsumableArray(this.fuels)), data);
-      } else {
+      if (this.isCity) {
         fuels = this.getCityWideFuels([].concat(_toConsumableArray(this.fuels)), data);
+        total_ghg_emissions = data.total_emissions;
+        total_usage = data.total_consump;
+      } else {
+        fuels = this.getBuildingFuels([].concat(_toConsumableArray(this.fuels)), data);
+        total_ghg_emissions = this.getSum('total_ghg_emissions', data);
+        total_usage = this.getSum('total_kbtu', data);
       }
 
       this.fixPercents(fuels, 'emissions');
@@ -204,6 +203,7 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
       return {
         fuels: fuels,
         totals: totals,
+        isCity: this.isCity,
         building_name: this.building_name,
         year: this.year,
         emission_klass: fuels.length === 1 ? 'onefuel' : '',
