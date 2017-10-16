@@ -80,6 +80,7 @@ define([
     },
 
     postRender: function() {
+      console.info('RENDER CITYWIDE');
       this.show('eui');
       this.show('ess');
     },
@@ -196,8 +197,6 @@ define([
           } else {
             label = metric.label;
           }
-
-          console.log(bldings, metric.field);
 
           let value = bldings[metric.field];
 
