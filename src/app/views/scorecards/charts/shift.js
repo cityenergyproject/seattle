@@ -16,6 +16,7 @@ define([
       this.no_year = options.no_year || false;
       this.selected_year = options.selected_year;
       this.previous_year = options.previous_year;
+      this.isCity = options.isCity || false;
     },
 
     validNumber: function(x) {
@@ -66,6 +67,7 @@ define([
           years,
           change,
           noyear: false,
+          isCity: this.isCity,
           pct: this.formatters.fixedOne(Math.abs(change)) + '%'
         }
       };
@@ -311,7 +313,8 @@ define([
       if (this.no_year) {
         cb(this.template({
           noyear: true,
-          year_needed: this.previous_year
+          year_needed: this.previous_year,
+          isCity: this.isCity
         }));
         return;
       }

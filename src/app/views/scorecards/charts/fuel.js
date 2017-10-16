@@ -16,7 +16,8 @@ define([
       this.formatters = options.formatters;
       this.data = options.data;
       this.building_name = options.name || '';
-      this.year = options.year || ''
+      this.year = options.year || '';
+      this.isCity = options.isCity || false;
 
       this.fuels = [
         {
@@ -199,6 +200,7 @@ define([
       return {
         fuels,
         totals,
+        isCity: this.isCity,
         building_name: this.building_name,
         year: this.year,
         emission_klass: fuels.length === 1 ? 'onefuel' : '',

@@ -1,7 +1,11 @@
 <div class='inner'>
   <div class='section-head'>
     <h3 class='sc-heading'>change from last year</h3>
-    <p class='sc-txt small bold'>See how this building’s performance has shifted since last year:</p>
+    <% if (!isCity) { %>
+      <p class='sc-txt small bold'>See how this building’s performance has shifted since last year:</p>
+    <% } else { %>
+      <p class='sc-txt small bold'>See how citywide performance has shifted since last year:</p>
+    <% } %>
   </div>
   <% if (noyear) { %>
     <div class='row no-year'>

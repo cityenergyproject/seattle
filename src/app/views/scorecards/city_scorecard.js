@@ -87,19 +87,22 @@ define([
       var viewSelector = `#${view}-scorecard-view`;
       var el = this.$el.find(viewSelector);
       var compareField = view === 'eui' ? 'site_eui' : 'energy_star_score';
+      var valueFormatter = view === 'eui' ? this.formatters.fixedOne : this.formatters.fixedZero;
+
 
       el.html(this.template({
         stats: this.buildingStats(buildings),
         compliance: this.compliance(buildings),
         year: year,
         view: view,
-        value: this.formatters.fixedOne(d3.median(buildings.pluck(compareField)))
+        value: valueFormatter(d3.median(buildings.pluck(compareField)))
       }));
 
       if (!this.chart_fueluse) {
         this.chart_fueluse = new FuelUseView({
           formatters: this.formatters,
-          data: buildings
+          data: buildings,
+          isCity: true
         });
       }
 
@@ -118,7 +121,8 @@ define([
           data: null,
           no_year: !hasPreviousYear,
           selected_year: year,
-          previous_year: previousYear
+          previous_year: previousYear,
+          isCity: true
         });
       }
 
