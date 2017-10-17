@@ -2,7 +2,7 @@
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-define(['jquery', 'underscore', 'backbone', './building_scorecard', './city_scorecard', 'text!templates/scorecards/scorecard.html'], function ($, _, Backbone, BuildingScorecard, CityScorecard, ScorecardTemplate) {
+define(['jquery', 'underscore', 'backbone', './building_scorecard', './city_scorecard', './links', 'text!templates/scorecards/scorecard.html'], function ($, _, Backbone, BuildingScorecard, CityScorecard, Links, ScorecardTemplate) {
   var ScorecardController = Backbone.View.extend({
     el: $('#scorecard'),
 
@@ -121,6 +121,25 @@ define(['jquery', 'underscore', 'backbone', './building_scorecard', './city_scor
       this.view = null;
     },
 
+    renderLinks: function renderLinks(building_type) {
+      if (this.linksView) this.removeLinks();
+
+      // Add links to parent
+      this.linksView = new Links({
+        link_type: building_type,
+        el: this.$el.find('#links')
+      });
+    },
+
+    removeLinks: function removeLinks() {
+      if (this.linksView) {
+        this.linksView.close();
+        this.linksView.remove();
+      }
+
+      this.linksView = null;
+    },
+
     getSubViewOptions: function getSubViewOptions() {
       return {
         el: '#scorecard-content',
@@ -136,18 +155,23 @@ define(['jquery', 'underscore', 'backbone', './building_scorecard', './city_scor
 
       var building = this.state.get('building');
       var name = void 0;
+      var building_type = void 0;
       if (this.viewclass === BuildingScorecard) {
         var buildings = this.state.get('allbuildings');
         var buildingModel = buildings.get(building);
         name = buildingModel.get('property_name');
+        building_type = buildingModel.get('property_type');
       } else {
         name = 'Citywide Report';
+        building_type = 'citywide';
       }
 
       this.$el.html(this.template({
         building_view: this.viewclass === BuildingScorecard,
         name: name
       }));
+
+      this.renderLinks(building_type);
 
       this.updateViewClass();
 
@@ -158,6 +182,7 @@ define(['jquery', 'underscore', 'backbone', './building_scorecard', './city_scor
 
     hideScorecard: function hideScorecard() {
       this.$el.toggleClass('active', false);
+      this.removeLinks();
       this.removeView();
       this.viewclass = null;
       this.$el.html('');

@@ -9,6 +9,8 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
       this.state = options.state;
       this.formatters = options.formatters;
 
+      this.parentEl = options.parentEl;
+
       this.template = _.template(ScorecardTemplate);
 
       return this;
@@ -67,8 +69,6 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
         payload.rows.forEach(function (d) {
           data[d.year] = _extends({}, d);
         });
-
-        console.log(payload);
 
         _this.scoreCardData = data;
 

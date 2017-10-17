@@ -2137,20 +2137,42 @@ header {
         padding-left: 1rem; }
   #scorecard #links {
     background: #F1F1F1; }
-    #scorecard #links table tr:first-child td {
-      width: 30%; }
-    #scorecard #links table tr:first-child td:first-child {
-      width: 40%;
-      padding-right: 10%;
-      padding-left: 0; }
-      #scorecard #links table tr:first-child td:first-child p:first-child {
-        text-transform: uppercase; }
-      #scorecard #links table tr:first-child td:first-child p + p {
-        margin-top: 10px; }
     #scorecard #links table td {
+      width: auto;
       border: 0;
-      padding: 5px 10px;
-      line-height: 1.2; }
+      padding: 0 10px;
+      line-height: 1.2;
+      vertical-align: top;
+      font-size: 0.875rem;
+      color: #999; }
+    #scorecard #links table .link-num {
+      width: 2rem;
+      height: 2rem;
+      background: green;
+      border-radius: 2rem;
+      text-align: center;
+      line-height: 2rem;
+      color: white;
+      font-size: 1.5rem;
+      float: left; }
+    #scorecard #links table .link-content {
+      display: block;
+      margin-left: 3rem;
+      vertical-align: top; }
+      #scorecard #links table .link-content strong {
+        font-size: 1.3rem; }
+    #scorecard #links table .link-link {
+      margin-left: 3rem;
+      margin-top: 1rem;
+      border-top: 1px dashed #ccc;
+      padding-top: 1rem; }
+      #scorecard #links table .link-link p {
+        font-weight: bold; }
+    #scorecard #links table tr.ad td {
+      text-align: center; }
+    #scorecard #links table tr.ad a {
+      display: block;
+      margin-top: 2rem; }
   #scorecard #building-type-table table {
     color: #646569;
     font-size: 0.725rem; }
