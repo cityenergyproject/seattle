@@ -268,12 +268,14 @@
                         "label": "{property_name}",
                         "color_range": ["#1f5dbe","#599b67","#ffd552","#da863f","#ab2328"],
                         "range_slice_count": 18,
+                        "unit": "ktbu",
                         "colorize": true,
                         "influencer": true
                     },
                     {
                         "field": "building_type_eui_wn",
                         "label": "Building Type Average",
+                        "unit": "ktbu",
                         "colorize": false
                     }
 
@@ -286,6 +288,7 @@
                         "label": "Usage",
                         "color_range": ["#1f5dbe","#599b67","#ffd552","#da863f","#ab2328"],
                         "range_slice_count": 18,
+                        "unit": "ktbu",
                         "colorize": true,
                         "influencer": true
                     },
@@ -294,6 +297,7 @@
                         "label": "Emissions",
                         "color_range": ["#1f5dbe","#599b67","#ffd552","#da863f","#ab2328"],
                         "range_slice_count": 18,
+                        "unit": "mt",
                         "colorize": true,
                         "influencer": false
                     }
@@ -513,33 +517,6 @@
                 "2016": [23.7,32.1,40.4]
               }
             }
-        },
-        "links": {
-            "contact": {
-                "name": "City Light Energy Advisors",
-                "phone": "(206) 684-3800",
-                "email": "hello@hello.com",
-                "desc": "Answering questions by {email} or phone {phone}"
-            },
-            "items": [
-                {
-                    "href": "https://cityenergyproject.github.io/seattle",
-                    "text": "This is an opportunity for users to click on another {link}"
-                },
-                {
-                    "href": "https://cityenergyproject.github.io/seattle",
-                    "text": "This is an opportunity for users to click on another link"
-                },
-                {
-                    "href": "https://cityenergyproject.github.io/seattle",
-                    "text": "This is an opportunity for users to {click on another link}"
-                },
-                {
-                    "href": "https://cityenergyproject.github.io/seattle",
-                    "text": "This is an {opportunity} for users to click on another link"
-                }
-
-            ]
         }
     }
 }

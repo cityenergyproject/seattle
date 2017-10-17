@@ -214,7 +214,9 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
       innerLabel.append('p').text(function (d) {
         return _this2.formatters.fixedOne(d.value);
       });
-      innerLabel.append('p').attr('class', 'metric small').text('kbtu/sf');
+      innerLabel.append('p').attr('class', 'metric small').text(function (d) {
+        return d.unit;
+      });
 
       label.each(function (d) {
         var el = d3.select(this);

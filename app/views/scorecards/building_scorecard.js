@@ -692,6 +692,7 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
             clr: clr,
             year: +year,
             colorize: metric.colorize,
+            unit: metric.unit || '',
             influencer: metric.influencer
           });
         });
