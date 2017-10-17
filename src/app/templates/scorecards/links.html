@@ -1,0 +1,39 @@
+<div class='inner'>
+  <div class='section-head'>
+    <h2 class='sc-heading large'>Links</h2>
+    <p class='sc-txt small bold'>Take advantage of low and no-cost solutions to...</p>
+  </div>
+  <% if (!error) { %>
+  <table>
+    <tr>
+      <% _.each(links, function(item, idx) { %>
+      <td>
+        <div class='link-cell'>
+          <div class='link-num'><%= (idx + 1) %></div>
+          <div class='link-content'>
+            <p><strong><%= item.header %></strong> <%= item.txt %></p>
+          </div>
+        </div>
+        </td>
+      <% }) %>
+    </tr>
+    <tr>
+      <% _.each(links, function(item) { %>
+      <td>
+        <div class='link-link'>
+          <p><%= item.link_txt %></p>
+          <a href='<%= item.link_href %>' target='_blank'><%= item.link_href %></a>
+        </div>
+      </td>
+      <% }) %>
+    </tr>
+    <tr class='ad'>
+      <td colspan='<%= (links.length)%>'>
+        <a href='<%= ad_href %>' target='_blank'>
+          <img src='<%= ad_img %>'/>
+        </a>
+      </td>
+    </tr>
+  </table>
+  <% } %>
+</div>

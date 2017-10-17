@@ -4,8 +4,9 @@ define([
   'backbone',
   './building_scorecard',
   './city_scorecard',
+  './links',
   'text!templates/scorecards/scorecard.html'
-], function($, _, Backbone, BuildingScorecard, CityScorecard, ScorecardTemplate){
+], function($, _, Backbone, BuildingScorecard, CityScorecard, Links, ScorecardTemplate){
   const ScorecardController = Backbone.View.extend({
     el: $('#scorecard'),
 
@@ -126,6 +127,25 @@ define([
       this.view = null;
     },
 
+    renderLinks: function(building_type) {
+      if (this.linksView) this.removeLinks();
+
+      // Add links to parent
+      this.linksView = new Links({
+        link_type: building_type,
+        el: this.$el.find('#links')
+      });
+    },
+
+    removeLinks: function() {
+      if (this.linksView) {
+        this.linksView.close();
+        this.linksView.remove();
+      }
+
+      this.linksView = null;
+    },
+
     getSubViewOptions: function() {
       return {
         el: '#scorecard-content',
@@ -141,18 +161,23 @@ define([
 
       const building = this.state.get('building');
       let name;
+      let building_type;
       if (this.viewclass === BuildingScorecard) {
         const buildings = this.state.get('allbuildings');
         const buildingModel = buildings.get(building);
         name = buildingModel.get('property_name');
+        building_type = buildingModel.get('property_type');
       } else {
         name = 'Citywide Report';
+        building_type = 'citywide';
       }
 
       this.$el.html(this.template({
         building_view: this.viewclass === BuildingScorecard,
         name
       }));
+
+      this.renderLinks(building_type);
 
       this.updateViewClass();
 
@@ -163,6 +188,7 @@ define([
 
     hideScorecard: function() {
       this.$el.toggleClass('active', false);
+      this.removeLinks();
       this.removeView();
       this.viewclass = null;
       this.$el.html('');

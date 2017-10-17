@@ -14,6 +14,8 @@ define([
       this.state = options.state;
       this.formatters = options.formatters;
 
+      this.parentEl = options.parentEl;
+
       this.template = _.template(ScorecardTemplate);
 
       return this;
@@ -70,8 +72,6 @@ define([
         payload.rows.forEach(d => {
           data[d.year] = {...d};
         });
-
-        console.log(payload);
 
         this.scoreCardData = data;
 
@@ -179,7 +179,7 @@ define([
         });
       }
 
-      el.find('#building-type-table').html(this.building_table.render())
+      el.find('#building-type-table').html(this.building_table.render());
 
       return this;
     },
