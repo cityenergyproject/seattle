@@ -234,7 +234,7 @@ define([
       innerLabel
         .append('p')
         .attr('class', 'metric small')
-        .text('kbtu/sf');
+        .text(d => d.unit);
 
       label.each(function(d) {
         var el = d3.select(this);

@@ -26,7 +26,11 @@
         <p class='change-arrow <%= direction %>'><span><%= pct %></span></p>
         <% } %>
         <p class="sc-txt light pg">
-          After adjusting for weather, from <%= years[0] %> to <%= years[1] %> this building’s site EUI
+          <% if (!isCity) { %>
+          <span>After adjusting for weather, from <%= years[0] %> to <%= years[1] %> this building’s site EUI</span>
+          <% } else { %>
+          <span>After adjusting for weather, from <%= years[0] %> to <%= years[1] %> citywide energy use</span>
+          <% } %>
           <% if (change === 0) { %>
             <span class='change-txt bold'> remained the same</span>.
           <% } else { %>

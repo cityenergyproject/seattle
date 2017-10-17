@@ -753,6 +753,7 @@ define([
             clr,
             year: +year,
             colorize: metric.colorize,
+            unit: metric.unit || '',
             influencer: metric.influencer
           });
         });
