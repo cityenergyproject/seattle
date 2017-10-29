@@ -95,7 +95,6 @@ define([
     },
 
     show: function(buildings, building_data, selected_year, avail_years) {
-      console.info("RENDER BUILDING");
       this.processBuilding(buildings, building_data, selected_year, avail_years, 'eui');
       this.processBuilding(buildings, building_data, selected_year, avail_years, 'ess');
     },
@@ -292,23 +291,28 @@ define([
     },
 
     compare: function(building, view, config, chartdata) {
-      var change_pct, change_label;
+      var change_pct, change_label, isValid;
       var compareConfig = config.compare_chart;
 
       if (view === 'eui') {
         change_pct = building.percent_from_median;
+        isValid = _.isNumber(change_pct) && _.isFinite(change_pct);
+        change_pct = this.formatters.percent(change_pct);
+
         change_label = building.higher_or_lower.toLowerCase();
       } else {
-        change_pct = ((chartdata.building_value - chartdata.mean) / chartdata.building_value);
+        change_pct = Math.abs(chartdata.building_value - chartdata.mean); // ((chartdata.building_value - chartdata.mean) / chartdata.building_value);
+        isValid = _.isNumber(change_pct) && _.isFinite(change_pct);
+        change_pct = this.formatters.fixedOne(change_pct);
+
         change_label = (chartdata.building_value >= chartdata.mean) ? 'higher' : 'lower';
       }
 
-      var isValid = _.isNumber(change_pct) && _.isFinite(change_pct);
 
       const o = {
         isValid: isValid,
         change_label: change_label,
-        change_pct: this.formatters.percent(change_pct),
+        change_pct: change_pct,
         error: !isValid ? compareConfig.nodata[view] : ''
       }
 
