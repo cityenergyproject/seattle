@@ -77,7 +77,6 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
     },
 
     postRender: function postRender() {
-      console.info('RENDER CITYWIDE');
       this.show('eui');
       this.show('ess');
     },

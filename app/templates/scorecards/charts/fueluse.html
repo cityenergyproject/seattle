@@ -42,9 +42,9 @@
         </div>
         <div class='fc-row emission-bars margin-top <%= emission_klass %>'>
           <% _.each(fuels, function(fuel) { %>
-            <div class='fc-bar emission <%= fuel.key %>' style="width: <%= fuel.emissions.pct_raw %>%;"><% if (fuels.length > 1) {%><% if (fuel.emissions.isValid) { %><span><%= fuel.emissions.pct %>%</span><% } else { %><span class='nodata'>n/a</span><% } %> <% } else { %><div class='onefuel-msg'>The <%= building_name %> consumed <%= totals.usage %> kBtu's of energy in <%= year %>, which equates to <%= totals.emissions %> metric tons of CO<sub>2</sub>E is the equivalent of <%= cars %> passenger vehicles driven for one year.</div><% } %></div> <% }); %>
+            <div class='fc-bar emission <%= fuel.key %>' style="width: <%= fuel.emissions.pct_raw %>%;"><% if (fuels.length >= 1) {%><% if (fuel.emissions.isValid) { %><span><%= fuel.emissions.pct %>%</span><% } else { %><span class='nodata'>n/a</span><% } %> <% } else { %><div class='onefuel-msg'>The <%= building_name %> consumed <%= totals.usage %> kBtu's of energy in <%= year %>, which equates to <%= totals.emissions %> metric tons of CO<sub>2</sub>E is the equivalent of <%= cars %> passenger vehicles driven for one year.</div><% } %></div> <% }); %>
         </div>
-        <% if (fuels.length > 1) { %>
+        <% if (fuels.length >= 1) { %>
         <div class='fc-row notes'>
           <% if(totals.emissions > 0) { %>
             <p><%= totals.emissions %> metric tons of CO<sub>2</sub>E is the equivalent of <%= cars %> passenger vehicles driven for one year.</p>

@@ -121,9 +121,10 @@ define(['jquery', 'underscore', 'backbone', './building_scorecard', './city_scor
       this.view = null;
     },
 
-    renderLinks: function renderLinks(building_type) {
+    renderLinks: function renderLinks(building_type, isBuildingRenderer) {
       if (this.linksView) this.removeLinks();
 
+      if (!isBuildingRenderer) return;
       // Add links to parent
       this.linksView = new Links({
         link_type: building_type,
@@ -156,7 +157,8 @@ define(['jquery', 'underscore', 'backbone', './building_scorecard', './city_scor
       var building = this.state.get('building');
       var name = void 0;
       var building_type = void 0;
-      if (this.viewclass === BuildingScorecard) {
+      var isBuildingRenderer = this.viewclass === BuildingScorecard;
+      if (isBuildingRenderer) {
         var buildings = this.state.get('allbuildings');
         var buildingModel = buildings.get(building);
         name = buildingModel.get('property_name');
@@ -171,7 +173,7 @@ define(['jquery', 'underscore', 'backbone', './building_scorecard', './city_scor
         name: name
       }));
 
-      this.renderLinks(building_type);
+      this.renderLinks(building_type, isBuildingRenderer);
 
       this.updateViewClass();
 
