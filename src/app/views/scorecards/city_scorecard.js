@@ -80,7 +80,6 @@ define([
     },
 
     postRender: function() {
-      console.info('RENDER CITYWIDE');
       this.show('eui');
       this.show('ess');
     },

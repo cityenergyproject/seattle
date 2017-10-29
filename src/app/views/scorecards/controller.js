@@ -127,9 +127,10 @@ define([
       this.view = null;
     },
 
-    renderLinks: function(building_type) {
+    renderLinks: function(building_type, isBuildingRenderer) {
       if (this.linksView) this.removeLinks();
 
+      if (!isBuildingRenderer) return;
       // Add links to parent
       this.linksView = new Links({
         link_type: building_type,
@@ -162,7 +163,8 @@ define([
       const building = this.state.get('building');
       let name;
       let building_type;
-      if (this.viewclass === BuildingScorecard) {
+      const isBuildingRenderer = this.viewclass === BuildingScorecard;
+      if (isBuildingRenderer) {
         const buildings = this.state.get('allbuildings');
         const buildingModel = buildings.get(building);
         name = buildingModel.get('property_name');
@@ -177,7 +179,7 @@ define([
         name
       }));
 
-      this.renderLinks(building_type);
+      this.renderLinks(building_type, isBuildingRenderer);
 
       this.updateViewClass();
 
