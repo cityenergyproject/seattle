@@ -6,8 +6,8 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/lin
       this.template = _.template(LinksTemplate);
       this.el = options.el;
       this.link_type = options.link_type;
+      this.building = _.isFinite(options.building) ? +options.building : -1;
       this.active = true;
-
       this.load();
     },
 
@@ -70,13 +70,23 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/lin
       var _this = this;
 
       if (!data.length) return null;
+      var row = void 0;
 
-      var row = data.find(function (d) {
+      // Look for a match on "building id" first
+      row = data.find(function (d) {
+        return d.building_id === _this.building;
+      });
+
+      if (row) return this.format(row);
+
+      // Try "property type" next
+      row = data.find(function (d) {
         return d.property_type === _this.link_type;
       });
 
       if (row) return this.format(row);
 
+      // Lastly use the default
       row = data.find(function (d) {
         return d.property_type === 'default';
       });
@@ -89,10 +99,14 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/lin
     url: function url() {
       // TODO: set dynamically from config
       var table = 'links';
-      var where = ['WHERE (property_type <> \'\') is true', 'property_type in (\'' + this.link_type + '\', \'default\')'].join(' AND ');
 
-      var base = 'https://cityenergy-seattle.carto.com/api/v2/sql?q=SELECT * FROM ' + table;
-      return base + ' ' + where;
+      var id = this.building;
+      var where = ['property_type in (\'' + this.link_type + '\', \'default\')', 'building_id = ' + this.building].join(' OR ');
+
+      var base = 'https://cityenergy-seattle.carto.com/api/v2/sql?q=';
+      var query = 'SELECT * FROM ' + table + ' WHERE ' + where;
+
+      return base + query;
     },
 
     load: function load() {

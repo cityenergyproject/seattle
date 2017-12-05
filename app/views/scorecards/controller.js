@@ -121,13 +121,14 @@ define(['jquery', 'underscore', 'backbone', './building_scorecard', './city_scor
       this.view = null;
     },
 
-    renderLinks: function renderLinks(building_type, isBuildingRenderer) {
+    renderLinks: function renderLinks(building, building_type, isBuildingRenderer) {
       if (this.linksView) this.removeLinks();
 
       if (!isBuildingRenderer) return;
       // Add links to parent
       this.linksView = new Links({
         link_type: building_type,
+        building: building,
         el: this.$el.find('#links')
       });
     },
@@ -158,6 +159,7 @@ define(['jquery', 'underscore', 'backbone', './building_scorecard', './city_scor
       var name = void 0;
       var building_type = void 0;
       var isBuildingRenderer = this.viewclass === BuildingScorecard;
+
       if (isBuildingRenderer) {
         var buildings = this.state.get('allbuildings');
         var buildingModel = buildings.get(building);
@@ -173,7 +175,7 @@ define(['jquery', 'underscore', 'backbone', './building_scorecard', './city_scor
         name: name
       }));
 
-      this.renderLinks(building_type, isBuildingRenderer);
+      this.renderLinks(building, building_type, isBuildingRenderer);
 
       this.updateViewClass();
 
