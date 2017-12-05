@@ -10,8 +10,8 @@ define([
       this.template = _.template(LinksTemplate);
       this.el = options.el;
       this.link_type = options.link_type;
+      this.building = options.building;
       this.active = true;
-
       this.load();
     },
 
@@ -70,13 +70,24 @@ define([
 
     getRow: function(data) {
       if (!data.length) return null;
+      let row;
 
-      let row = data.find(d => {
+      // Look for a match on "building id" first
+      const id = +this.building;
+      row = data.find(d => {
+        return d.building_id === id;
+      });
+
+      if (row) return this.format(row);
+
+      // Try "property type" next
+      row = data.find(d => {
         return d.property_type === this.link_type;
       });
 
       if (row) return this.format(row);
 
+      // Lastly use the default
       row = data.find(d => {
         return d.property_type === 'default';
       });
@@ -89,13 +100,17 @@ define([
     url: function() {
       // TODO: set dynamically from config
       const table = 'links';
-      const where = [
-        `WHERE (property_type <> '') is true`,
-        `property_type in ('${this.link_type}', 'default')`
-      ].join(' AND ');
 
-      const base = `https://cityenergy-seattle.carto.com/api/v2/sql?q=SELECT * FROM ${table}`;
-      return base + ' ' + where;
+      const id = this.building;
+      const where = [
+        `property_type in ('${this.link_type}', 'default')`,
+        `building_id = ${this.building}`
+      ].join(' OR ');
+
+      const base = 'https://cityenergy-seattle.carto.com/api/v2/sql?q=';
+      const query = `SELECT * FROM ${table} WHERE ${where}`;
+
+      return base + query;
     },
 
     load: function() {

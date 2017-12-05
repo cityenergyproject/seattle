@@ -127,13 +127,14 @@ define([
       this.view = null;
     },
 
-    renderLinks: function(building_type, isBuildingRenderer) {
+    renderLinks: function(building, building_type, isBuildingRenderer) {
       if (this.linksView) this.removeLinks();
 
       if (!isBuildingRenderer) return;
       // Add links to parent
       this.linksView = new Links({
         link_type: building_type,
+        building,
         el: this.$el.find('#links')
       });
     },
@@ -164,6 +165,7 @@ define([
       let name;
       let building_type;
       const isBuildingRenderer = this.viewclass === BuildingScorecard;
+
       if (isBuildingRenderer) {
         const buildings = this.state.get('allbuildings');
         const buildingModel = buildings.get(building);
@@ -179,7 +181,7 @@ define([
         name
       }));
 
-      this.renderLinks(building_type, isBuildingRenderer);
+      this.renderLinks(building, building_type, isBuildingRenderer);
 
       this.updateViewClass();
 
