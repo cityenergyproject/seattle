@@ -301,7 +301,7 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
       } else {
         change_pct = Math.abs(chartdata.building_value - chartdata.mean); // ((chartdata.building_value - chartdata.mean) / chartdata.building_value);
         isValid = _.isNumber(change_pct) && _.isFinite(change_pct);
-        change_pct = this.formatters.fixedOne(change_pct);
+        change_pct = this.formatters.fixedZero(change_pct);
 
         change_label = chartdata.building_value >= chartdata.mean ? 'higher' : 'lower';
       }
@@ -440,6 +440,12 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
       var avg = view === 'eui' ? building.building_type_eui : d3.mean(buildingsOfType, function (d) {
         return d[compareField];
       });
+
+      if (view !== 'eui') {
+        avg = Math.round(avg);
+      } else {
+        avg = +this.formatters.fixedOne(avg);
+      }
 
       data.forEach(function (d, i) {
         if (avgIndex !== null) return;
@@ -632,7 +638,7 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
 
       avgHighlightContent.append('p').text('Building type average');
 
-      avgHighlightContent.append('p').text(chartdata.mean.toFixed(1)).style('color', chartdata.avgColor);
+      avgHighlightContent.append('p').text(chartdata.mean).style('color', chartdata.avgColor);
 
       avgHighlightContent.append('p').html(compareChartConfig.highlight_metric[view]).style('color', chartdata.avgColor);
 

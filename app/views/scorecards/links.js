@@ -37,14 +37,28 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/lin
       formatted.ad_href = data.ad_href;
       formatted.property_type = data.property_type;
       formatted.ad_img = data.ad_img;
+
       formatted.links = slots.map(function (s) {
         var l = {};
+        var valid = false;
+
         linkKeys.forEach(function (k) {
           var field = keys[k].replace('{s}', s);
+          if (!data.hasOwnProperty(field)) return;
+
           l[k] = data[field];
+
+          // Validity check only on header
+          if (k === 'header') {
+            valid = _.isString(l[k]) && l[k].length > 3;
+          }
         });
 
+        if (!valid) return null;
+
         return l;
+      }).filter(function (d) {
+        return d !== null;
       });
 
       formatted.error = null;

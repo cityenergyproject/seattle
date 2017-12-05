@@ -2168,6 +2168,9 @@ header {
       padding-top: 1rem; }
       #scorecard #links table .link-link p {
         font-weight: bold; }
+      #scorecard #links table .link-link a {
+        word-break: break-word;
+        word-wrap: break-word; }
     #scorecard #links table tr.ad td {
       text-align: center; }
     #scorecard #links table tr.ad a {

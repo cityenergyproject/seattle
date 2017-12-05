@@ -65,7 +65,11 @@
       <div class='col-4 compare-desc'>
         <% if(compare.isValid) { %>
           <p class='compare-logo <%= compare.change_label %> <%= view %>'><span><%= compare.change_pct %></span></p>
-          <p class="sc-txt light pg">This building’s <%= view === 'eui' ? 'EUI' : 'ENERGY STAR Score' %> is <span class='change-txt bold <%= compare.change_label %> <%= view %>'><%= compare.change_pct %> <%= compare.change_label %></span> than the average <%= type %> in Seattle.</p>
+          <% if (view === 'eui') { %>
+            <p class="sc-txt light pg">This building’s EUI is <span class='change-txt bold <%= compare.change_label %> <%= view %>'><%= compare.change_pct %> <%= compare.change_label %></span> than the average <%= type %> in Seattle.</p>
+          <% } else { %>
+            <p class="sc-txt light pg">This building’s ENERGY STAR Score is <span class='change-txt bold <%= compare.change_label %> <%= view %>'><%= compare.change_pct %> points <%= compare.change_label %></span> than the average <%= type %> in Seattle.</p>
+          <% } %>
         <% } else { %>
           <p class='not-available'><%= compare.error %></p>
         <% } %>
