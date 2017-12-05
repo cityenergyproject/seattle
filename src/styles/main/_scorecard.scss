@@ -849,6 +849,11 @@ $sc-font-lgr: 3rem;
         p {
           font-weight: bold;
         }
+
+        a {
+          word-break: break-word;
+          word-wrap: break-word;
+        }
       }
 
       tr.ad {

@@ -41,15 +41,27 @@ define([
       formatted.ad_href = data.ad_href;
       formatted.property_type = data.property_type;
       formatted.ad_img = data.ad_img;
+
       formatted.links = slots.map(s => {
         const l = {};
+        let valid = false;
+
         linkKeys.forEach(k => {
           const field = keys[k].replace('{s}', s);
+          if (!data.hasOwnProperty(field)) return;
+
           l[k] = data[field];
+
+          // Validity check only on header
+          if (k === 'header') {
+            valid = _.isString(l[k]) && l[k].length > 3;
+          }
         });
 
+        if (!valid) return null;
+
         return l;
-      });
+      }).filter(d => d !== null);
 
       formatted.error = null;
 
