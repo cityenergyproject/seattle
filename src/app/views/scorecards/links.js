@@ -10,7 +10,7 @@ define([
       this.template = _.template(LinksTemplate);
       this.el = options.el;
       this.link_type = options.link_type;
-      this.building = options.building;
+      this.building = _.isFinite(options.building) ? +options.building : -1;
       this.active = true;
       this.load();
     },
@@ -73,9 +73,8 @@ define([
       let row;
 
       // Look for a match on "building id" first
-      const id = +this.building;
       row = data.find(d => {
-        return d.building_id === id;
+        return d.building_id === this.building;
       });
 
       if (row) return this.format(row);
