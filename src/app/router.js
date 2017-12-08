@@ -16,12 +16,13 @@ define([
   'views/layout/compare_bar',
   'views/scorecards/controller',
   'views/layout/button',
+  'views/layout/mobile-alert',
   'views/modals/modal-model',
   'views/modals/modal'
 ], function($, deparam, _, Backbone, CityModel, ScorecardModel,
             CityBuildings, MapView, AddressSearchView,
             YearControlView, ActivityIndicator,
-            BuildingCounts, CompareBar, ScorecardController, Button, ModalModel, ModalController) {
+            BuildingCounts, CompareBar, ScorecardController, Button, MobileAlert, ModalModel, ModalController) {
 
   var RouterState = Backbone.Model.extend({
     queryFields: [
@@ -162,16 +163,17 @@ define([
     },
 
     initialize: function(){
-      var activityIndicator = new ActivityIndicator({state: this.state});
-      var yearControlView = new YearControlView({state: this.state});
-      var mapView = new MapView({state: this.state});
-      var addressSearchView = new AddressSearchView({mapView: mapView, state: this.state});
+      const activityIndicator = new ActivityIndicator({state: this.state});
+      const yearControlView = new YearControlView({state: this.state});
+      const mapView = new MapView({state: this.state});
+      const addressSearchView = new AddressSearchView({mapView: mapView, state: this.state});
 
-      var buildingCounts = new BuildingCounts({state: this.state});
-      var compareBar = new CompareBar({state: this.state});
+      const buildingCounts = new BuildingCounts({state: this.state});
+      const compareBar = new CompareBar({state: this.state});
       const scorecardController = new ScorecardController({state: this.state, mapView: mapView});
+      const mobileAlert = new MobileAlert({state: this.state});
 
-      var button = new Button({
+      const button = new Button({
         el: '#city-scorcard-toggle',
         onClick: _.bind(this.toggleCityScorecard, this),
         value: 'Citywide Report'
