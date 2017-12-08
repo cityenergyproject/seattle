@@ -16,10 +16,12 @@ define([
   'views/layout/compare_bar',
   'views/scorecards/controller',
   'views/layout/button',
+  'views/modals/modal-model',
+  'views/modals/modal'
 ], function($, deparam, _, Backbone, CityModel, ScorecardModel,
             CityBuildings, MapView, AddressSearchView,
             YearControlView, ActivityIndicator,
-            BuildingCounts, CompareBar, ScorecardController, Button) {
+            BuildingCounts, CompareBar, ScorecardController, Button, ModalModel, ModalController) {
 
   var RouterState = Backbone.Model.extend({
     queryFields: [
@@ -222,6 +224,20 @@ define([
       var newState = new StateBuilder(results, year, layer, categories).toState();
       var defaultMapState = {lat: city.get('center')[0], lng: city.get('center')[1], zoom: city.get('zoom')};
       var mapState = this.state.pick('lat', 'lng', 'zoom');
+
+      // Configure modals
+      if (results.hasOwnProperty('modals')) {
+        var modalModel = new ModalModel({
+          available: _.extend({}, results.modals)
+        });
+
+        var modalController = new ModalController({state: this.state});
+
+        newState = _.extend(newState, {
+          modal: modalModel,
+          setModal: _.bind(modalController.setModal, modalController)
+        });
+      }
 
       _.defaults(mapState, defaultMapState);
 

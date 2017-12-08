@@ -518,5 +518,12 @@
               }
             }
         }
+    },
+    "modals": {
+        "faq": {
+            "title": "Frequently asked questions (FAQ)",
+            "desc": "A quide to using this tool",
+            "tablename": "faq"
+        }
     }
 }
