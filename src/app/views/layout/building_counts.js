@@ -14,7 +14,7 @@ define([
       var onRenderDebounce = _.debounce(_.bind(this.render, this), 150);
       this.listenTo(this.state, 'change:filters', onRenderDebounce  );
       this.listenTo(this.state, 'change:categories', onRenderDebounce );
-      this.listenTo(this.state, 'change:allbuildings', this.render);
+      this.listenTo(this.state, 'change:allbuildings', this.onBuildingChange);
 
       this.render();
     },
@@ -29,6 +29,18 @@ define([
         showing: filteredBuildings.length.toLocaleString(),
         total: buildings.length.toLocaleString()
       });
+    },
+
+    onBuildingChange: function() {
+      // TODO: Testing remove once implemented
+      /*
+      var modelFn = this.state.get('setModal');
+      if (typeof modelFn === 'function') {
+        modelFn('glossary');
+      }
+      */
+
+      this.render();
     },
 
     render: function(){

@@ -4,7 +4,7 @@ define([
   'backbone',
   'text!templates/layout/modal.html'
 ], function($, _, Backbone, ModalTemplate){
-  var ModalController = Backbone.View.extend({
+  const ModalController = Backbone.View.extend({
     el: $('#modals'),
 
     initialize: function(options){
@@ -30,37 +30,34 @@ define([
     },
 
     onCityChange: function(){
-      var model = this.state.get('modal');
+      const model = this.state.get('modal');
+
       this.listenTo(model, 'change:selected', this.onModalChange);
       this.listenTo(model, 'change:viewdata', this.onViewDataChange);
       this.listenTo(model, 'sync', this.onModalSync,  this);
     },
 
     onModalSync: function() {
-      var model = this.state.get('modal');
-      // console.log('Sync: ', model);
+      // Do nothing here for now
+      // const model = this.state.get('modal');
     },
 
     onModalChange: function() {
-      var model = this.state.get('modal');
-      var selected  = model.get('selected');
-
+      const model = this.state.get('modal');
       model.fetchViewData();
     },
 
     onViewDataChange: function() {
-      var model = this.state.get('modal');
-      var selected  = model.get('selected');
-      var viewdata = model.get('viewdata');
-      var props = model.modalProps();
-      // console.log('onViewDataChange: ', model);
-      // console.log('selected: ', selected);
+      const model = this.state.get('modal');
+      const viewdata = model.get('viewdata');
+      const props = model.modalProps();
+
       this.render(viewdata, props);
     },
 
     setModal: function(name) {
-      var model = this.state.get('modal');
-      var selected  = model.get('selected');
+      const model = this.state.get('modal');
+      const selected = model.get('selected');
 
       if (name && selected !== name) {
         model.set({
@@ -86,6 +83,7 @@ define([
           desc: props.desc || ''
         }));
       }
+
       return this;
     }
   });
