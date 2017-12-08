@@ -22,7 +22,8 @@ define([
 ], function($, deparam, _, Backbone, CityModel, ScorecardModel,
             CityBuildings, MapView, AddressSearchView,
             YearControlView, ActivityIndicator,
-            BuildingCounts, CompareBar, ScorecardController, Button, MobileAlert, ModalModel, ModalController) {
+            BuildingCounts, CompareBar, ScorecardController,
+            Button, MobileAlert, ModalModel, ModalController) {
 
   var RouterState = Backbone.Model.extend({
     queryFields: [
@@ -178,7 +179,6 @@ define([
         onClick: _.bind(this.toggleCityScorecard, this),
         value: 'Citywide Report'
       });
-
 
       this.state.on('change', this.onChange, this);
     },
