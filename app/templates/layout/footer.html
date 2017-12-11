@@ -1,3 +1,11 @@
-<div class="footer-row">
-  © Copyright 1995-2016 City of Seattle
+<div class="links-wrapper">
+  <div class="links">
+    <div class="footer-row">
+      <a href="/" target="_blank" title="About benchmarking program" rel="noopener noreferrer">About the Program</a>
+      <% _.each(modals, function(m){ %>
+        <a href="#" class="modal-link" data-modal="<%= m.id %>"><%= m.label %></a>
+      <% }) %>
+      <a href="/" target="_blank" rel="noopener noreferrer">Download Data</a>
+    </div>
+  </div>
 </div>

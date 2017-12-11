@@ -2,7 +2,7 @@
 
 // Filename: router.js
 //
-define(['jquery', 'deparam', 'underscore', 'backbone', 'models/city', 'models/scorecard', 'collections/city_buildings', 'views/map/map', 'views/map/address_search_autocomplete', 'views/map/year_control', 'views/layout/activity_indicator', 'views/layout/building_counts', 'views/layout/compare_bar', 'views/scorecards/controller', 'views/layout/button'], function ($, deparam, _, Backbone, CityModel, ScorecardModel, CityBuildings, MapView, AddressSearchView, YearControlView, ActivityIndicator, BuildingCounts, CompareBar, ScorecardController, Button) {
+define(['jquery', 'deparam', 'underscore', 'backbone', 'models/city', 'models/scorecard', 'collections/city_buildings', 'views/map/map', 'views/map/address_search_autocomplete', 'views/map/year_control', 'views/layout/activity_indicator', 'views/layout/building_counts', 'views/layout/compare_bar', 'views/scorecards/controller', 'views/layout/button', 'views/layout/mobile-alert', 'views/modals/modal-model', 'views/modals/modal', 'views/layout/footer'], function ($, deparam, _, Backbone, CityModel, ScorecardModel, CityBuildings, MapView, AddressSearchView, YearControlView, ActivityIndicator, BuildingCounts, CompareBar, ScorecardController, Button, MobileAlert, ModalModel, ModalController, FooterView) {
 
   var RouterState = Backbone.Model.extend({
     queryFields: ['filters', 'categories', 'layer', 'metrics', 'sort', 'order', 'lat', 'lng', 'zoom', 'building', 'report_active', 'city_report_active'],
@@ -151,6 +151,8 @@ define(['jquery', 'deparam', 'underscore', 'backbone', 'models/city', 'models/sc
       var buildingCounts = new BuildingCounts({ state: this.state });
       var compareBar = new CompareBar({ state: this.state });
       var scorecardController = new ScorecardController({ state: this.state, mapView: mapView });
+      var mobileAlert = new MobileAlert({ state: this.state });
+      var footerView = new FooterView({ state: this.state });
 
       var button = new Button({
         el: '#city-scorcard-toggle',
@@ -204,9 +206,24 @@ define(['jquery', 'deparam', 'underscore', 'backbone', 'models/city', 'models/sc
       var defaultMapState = { lat: city.get('center')[0], lng: city.get('center')[1], zoom: city.get('zoom') };
       var mapState = this.state.pick('lat', 'lng', 'zoom');
 
+      // Configure modals
+      if (results.hasOwnProperty('modals')) {
+        var modalModel = new ModalModel({
+          available: _.extend({}, results.modals)
+        });
+
+        var modalController = new ModalController({ state: this.state });
+
+        newState = _.extend(newState, {
+          modal: modalModel,
+          setModal: _.bind(modalController.setModal, modalController)
+        });
+      }
+
       _.defaults(mapState, defaultMapState);
 
-      // set this to silent because we need to load buildings
+      // set this to silent because  `fetchBuildings`
+      // will trigger a state change
       this.state.set(_.extend({ city: city }, newState, mapState));
 
       var thisYear = this.state.get('year');
@@ -224,14 +241,6 @@ define(['jquery', 'deparam', 'underscore', 'backbone', 'models/city', 'models/sc
 
     onBuildingsSync: function onBuildingsSync() {
       this.state.set({ allbuildings: this.allBuildings });
-
-      /*
-      // energy_star_score
-      const b = this.allBuildings.filter(function(d){
-        return d.get('energy_star_score') < 10;
-      });
-      console.log(b);
-      */
       this.state.trigger("hideActivityLoader");
     },
 

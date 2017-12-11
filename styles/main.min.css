@@ -492,7 +492,7 @@ body {
 .main-container {
   position: absolute;
   top: 3em;
-  bottom: 4em;
+  bottom: 6em;
   width: 100%;
   z-index: 1;
   max-width: 100%;
@@ -504,10 +504,10 @@ body {
     display: table; }
   @media screen and (min-width: 43.75em) {
     .main-container {
-      bottom: 4em; } }
+      bottom: 6em; } }
   @media screen and (min-width: 56.25em) {
     .main-container {
-      bottom: 4em; } }
+      bottom: 6em; } }
 
 header {
   height: 0em; }
@@ -1272,6 +1272,53 @@ header {
     .year-control input:checked + label::after {
       opacity: 1;
       background-color: white; }
+
+#footer {
+  position: fixed;
+  display: table;
+  bottom: 0;
+  width: 100%;
+  height: 2em;
+  padding: 0;
+  background-color: #f2f2f2;
+  text-align: center;
+  overflow: hidden; }
+  @media screen and (min-width: 43.75em) {
+    #footer {
+      height: 2em; } }
+  @media screen and (min-width: 75em) {
+    #footer {
+      height: 2em; } }
+  #footer .footer-row {
+    display: block;
+    margin: 0; }
+  #footer .links-wrapper {
+    position: relative;
+    height: 100%;
+    width: 100%;
+    border-top: 1px solid #0047ba; }
+  #footer .links {
+    position: relative;
+    top: 50%;
+    -webkit-transform: translateY(-50%);
+            transform: translateY(-50%); }
+  #footer a {
+    display: inline-block;
+    color: #0047ba;
+    text-decoration: none;
+    vertical-align: middle; }
+  #footer a + a:before {
+    content: '|';
+    padding: 0 5px; }
+
+#footer.nav-up {
+  bottom: -2em; }
+  @media screen and (min-width: 43.75em) {
+    #footer.nav-up {
+      bottom: -2em; } }
+  @media screen and (min-width: 75em) {
+    #footer.nav-up {
+      bottom: -2em; } }
 
 #map a.leaflet-popup-close-button {
   display: none; }
@@ -2310,3 +2357,147 @@ header {
     border: 0;
     padding: 0.4em 1.2em;
     outline: 0; }
+
+#mobile-failover {
+  display: block;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #f2f2f2;
+  z-index: 999999; }
+  #mobile-failover.forceoff {
+    display: none !important; }
+  @media screen and (min-width: 43.75em) {
+    #mobile-failover {
+      display: none; } }
+  #mobile-failover .logo {
+    display: none;
+    position: relative;
+    margin: 1em 0;
+    height: 46px; }
+    #mobile-failover .logo img {
+      width: auto;
+      height: 100%; }
+  #mobile-failover .hero {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    padding: 3em;
+    font-size: 1rem;
+    font-weight: 500;
+    text-align: center;
+    -webkit-transform: translateY(-50%);
+            transform: translateY(-50%); }
+    #mobile-failover .hero > div {
+      display: inline-block; }
+  #mobile-failover #continue-on {
+    background: #0047ba;
+    color: white;
+    font-size: 0.75rem;
+    padding: 4px 8px;
+    border: 0; }
+  #mobile-failover label {
+    font-size: 0.75rem;
+    font-weight: normal;
+    margin-top: 0.5em; }
+
+body.modal-active {
+  overflow: hidden; }
+
+#modal-bar {
+  position: absolute; }
+
+#modals {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: calc(100% - 2em);
+  background: #f2f2f2;
+  z-index: 1000000; }
+  @media screen and (min-width: 43.75em) {
+    #modals {
+      height: calc(100% - 2em); } }
+  @media screen and (min-width: 75em) {
+    #modals {
+      height: calc(100% - 2em); } }
+  #modals.active {
+    display: block; }
+  #modals .inner {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    padding: 1em;
+    border: 1em solid #0047ba;
+    text-align: center;
+    overflow: hidden;
+    overflow-y: auto; }
+  #modals a {
+    color: #0047ba;
+    font-weight: 500;
+    text-decoration: underline; }
+    #modals a.link-ref {
+      display: block;
+      margin-top: 0.5rem;
+      text-align: left; }
+  #modals button {
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 42px;
+    width: 42px;
+    margin-right: 1em;
+    margin-top: 1em;
+    padding: 0;
+    background: transparent;
+    border: 0;
+    border-radius: 0; }
+    #modals button span {
+      font-size: 42px;
+      line-height: 42px; }
+  #modals h3 {
+    text-transform: uppercase; }
+  #modals p {
+    margin: 0 0 0.6em; }
+  #modals .indent {
+    margin: 0 1.5rem; }
+  #modals .list {
+    list-style-type: circle;
+    margin-bottom: 0.6em; }
+  #modals table, #modals tbody, #modals tr, #modals td {
+    display: block; }
+  #modals table {
+    margin: 0 auto;
+    width: 90%;
+    height: auto;
+    text-align: left; }
+    #modals table tr + tr {
+      margin-top: 1rem; }
+    #modals table td {
+      vertical-align: top;
+      padding: 0.3em 0 0 0;
+      border: 0; }
+      #modals table td:first-child {
+        font-weight: bold; }
+  @media screen and (min-width: 43.75em) {
+    #modals table {
+      display: table;
+      width: 80%;
+      height: auto; }
+      #modals table tbody {
+        display: table-row-group; }
+      #modals table tr {
+        display: table-row; }
+      #modals table td {
+        display: table-cell;
+        padding-top: 0.5em; }
+        #modals table td:first-child {
+          padding-right: 0.5em;
+          text-align: right;
+          font-weight: normal; }
+        #modals table td:last-child {
+          padding-left: 0.5em; } }

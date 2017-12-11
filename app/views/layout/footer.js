@@ -1,53 +1,59 @@
 'use strict';
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 define(['jquery', 'underscore', 'backbone', 'text!templates/layout/footer.html'], function ($, _, Backbone, FooterTemplate) {
   var Footer = Backbone.View.extend({
+    el: $('#footer'),
+
     initialize: function initialize(options) {
       this.state = options.state;
-      this.listenTo(this.state, 'change:allbuildings', this.onBuildingsChange);
       this.template = _.template(FooterTemplate);
 
-      this.scrolling = false;
-      this.reveal = 100;
-      this.lastScrollTop = 0;
-      this.delta = 5;
-      this.footer = $('#footer');
-
-      var self = this;
-
-      var autoHideFn = $.proxy(this.autoHideHeader, this);
-      $(window).scroll(function (event) {
-        if (!self.scrolling) {
-          self.scrolling = true;
-          !window.requestAnimationFrame ? setTimeout(autoHideFn, 250) : requestAnimationFrame(autoHideFn);
-        }
-      });
+      this.listenTo(this.state, 'change:city', this.render);
 
       this.render();
-      this.autoHideHeader();
     },
 
-    onBuildingsChange: function onBuildingsChange() {
-      this.autoHideHeader();
+    events: {
+      'click .modal-link': 'onModalLink'
     },
 
-    autoHideHeader: function autoHideHeader() {
-      this.scrolling = false;
+    getModals: function getModals() {
+      var city = this.state.get('city');
 
-      var st = $(window).scrollTop();
-      if (Math.abs(this.lastScrollTop - st) <= this.delta) return;
+      if (!city) return [];
 
-      if (st > this.reveal) {
-        this.footer.removeClass('nav-up').addClass('nav-down');
-      } else {
-        this.footer.removeClass('nav-down').addClass('nav-up');
-      }
+      var modals = city.get('modals');
 
-      this.lastScrollTop = st;
+      if (!modals) return [];
+
+      return Object.keys(modals).map(function (k) {
+        return {
+          id: k,
+          label: modals[k].label || k
+        };
+      });
+    },
+
+    onModalLink: function onModalLink(evt) {
+      if (typeof evt.preventDefault === 'function') evt.preventDefault();
+
+      // Since this is a modal link, we need to make sure
+      // our handler exists
+      var modelFn = this.state.get('setModal');
+      if (!(typeof modelFn === 'undefined' ? 'undefined' : _typeof(modelFn)) === 'function') return false;
+
+      modelFn(evt.target.dataset.modal);
+
+      return false;
     },
 
     render: function render() {
-      $('#footer').html(this.template());
+      var modals = this.getModals();
+      this.$el.html(this.template({
+        modals: modals
+      }));
       return this;
     }
   });

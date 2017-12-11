@@ -9,6 +9,7 @@ require.config({
     ionrangeslider: '../lib/range-slider/ion.rangeSlider',
     selectize: '//cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.4/js/standalone/selectize.min',
     toastr: '../lib/toastr/toastr.min',
+    store: '//cdnjs.cloudflare.com/ajax/libs/store.js/1.3.20/store.min',
     fusejs: '//cdnjs.cloudflare.com/ajax/libs/fuse.js/2.5.0/fuse.min',
     autocomplete: '../lib/autocomplete/autocomplete',
     templates: 'templates'

@@ -11,7 +11,7 @@ define(['jquery', 'underscore', 'backbone', 'text!templates/layout/building_coun
       var onRenderDebounce = _.debounce(_.bind(this.render, this), 150);
       this.listenTo(this.state, 'change:filters', onRenderDebounce);
       this.listenTo(this.state, 'change:categories', onRenderDebounce);
-      this.listenTo(this.state, 'change:allbuildings', this.render);
+      this.listenTo(this.state, 'change:allbuildings', this.onBuildingChange);
 
       this.render();
     },
@@ -26,6 +26,10 @@ define(['jquery', 'underscore', 'backbone', 'text!templates/layout/building_coun
         showing: filteredBuildings.length.toLocaleString(),
         total: buildings.length.toLocaleString()
       });
+    },
+
+    onBuildingChange: function onBuildingChange() {
+      this.render();
     },
 
     render: function render() {
