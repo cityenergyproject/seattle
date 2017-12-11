@@ -1,64 +1,61 @@
-$footer-height-sm: 60px;
-$footer-height-md: 70px;
-$footer-height-lg: 80px;
-
 #footer {
-  background-color: #f2f2f2;
-  height: $footer-height-sm;
   position: fixed;
   display: table;
   bottom: 0;
-  transition: bottom 0.2s ease-in-out;
   width: 100%;
+  height: $footer-height;
+  padding: 0;
+  background-color: #f2f2f2;
   text-align: center;
-  padding: 10px;
+  overflow: hidden;
 
   @include media($medium-screen-up) {
-    height: $footer-height-md;
+    height: $footer-height;
   }
 
   @include media($xlarge-screen-up) {
-    height: $footer-height-lg;
+    height: $footer-height;
   }
 
   .footer-row {
-    display: table-row;
-    height: 50%;
+    display: block;
     margin: 0;
   }
 
+  .links-wrapper {
+    position: relative;
+    height: 100%;
+    width: 100%;
+    border-top: 1px solid $blue;
+  }
+
+  .links {
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
   a {
-    display:table-cell;
+    display: inline-block;
     color: #0047ba;
     text-decoration: none;
     vertical-align: middle;
   }
+
+  a + a:before {
+    content: '|';
+    padding: 0 5px;
+  }
 }
 
 #footer.nav-up {
-  bottom: -$footer-height-sm;
+  bottom: -$footer-height;
 
   @include media($medium-screen-up) {
-    bottom: -$footer-height-md;
+    bottom: -$footer-height;
   }
 
   @include media($xlarge-screen-up) {
-    bottom: -$footer-height-lg;
+    bottom: -$footer-height;
   }
 }
-
-// TODO: Come up with a better solution
-#buildings {
-  margin-bottom: $footer-height-sm;
-
-  @include media($medium-screen-up) {
-    margin-bottom: $footer-height-md;
-  }
-
-  @include media($xlarge-screen-up) {
-    margin-bottom: $footer-height-lg;
-  }
-}
-
-
-// 56

@@ -18,12 +18,13 @@ define([
   'views/layout/button',
   'views/layout/mobile-alert',
   'views/modals/modal-model',
-  'views/modals/modal'
+  'views/modals/modal',
+  'views/layout/footer'
 ], function($, deparam, _, Backbone, CityModel, ScorecardModel,
             CityBuildings, MapView, AddressSearchView,
             YearControlView, ActivityIndicator,
             BuildingCounts, CompareBar, ScorecardController,
-            Button, MobileAlert, ModalModel, ModalController) {
+            Button, MobileAlert, ModalModel, ModalController, FooterView) {
 
   var RouterState = Backbone.Model.extend({
     queryFields: [
@@ -173,6 +174,7 @@ define([
       const compareBar = new CompareBar({state: this.state});
       const scorecardController = new ScorecardController({state: this.state, mapView: mapView});
       const mobileAlert = new MobileAlert({state: this.state});
+      const footerView = new FooterView({state: this.state});
 
       const button = new Button({
         el: '#city-scorcard-toggle',
@@ -243,7 +245,8 @@ define([
 
       _.defaults(mapState, defaultMapState);
 
-      // set this to silent because we need to load buildings
+      // set this to silent because  `fetchBuildings`
+      // will trigger a state change
       this.state.set(_.extend({city: city}, newState, mapState));
 
       var thisYear = this.state.get('year');
@@ -261,14 +264,6 @@ define([
 
     onBuildingsSync: function() {
       this.state.set({allbuildings: this.allBuildings});
-
-      /*
-      // energy_star_score
-      const b = this.allBuildings.filter(function(d){
-        return d.get('energy_star_score') < 10;
-      });
-      console.log(b);
-      */
       this.state.trigger("hideActivityLoader");
     },
 

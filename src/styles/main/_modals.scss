@@ -12,16 +12,16 @@ body.modal-active {
   top: 0;
   left: 0;
   width: 100%;
-  height: calc(100% - #{$footer-height-sm});
+  height: calc(100% - #{$footer-height});
   background: $base-background-color;
   z-index: $zIndexMax + 1;
 
   @include media($medium-screen-up) {
-    height: calc(100% - #{$footer-height-md});
+    height: calc(100% - #{$footer-height});
   }
 
   @include media($xlarge-screen-up) {
-    height: calc(100% - #{$footer-height-lg});
+    height: calc(100% - #{$footer-height});
   }
 
 
@@ -95,7 +95,7 @@ body.modal-active {
   table {
     margin: 0 auto;
     width: 90%;
-    height: 100%;
+    height: auto;
     text-align: left;
 
     tr + tr {
@@ -117,7 +117,7 @@ body.modal-active {
     table {
       display: table;
       width: 80%;
-      height: 100%;
+      height: auto;
 
 
       tbody { display: table-row-group; }

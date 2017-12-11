@@ -16,7 +16,6 @@ $small-spacing: $base-spacing / 2;
 $base-z-index: 0;
 
 // Colors
-$blue: #477dca;
 $dark-gray: #333;
 $medium-gray: darken(#d0d0d0,10%);
 $light-gray: #ddd;
@@ -30,7 +29,8 @@ $real-orange: #DE8F41;
 
 $metric-left-width: 30%;
 $metric-header-height: 6.5em;
-$metric-footer-height: 4em;
+$metric-footer-height: 4em; // Building comparsion column height
+$footer-height: 2em; // Footer height
 
 
 
@@ -57,11 +57,3 @@ $zIndex1: 1;
 $zIndex10: 10;
 $zIndex100: 100;
 $zIndexMax: 999999;
-
-
-
-// Modals //
-// values need unit
-$footer-height-sm: 0px;
-$footer-height-md: 0px;
-$footer-height-lg: 0px;

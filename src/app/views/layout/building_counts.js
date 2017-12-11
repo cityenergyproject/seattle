@@ -32,14 +32,6 @@ define([
     },
 
     onBuildingChange: function() {
-      // TODO: Testing remove once implemented
-      /*
-      var modelFn = this.state.get('setModal');
-      if (typeof modelFn === 'function') {
-        modelFn('glossary');
-      }
-      */
-
       this.render();
     },
 
