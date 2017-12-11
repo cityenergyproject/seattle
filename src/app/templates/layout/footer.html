@@ -1,10 +1,11 @@
 <div class="links-wrapper">
   <div class="links">
     <div class="footer-row">
-      <a href="/" target="_blank" title="About benchmarking program">About the Program</a>
-      <a href="#" class="modal-link" data-modal="faq">FAQ</a>
-      <a href="#" class="modal-link" data-modal="glossary">Glossary</a>
-      <a href="/" target="_blank">Download Data</a>
+      <a href="/" target="_blank" title="About benchmarking program" rel="noopener noreferrer">About the Program</a>
+      <% _.each(modals, function(m){ %>
+        <a href="#" class="modal-link" data-modal="<%= m.id %>"><%= m.label %></a>
+      <% }) %>
+      <a href="/" target="_blank" rel="noopener noreferrer">Download Data</a>
     </div>
   </div>
 </div>

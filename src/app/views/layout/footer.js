@@ -10,6 +10,9 @@ define([
     initialize: function(options){
       this.state = options.state;
       this.template = _.template(FooterTemplate);
+
+      this.listenTo(this.state, 'change:city', this.render);
+
       this.render();
     },
 
@@ -17,13 +20,30 @@ define([
       'click .modal-link': 'onModalLink'
     },
 
+    getModals: function() {
+      const city = this.state.get('city');
+
+      if (!city) return [];
+
+      const modals = city.get('modals');
+
+      if (!modals) return [];
+
+      return Object.keys(modals).map(k => {
+        return {
+          id: k,
+          label: modals[k].label || k
+        };
+      });
+    },
+
     onModalLink: function(evt) {
       if (typeof evt.preventDefault === 'function') evt.preventDefault();
 
       // Since this is a modal link, we need to make sure
       // our handler exists
-      var modelFn = this.state.get('setModal');
-      if (!modelFn) return false;
+      const modelFn = this.state.get('setModal');
+      if (!typeof modelFn === 'function') return false;
 
       modelFn(evt.target.dataset.modal);
 
@@ -31,7 +51,10 @@ define([
     },
 
     render: function(){
-      this.$el.html(this.template());
+      const modals = this.getModals();
+      this.$el.html(this.template({
+        modals
+      }));
       return this;
     }
   });

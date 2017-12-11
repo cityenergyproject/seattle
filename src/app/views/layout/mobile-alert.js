@@ -16,7 +16,6 @@ define([
 
       this.listenTo(this.state, 'change:city', this.onCityChange);
 
-
       var store = Store.get(this.storekey);
 
       if (store !== undefined) {
