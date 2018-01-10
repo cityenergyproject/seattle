@@ -1,8 +1,3 @@
-/*!
- * gulp
- * $ npm install gulp-sass gulp-autoprefixer gulp-minify-css gulp-eslint gulp-concat gulp-uglify gulp-notify gulp-rename gulp-livereload gulp-cache del --save-dev
- */
-
 // Load plugins
 var gulp = require('gulp'),
     mainBowerFiles = require('main-bower-files');
@@ -11,7 +6,6 @@ var gulp = require('gulp'),
     eslint = require('gulp-eslint'),
     rename = require('gulp-rename'),
     concat = require('gulp-concat'),
-    notify = require('gulp-notify'),
     jasmine = require('gulp-jasmine'),
     connect = require('gulp-connect'),
     livereload = require('gulp-livereload'),
@@ -21,14 +15,12 @@ var gulp = require('gulp'),
 
 gulp.task('fileinclude', function() {
   return  gulp.src(['src/index.html', 'src/iframe.html', 'src/CNAME'])
-    .pipe(gulp.dest('dist'))
-    .pipe(notify({onLast: true, message: 'Index Copied' }));
+    .pipe(gulp.dest('dist'));
 });
 
 gulp.task('templates', function() {
   return gulp.src('src/app/templates/**/*.html')
-    .pipe(gulp.dest('dist/app/templates'))
-    .pipe(notify({onLast: true, message: 'templates copied' }));
+    .pipe(gulp.dest('dist/app/templates'));
 });
 
 // Styles
@@ -37,8 +29,7 @@ gulp.task('styles', function() {
     .pipe(sass({includePaths: require('node-neat').includePaths}).on('error', sass.logError))
     .pipe(autoprefixer('last 2 version'))
     .pipe(rename({ suffix: '.min' }))
-    .pipe(gulp.dest('dist/styles'))
-    .pipe(notify({onLast: true, message: 'Styles task complete' }));
+    .pipe(gulp.dest('dist/styles'));
 });
 
 // Scripts
@@ -47,8 +38,7 @@ gulp.task('scripts', function() {
     .pipe(eslint('./.eslintrc'))
     .pipe(eslint.format())
     .pipe(babel())
-    .pipe(gulp.dest('dist/app'))
-    .pipe(notify({onLast: true, message: 'Scripts task complete' }));
+    .pipe(gulp.dest('dist/app'));
 });
 
 // Cities Config
@@ -56,15 +46,13 @@ gulp.task('cities_config', function() {
   return gulp.src('src/cities/*.json')
     .pipe(eslint('./.eslintrc'))
     .pipe(eslint.format())
-    .pipe(gulp.dest('dist/cities'))
-    .pipe(notify({message: 'Cities config task complete' }));
+    .pipe(gulp.dest('dist/cities'));
 });
 
 // Images
 gulp.task('images', function() {
   return gulp.src('src/images/**/*')
-    .pipe(gulp.dest('dist/images'))
-    .pipe(notify({onLast: true, message: 'Images task complete' }));
+    .pipe(gulp.dest('dist/images'));
 });
 
 gulp.task('copy-bower', function() {
@@ -79,8 +67,7 @@ gulp.task('clean', function(cb) {
 
 gulp.task('copy-lib', function() {
   return gulp.src('src/lib/**/*')
-    .pipe(gulp.dest('dist/lib'))
-    .pipe(notify({onLast: true, message: 'lib copied' }));
+    .pipe(gulp.dest('dist/lib'));
 });
 
 // Default task
