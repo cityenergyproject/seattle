@@ -18,13 +18,10 @@ City data is hosted on CartoDB. Each city data table is specified in its respect
 
   Start webserver
   ```
-    $ npm start
+    $ npm run dev
   ```
 
-  Start livereload
-  ```
-    $ npm run watch
-  ```
+  Sometimes a `gulp` process gets stuck, so you may need to run `killall gulp` every once in awhile.
 
 ### Static Assets
 
@@ -42,7 +39,7 @@ to compile, and copy all site files to the `dist/` folder
   * make sure you have [node](https://nodejs.org/) and [bower](http://bower.io/) installed
   * in the root of the repo, run ```npm install```
   * in the root of the repo, run ```bower install```
-  * in a separate terminal window run ```npm start```
+  * in a separate terminal window run ```npm run dev```
   * point your browser to http://localhost:8080/
 
 ## How do I deploy it to the world?
@@ -50,6 +47,15 @@ to compile, and copy all site files to the `dist/` folder
 You can fork a copy of the repository, and the `dist` directory will turn into your own version of the site via [Github Pages](https://pages.github.com).  Alternatively, you can host your own copy of the `dist` directory on your own web server.
 
 For setup and configuration instructions, see the [Setup and Configuration guide](https://github.com/cityenergyproject/cityenergy/wiki/Setup-and-Configuration).
+
+## Modals & footers
+Please see the [Modals_Footer.md](./docs/Modals_Footer.md) file.
+
+## Links
+Please see the [Links.md](./docs/Links.md) file.
+
+## City-wide scorecard data
+Please see the [Citywide_scorecard.md](./docs/Citywide_scorecard.md) file.
 
 ## Contributing
 

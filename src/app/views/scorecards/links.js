@@ -10,6 +10,7 @@ define([
       this.template = _.template(LinksTemplate);
       this.el = options.el;
       this.link_type = options.link_type;
+      this.links_table = options.links_table;
       this.building = _.isFinite(options.building) ? +options.building : -1;
       this.active = true;
       this.load();
@@ -97,9 +98,7 @@ define([
     },
 
     url: function() {
-      // TODO: set dynamically from config
-      const table = 'links';
-
+      const table = this.links_table;
       const id = this.building;
       const where = [
         `property_type in ('${this.link_type}', 'default')`,

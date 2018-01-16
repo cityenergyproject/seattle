@@ -20,9 +20,7 @@ define([
       'click .modal-link': 'onModalLink'
     },
 
-    getModals: function() {
-      const city = this.state.get('city');
-
+    getModals: function(city) {
       if (!city) return [];
 
       const modals = city.get('modals');
@@ -50,11 +48,32 @@ define([
       return false;
     },
 
+    getFooterLinks: function(city) {
+      const rsp = {
+        about: '/',
+        download: '/'
+      };
+
+      let footerLinks = city && city.get && city.get('footer');
+
+      if (!footerLinks) footerLinks = {};
+
+      rsp.about = footerLinks.about_link || '/';
+      rsp.download = footerLinks.download_link || '/';
+
+      return rsp;
+    },
+
     render: function(){
-      const modals = this.getModals();
+      const city = this.state.get('city');
+      const modals = this.getModals(city);
+      const footerLinks = this.getFooterLinks(city);
+
       this.$el.html(this.template({
-        modals
+        modals,
+        footerLinks
       }));
+
       return this;
     }
   });

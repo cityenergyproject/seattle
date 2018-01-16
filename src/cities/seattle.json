@@ -234,6 +234,7 @@
         "citywide": {
             "table": "citywide_scorecard_data"
         },
+        "links_table": "links",
         "certified_field": "ess_cert",
         "labels": {
             "eui": {
@@ -534,5 +535,9 @@
             "label": "Glossary",
             "reflinks": true
         }
+    },
+    "footer": {
+        "about_link": "/",
+        "download_link": "/"
     }
 }

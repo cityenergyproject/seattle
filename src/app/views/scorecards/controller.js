@@ -127,12 +127,20 @@ define([
       this.view = null;
     },
 
+    getLinksTable: function() {
+      const city = this.state.get('city');
+      const table = city && city.get && city.get('scorecard');
+      return (table && table.links_table) || 'links'
+    },
+
     renderLinks: function(building, building_type, isBuildingRenderer) {
       if (this.linksView) this.removeLinks();
 
       if (!isBuildingRenderer) return;
+
       // Add links to parent
       this.linksView = new Links({
+        links_table: this.getLinksTable(),
         link_type: building_type,
         building,
         el: this.$el.find('#links')
