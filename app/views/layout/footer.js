@@ -19,9 +19,7 @@ define(['jquery', 'underscore', 'backbone', 'text!templates/layout/footer.html']
       'click .modal-link': 'onModalLink'
     },
 
-    getModals: function getModals() {
-      var city = this.state.get('city');
-
+    getModals: function getModals(city) {
       if (!city) return [];
 
       var modals = city.get('modals');
@@ -49,11 +47,32 @@ define(['jquery', 'underscore', 'backbone', 'text!templates/layout/footer.html']
       return false;
     },
 
+    getFooterLinks: function getFooterLinks(city) {
+      var rsp = {
+        about: '/',
+        download: '/'
+      };
+
+      var footerLinks = city && city.get && city.get('footer');
+
+      if (!footerLinks) footerLinks = {};
+
+      rsp.about = footerLinks.about_link || '/';
+      rsp.download = footerLinks.download_link || '/';
+
+      return rsp;
+    },
+
     render: function render() {
-      var modals = this.getModals();
+      var city = this.state.get('city');
+      var modals = this.getModals(city);
+      var footerLinks = this.getFooterLinks(city);
+
       this.$el.html(this.template({
-        modals: modals
+        modals: modals,
+        footerLinks: footerLinks
       }));
+
       return this;
     }
   });

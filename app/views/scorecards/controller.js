@@ -121,12 +121,20 @@ define(['jquery', 'underscore', 'backbone', './building_scorecard', './city_scor
       this.view = null;
     },
 
+    getLinksTable: function getLinksTable() {
+      var city = this.state.get('city');
+      var table = city && city.get && city.get('scorecard');
+      return table && table.links_table || 'links';
+    },
+
     renderLinks: function renderLinks(building, building_type, isBuildingRenderer) {
       if (this.linksView) this.removeLinks();
 
       if (!isBuildingRenderer) return;
+
       // Add links to parent
       this.linksView = new Links({
+        links_table: this.getLinksTable(),
         link_type: building_type,
         building: building,
         el: this.$el.find('#links')

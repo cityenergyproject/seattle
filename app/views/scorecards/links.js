@@ -6,6 +6,7 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/lin
       this.template = _.template(LinksTemplate);
       this.el = options.el;
       this.link_type = options.link_type;
+      this.links_table = options.links_table;
       this.building = _.isFinite(options.building) ? +options.building : -1;
       this.active = true;
       this.load();
@@ -97,9 +98,7 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/lin
     },
 
     url: function url() {
-      // TODO: set dynamically from config
-      var table = 'links';
-
+      var table = this.links_table;
       var id = this.building;
       var where = ['property_type in (\'' + this.link_type + '\', \'default\')', 'building_id = ' + this.building].join(' OR ');
 
