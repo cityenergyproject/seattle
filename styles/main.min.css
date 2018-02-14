@@ -1298,10 +1298,7 @@ header {
     width: 100%;
     border-top: 1px solid #0047ba; }
   #footer .links {
-    position: relative;
-    top: 50%;
-    -webkit-transform: translateY(-50%);
-            transform: translateY(-50%); }
+    position: relative; }
   #footer a {
     display: inline-block;
     color: #0047ba;
