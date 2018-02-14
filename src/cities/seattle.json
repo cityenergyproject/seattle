@@ -537,7 +537,7 @@
         }
     },
     "footer": {
-        "about_link": "/",
-        "download_link": "/"
+        "about_link": "http://www.seattle.gov/environment/climate-change/building-energy/energy-benchmarking",
+        "download_link": "http://www.seattle.gov/environment/climate-change/building-energy/energy-benchmarking/why-benchmarking-is-required#dataanalysis"
     }
 }
