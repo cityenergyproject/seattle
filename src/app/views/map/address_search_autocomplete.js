@@ -208,7 +208,15 @@ define([
               this.centerMapOn([lat,lng]);
 
               if (this.SYNC_WITH_STATE) {
-                this.state.set({building: building.get(propertyId)});
+                var buildingId = building.get(propertyId);
+                var state = { building: buildingId };
+
+                var selectedBuildings = this.makeSelectedBuildingsState(buildingId);
+                if (selectedBuildings) {
+                  state.selected_buildings = selectedBuildings;
+                }
+
+                this.state.set(state);
               }
             }
           }
@@ -375,6 +383,28 @@ define([
     centerMapOn: function(coordinates){
       this.placeMarker(coordinates);
       this.mapView.leafletMap.setView(coordinates);
+    },
+
+    makeSelectedBuildingsState: function(id) {
+      var selected_buildings = this.state.get('selected_buildings') || [];
+      if (selected_buildings.length === 5) return null;
+
+      var out = selected_buildings.map(function(b) {
+        b.selected = false;
+        return b;
+      });
+
+      out.push({
+        id: id,
+        insertedAt: Date.now(),
+        selected: true
+      });
+
+      out.sort(function(a, b) {
+        return a.insertedAt - b.insertedAt;
+      });
+
+      return out;
     },
 
     placeMarker: function(coordinates){
