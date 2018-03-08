@@ -302,7 +302,7 @@ define([
         change_label = building.higher_or_lower.toLowerCase();
       } else {
         change_pct = Math.abs(chartdata.building_value - chartdata.mean); // ((chartdata.building_value - chartdata.mean) / chartdata.building_value);
-        isValid = _.isNumber(change_pct) && _.isFinite(change_pct);
+        isValid = _.isNumber(change_pct) && _.isNumber(chartdata.building_value) && _.isFinite(change_pct);
         change_pct = this.formatters.fixedZero(change_pct);
 
         change_label = (chartdata.building_value >= chartdata.mean) ? 'higher' : 'lower';
