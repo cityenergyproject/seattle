@@ -217,7 +217,15 @@ define(['jquery', 'underscore', 'backbone', 'toastr', 'fusejs', 'autocomplete', 
             _this.centerMapOn([lat, lng]);
 
             if (_this.SYNC_WITH_STATE) {
-              _this.state.set({ building: building.get(propertyId) });
+              var buildingId = building.get(propertyId);
+              var state = { building: buildingId };
+
+              var selectedBuildings = _this.makeSelectedBuildingsState(buildingId);
+              if (selectedBuildings) {
+                state.selected_buildings = selectedBuildings;
+              }
+
+              _this.state.set(state);
             }
           }
         }
@@ -393,6 +401,28 @@ define(['jquery', 'underscore', 'backbone', 'toastr', 'fusejs', 'autocomplete', 
     centerMapOn: function centerMapOn(coordinates) {
       this.placeMarker(coordinates);
       this.mapView.leafletMap.setView(coordinates);
+    },
+
+    makeSelectedBuildingsState: function makeSelectedBuildingsState(id) {
+      var selected_buildings = this.state.get('selected_buildings') || [];
+      if (selected_buildings.length === 5) return null;
+
+      var out = selected_buildings.map(function (b) {
+        b.selected = false;
+        return b;
+      });
+
+      out.push({
+        id: id,
+        insertedAt: Date.now(),
+        selected: true
+      });
+
+      out.sort(function (a, b) {
+        return a.insertedAt - b.insertedAt;
+      });
+
+      return out;
     },
 
     placeMarker: function placeMarker(coordinates) {
