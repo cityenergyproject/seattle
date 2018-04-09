@@ -1,7 +1,7 @@
 $output-bourbon-deprecation-warnings: false !default;
 
 @import "bourbon";
-@import "base/base";
+@import "bitters-seattle/base";
 @import "neat";
 @import "../lib/range-slider/ion.rangeSlider";
 @import "range-slider/skin";
