@@ -20,3 +20,4 @@ venv
 doee_scripts/*.csv
 
 
+src/styles/main.scss
