@@ -1,8 +1,15 @@
 $output-bourbon-deprecation-warnings: false !default;
 
 @import "bourbon";
-@import "base/base";
+@import "bitters-{{ CITY }}/base";
+
+// Neat Settings -- uncomment if using Neat -- must be imported before Neat
+@import "main/grid-settings";
 @import "neat";
+
+@import "main/grid-settings";
+@import "main/common";
+
 @import "../lib/range-slider/ion.rangeSlider";
 @import "range-slider/skin";
 @import "../lib/toastr/toastr.min.css";
