@@ -35,7 +35,7 @@
 
 .year-control {
   font-weight: 500;
-  border-bottom-color: rgba(darken($orange, 15), 0.7);
+  border-bottom-color: rgba(darken($theme-color, 15), 0.7);
   text-align: center;
 
   label {
@@ -44,13 +44,13 @@
 
   input + label {
     cursor: pointer;
-    color: darken($orange, 10);
+    color: darken($theme-color, 10);
     opacity: 0.85;
     margin-bottom: 0.4em;
 
     &::after {
       opacity: 0.6;
-      background-color: darken($orange, 15);
+      background-color: darken($theme-color, 15);
     }
   }
 

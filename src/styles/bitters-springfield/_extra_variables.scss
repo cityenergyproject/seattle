@@ -4,7 +4,9 @@
 // $orange) or rely on an exiting Bitters 1.8 var that might not have been
 // around before.
 
-$orange: #0047ba;
+$theme-color: red;
+$theme-color-dark: shade(red, 30%);
+
 $base-background-color: #f2f2f2;
 $base-font-size: 1em;
 $footer-height: 2em;
@@ -13,7 +15,6 @@ $inverse-font-color: white;
 $metric-footer-height: 4em;
 $metric-header-height: 6.5em;
 $metric-left-width: 30%;
-$normal-text: $orange;
 $real-orange: #de8f41;
 $spinner-gray: #666;
 $toolbar-height: 3em;

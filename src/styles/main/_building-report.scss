@@ -101,12 +101,12 @@
 
 .building-report {
   thead {
-    background-color: $orange;
+    background-color: $theme-color;
     color: #fff;
   }
 
   tbody {
-    color: $orange;
+    color: $theme-color;
     background-color: #fff;
   }
 
@@ -129,7 +129,7 @@
   label {
     background: #fff;
     border-radius: 1em;
-    color: $orange;
+    color: $theme-color;
     cursor: pointer;
     @extend %disable-user-select;
   }

@@ -4,7 +4,7 @@
   top: 100%;
   width: 100% - $metric-left-width;
   height: $metric-footer-height;
-  background: $base-font-color;
+  background: $theme-color;
   z-index: 1000;
   cursor: pointer;
   font-size: 1em;
@@ -74,7 +74,7 @@
     }
 
     td.empty > div {
-      background: #001488;
+      background: $theme-color-dark;
       cursor: default;
     }
 

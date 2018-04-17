@@ -20,12 +20,13 @@ $dark-gray: #333;
 $medium-gray: darken(#d0d0d0,10%);
 $light-gray: #ddd;
 $spinner-gray: #666;
-$orange: #0047ba;
 $blue: #0047ba;
-$normal-text: $orange;
+$navy-blue: #001488;
 
 $real-orange: #DE8F41;
 
+$theme-color: $blue;
+$theme-color-dark: $navy-blue;
 
 $metric-left-width: 30%;
 $metric-header-height: 6.5em;
@@ -36,7 +37,7 @@ $footer-height: 2em; // Footer height
 
 // Font Colors
 $base-background-color: #f2f2f2;
-$base-font-color: $orange;
+$base-font-color: $theme-color;
 $action-color: white;
 
 $inverse-font-color: white;
