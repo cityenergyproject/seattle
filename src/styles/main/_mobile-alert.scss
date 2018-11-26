@@ -16,6 +16,10 @@
     display: none;
   }
 
+  @media print {
+    display: none;
+  }
+
   .logo {
     display: none;
     position: relative;
