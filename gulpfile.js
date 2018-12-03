@@ -71,10 +71,10 @@ gulp.task('copy-lib', function() {
 });
 
 // Default task
-gulp.task('default', ['clean'], function() {
+gulp.task('default', gulp.parallel('clean', function() {
   //gulp.start('scripts');
   gulp.start('fileinclude', 'styles', 'scripts', 'images', 'templates', 'cities_config', 'copy-lib');
-});
+}));
 
 gulp.task('connect', function() {
   connect.server({
@@ -90,24 +90,24 @@ gulp.task("heroku:production", function(){
 
 // Watch
 gulp.task('watch', function() {
-  gulp.start('default')
+  gulp.task('default')();
   // Create LiveReload server
   livereload.listen({start:true});
 
   // Watch .html files
-  gulp.watch('src/**/*.html', ['fileinclude', 'templates']);
-  gulp.watch('src/app/templates/**/*.html', ['templates']);
+  gulp.watch('src/**/*.html', gulp.series('fileinclude', 'templates'));
+  gulp.watch('src/app/templates/**/*.html', gulp.series('templates'));
 
   // Watch .scss files
-  gulp.watch(['src/styles/**/*.scss', 'src/lib/**/*.css'], ['styles']);
+  gulp.watch(['src/styles/**/*.scss', 'src/lib/**/*.css'], gulp.series('styles'));
 
   // Watch .js files
-  gulp.watch('src/app/**/*.js', ['scripts']);
+  gulp.watch('src/app/**/*.js', gulp.series('scripts'));
 
   // Watch image files
-  gulp.watch('src/images/**/*', ['images']);
+  gulp.watch('src/images/**/*', gulp.series('images'));
 
-  gulp.watch('src/cities/*.json', ['cities_config']);
+  gulp.watch('src/cities/*.json', gulp.series('cities_config'));
 
   // Watch any files in dist/, reload on change
   gulp.watch(['dist/**']).on('change', livereload.changed);
