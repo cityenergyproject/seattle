@@ -42,6 +42,9 @@ define([
       });
 
       var last = years.length - 1;
+      if (years.length < 2) {
+        return null;
+      }
 
       return ((years[last].val - years[last - 1].val) / years[last].val) * 100;
     },
