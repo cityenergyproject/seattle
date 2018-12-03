@@ -51,7 +51,7 @@ define([
         return a.year - b.year;
       });
 
-      const years = d3.extent(this.data, d => d.year);
+      const years = d3.set(this.data.map(d => d.year)).values().slice(-2);
 
       const change = this.calculateChange();
 
@@ -133,9 +133,15 @@ define([
 
       if (!isValid) return;
 
+      // Filter data to past two years
+      const allowedYears = d3.set(data.map(d => d.year)).values()
+        .map(y => parseInt(y))
+        .slice(-2);
+      const filteredData = data.filter(d => allowedYears.indexOf(d.year) >= 0);
+
       const diameter = 10;
-      const yearExtent = d3.extent(data, function(d){ return d.year; });
-      const valueExtent = d3.extent(data, function(d) { return d.value; });
+      const yearExtent = d3.extent(filteredData, function(d){ return d.year; });
+      const valueExtent = d3.extent(filteredData, function(d) { return d.value; });
 
       const yearWidth = yearsElm.select('p').node().offsetWidth;
       let baseWidth = yearsElm.node().offsetWidth - (yearWidth * 2);
@@ -155,7 +161,7 @@ define([
           .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
       const gradientID = 'gradient-' + this.view;
-      this.setSVGGradient(rootElm, gradientID, data);
+      this.setSVGGradient(rootElm, gradientID, filteredData);
 
       const x = d3.scale.ordinal()
           .range([0, width])
@@ -171,7 +177,7 @@ define([
 
       const connections = d3.nest()
         .key(d => d.label)
-        .entries(data);
+        .entries(filteredData);
 
       svg.selectAll('.line')
         .data(connections)
@@ -192,7 +198,7 @@ define([
         .attr('d', d => line(d.values));
 
       var bar = svg.selectAll('.dot')
-          .data(data)
+          .data(filteredData)
         .enter().append('g')
           .attr('class', d => {
             const colorize = d.colorize ? '' : ' no-clr';
@@ -210,7 +216,7 @@ define([
       var lastyear = x.domain()[1];
 
       var label = rootElm.selectAll('.label')
-        .data(data)
+        .data(filteredData)
       .enter().append('div')
         .attr('class', 'label')
         .attr('class', d => {
