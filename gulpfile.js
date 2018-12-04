@@ -72,8 +72,7 @@ gulp.task('copy-lib', function() {
 
 // Default task
 gulp.task('default', gulp.parallel('clean', function() {
-  //gulp.start('scripts');
-  gulp.start('fileinclude', 'styles', 'scripts', 'images', 'templates', 'cities_config', 'copy-lib');
+  gulp.series('fileinclude', 'styles', 'scripts', 'images', 'templates', 'cities_config', 'copy-lib');
 }));
 
 gulp.task('connect', function() {
@@ -85,7 +84,7 @@ gulp.task('connect', function() {
 });
 
 gulp.task("heroku:production", function(){
-  gulp.start('connect')
+  gulp.series('connect')
 });
 
 // Watch
