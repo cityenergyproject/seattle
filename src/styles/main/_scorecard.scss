@@ -956,6 +956,10 @@ $sc-font-lgr: 3rem;
       max-width: 7in;
     }
 
+    .sc-toggle {
+      display: none;
+    }
+
     .scorecard--nav {
       margin-top: 0;
     }
@@ -972,9 +976,24 @@ $sc-font-lgr: 3rem;
       overflow: visible;
     }
 
+    #comparison-view-link {
+      display: none;
+    }
+
     #ess-scorecard-view {
       page-break-before: always;
+      position: static;
       overflow: visible;
+
+      #compare-shift-chart,
+      #fuel-use-chart {
+        display: none;
+      }
+
+      .scorecard--details {
+        position: absolute;
+        top: 0;
+      }
     }
 
     .scorecard--section, .scorecard--details {
@@ -991,6 +1010,10 @@ $sc-font-lgr: 3rem;
   body {
     background-color: #fff;
     overflow: visible;
+  }
+
+  #footer {
+    display: none;
   }
 }
 
