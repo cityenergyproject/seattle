@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <style>
+      .tooltip {
+        position: absolute;
+        text-align: left;
+        padding: 8px;
+        font: 10px sans-serif;
+        pointer-events: none;
+        background: rgba(255,255,255,0.8);
+      }
+
+      .tick line {
+        display: none;
+      }
+
+      .tick text {
+        fill: #CBCBCB;
+      }
+
+      .domain {
+        stroke: #CBCBCB;
+      }
+
+      .axis-label {
+        fill: #CBCBCB;
+        font-size: 10px;
+        text-transform: uppercase;
+        font-family: sans-serif;
+      }
+    </style>
+    <title>Fuel Use prototype</title>
+</head>
+<body>
+  <script src="https://d3js.org/d3.v4.min.js"></script>
+  <script src="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/cartodb.js"></script>
+  <script>
+
+  var metric = 'site_eui';
+  var numberOfBuckets = 18;
+  var cappedMax = 200;
+
+  cappedMax = cappedMax * ((numberOfBuckets+1)/numberOfBuckets); //need to make the max as the last class break
+
+  var sql = new cartodb.SQL({ user: 'cityenergy-seattle', format: 'json' });
+  sql.execute("SELECT * FROM table_2015_stamen_phase_ii_v2 WHERE id::int >= {{id}}", { id: 1 })
+      // new data table: table_2015_stamen_phase_ii_v1
+  .done((data) => {
+      console.log(data.rows);
+
+      const types = new Set(data.rows.map(d => d.property_type)).values();
+      console.log(types);
+
+      const filteredData = data.rows.filter(row => row.total_ghg_emissions_intensity_2016 != null && row.energy_star_score_2016 != null && row.site_eui_2016 != null)
+        .filter(row => row.property_type === 'Large Office');
+
+      filteredData.forEach(row => {
+        row.gas_2016_pct = row.gas_2016_pct ? row.gas_2016_pct : 0;
+        row.electricity_2016_pct = row.electricity_2016_pct ? row.electricity_2016_pct : 0;
+        row.energy_star_score_2016 = row.energy_star_score_2016 ? row.energy_star_score_2016 : 0;
+        row.steam_2016_pct = row.steam_2016_pct ? row.steam_2016_pct : 0;
+        row.other_2016_pct = row.other_2016_pct ? row.other_2016_pct : 0;
+        row.gas_2016_ghg_percent = row.gas_2016_ghg_percent ? row.gas_2016_ghg_percent : 0;
+        row.electricity_2016_ghg_percent = row.electricity_2016_ghg_percent ? row.electricity_2016_ghg_percent : 0;
+        row.steam_2016_ghg_percent = row.steam_2016_ghg_percent ? row.steam_2016_ghg_percent : 0;
+        row.other_2016_ghg_percent = row.other_2016_ghg_percent ? row.other_2016_ghg_percent : 0;
+      });
+
+      const margin = 40;
+      const chartWidth = 760;
+      const chartHeight = 400;
+
+      var width = chartWidth - (margin * 2);
+      var height = chartHeight - (margin * 2);
+
+      var svg = d3.select("body").append("svg")
+        .attr("width", chartWidth)
+        .attr("height", chartHeight);
+
+      var container = svg.append('g')
+        .attr('width', width)
+        .attr('height', height)
+        .attr('transform', `translate(${margin}, ${margin})`);
+
+      var tooltip = d3.select("body").append("div")
+          .attr("class", "tooltip")
+          .style("display", "none");
+
+      const x = d3.scaleLinear()
+        .domain([0, d3.max(filteredData.map(r => r.total_ghg_emissions_intensity_2016))])
+        .range([0, width]);
+
+      const size = d3.scaleLinear()
+        .domain([0, d3.max(filteredData.map(r => r.total_ghg_emissions_2016))])
+        .range([5, 25]);
+
+      const y = d3.scaleLinear()
+        .domain([0, d3.max(filteredData.map(r => r.site_eui_2016))])
+        //.domain([0, d3.max(filteredData.map(r => r.energy_star_score_2016))])
+        .range([height, 0]);
+
+      const colors = d3.scaleOrdinal(d3.schemeCategory10)
+        .domain(new Set(filteredData.map(d => d.property_type)).values());
+
+      const xAxis = d3.axisBottom(x);
+      svg.append('g')
+        .attr('transform', `translate(${margin}, ${chartHeight - margin})`)
+        .call(xAxis);
+
+      const yAxis = d3.axisLeft(y);
+      svg.append('g')
+        .attr('transform', `translate(${margin}, ${margin})`)
+        .call(yAxis);
+
+      svg.append('text')
+        .classed('axis-label', true)
+        .text('GHG Emissions Intensity')
+        .attr('transform', `translate(${chartWidth / 2 - 100}, ${chartHeight - 3})`);
+
+      svg.append('text')
+        .classed('axis-label', true)
+        .text('Energy Use Intensity')
+        //.text('Energy STAR Score')
+        .attr('transform', `translate(8, ${chartHeight / 2 + 50}) rotate(-90)`);
+
+      const selectedId = filteredData[Math.ceil(Math.random() * filteredData.length)].cartodb_id;
+    console.log(selectedId);
+
+      var enterSelection = container.selectAll("circle")
+          .data(filteredData)
+        .enter()
+        .append('circle')
+        .attr('cx', d => x(d.total_ghg_emissions_intensity_2016))
+        .attr('cy', d => y(d.site_eui_2016))
+        //.attr('cy', d => y(d.energy_star_score_2016))
+        .attr('r', d => size(d.total_ghg_emissions_2016))
+        .attr('fill', d => {
+          console.log(d.cartodb_id === selectedId);
+          return d.cartodb_id === selectedId ? '#1F5DBE' : '#F1F1F1';
+        })
+        .on("mouseover", (d,i) => {
+          tooltip.style("display", null);
+          tooltip.style("left", '0px')
+          tooltip.style("top", '0px')
+          var summary = 
+            "<span>" + d.property_name + "</span><br>" +
+            "<span>site_eui_2016: " + d.site_eui_2016 + "</span><br>" +
+            "<span>total_ghg_emissions_2016: " + d.total_ghg_emissions_2016 + "</span><br>" +
+            "<span>total_ghg_emissions_intensity_2016: " + d.total_ghg_emissions_intensity_2016 + "</span><br>";
+          tooltip.html(summary);
+        })
+        .on("mouseout", function() {
+          tooltip.style("display", "none");
+        });
+    })
+    .error(function(errors) {
+      // errors contains a list of errors
+      console.log("errors:" + errors);
+    })
+
+  </script>
+</body>
+</html>
