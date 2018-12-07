@@ -1109,6 +1109,10 @@ $steam-color: $sc-orange;
       page-break-inside: avoid;
     }
 
+    #fuel-use-chart {
+      page-break-inside: unset;
+    }
+
     #building-type-table {
       page-break-after: always;
     }
