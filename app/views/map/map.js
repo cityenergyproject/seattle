@@ -27,12 +27,12 @@ define(['jquery', 'underscore', 'backbone', 'views/map/building_layer', 'views/m
         var default_layer = city.years[year].default_layer;
 
         _this.state.set({
-          'categories': cat_defaults,
-          'filters': [],
-          'metrics': [default_layer],
-          'layer': default_layer,
+          categories: cat_defaults,
+          filters: [],
+          metrics: [default_layer],
+          layer: default_layer,
           sort: default_layer,
-          'reset_all': true
+          reset_all: true
         });
 
         return false;
@@ -70,8 +70,7 @@ define(['jquery', 'underscore', 'backbone', 'views/map/building_layer', 'views/m
 
       $('#building-proptype-selector').html(template({ items: items, current: this.getCurrentCatValue() }));
 
-      var me = this;
-      var selector = $('#building-proptype-selector > select').selectize({
+      $('#building-proptype-selector > select').selectize({
         onChange: function onChange(val) {
           if (val === '*') val = null;
 
@@ -105,7 +104,6 @@ define(['jquery', 'underscore', 'backbone', 'views/map/building_layer', 'views/m
     },
 
     getThreshold: function getThreshold(propType) {
-
       // TODO: This will fail loudly
       var availableThresholds = this.state.get('city').get('scorecard').thresholds.eui;
       var year = this.state.get('year');
@@ -153,7 +151,8 @@ define(['jquery', 'underscore', 'backbone', 'views/map/building_layer', 'views/m
         this.currentLayerView = new BuildingLayer({
           leafletMap: this.leafletMap,
           state: this.state,
-          mapView: this });
+          mapView: this
+        });
       }
     },
 
@@ -164,7 +163,8 @@ define(['jquery', 'underscore', 'backbone', 'views/map/building_layer', 'views/m
       this.state.set({
         lat: center.lat.toFixed(5),
         lng: center.lng.toFixed(5),
-        zoom: zoom });
+        zoom: zoom
+      });
     },
 
     onMapChange: function onMapChange() {

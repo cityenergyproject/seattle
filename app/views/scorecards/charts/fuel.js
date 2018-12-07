@@ -16,6 +16,7 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
       this.building_name = options.name || '';
       this.year = options.year || '';
       this.isCity = options.isCity || false;
+      this.viewParent = options.parent;
 
       this.fuels = [{
         label: 'Gas',
@@ -290,9 +291,11 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
         return d.emissionsIntensity;
       }));
 
-      var parent = d3.select('#emissions-intensity-chart');
+      var parent = d3.select(this.viewParent).select('.emissions-intensity-chart');
+      if (!parent.node()) return;
+
       var margin = { top: 50, right: 30, bottom: 40, left: 40 };
-      var width = 620 - margin.left - margin.right;
+      var width = parent.node().offsetWidth - margin.left - margin.right;
       var height = 300 - margin.top - margin.bottom;
 
       var svg = parent.append('svg').attr('width', width + margin.left + margin.right).attr('height', height + margin.top + margin.bottom);
@@ -319,7 +322,7 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
       var yAxis = d3.svg.axis().orient('left').outerTickSize(0).innerTickSize(2).scale(y);
       svg.append('g').attr('class', 'y axis').attr('transform', 'translate(' + margin.left + ', ' + margin.top + ')').call(yAxis);
 
-      svg.append('g').classed('label', true).attr('transform', 'translate(' + width / 2 + ', ' + (height + margin.top + 30) + ')').append('text').attr('text-anchor', 'middle').text('GHG Emissions Per Square Foot');
+      svg.append('g').classed('label', true).attr('transform', 'translate(' + (margin.left + width / 2) + ', ' + (height + margin.top + 30) + ')').append('text').attr('text-anchor', 'middle').text('GHG Emissions Per Square Foot');
 
       svg.append('g').classed('label', true).attr('transform', 'translate(8, ' + (height / 2 + margin.top) + ') rotate(-90)').append('text').attr('text-anchor', 'middle').text('Energy Use Per Square Foot (EUI)');
 
@@ -387,7 +390,7 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
       selectedTextContent.append('p').text(d3.format('.2f')(selectedBuilding.total_ghg_emissions_intensity)).classed('quartile-' + selectedQuartile, true);
       selectedTextContent.append('p').html('KG/SF').classed('quartile-' + selectedQuartile, true);
 
-      var legendParent = d3.select('.emissions-dots');
+      var legendParent = d3.select(this.viewParent).select('.emissions-dots');
       if (legendParent.node()) {
         var legendWidth = legendParent.node().offsetWidth;
         var dotMargin = 15;
@@ -401,7 +404,7 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
           return size(dotScale.invert(dot)) * 2;
         }));
 
-        var legendSvg = d3.select('.emissions-dots').append('svg').attr('width', legendWidth).attr('height', 100);
+        var legendSvg = legendParent.append('svg').attr('width', legendWidth).attr('height', 100);
         var legendContainer = legendSvg.append('g').attr('transform', 'translate(' + (legendWidth - expectedWidth) / 2 + ', 15)');
 
         var xDotPosition = 0;
@@ -440,7 +443,8 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
     renderPieChart: function renderPieChart(id, data, width, height) {
       var radius = Math.min(width, height) / 2;
 
-      var svg = d3.select('#' + id).append('svg').attr('width', width).attr('height', height).append('g').attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')');
+      var parent = d3.select(this.viewParent);
+      var svg = parent.select('#' + id).append('svg').attr('width', width).attr('height', height).append('g').attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')');
 
       var pie = d3.layout.pie().sort(null).value(function (d) {
         return d.value;
@@ -457,7 +461,6 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
       };
 
       arcs.append('path').attr('d', arc).style('fill', function (d) {
-        console.log(d);
         return arcColors[d.data.type];
       });
     },
@@ -473,12 +476,13 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
     },
 
     render: function render() {
-      var d = this.chartData();
+      return this.template(this.chartData());
+    },
+
+    afterRender: function afterRender() {
       this.renderEmissionsChart(this.emissionsChartData);
       this.renderEnergyConsumptionPieChart(this.data[0]);
       this.renderEmissionsPieChart(this.data[0]);
-      console.log(d);
-      return this.template(d);
     }
   });
 

@@ -3,7 +3,6 @@
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 define(['jquery', 'underscore', 'backbone', 'collections/city_buildings', 'models/building_color_bucket_calculator', 'text!templates/map/building_info.html'], function ($, _, Backbone, CityBuildings, BuildingColorBucketCalculator, BuildingInfoTemplate) {
-
   var baseCartoCSS = {
     dots: ['{marker-fill: #CCC;' + 'marker-fill-opacity: 0.9;' + 'marker-line-color: #FFF;' + 'marker-line-width: 0.5;' + 'marker-line-opacity: 1;' + 'marker-placement: point;' + 'marker-multi-policy: largest;' + 'marker-type: ellipse;' + 'marker-allow-overlap: true;' + 'marker-clip: false;}'],
     footprints: ['{polygon-fill: #CCC;' + 'polygon-opacity: 0.9;' + 'line-width: 1;' + 'line-color: #FFF;' + 'line-opacity: 0.5;}']
@@ -317,25 +316,12 @@ define(['jquery', 'underscore', 'backbone', 'collections/city_buildings', 'model
       if (!buildingId) return;
 
       this.onClearPopups();
-
       this.state.set({ building_compare_active: true });
-      /*
-      $('#compare-building').attr('disabled', 'disabled');
-       // Add building to selected_buildings
-      var selectedBuildings = this.makeSelectedBuildingsState(buildingId);
-       if (selectedBuildings) {
-        this.state.set({
-          selected_buildings: selectedBuildings,
-          building_compare_active: true
-        });
-      }
-      */
       return false;
     },
 
     onViewReportClick: function onViewReportClick(evt) {
       if (evt.preventDefault) evt.preventDefault();
-      var buildingId = this.state.get('building');
       this.state.set({ report_active: true });
       return false;
     },
@@ -356,11 +342,6 @@ define(['jquery', 'underscore', 'backbone', 'collections/city_buildings', 'model
         propertyId = this.footprints_cfg.property_id;
       }
 
-      var selected_buildings = this.state.get('selected_buildings') || [];
-
-      var disableCompareBtn = this.isSelectedBuilding(selected_buildings, building_id);
-      if (selected_buildings.length >= 5) disableCompareBtn = true;
-
       var template = _.template(BuildingInfoTemplate);
 
       var presenter = new BuildingInfoPresenter(this.state.get('city'), this.allBuildings, building_id, propertyId, this.mapView.getControls(), this.state.get('layer'));
@@ -370,7 +351,6 @@ define(['jquery', 'underscore', 'backbone', 'collections/city_buildings', 'model
       var popup = L.popup().setLatLng(presenter.toLatLng()).setContent(template({
         data: presenter.toPopulatedLabels(),
         compare_disabled: ''
-        // compare_disabled: disableCompareBtn ? 'disabled="disable"' : '',
       }));
 
       this._popupid = building_id;

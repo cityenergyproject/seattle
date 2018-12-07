@@ -1,7 +1,7 @@
 'use strict';
 
 define(['jquery', 'underscore', 'backbone', 'models/city', 'text!templates/map_controls/category.html'], function ($, _, Backbone, CityModel, MapCategoryControlTemplate) {
-  var OTHER_LABEL = "Other";
+  var OTHER_LABEL = 'Other';
 
   var MapCategoryControlView = Backbone.View.extend({
     $container: $('#map-category-controls'),
@@ -12,8 +12,8 @@ define(['jquery', 'underscore', 'backbone', 'models/city', 'text!templates/map_c
       this.allBuildings = options.allBuildings;
       this.state = options.state;
 
-      var fieldName = this.layer.field_name,
-          counts = this.allBuildings.countBy(fieldName);
+      var fieldName = this.layer.field_name;
+      var counts = this.allBuildings.countBy(fieldName);
 
       var orderedValues = Object.keys(counts).sort(function (a, b) {
         if (this.layer.sort_by_key) {
@@ -35,28 +35,28 @@ define(['jquery', 'underscore', 'backbone', 'models/city', 'text!templates/map_c
     },
 
     render: function render() {
-      var fieldName = this.layer.field_name,
-          counts = this.allBuildings.countBy(fieldName),
-          fieldKeys = _.keys(counts),
-          onloadDisplayValues = !this.layer.onload_display_values ? fieldKeys.reduce(function (accum, current) {
+      var fieldName = this.layer.field_name;
+      var counts = this.allBuildings.countBy(fieldName);
+      var fieldKeys = _.keys(counts);
+      var onloadDisplayValues = !this.layer.onload_display_values ? fieldKeys.reduce(function (accum, current) {
         accum[current] = true;
         return accum;
       }, {}) : this.layer.onload_display_values.split(',').reduce(function (accum, current) {
         accum[current] = true;
         return accum;
-      }, {}),
-          defaultCategoryState = { field: fieldName, values: [fieldKeys], other: true },
-          categoryState = _.findWhere(this.state.get('categories'), { field: fieldName }) || defaultCategoryState,
-          template = _.template(MapCategoryControlTemplate);
+      }, {});
+      var defaultCategoryState = { field: fieldName, values: [fieldKeys], other: true };
+      var categoryState = _.findWhere(this.state.get('categories'), { field: fieldName }) || defaultCategoryState;
+      var template = _.template(MapCategoryControlTemplate);
 
-      if (fieldKeys[0] == "undefined") {
+      if (fieldKeys[0] == 'undefined') {
         return this;
       }
 
       var categories = this.values.map(function (name) {
-        var stateHasValue = _.contains(categoryState.values, name),
-            stateIsInverted = categoryState.other === true || categoryState.other === 'true',
-            checked = stateIsInverted ? name in onloadDisplayValues : stateHasValue;
+        var stateHasValue = _.contains(categoryState.values, name);
+        var stateIsInverted = categoryState.other === true || categoryState.other === 'true';
+        var checked = stateIsInverted ? name in onloadDisplayValues : stateHasValue;
 
         return {
           checked: checked ? 'checked="checked"' : '',
@@ -84,12 +84,12 @@ define(['jquery', 'underscore', 'backbone', 'models/city', 'text!templates/map_c
     },
 
     toggleCategory: function toggleCategory() {
-      var categories = this.state.get('categories'),
-          fieldName = this.layer.field_name,
-          unchecked = this.$el.find(".categories input:not(:checked)").map(function () {
+      var categories = this.state.get('categories');
+      var fieldName = this.layer.field_name;
+      var unchecked = this.$el.find('.categories input:not(:checked)').map(function () {
         return $(this).val();
-      }),
-          checked = this.$el.find(".categories input:checked").map(function () {
+      });
+      var checked = this.$el.find('.categories input:checked').map(function () {
         return $(this).val();
       });
 
@@ -119,44 +119,42 @@ define(['jquery', 'underscore', 'backbone', 'models/city', 'text!templates/map_c
     },
 
     hideAll: function hideAll() {
-      var categories = this.state.get('categories'),
-          fieldName = this.layer.field_name,
-          counts = this.allBuildings.countBy(fieldName),
-          fieldKeys = _.keys(counts);
+      var categories = this.state.get('categories');
+      var fieldName = this.layer.field_name;
+      var counts = this.allBuildings.countBy(fieldName);
+      var fieldKeys = _.keys(counts);
 
       categories = _.reject(categories, function (f) {
         return f.field == fieldName;
       });
 
-      this.$el.find(".categories input").map(function () {
+      this.$el.find('.categories input').map(function () {
         this.checked = false;
       });
 
       categories.push({ field: fieldName, values: fieldKeys, other: true });
 
       this.state.set({ categories: categories });
-
       return false;
     },
 
     showAll: function showAll() {
-      var categories = this.state.get('categories'),
-          fieldName = this.layer.field_name,
-          counts = this.allBuildings.countBy(fieldName),
-          fieldKeys = _.keys(counts);
+      var categories = this.state.get('categories');
+      var fieldName = this.layer.field_name;
+      var counts = this.allBuildings.countBy(fieldName);
+      var fieldKeys = _.keys(counts);
 
       categories = _.reject(categories, function (f) {
         return f.field == fieldName;
       });
 
-      this.$el.find(".categories input").map(function () {
+      this.$el.find('.categories input').map(function () {
         this.checked = true;
       });
 
       categories.push({ field: fieldName, values: fieldKeys, other: false });
 
       this.state.set({ categories: categories });
-
       return false;
     }
   });

@@ -5,7 +5,6 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
 
 define(['jquery', 'underscore', 'backbone', 'toastr', 'fusejs', 'autocomplete', 'text!templates/map/address_search.html', 'text!templates/map/address_search_results.html'], function ($, _, Backbone, toastr, Fuse, AutoComplete, AddressSearchTemplate, AddressSearchResultTemplate) {
-
   var AddressSearchACView = Backbone.View.extend({
     $container: $('#search'),
 
@@ -67,11 +66,6 @@ define(['jquery', 'underscore', 'backbone', 'toastr', 'fusejs', 'autocomplete', 
       });
 
       if (building) {
-        var _getLatLng = this.getLatLng(building),
-            _getLatLng2 = _slicedToArray(_getLatLng, 2),
-            lat = _getLatLng2[0],
-            lng = _getLatLng2[1];
-
         $('#address-search').val(building.get(this.SEARCH_KEY_FOR_SELECTED));
       } else {
         $('#address-search').val('');
@@ -89,10 +83,10 @@ define(['jquery', 'underscore', 'backbone', 'toastr', 'fusejs', 'autocomplete', 
     },
 
     getBuildingDataForSearch: function getBuildingDataForSearch(building) {
-      var _getLatLng3 = this.getLatLng(building),
-          _getLatLng4 = _slicedToArray(_getLatLng3, 2),
-          lat = _getLatLng4[0],
-          lng = _getLatLng4[1];
+      var _getLatLng = this.getLatLng(building),
+          _getLatLng2 = _slicedToArray(_getLatLng, 2),
+          lat = _getLatLng2[0],
+          lng = _getLatLng2[1];
 
       var rsp = {
         id: building.cid,
@@ -190,13 +184,13 @@ define(['jquery', 'underscore', 'backbone', 'toastr', 'fusejs', 'autocomplete', 
 
         renderItem: function renderItem(result, search) {
           search = search.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-          var re = new RegExp("(" + search.split(' ').join('|') + ")", "gi");
+          var re = new RegExp('(' + search.split(' ').join('|') + ')', 'gi');
           var template = _.template(AddressSearchResultTemplate);
 
           result.items.filter(function (d) {
             return skipRender.indexOf(d.key) === -1;
           }).forEach(function (item) {
-            item.formatted_value = item.matched ? item.value.replace(re, "<b>$1</b>") : item.value;
+            item.formatted_value = item.matched ? item.value.replace(re, '<b>$1</b>') : item.value;
           });
 
           return template(result);
@@ -207,10 +201,10 @@ define(['jquery', 'underscore', 'backbone', 'toastr', 'fusejs', 'autocomplete', 
             var id = item.getAttribute('data-building');
             var building = buildings.get(id);
 
-            var _getLatLng5 = _this.getLatLng(building),
-                _getLatLng6 = _slicedToArray(_getLatLng5, 2),
-                lat = _getLatLng6[0],
-                lng = _getLatLng6[1];
+            var _getLatLng3 = _this.getLatLng(building),
+                _getLatLng4 = _slicedToArray(_getLatLng3, 2),
+                lat = _getLatLng4[0],
+                lng = _getLatLng4[1];
 
             var propertyId = _this.state.get('city').get('property_id');
 
@@ -238,7 +232,6 @@ define(['jquery', 'underscore', 'backbone', 'toastr', 'fusejs', 'autocomplete', 
 
     wrapper: function wrapper(term, suggest, started_at, ctx) {
       return function (from_term, items, err) {
-        var now = new Date().getTime();
         if (from_term == term && ctx.maxReqTimestampRendered > started_at) return;
         ctx.maxReqTimestampRendered = started_at;
 
@@ -269,16 +262,16 @@ define(['jquery', 'underscore', 'backbone', 'toastr', 'fusejs', 'autocomplete', 
       this.xhr = $.ajax({
         url: url,
         data: {
-          api_key: api_key,
-          text: term + " " + this.state.get('city').get('address_search_regional_context'),
-          size: 10,
+          'api_key': api_key,
+          'text': term + ' ' + this.state.get('city').get('address_search_regional_context'),
+          'size': 10,
           'focus.point.lat': center[0],
           'focus.point.lon': center[1],
           'boundary.rect.min_lat': bounds[0],
           'boundary.rect.min_lon': bounds[1],
           'boundary.rect.max_lat': bounds[2],
           'boundary.rect.max_lon': bounds[3],
-          layers: 'address'
+          'layers': 'address'
         },
 
         error: function error(xhr, status, err) {
@@ -378,21 +371,21 @@ define(['jquery', 'underscore', 'backbone', 'toastr', 'fusejs', 'autocomplete', 
 
     errorReporter: function errorReporter(msg) {
       toastr.options = {
-        "closeButton": true,
-        "debug": false,
-        "newestOnTop": false,
-        "progressBar": false,
-        "positionClass": "toast-top-right",
-        "preventDuplicates": true,
-        "onclick": null,
-        "showDuration": "300",
-        "hideDuration": "1000",
-        "timeOut": "5000",
-        "extendedTimeOut": "1000",
-        "showEasing": "swing",
-        "hideEasing": "linear",
-        "showMethod": "fadeIn",
-        "hideMethod": "fadeOut"
+        closeButton: true,
+        debug: false,
+        newestOnTop: false,
+        progressBar: false,
+        positionClass: 'toast-top-right',
+        preventDuplicates: true,
+        onclick: null,
+        showDuration: '300',
+        hideDuration: '1000',
+        timeOut: '5000',
+        extendedTimeOut: '1000',
+        showEasing: 'swing',
+        hideEasing: 'linear',
+        showMethod: 'fadeIn',
+        hideMethod: 'fadeOut'
       };
 
       toastr.error(msg);

@@ -106,7 +106,6 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
         return console.error('No city scorecard data found');
       }
 
-      var scorecardState = this.state.get('scorecard');
       var buildings = this.state.get('allbuildings');
       var city = this.state.get('city');
       var years = _.keys(city.get('years')).map(function (d) {
@@ -122,7 +121,6 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
       var data = this.scoreCardData;
 
       if (!data.hasOwnProperty(year)) {
-        console.log(data);
         return console.error('No year found in citywide data!');
       }
 

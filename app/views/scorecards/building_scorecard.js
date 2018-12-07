@@ -133,8 +133,6 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
     processBuilding: function processBuilding(buildings, building_data, selected_year, avail_years, view) {
       var _this2 = this;
 
-      var scorecardState = this.state.get('scorecard');
-
       var building = building_data[selected_year];
 
       var config = this.state.get('city').get('scorecard');
@@ -155,7 +153,6 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
       var sqft = +building.reported_gross_floor_area;
       var prop_type = building.property_type;
       var id = building.id;
-      var eui = building.site_eui;
 
       var chartdata = this.prepareCompareChartData(config, buildings, building, selected_year, view, prop_type, id);
 
@@ -186,12 +183,14 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
           data: [building],
           name: name,
           year: selected_year,
+          parent: el[0],
           emissionsChartData: emissionsChartData
         });
       }
 
       el.find('#fuel-use-chart').html(this.charts[view].chart_fueluse.render());
       this.charts[view].chart_fueluse.fixlabels(viewSelector);
+      this.charts[view].chart_fueluse.afterRender();
 
       // render Change from Last Year chart
       // selected_year, avail_years
@@ -291,7 +290,9 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
     },
 
     compare: function compare(building, view, config, chartdata) {
-      var change_pct, change_label, isValid;
+      var change_pct;
+      var change_label;
+      var isValid;
       var compareConfig = config.compare_chart;
 
       if (view === 'eui') {
@@ -301,7 +302,7 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
 
         change_label = building.higher_or_lower.toLowerCase();
       } else {
-        change_pct = Math.abs(chartdata.building_value - chartdata.mean); // ((chartdata.building_value - chartdata.mean) / chartdata.building_value);
+        change_pct = Math.abs(chartdata.building_value - chartdata.mean);
         isValid = _.isNumber(change_pct) && _.isNumber(chartdata.building_value) && _.isFinite(change_pct);
         change_pct = this.formatters.fixedZero(change_pct);
 
@@ -321,7 +322,8 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
     calculateEuiBins: function calculateEuiBins(data_min, data_max, thresholds, schema) {
       var me = this;
       var _bins = [];
-      var min, max;
+      var min;
+      var max;
 
       schema.forEach(function (d, i) {
         min = thresholds[i - 1] ? thresholds[i - 1] : data_min;
@@ -364,11 +366,8 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
     },
 
     getThresholdLabels: function getThresholdLabels(thresholds) {
-      var _ = [];
-
       var prev = 0;
       return thresholds.map(function (d, i) {
-
         var start = prev;
         var end = start + d.steps;
         prev = end + 1;

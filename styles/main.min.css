@@ -2417,6 +2417,8 @@ header {
         top: 0; }
     #scorecard .scorecard--section, #scorecard .scorecard--details {
       page-break-inside: avoid; }
+    #scorecard #fuel-use-chart {
+      page-break-inside: unset; }
     #scorecard #building-type-table {
       page-break-after: always; } }
 
@@ -2424,6 +2426,8 @@ header {
   body {
     background-color: #fff;
     overflow: visible; }
+  #scorecard .scorecard-wrapper.no-energy-star-score #ess-scorecard-view {
+    display: none !important; }
   #footer {
     display: none; } }
 

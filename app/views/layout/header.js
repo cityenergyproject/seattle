@@ -11,11 +11,11 @@ define(['jquery', 'underscore', 'backbone', 'text!templates/layout/header.html']
       this.listenTo(this.state.get('city'), 'sync', this.render);
     },
     render: function render() {
-      var city = this.state.get('city'),
-          name = city.get('name'),
-          url_name = city.get('url_name'),
-          logo_link = city.get('logo_link_url'),
-          banner_images = city.get('header_banner_images');
+      var city = this.state.get('city');
+      var name = city.get('name');
+      var url_name = city.get('url_name');
+      var logo_link = city.get('logo_link_url');
+      var banner_images = city.get('header_banner_images');
 
       document.title = name;
 

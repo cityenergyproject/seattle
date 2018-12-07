@@ -166,6 +166,7 @@ define(['jquery', 'underscore', 'backbone', './building_scorecard', './city_scor
       var building = this.state.get('building');
       var name = void 0;
       var building_type = void 0;
+      var energy_star_score = void 0;
       var isBuildingRenderer = this.viewclass === BuildingScorecard;
 
       if (isBuildingRenderer) {
@@ -173,6 +174,7 @@ define(['jquery', 'underscore', 'backbone', './building_scorecard', './city_scor
         var buildingModel = buildings.get(building);
         name = buildingModel.get('property_name');
         building_type = buildingModel.get('property_type');
+        energy_star_score = buildingModel.get('energy_star_score');
       } else {
         name = 'Citywide Report';
         building_type = 'citywide';
@@ -180,7 +182,8 @@ define(['jquery', 'underscore', 'backbone', './building_scorecard', './city_scor
 
       this.$el.html(this.template({
         building_view: this.viewclass === BuildingScorecard,
-        name: name
+        name: name,
+        energy_star_score: energy_star_score
       }));
 
       this.renderLinks(building, building_type, isBuildingRenderer);

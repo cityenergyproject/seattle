@@ -5,9 +5,8 @@ var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = [
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 define(['jquery', 'underscore', 'backbone', 'd3', 'ionrangeslider', 'models/building_bucket_calculator', 'models/building_color_bucket_calculator', 'views/charts/histogram', 'utils/formatters', 'utils/threshold', 'text!templates/map_controls/filter_section_header.html', 'text!templates/map_controls/filter.html', 'text!templates/map_controls/filter_quartile.html', 'text!templates/map_controls/filter_container.html', 'text!templates/map_controls/filter_building_details.html', 'text!templates/map_controls/filter_property_type.html'], function ($, _, Backbone, d3, Ion, BuildingBucketCalculator, BuildingColorBucketCalculator, HistogramView, Formatters, ThresholdUtils, FilterSectionHeader, FilterTemplate, FilterQuartileTemplate, FilterContainer, FilterBuildingDetailsTemplate, FilterPropertyTypeTemplate) {
-
   var MapControlView = Backbone.View.extend({
-    className: "map-control",
+    className: 'map-control',
     $container: $('#map-controls-content--inner'),
     viewType: 'filter',
 
@@ -237,7 +236,7 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'ionrangeslider', 'models/buil
       var template = _.template(FilterContainer);
       var quartileTemplate = _.template(FilterQuartileTemplate);
       var fieldName = this.layer.field_name;
-      var idField = this.layer.id || fieldName.toLowerCase().replace(/\s/g, "-");
+      var idField = this.layer.id || fieldName.toLowerCase().replace(/\s/g, '-');
       var $el = $('#' + idField);
 
       var layerID = this.layer.id ? this.layer.id : fieldName;
@@ -247,13 +246,8 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'ionrangeslider', 'models/buil
       var $section = this.$section();
       var filterRange = this.layer.filter_range;
       var rangeSliceCount = this.layer.range_slice_count;
-      var colorStops = this.layer.color_range;
-      var buildings = this.activeBuildings;
-      var bucketCalculator = this.bucketCalculator;
       var extent = this.bucketCalculator.toExtent();
       var gradientCalculator = this.gradientCalculator;
-      var buckets = this.buckets;
-      var gradientStops = this.gradientStops;
       var filterTemplate = _.template(FilterTemplate);
       var stateFilters = this.state.get('filters');
       var filterState = _.findWhere(stateFilters, { field: idField }) || { min: extent[0], max: extent[1] };
@@ -361,7 +355,7 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'ionrangeslider', 'models/buil
         }
 
         var slider = this.$el.find('.range.filter').ionRangeSlider(slideOptions);
-        this.$filter = slider.data("ionRangeSlider");
+        this.$filter = slider.data('ionRangeSlider');
       }
 
       // if this is a slider update, skip
@@ -404,7 +398,7 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'ionrangeslider', 'models/buil
             section.find('.category-control-container').prepend(elm);
             break;
           default:
-            section.find(".category-control-container > div:nth-child(" + positionInCategory + ")").after(elm);
+            section.find('.category-control-container > div:nth-child(' + positionInCategory + ')').after(elm);
         }
       }
     },
@@ -449,7 +443,6 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'ionrangeslider', 'models/buil
     },
 
     onPrettifyHandler: function onPrettifyHandler(min, max, histogram) {
-
       if (this.isThreshold) {
         var labels = this.layer.slider_labels;
         return function (num) {
@@ -462,7 +455,7 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'ionrangeslider', 'models/buil
           case min:
             return num.toLocaleString();
           case max:
-            return num.toLocaleString() + "+";
+            return num.toLocaleString() + '+';
           default:
             return num.toLocaleString();
         }
@@ -483,8 +476,6 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'ionrangeslider', 'models/buil
 
     showLayer: function showLayer() {
       var layerID = this.layer.id ? this.layer.id : this.layer.field_name;
-
-      ///layer_thresholds: this.threshold_values
       this.state.set({ layer: layerID, sort: this.layer.field_name, order: 'desc' });
     },
 
@@ -494,9 +485,9 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'ionrangeslider', 'models/buil
     },
 
     $section: function $section() {
-      var sectionName = this.layer.section,
-          safeSectionName = sectionName.toLowerCase().replace(/\s/g, "-"),
-          $sectionEl = $("#" + safeSectionName);
+      var sectionName = this.layer.section;
+      var safeSectionName = sectionName.toLowerCase().replace(/\s/g, '-');
+      var $sectionEl = $('#' + safeSectionName);
 
       // if section exists return it, because every filter calls this fn
       if ($sectionEl.length > 0) {

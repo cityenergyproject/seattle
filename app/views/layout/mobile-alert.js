@@ -30,8 +30,8 @@ define(['jquery', 'underscore', 'backbone', 'store', 'text!templates/layout/mobi
     },
 
     onContinue: function onContinue() {
-      if ($('#remember-continue').is(":checked")) {
-        Store.set(this.storekey, { 'mobile_opt_out': true });
+      if ($('#remember-continue').is(':checked')) {
+        Store.set(this.storekey, { mobile_opt_out: true });
       }
 
       this.$el.toggleClass('forceoff', true);
