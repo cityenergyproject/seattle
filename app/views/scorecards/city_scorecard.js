@@ -122,6 +122,7 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
       var data = this.scoreCardData;
 
       if (!data.hasOwnProperty(year)) {
+        console.log(data);
         return console.error('No year found in citywide data!');
       }
 

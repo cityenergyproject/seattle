@@ -150,7 +150,7 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
         valueColor = '#aaa';
       }
 
-      var name = building.property_name; // building.get('property_name');
+      var name = building.property_name;
       var address = this.full_address(building);
       var sqft = +building.reported_gross_floor_area;
       var prop_type = building.property_type;
@@ -180,11 +180,13 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
 
       // render fuel use chart
       if (!this.charts[view].chart_fueluse) {
+        var emissionsChartData = this.prepareEmissionsChartData(buildings, prop_type);
         this.charts[view].chart_fueluse = new FuelUseView({
           formatters: this.formatters,
           data: [building],
           name: name,
-          year: selected_year
+          year: selected_year,
+          emissionsChartData: emissionsChartData
         });
       }
 
@@ -491,6 +493,22 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
         selectedColor: selectedColor,
         mean: avg
       };
+    },
+
+    prepareEmissionsChartData: function prepareEmissionsChartData(buildings, property_type) {
+      var buildingsOfType = buildings.where({ property_type: property_type }).map(function (m) {
+        return m.toJSON();
+      });
+      return buildingsOfType.map(function (building) {
+        return {
+          id: building.id,
+          eui: building.site_eui,
+          emissions: building.total_ghg_emissions,
+          emissionsIntensity: building.total_ghg_emissions_intensity
+        };
+      }).filter(function (d) {
+        return d.eui != null && d.emissionsIntensity != null;
+      });
     },
 
     renderCompareChart: function renderCompareChart(config, chartdata, view, prop_type, name, viewSelector) {

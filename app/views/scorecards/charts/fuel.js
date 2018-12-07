@@ -3,7 +3,6 @@
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/charts/fueluse.html'], function ($, _, Backbone, d3, FuelUseTemplate) {
-
   var FuelUseView = Backbone.View.extend({
     className: 'fueluse-chart',
 
@@ -13,12 +12,13 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
       this.template = _.template(FuelUseTemplate);
       this.formatters = options.formatters;
       this.data = options.data;
+      this.emissionsChartData = options.emissionsChartData;
       this.building_name = options.name || '';
       this.year = options.year || '';
       this.isCity = options.isCity || false;
 
       this.fuels = [{
-        label: 'Natural Gas',
+        label: 'Gas',
         key: 'gas'
       }, {
         label: 'Electric',
@@ -194,7 +194,6 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
       this.fixPercents(fuels, 'emissions');
       this.fixPercents(fuels, 'usage');
 
-      // console.log(this.formatters.abbreviate(total_usage, this.formatters.fixed));
       var totals = {
         usage: this.formatters.fixed(total_usage),
         emissions: this.formatters.fixed(total_ghg_emissions)
@@ -203,6 +202,8 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
       return {
         fuels: fuels,
         totals: totals,
+        total_ghg_emissions: total_ghg_emissions,
+        total_ghg_emissions_intensity: data[0].total_ghg_emissions_intensity,
         isCity: this.isCity,
         building_name: this.building_name,
         year: this.year,
@@ -272,21 +273,175 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
       });
     },
 
+    renderEmissionsChart: function renderEmissionsChart(data) {
+      var selectedBuilding = this.data[0];
+      var averageEmissionsIntensity = d3.mean(data.map(function (d) {
+        return d.emissionsIntensity;
+      }));
+
+      var parent = d3.select('#emissions-intensity-chart');
+      var margin = { top: 30, right: 30, bottom: 40, left: 40 };
+      var width = 620 - margin.left - margin.right;
+      var height = 300 - margin.top - margin.bottom;
+
+      var svg = parent.append('svg').attr('width', width + margin.left + margin.right).attr('height', height + margin.top + margin.bottom);
+
+      var container = svg.append('g').attr('width', width).attr('height', height).attr('transform', 'translate(' + margin.left + ', ' + margin.top + ')');
+
+      var maxEmissionsIntensity = d3.max(data.map(function (r) {
+        return r.emissionsIntensity;
+      }));
+      var x = d3.scale.linear().domain([0, maxEmissionsIntensity * 1.05]).range([0, width]);
+
+      var maxEui = d3.max(data.map(function (r) {
+        return r.eui;
+      }));
+      var y = d3.scale.linear().domain([0, maxEui * 1.15]).range([height, 0]);
+
+      var size = d3.scale.linear().domain([0, d3.max(data.map(function (r) {
+        return r.emissions;
+      }))]).range([5, 25]);
+
+      var xAxis = d3.svg.axis().orient('bottom').outerTickSize(0).innerTickSize(2).scale(x);
+      svg.append('g').attr('class', 'x axis').attr('transform', 'translate(' + margin.left + ', ' + (height + margin.top) + ')').call(xAxis);
+
+      var yAxis = d3.svg.axis().orient('left').outerTickSize(0).innerTickSize(2).scale(y);
+      svg.append('g').attr('class', 'y axis').attr('transform', 'translate(' + margin.left + ', ' + margin.top + ')').call(yAxis);
+
+      svg.append('g').classed('label', true).attr('transform', 'translate(' + width / 2 + ', ' + (height + margin.top + 30) + ')').append('text').attr('text-anchor', 'middle').text('GHG Emissions Per Square Foot');
+
+      svg.append('g').classed('label', true).attr('transform', 'translate(8, ' + (height / 2 + margin.top) + ') rotate(-90)').append('text').attr('text-anchor', 'middle').text('Energy Use Per Square Foot (EUI)');
+
+      // TODO bring selected building to front
+      container.selectAll('circle').data(data).enter().append('circle').attr('cx', function (d) {
+        return x(d.emissionsIntensity);
+      }).attr('cy', function (d) {
+        return y(d.eui);
+      }).attr('r', function (d) {
+        return size(d.emissions);
+      }).attr('fill-opacity', 0.5).attr('fill', function (d) {
+        return d.id === selectedBuilding.id ? '#1F5DBE' : '#F1F1F1';
+      });
+
+      // Show average intensity
+      container.append('line').attr('stroke', '#D5D5D5').attr('stroke-dasharray', '8 5').attr('x1', x(averageEmissionsIntensity)).attr('x2', x(averageEmissionsIntensity)).attr('y1', y(0)).attr('y2', 0);
+
+      // Draw line to selected building
+      container.append('line').attr('stroke', '#1F5DBE').attr('x1', x(selectedBuilding.total_ghg_emissions_intensity)).attr('x2', x(selectedBuilding.total_ghg_emissions_intensity)).attr('y1', y(selectedBuilding.site_eui) - size(selectedBuilding.total_ghg_emissions) - 3).attr('y2', 0);
+
+      // Text for average
+      var yPosition = 0;
+      var averageText = parent.append('div');
+      averageText.classed('avg-highlight-html', true).style('top', margin.top + 'px').style('left', margin.left + x(averageEmissionsIntensity) + 5 + 'px');
+
+      // TODO fix text color
+      var averageTextContent = averageText.append('div');
+      averageTextContent.append('p').text('Building type average');
+      averageTextContent.append('p').text(d3.format('.2f')(averageEmissionsIntensity)).style('color', 'orange');
+      averageTextContent.append('p').html('KG/SF').style('color', 'orange');
+
+      // Text for selected building
+      var selectedText = parent.append('div');
+      // TODO fix alignment when close to edge
+      selectedText.classed('avg-highlight-html', true).style('top', margin.top + 'px').style('left', margin.left + x(selectedBuilding.total_ghg_emissions_intensity) + 5 + 'px');
+
+      // TODO fix text color
+      var selectedTextContent = selectedText.append('div');
+      selectedTextContent.append('p').text(selectedBuilding.property_name);
+      selectedTextContent.append('p').text(d3.format('.2f')(selectedBuilding.total_ghg_emissions_intensity)).style('color', 'orange');
+      selectedTextContent.append('p').html('KG/SF').style('color', 'orange');
+
+      /*
+      // fix averageHighlight going to deep
+      var averageBoxHeight = averageHighlight.node().offsetHeight;
+      if ((yPosition + averageBoxHeight) > height) {
+        yPosition += (height - (yPosition + averageBoxHeight));
+        averageHighlight.style('top', (margin.top + yPosition) + 'px');
+      }
+      */
+
+      var legendParent = d3.select('.emissions-dots');
+      if (legendParent.node()) {
+        var legendWidth = legendParent.node().offsetWidth;
+        var dotMargin = 15;
+
+        var dotScale = d3.scale.linear().domain(d3.extent(data.map(function (d) {
+          return d.emissions;
+        })));
+        var dots = [0.1, 0.25, 0.5, 0.75, 1];
+
+        var expectedWidth = dotMargin * (dots.length - 1) + d3.sum(dots.map(function (dot) {
+          return size(dotScale.invert(dot)) * 2;
+        }));
+
+        var legendSvg = d3.select('.emissions-dots').append('svg').attr('width', legendWidth).attr('height', 100);
+        var legendContainer = legendSvg.append('g').attr('transform', 'translate(' + (legendWidth - expectedWidth) / 2 + ', 15)');
+
+        var xDotPosition = 0;
+        var enterLegendDot = legendContainer.selectAll('.emissions-chart-legend-dot').data(dots).enter().append('g').classed('emissions-chart-legend-dot', true).attr('transform', function (d, i) {
+          var r = size(dotScale.invert(d));
+          xDotPosition += r;
+          var translate = 'translate(' + xDotPosition + ', ' + (50 - r) + ')';
+          xDotPosition += r + dotMargin;
+          return translate;
+        });
+
+        enterLegendDot.append('circle').attr('cx', 0).attr('cy', 0).attr('r', function (d) {
+          return size(dotScale.invert(d));
+        }).attr('fill', function (d) {
+          return '#F1F1F1';
+        });
+
+        enterLegendDot.append('text').attr('text-anchor', 'middle').classed('emissions-dots-label', true).text(function (d) {
+          return d3.format('.2r')(dotScale.invert(d));
+        }).attr('transform', function (d) {
+          return 'translate(0, ' + (15 + size(dotScale.invert(d))) + ')';
+        });
+      }
+    },
+
     fixlabels: function fixlabels(selector) {
       var chart = d3.select(selector).select('#fuel-use-chart');
 
       var headerLabels = chart.select('.fc-bars').selectAll('.fc-header');
       this.adjSizes(headerLabels, 0);
 
-      // const emissionBars = chart.select('.emission-bars').selectAll('.fc-bar');
-      // this.adjSizes(emissionBars, 0);
-
       var barLabels = chart.select('.fc-bars').selectAll('.fc-bar');
       this.hideLabels(barLabels);
     },
 
+    renderPieChart: function renderPieChart(id, data, width, height) {
+      var radius = Math.min(width, height) / 2;
+
+      var svg = d3.select('#' + id).append('svg').attr('width', width).attr('height', height).append('g').attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')');
+
+      var pie = d3.layout.pie().sort(null).value(function (d) {
+        return d;
+      });
+
+      var arcs = svg.selectAll('.arc').data(pie(data)).enter().append('g').classed('arc', true);
+
+      var arc = d3.svg.arc().outerRadius(radius - 10).innerRadius(0);
+
+      arcs.append('path').attr('d', arc).style('fill', 'blue');
+    },
+
+    renderEmissionsPieChart: function renderEmissionsPieChart(data) {
+      var pieData = [data.gas_ghg_percent * 100, data.electricity_ghg_percent * 100, data.steam_ghg_percent * 100];
+      this.renderPieChart('emissions-pie-chart', pieData, 100, 100);
+    },
+
+    renderEnergyConsumptionPieChart: function renderEnergyConsumptionPieChart(data) {
+      var pieData = [data.gas_pct * 100, data.electricity_pct * 100, data.steam_pct * 100];
+      this.renderPieChart('energy-consumption-pie-chart', pieData, 100, 100);
+    },
+
     render: function render() {
       var d = this.chartData();
+      this.renderEmissionsChart(this.emissionsChartData);
+      this.renderEnergyConsumptionPieChart(this.data[0]);
+      this.renderEmissionsPieChart(this.data[0]);
+      console.log(d);
       return this.template(d);
     }
   });

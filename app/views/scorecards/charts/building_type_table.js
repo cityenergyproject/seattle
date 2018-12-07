@@ -1,7 +1,6 @@
 'use strict';
 
 define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/charts/building_type_table.html'], function ($, _, Backbone, d3, TableTemplate) {
-
   var ORDINALS = ['1st', '2nd', '3rd', '4th'];
 
   var BuildingTypeTableView = Backbone.View.extend({
@@ -36,10 +35,12 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
         var clr = d.color;
         var val = void 0;
 
-        if (!thresholds) return {
-          clr: null,
-          val: 'n/a'
-        };
+        if (!thresholds) {
+          return {
+            clr: null,
+            val: 'n/a'
+          };
+        }
 
         if (i === 0) {
           val = '<' + _this.formatters.fixedZero(thresholds[0]);

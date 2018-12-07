@@ -99,7 +99,6 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/lin
 
     url: function url() {
       var table = this.links_table;
-      var id = this.building;
       var where = ['property_type in (\'' + this.link_type + '\', \'default\')', 'building_id = ' + this.building].join(' OR ');
 
       var base = 'https://cityenergy-seattle.carto.com/api/v2/sql?q=';
