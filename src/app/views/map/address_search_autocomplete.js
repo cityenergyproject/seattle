@@ -8,7 +8,6 @@ define([
   'text!templates/map/address_search.html',
   'text!templates/map/address_search_results.html'
 ], function($, _, Backbone, toastr, Fuse, AutoComplete, AddressSearchTemplate, AddressSearchResultTemplate){
-
   var AddressSearchACView = Backbone.View.extend({
     $container: $('#search'),
 
@@ -33,7 +32,7 @@ define([
       this.listenTo(this.state, 'change:building', this.onBuildingChange);
 
       if (!String.prototype.trim) {
-        String.prototype.trim = function () {
+        String.prototype.trim = function() {
           return this.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, '');
         };
       }
@@ -71,8 +70,6 @@ define([
       });
 
       if (building) {
-        const [lat,lng] = this.getLatLng(building);
-
         $('#address-search').val(building.get(this.SEARCH_KEY_FOR_SELECTED));
       } else {
         $('#address-search').val('');
@@ -84,7 +81,7 @@ define([
       return [
         parseFloat(building.get('lat')),
         parseFloat(building.get('lng'))
-      ]
+      ];
     },
 
     render: function(){
@@ -93,7 +90,7 @@ define([
     },
 
     getBuildingDataForSearch: function(building) {
-      const [lat,lng] = this.getLatLng(building);
+      const [lat, lng] = this.getLatLng(building);
 
       const rsp = {
         id: building.cid,
@@ -101,7 +98,7 @@ define([
       };
 
       let valid = true;
-      this.SEARCH_KEYS.forEach((obj) => {
+      this.SEARCH_KEYS.forEach(obj => {
         let value = building.get(obj.key) + '';
 
         rsp[obj.name] = value.trim();
@@ -122,8 +119,8 @@ define([
         if (buildingData) things.push(buildingData);
       });
 
-      const options = {...this.config.fuse_options};
-      options.keys = this.SEARCH_KEYS.map(d => d.name)
+      const options = { ...this.config.fuse_options };
+      options.keys = this.SEARCH_KEYS.map(d => d.name);
 
       // fuzzy search engine
       this.fuse = new Fuse(things, options);
@@ -135,91 +132,90 @@ define([
 
       // autocomplete setup
       this.autocomplete = new autoComplete({
-          selector: '#address-search',
-          menuClass: 'address-search-results',
-          minChars: 3,
-          delay: 200,
-          offsetTop: 10,
-          cache: false,
-          source: (term, suggest, doExternalSearch) => {
-            var wrapper = this.wrapper(term, suggest, new Date().getTime(), this);
+        selector: '#address-search',
+        menuClass: 'address-search-results',
+        minChars: 3,
+        delay: 200,
+        offsetTop: 10,
+        cache: false,
+        source: (term, suggest, doExternalSearch) => {
+          var wrapper = this.wrapper(term, suggest, new Date().getTime(), this);
 
-            if (this.$autocompleteHeader) this.$autocompleteHeader.removeClass('show');
+          if (this.$autocompleteHeader) this.$autocompleteHeader.removeClass('show');
 
-            if (doExternalSearch) {
-              this.search(term, wrapper);
-            } else {
-              const val = term.toLowerCase();
-              const results = this.fuse.search(val);
+          if (doExternalSearch) {
+            this.search(term, wrapper);
+          } else {
+            const val = term.toLowerCase();
+            const results = this.fuse.search(val);
 
-              const matches = results.map((d) => {
-                const m = [];
+            const matches = results.map(d => {
+              const m = [];
 
-                this.SEARCH_KEYS.forEach((opt) => {
-                  const name = opt.name;
-                  if (!d.item[name] || !d.item[name].length) return;
+              this.SEARCH_KEYS.forEach(opt => {
+                const name = opt.name;
+                if (!d.item[name] || !d.item[name].length) return;
 
-                  let matched = false;
-                  d.matches.forEach((mat) => {
-                    if (mat.key === name) matched = true;
-                  });
-
-                  m.push({
-                    key: name,
-                    value: d.item[name],
-                    matched: matched
-                  });
+                let matched = false;
+                d.matches.forEach(mat => {
+                  if (mat.key === name) matched = true;
                 });
 
-                return {
-                  building_id: d.item.id,
-                  items: m
-                };
+                m.push({
+                  key: name,
+                  value: d.item[name],
+                  matched: matched
+                });
               });
 
-              wrapper(term, matches);
-            }
+              return {
+                building_id: d.item.id,
+                items: m
+              };
+            });
 
-          },
+            wrapper(term, matches);
+          }
+        },
 
-          renderItem: (result, search) => {
-            search = search.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-            const re = new RegExp("(" + search.split(' ').join('|') + ")", "gi");
-            const template = _.template(AddressSearchResultTemplate);
+        renderItem: (result, search) => {
+          search = search.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+          const re = new RegExp('(' + search.split(' ').join('|') + ')', 'gi');
+          const template = _.template(AddressSearchResultTemplate);
 
-            result.items
-              .filter(d => skipRender.indexOf(d.key) === -1)
-              .forEach(item => {
-                item.formatted_value = (item.matched) ?
-                    item.value.replace(re, "<b>$1</b>") :
-                    item.value;
-              });
+          result.items
+            .filter(d => skipRender.indexOf(d.key) === -1)
+            .forEach(item => {
+              item.formatted_value = (item.matched) ?
+                  item.value.replace(re, '<b>$1</b>') :
+                  item.value;
+            });
 
-            return template(result);
-          },
+          return template(result);
+        },
 
-          onSelect: (e, term, item) => {
-            if (item) {
-              const id = item.getAttribute('data-building');
-              const building = buildings.get(id);
-              const [lat,lng] = this.getLatLng(building);
-              const propertyId = this.state.get('city').get('property_id');
+        onSelect: (e, term, item) => {
+          if (item) {
+            const id = item.getAttribute('data-building');
+            const building = buildings.get(id);
+            const [lat, lng] = this.getLatLng(building);
+            const propertyId = this.state.get('city').get('property_id');
 
-              this.centerMapOn([lat,lng]);
+            this.centerMapOn([lat, lng]);
 
-              if (this.SYNC_WITH_STATE) {
-                var buildingId = building.get(propertyId);
-                var state = { building: buildingId };
+            if (this.SYNC_WITH_STATE) {
+              var buildingId = building.get(propertyId);
+              var state = { building: buildingId };
 
-                var selectedBuildings = this.makeSelectedBuildingsState(buildingId);
-                if (selectedBuildings) {
-                  state.selected_buildings = selectedBuildings;
-                }
-
-                this.state.set(state);
+              var selectedBuildings = this.makeSelectedBuildingsState(buildingId);
+              if (selectedBuildings) {
+                state.selected_buildings = selectedBuildings;
               }
+
+              this.state.set(state);
             }
           }
+        }
       });
 
       if (this.SYNC_WITH_STATE) this.onBuildingChange();
@@ -229,7 +225,6 @@ define([
 
     wrapper: function(term, suggest, started_at, ctx) {
       return function(from_term, items, err) {
-        var now = new Date().getTime();
         if (from_term == term && ctx.maxReqTimestampRendered > started_at) return;
         ctx.maxReqTimestampRendered = started_at;
 
@@ -238,7 +233,7 @@ define([
         }
 
         suggest(items);
-      }
+      };
     },
 
     maxReqTimestampRendered: new Date().getTime(),
@@ -251,21 +246,21 @@ define([
       const center = this.state.get('city').get('center');
       const api_key = this.SEARCH_API_KEY;
 
-      try { this.xhr.abort(); } catch(e){}
+      try { this.xhr.abort(); } catch (e){}
 
       this.xhr = $.ajax({
         url: url,
         data: {
-          api_key: api_key,
-          text: term + " " + this.state.get('city').get('address_search_regional_context'),
-          size: 10,
+          'api_key': api_key,
+          'text': term + ' ' + this.state.get('city').get('address_search_regional_context'),
+          'size': 10,
           'focus.point.lat': center[0],
           'focus.point.lon': center[1],
           'boundary.rect.min_lat': bounds[0],
           'boundary.rect.min_lon': bounds[1],
           'boundary.rect.max_lat': bounds[2],
           'boundary.rect.max_lon': bounds[3],
-          layers: 'address',
+          'layers': 'address',
         },
 
         error: (xhr, status, err) => {
@@ -286,7 +281,7 @@ define([
             callback(term, results.buildings, null);
           }
         }
-      })
+      });
     },
 
     getDistances: function(loc) {
@@ -295,7 +290,7 @@ define([
 
       this.things.forEach(thing => {
         var d = loc.distanceTo(thing.latlng);
-        if (d < limit) distances.push({id: thing.id, d: d});
+        if (d < limit) distances.push({ id: thing.id, d });
       });
 
       return distances;
@@ -309,11 +304,11 @@ define([
 
     onAjaxAddressSuccess: function(data, term) {
       const regional_context = this.state.get('city').get('address_search_regional_context');
-      const features = (data.features || []).filter((feat) => {
+      const features = (data.features || []).filter(feat => {
         return feat.properties.region && feat.properties.region === regional_context;
       });
 
-      if (!features.length) return {match: false, buildings:[]};
+      if (!features.length) return { match: false, buildings: [] };
 
       const buildings = this.state.get('allbuildings');
       const keys = this.SEARCH_KEYS.map(d => d.name);
@@ -325,9 +320,9 @@ define([
         closestBuildings = closestBuildings.concat(distances);
       });
 
-      closestBuildings = _.uniq(closestBuildings, false, function(item) { return item.id; })
+      closestBuildings = _.uniq(closestBuildings, false, function(item) { return item.id; });
       closestBuildings = _.sortBy(closestBuildings, 'd');
-      closestBuildings = closestBuildings.slice(0,10);
+      closestBuildings = closestBuildings.slice(0, 10);
       closestBuildings = closestBuildings.map(item => {
         const building = buildings.get(item.id);
         const buildingData = this.getBuildingDataForSearch(building);
@@ -349,32 +344,31 @@ define([
             value: value,
             matched: false
           });
-
         });
 
         return m;
       });
 
-      return {match: match, buildings: closestBuildings};
+      return { match, buildings: closestBuildings };
     },
 
     errorReporter: function(msg) {
       toastr.options = {
-        "closeButton": true,
-        "debug": false,
-        "newestOnTop": false,
-        "progressBar": false,
-        "positionClass": "toast-top-right",
-        "preventDuplicates": true,
-        "onclick": null,
-        "showDuration": "300",
-        "hideDuration": "1000",
-        "timeOut": "5000",
-        "extendedTimeOut": "1000",
-        "showEasing": "swing",
-        "hideEasing": "linear",
-        "showMethod": "fadeIn",
-        "hideMethod": "fadeOut"
+        closeButton: true,
+        debug: false,
+        newestOnTop: false,
+        progressBar: false,
+        positionClass: 'toast-top-right',
+        preventDuplicates: true,
+        onclick: null,
+        showDuration: '300',
+        hideDuration: '1000',
+        timeOut: '5000',
+        extendedTimeOut: '1000',
+        showEasing: 'swing',
+        hideEasing: 'linear',
+        showMethod: 'fadeIn',
+        hideMethod: 'fadeOut'
       };
 
       toastr.error(msg);
@@ -425,7 +419,7 @@ define([
           shadowAnchor: [22, 94]
       });
 
-      this.marker = L.marker(coordinates, {icon: icon}).addTo(map);
+      this.marker = L.marker(coordinates, { icon }).addTo(map);
     },
 
     clearMarker: function(){
@@ -440,5 +434,4 @@ define([
   });
 
   return AddressSearchACView;
-
 });
