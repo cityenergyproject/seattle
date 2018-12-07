@@ -278,8 +278,10 @@ define([
       const averageEmissionsIntensity = d3.mean(data.map(d => d.emissionsIntensity));
 
       const parent = d3.select('#emissions-intensity-chart');
+      if (!parent.node()) return;
+
       const margin = { top: 50, right: 30, bottom: 40, left: 40 };
-      const width = 620 - margin.left - margin.right;
+      const width = parent.node().offsetWidth - margin.left - margin.right;
       const height = 300 - margin.top - margin.bottom;
 
       const svg = parent.append('svg')
