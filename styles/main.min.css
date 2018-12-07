@@ -2045,6 +2045,8 @@ header {
     fill: #CBCBCB; }
   #scorecard #emissions-intensity-chart .avg-highlight-html.selected-building {
     opacity: 1; }
+    #scorecard #emissions-intensity-chart .avg-highlight-html.selected-building.right-aligned {
+      text-align: right; }
     #scorecard #emissions-intensity-chart .avg-highlight-html.selected-building p {
       color: #0047BA; }
   #scorecard #emissions-intensity-chart .avg-highlight-html p.quartile-1 {
@@ -2118,8 +2120,7 @@ header {
       line-height: 24px; }
   #scorecard #fueluse-chart .fc-label {
     height: 36px;
-    line-height: 36px;
-    text-align: center; }
+    line-height: 36px; }
     #scorecard #fueluse-chart .fc-label > div {
       display: inline-block;
       vertical-align: middle; }

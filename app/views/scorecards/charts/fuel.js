@@ -195,8 +195,8 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
       this.fixPercents(fuels, 'usage');
 
       var totals = {
-        usage: this.formatters.fixed(total_usage),
-        emissions: this.formatters.fixed(total_ghg_emissions)
+        usage: d3.format(',d')(d3.round(total_usage, 0)),
+        emissions: d3.format(',d')(d3.round(total_ghg_emissions, 0))
       };
 
       return {
@@ -350,7 +350,7 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
       }).attr('r', function (d) {
         return size(d.emissions);
       }).attr('fill-opacity', function (d) {
-        return d.id === selectedBuilding.id ? 1 : 0.3;
+        return d.id === selectedBuilding.id ? 1 : 0.15;
       }).attr('fill', function (d) {
         return quartileColors[_this3.findQuartile(quartiles, d.emissionsIntensity)];
       });
@@ -372,9 +372,14 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
       averageTextContent.append('p').html('KG/SF').classed('quartile-' + averageQuartile, true);
 
       // Text for selected building
-      var selectedText = parent.append('div');
-      // TODO fix alignment when close to edge
-      selectedText.classed('avg-highlight-html selected-building', true).style('top', '0px').style('left', margin.left + x(selectedBuilding.total_ghg_emissions_intensity) + 5 + 'px');
+      var selectedText = parent.append('div').classed('avg-highlight-html selected-building', true).style('top', '0px');
+
+      var selectedBuildingX = x(selectedBuilding.total_ghg_emissions_intensity);
+      if (selectedBuildingX <= width * 0.75) {
+        selectedText.style('left', margin.left + selectedBuildingX + 5 + 'px');
+      } else {
+        selectedText.style('right', width - selectedBuildingX + margin.right + 5 + 'px').classed('right-aligned', true);
+      }
 
       var selectedTextContent = selectedText.append('div');
       var selectedQuartile = this.findQuartile(quartiles, selectedBuilding.total_ghg_emissions_intensity);
