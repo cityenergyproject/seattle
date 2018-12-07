@@ -273,14 +273,25 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
       });
     },
 
+    findQuartile: function findQuartile(quartiles, value) {
+      var i = 1;
+      for (; i <= quartiles.length; i++) {
+        if (value < quartiles[i - 1]) return i;
+      }
+      return i - 1;
+    },
+
+
     renderEmissionsChart: function renderEmissionsChart(data) {
+      var _this3 = this;
+
       var selectedBuilding = this.data[0];
       var averageEmissionsIntensity = d3.mean(data.map(function (d) {
         return d.emissionsIntensity;
       }));
 
       var parent = d3.select('#emissions-intensity-chart');
-      var margin = { top: 30, right: 30, bottom: 40, left: 40 };
+      var margin = { top: 50, right: 30, bottom: 40, left: 40 };
       var width = 620 - margin.left - margin.right;
       var height = 300 - margin.top - margin.bottom;
 
@@ -312,53 +323,64 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
 
       svg.append('g').classed('label', true).attr('transform', 'translate(8, ' + (height / 2 + margin.top) + ') rotate(-90)').append('text').attr('text-anchor', 'middle').text('Energy Use Per Square Foot (EUI)');
 
-      // TODO bring selected building to front
-      container.selectAll('circle').data(data).enter().append('circle').attr('cx', function (d) {
+      // Bring selected building to front
+      var buildingData = data.filter(function (d) {
+        return d.id === selectedBuilding.id;
+      })[0];
+      var scatterpointData = data.slice();
+      scatterpointData.push(buildingData);
+
+      var quartileColors = {
+        1: '#0047BA',
+        2: '#90AE60',
+        3: '#F7C34D',
+        4: '#C04F31'
+      };
+      var emissionsIntensities = data.map(function (d) {
+        return d.emissionsIntensity;
+      }).sort();
+      var quartiles = [0.25, 0.5, 0.75, 1].map(function (q) {
+        return d3.quantile(emissionsIntensities, q);
+      });
+
+      container.selectAll('circle').data(scatterpointData).enter().append('circle').attr('cx', function (d) {
         return x(d.emissionsIntensity);
       }).attr('cy', function (d) {
         return y(d.eui);
       }).attr('r', function (d) {
         return size(d.emissions);
-      }).attr('fill-opacity', 0.5).attr('fill', function (d) {
-        return d.id === selectedBuilding.id ? '#1F5DBE' : '#F1F1F1';
+      }).attr('fill-opacity', function (d) {
+        return d.id === selectedBuilding.id ? 1 : 0.3;
+      }).attr('fill', function (d) {
+        return quartileColors[_this3.findQuartile(quartiles, d.emissionsIntensity)];
       });
 
       // Show average intensity
       container.append('line').attr('stroke', '#D5D5D5').attr('stroke-dasharray', '8 5').attr('x1', x(averageEmissionsIntensity)).attr('x2', x(averageEmissionsIntensity)).attr('y1', y(0)).attr('y2', 0);
 
       // Draw line to selected building
-      container.append('line').attr('stroke', '#1F5DBE').attr('x1', x(selectedBuilding.total_ghg_emissions_intensity)).attr('x2', x(selectedBuilding.total_ghg_emissions_intensity)).attr('y1', y(selectedBuilding.site_eui) - size(selectedBuilding.total_ghg_emissions) - 3).attr('y2', 0);
+      container.append('line').attr('stroke', '#1F5DBE').attr('x1', x(selectedBuilding.total_ghg_emissions_intensity)).attr('x2', x(selectedBuilding.total_ghg_emissions_intensity)).attr('y1', y(selectedBuilding.site_eui) - size(selectedBuilding.total_ghg_emissions) - 3).attr('y2', -margin.top);
 
       // Text for average
-      var yPosition = 0;
       var averageText = parent.append('div');
       averageText.classed('avg-highlight-html', true).style('top', margin.top + 'px').style('left', margin.left + x(averageEmissionsIntensity) + 5 + 'px');
 
-      // TODO fix text color
       var averageTextContent = averageText.append('div');
+      var averageQuartile = this.findQuartile(quartiles, averageEmissionsIntensity);
       averageTextContent.append('p').text('Building type average');
-      averageTextContent.append('p').text(d3.format('.2f')(averageEmissionsIntensity)).style('color', 'orange');
-      averageTextContent.append('p').html('KG/SF').style('color', 'orange');
+      averageTextContent.append('p').text(d3.format('.2f')(averageEmissionsIntensity)).classed('quartile-' + averageQuartile, true);
+      averageTextContent.append('p').html('KG/SF').classed('quartile-' + averageQuartile, true);
 
       // Text for selected building
       var selectedText = parent.append('div');
       // TODO fix alignment when close to edge
-      selectedText.classed('avg-highlight-html', true).style('top', margin.top + 'px').style('left', margin.left + x(selectedBuilding.total_ghg_emissions_intensity) + 5 + 'px');
+      selectedText.classed('avg-highlight-html selected-building', true).style('top', '0px').style('left', margin.left + x(selectedBuilding.total_ghg_emissions_intensity) + 5 + 'px');
 
-      // TODO fix text color
       var selectedTextContent = selectedText.append('div');
+      var selectedQuartile = this.findQuartile(quartiles, selectedBuilding.total_ghg_emissions_intensity);
       selectedTextContent.append('p').text(selectedBuilding.property_name);
-      selectedTextContent.append('p').text(d3.format('.2f')(selectedBuilding.total_ghg_emissions_intensity)).style('color', 'orange');
-      selectedTextContent.append('p').html('KG/SF').style('color', 'orange');
-
-      /*
-      // fix averageHighlight going to deep
-      var averageBoxHeight = averageHighlight.node().offsetHeight;
-      if ((yPosition + averageBoxHeight) > height) {
-        yPosition += (height - (yPosition + averageBoxHeight));
-        averageHighlight.style('top', (margin.top + yPosition) + 'px');
-      }
-      */
+      selectedTextContent.append('p').text(d3.format('.2f')(selectedBuilding.total_ghg_emissions_intensity)).classed('quartile-' + selectedQuartile, true);
+      selectedTextContent.append('p').html('KG/SF').classed('quartile-' + selectedQuartile, true);
 
       var legendParent = d3.select('.emissions-dots');
       if (legendParent.node()) {
@@ -416,23 +438,32 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
       var svg = d3.select('#' + id).append('svg').attr('width', width).attr('height', height).append('g').attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')');
 
       var pie = d3.layout.pie().sort(null).value(function (d) {
-        return d;
+        return d.value;
       });
 
       var arcs = svg.selectAll('.arc').data(pie(data)).enter().append('g').classed('arc', true);
 
       var arc = d3.svg.arc().outerRadius(radius - 10).innerRadius(0);
 
-      arcs.append('path').attr('d', arc).style('fill', 'blue');
+      var arcColors = {
+        gas: '#C04F31',
+        electricity: '#90AE60',
+        steam: '#DE8F41'
+      };
+
+      arcs.append('path').attr('d', arc).style('fill', function (d) {
+        console.log(d);
+        return arcColors[d.data.type];
+      });
     },
 
     renderEmissionsPieChart: function renderEmissionsPieChart(data) {
-      var pieData = [data.gas_ghg_percent * 100, data.electricity_ghg_percent * 100, data.steam_ghg_percent * 100];
+      var pieData = [{ type: 'gas', value: data.gas_ghg_percent * 100 }, { type: 'electricity', value: data.electricity_ghg_percent * 100 }, { type: 'steam', value: data.steam_ghg_percent * 100 }];
       this.renderPieChart('emissions-pie-chart', pieData, 100, 100);
     },
 
     renderEnergyConsumptionPieChart: function renderEnergyConsumptionPieChart(data) {
-      var pieData = [data.gas_pct * 100, data.electricity_pct * 100, data.steam_pct * 100];
+      var pieData = [{ type: 'gas', value: data.gas_pct * 100 }, { type: 'electricity', value: data.electricity_pct * 100 }, { type: 'steam', value: data.steam_pct * 100 }];
       this.renderPieChart('energy-consumption-pie-chart', pieData, 100, 100);
     },
 

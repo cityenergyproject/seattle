@@ -2043,6 +2043,18 @@ header {
     stroke: #CBCBCB; }
   #scorecard #emissions-intensity-chart .x.axis text, #scorecard #emissions-intensity-chart .label text {
     fill: #CBCBCB; }
+  #scorecard #emissions-intensity-chart .avg-highlight-html.selected-building {
+    opacity: 1; }
+    #scorecard #emissions-intensity-chart .avg-highlight-html.selected-building p {
+      color: #0047BA; }
+  #scorecard #emissions-intensity-chart .avg-highlight-html p.quartile-1 {
+    color: #0047BA; }
+  #scorecard #emissions-intensity-chart .avg-highlight-html p.quartile-2 {
+    color: #90AE60; }
+  #scorecard #emissions-intensity-chart .avg-highlight-html p.quartile-3 {
+    color: #F7C34D; }
+  #scorecard #emissions-intensity-chart .avg-highlight-html p.quartile-4 {
+    color: #C04F31; }
   #scorecard .emissions-intensity-chart-container {
     display: -webkit-box;
     display: -ms-flexbox;
@@ -2180,6 +2192,15 @@ header {
       font-weight: bold;
       margin-top: 5px;
       padding-top: 5px; }
+    #scorecard #fueluse-chart .pie-chart-container .energy-consumption-item.gas,
+    #scorecard #fueluse-chart .pie-chart-container .emissions-item.gas {
+      color: #C04F31; }
+    #scorecard #fueluse-chart .pie-chart-container .energy-consumption-item.electricity,
+    #scorecard #fueluse-chart .pie-chart-container .emissions-item.electricity {
+      color: #90AE60; }
+    #scorecard #fueluse-chart .pie-chart-container .energy-consumption-item.steam,
+    #scorecard #fueluse-chart .pie-chart-container .emissions-item.steam {
+      color: #DE8F41; }
   #scorecard #change-chart {
     text-align: center; }
     #scorecard #change-chart .change-chart-inner {

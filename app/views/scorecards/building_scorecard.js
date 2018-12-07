@@ -462,8 +462,8 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
         if (avg >= d.min && avg < next.min) avgIndex = i;
       });
 
-      var avgColor = void 0,
-          selectedColor = void 0;
+      var avgColor = void 0;
+      var selectedColor = void 0;
 
       if (compareField === 'site_eui') {
         thresholds.forEach(function (d) {
@@ -513,19 +513,16 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
 
     renderCompareChart: function renderCompareChart(config, chartdata, view, prop_type, name, viewSelector) {
       var container = d3.select(viewSelector);
-      var self = this;
 
       if (chartdata.selectedIndex === null && (chartdata.avgIndex === null || chartdata.mean === null)) {
         console.warn('Could not find required data!', view, chartdata);
         return;
       }
 
-      var compareField = this.getViewField(view);
-
       var compareChartConfig = config.compare_chart;
-      var margin = { top: 80, right: 30, bottom: 40, left: 40 },
-          width = 620 - margin.left - margin.right,
-          height = 300 - margin.top - margin.bottom;
+      var margin = { top: 80, right: 30, bottom: 40, left: 40 };
+      var width = 620 - margin.left - margin.right;
+      var height = 300 - margin.top - margin.bottom;
 
       if (chartdata.building_value === null) margin.top = 20;
 
@@ -537,16 +534,16 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
         return d.y;
       })]).range([height, 0]);
 
-      var svg = container.select("#compare-chart").append("svg").attr("width", width + margin.left + margin.right).attr("height", height + margin.top + margin.bottom).append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+      var svg = container.select('#compare-chart').append('svg').attr('width', width + margin.left + margin.right).attr('height', height + margin.top + margin.bottom).append('g').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
-      svg.append("g").attr("class", "y axis").call(d3.svg.axis().scale(y).orient("left").ticks(5).outerTickSize(0).innerTickSize(2));
+      svg.append('g').attr('class', 'y axis').call(d3.svg.axis().scale(y).orient('left').ticks(5).outerTickSize(0).innerTickSize(2));
 
-      var threshold = svg.append('g').attr('class', 'x axis').attr("transform", function (d) {
-        return "translate(0," + (height + 10) + ")";
-      }).selectAll('.threshold').data(chartdata.thresholds).enter().append('g').attr('class', 'threshold').attr("transform", function (d) {
+      var threshold = svg.append('g').attr('class', 'x axis').attr('transform', function (d) {
+        return 'translate(0,' + (height + 10) + ')';
+      }).selectAll('.threshold').data(chartdata.thresholds).enter().append('g').attr('class', 'threshold').attr('transform', function (d) {
         var indices = d.indices;
         var start = x(chartdata.data[indices[0]].x);
-        return "translate(" + start + ",0)";
+        return 'translate(' + start + ',0)';
       });
 
       threshold.append('line').attr('x1', 0).attr('x2', function (d) {
@@ -554,7 +551,7 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
         var start = x(chartdata.data[indices[0]].x);
         var end = x(chartdata.data[indices[1]].x) + x.rangeBand();
         return end - start;
-      }).attr("fill", 'none').attr('stroke', function (d) {
+      }).attr('fill', 'none').attr('stroke', function (d) {
         return d.clr;
       });
 
@@ -577,19 +574,19 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
         return d.label;
       });
 
-      svg.append('g').attr('class', 'label').attr("transform", function (d) {
-        return "translate(" + -30 + "," + height / 2 + ")";
+      svg.append('g').attr('class', 'label').attr('transform', function (d) {
+        return 'translate(' + -30 + ',' + height / 2 + ')';
       }).append('text').text(compareChartConfig.y_label).attr('text-anchor', 'middle').attr('transform', 'rotate(-90)');
 
-      svg.append('g').attr('class', 'label').attr("transform", function (d) {
-        return "translate(" + width / 2 + "," + (height + 40) + ")";
+      svg.append('g').attr('class', 'label').attr('transform', function (d) {
+        return 'translate(' + width / 2 + ',' + (height + 40) + ')';
       }).append('text').text(compareChartConfig.x_label[view]).attr('text-anchor', 'middle');
 
-      var bar = svg.selectAll(".bar").data(chartdata.data).enter().append("g").attr("class", "bar").attr("transform", function (d) {
-        return "translate(" + x(d.x) + "," + y(d.y) + ")";
+      var bar = svg.selectAll('.bar').data(chartdata.data).enter().append('g').attr('class', 'bar').attr('transform', function (d) {
+        return 'translate(' + x(d.x) + ',' + y(d.y) + ')';
       });
 
-      bar.append("rect").attr("x", 1).attr("width", x.rangeBand()).attr("height", function (d) {
+      bar.append('rect').attr('x', 1).attr('width', x.rangeBand()).attr('height', function (d) {
         return height - y(d.y);
       }).attr('class', function (d, i) {
         if (i === chartdata.selectedIndex) return 'building-bar selected';
@@ -610,12 +607,12 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
         return '>= ' + d.x + ' && < ' + (d.x + d.dx);
       });
 
-      //// Set selected building marker
+      // Set selected building marker
       var xBandWidth = x.rangeBand();
       var xpos = chartdata.selectedIndex === null ? 0 : x(chartdata.data[chartdata.selectedIndex].x) + xBandWidth / 2;
       var ypos = chartdata.selectedIndex === null ? 0 : y(chartdata.data[chartdata.selectedIndex].y);
 
-      var selectedCityHighlight = container.select("#compare-chart").append('div').attr('class', 'selected-city-highlight-html').style('top', margin.top - 70 + 'px').style('left', margin.left + xpos + 'px').style('display', function (d) {
+      var selectedCityHighlight = container.select('#compare-chart').append('div').attr('class', 'selected-city-highlight-html').style('top', margin.top - 70 + 'px').style('left', margin.left + xpos + 'px').style('display', function (d) {
         return chartdata.selectedIndex === null || chartdata.building_value === null ? 'none' : null;
       });
 
@@ -632,14 +629,13 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
 
       selectedCityHighlight.append('div').attr('class', 'line').style('height', ypos + 5 + 'px');
 
-      //// Set average label and fill
+      // Set average label and fill
       if (chartdata.avgIndex === null) return;
       if (chartdata.mean === null) return;
 
       xpos = x(chartdata.data[chartdata.avgIndex].x);
 
       var avgPadding = 5;
-      var leftEdge = xpos + 100 + xBandWidth;
       var avgClass = 'avg-highlight-html';
       if (chartdata.avgIndex >= chartdata.selectedIndex) {
         xpos += xBandWidth + avgPadding;
@@ -650,7 +646,7 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
 
       ypos = y(chartdata.data[chartdata.avgIndex].y); // top of bar
 
-      var avgHighlight = container.select("#compare-chart").append('div').attr('class', avgClass).style('top', margin.top + ypos + 'px').style('left', margin.left + xpos + 'px');
+      var avgHighlight = container.select('#compare-chart').append('div').attr('class', avgClass).style('top', margin.top + ypos + 'px').style('left', margin.left + xpos + 'px');
 
       var avgHighlightContent = avgHighlight.append('div');
 
