@@ -329,7 +329,7 @@ define([
 
       svg.append('g')
         .classed('label', true)
-        .attr('transform', `translate(${width / 2}, ${height + margin.top + 30})`)
+        .attr('transform', `translate(${margin.left + (width / 2)}, ${height + margin.top + 30})`)
           .append('text')
           .attr('text-anchor', 'middle')
           .text('GHG Emissions Per Square Foot');
