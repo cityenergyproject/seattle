@@ -14,7 +14,7 @@ var gulp = require('gulp'),
     babel = require('gulp-babel');
 
 gulp.task('fileinclude', function() {
-  return  gulp.src(['src/index.html', 'src/iframe.html', 'src/CNAME'])
+  return gulp.src(['src/index.html', 'src/iframe.html'])
     .pipe(gulp.dest('dist'));
 });
 
@@ -71,9 +71,7 @@ gulp.task('copy-lib', function() {
 });
 
 // Default task
-gulp.task('default', gulp.parallel('clean', function() {
-  gulp.series('fileinclude', 'styles', 'scripts', 'images', 'templates', 'cities_config', 'copy-lib');
-}));
+gulp.task('default', gulp.series('clean', 'fileinclude', 'styles', 'scripts', 'images', 'templates', 'cities_config', 'copy-lib'));
 
 gulp.task('connect', function() {
   connect.server({

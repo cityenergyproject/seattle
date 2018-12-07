@@ -34,9 +34,12 @@
     "underscore": "^1.8.3"
   },
   "devDependencies": {
+    "babel-eslint": "^10.0.1",
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-es2017": "^6.24.1",
     "babel-preset-stage-2": "^6.24.1",
+    "csv-parse": "^4.0.1",
+    "csv-stringify": "^5.0.0",
     "del": "^1.2.0",
     "eslint": "^5.9.0",
     "eslint-config-google": "^0.9.1",
