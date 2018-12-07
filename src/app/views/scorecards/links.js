@@ -99,7 +99,6 @@ define([
 
     url: function() {
       const table = this.links_table;
-      const id = this.building;
       const where = [
         `property_type in ('${this.link_type}', 'default')`,
         `building_id = ${this.building}`

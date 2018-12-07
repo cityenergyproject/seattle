@@ -42,7 +42,7 @@ define([
         return false;
       }
 
-      scorecardState.set({'view': value});
+      scorecardState.set({ 'view': value });
     },
 
     onViewChange: function() {
@@ -58,14 +58,14 @@ define([
 
       var city = this.state.get('city');
       var table = city.get('table_name');
-      var years = _.keys(city.get('years')).map(d => +d).sort((a,b) => {
+      var years = _.keys(city.get('years')).map(d => +d).sort((a, b) => {
         return a - b;
       });
 
       if (this.scoreCardData && this.scoreCardData.id === id) {
         this.show(buildings, this.scoreCardData.data, year, years);
       } else {
-        const yearWhereClause = years.reduce((a,b) => {
+        const yearWhereClause = years.reduce((a, b) => {
           if (!a.length) return `year=${b}`;
           return a + ` OR year=${b}`;
         },'');
@@ -149,7 +149,7 @@ define([
         valueColor = '#aaa';
       }
 
-      var name = building.property_name; // building.get('property_name');
+      var name = building.property_name;
       var address = this.full_address(building);
       var sqft = +(building.reported_gross_floor_area);
       var prop_type = building.property_type;
@@ -179,11 +179,13 @@ define([
 
       // render fuel use chart
       if (!this.charts[view].chart_fueluse) {
+        const emissionsChartData = this.prepareEmissionsChartData(buildings, prop_type);
         this.charts[view].chart_fueluse = new FuelUseView({
           formatters: this.formatters,
           data: [building],
           name: name,
-          year: selected_year
+          year: selected_year,
+          emissionsChartData
         });
       }
 
@@ -325,8 +327,8 @@ define([
       var min, max;
 
       schema.forEach(function(d, i) {
-        min = (thresholds[ i - 1 ]) ? thresholds[ i - 1 ] : data_min;
-        max = (thresholds[ i ]) ? thresholds[ i ] : data_max;
+        min = (thresholds[i - 1]) ? thresholds[i - 1] : data_min;
+        max = (thresholds[i]) ? thresholds[i] : data_max;
 
         me.binRange(min, max, d.steps, _bins);
       });
@@ -374,7 +376,7 @@ define([
           label: d.label,
           clr: d.color,
           indices: [start, end]
-        }
+        };
       });
     },
 
@@ -390,7 +392,7 @@ define([
         building_value = null;
       }
 
-      var buildingsOfType = buildings.where({property_type: prop_type}).map(function(m) {
+      var buildingsOfType = buildings.where({ property_type: prop_type }).map(function(m) {
         return m.toJSON();
       });
 
@@ -409,7 +411,6 @@ define([
       if (view === 'eui') {
        _bins = this.calculateEuiBins(buildingsOfType_min, buildingsOfType_max, config.thresholds.eui[prop_type][selected_year], config.thresholds.eui_schema);
        thresholds = this.getThresholdLabels(config.thresholds.eui_schema);
-
       } else {
         thresholds = this.getThresholdLabels(config.thresholds.energy_star);
         _bins = this.calculateEnergyStarBins(config.thresholds.energy_star);
@@ -420,7 +421,6 @@ define([
           .value(function(d) {
             return d[compareField];
           })(buildingsOfType);
-
 
       data.forEach(function(d, i) {
         d.min = _bins[i];
@@ -465,7 +465,8 @@ define([
       });
 
 
-      let avgColor, selectedColor;
+      let avgColor;
+      let selectedColor;
 
       if (compareField === 'site_eui') {
         thresholds.forEach(d => {
@@ -477,7 +478,6 @@ define([
             avgColor = d.clr;
           }
         });
-
       } else {
         avgColor = this.getColor(compareField, avg);
         selectedColor = this.getColor(compareField, building_value);
@@ -495,57 +495,66 @@ define([
         avgColor,
         selectedColor,
         mean: avg
-      }
+      };
+    },
+
+    prepareEmissionsChartData: function(buildings, property_type) {
+      const buildingsOfType = buildings.where({ property_type }).map(m => m.toJSON());
+      return buildingsOfType.map(building => {
+        return {
+          id: building.id,
+          eui: building.site_eui,
+          emissions: building.total_ghg_emissions,
+          emissionsIntensity: building.total_ghg_emissions_intensity
+        };
+      }).filter(d => d.eui != null && d.emissionsIntensity != null);
     },
 
     renderCompareChart: function(config, chartdata, view, prop_type, name, viewSelector) {
       const container = d3.select(viewSelector);
-      var self = this;
 
       if (chartdata.selectedIndex === null && (chartdata.avgIndex === null || chartdata.mean === null)) {
         console.warn('Could not find required data!', view, chartdata);
         return;
       }
 
-      var compareField = this.getViewField(view);
-
       var compareChartConfig = config.compare_chart;
-      var margin = {top: 80, right: 30, bottom: 40, left: 40},
-          width = 620 - margin.left - margin.right,
-          height = 300 - margin.top - margin.bottom;
+      var margin = { top: 80, right: 30, bottom: 40, left: 40 };
+      var width = 620 - margin.left - margin.right;
+      var height = 300 - margin.top - margin.bottom;
 
       if (chartdata.building_value === null) margin.top = 20;
 
       var x = d3.scale.ordinal()
-          .rangeRoundBands([0, width], 0.3, 0)
-          .domain(chartdata.data.map(function(d){ return d.x;}));
+        .rangeRoundBands([0, width], 0.3, 0)
+        .domain(chartdata.data.map(d => d.x));
 
       var y = d3.scale.linear()
           .domain([0, d3.max(chartdata.data, function(d) { return d.y; })])
           .range([height, 0]);
 
-      var svg = container.select("#compare-chart").append("svg")
-          .attr("width", width + margin.left + margin.right)
-          .attr("height", height + margin.top + margin.bottom)
-        .append("g")
-          .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+      var svg = container.select('#compare-chart').append('svg')
+          .attr('width', width + margin.left + margin.right)
+          .attr('height', height + margin.top + margin.bottom)
+        .append('g')
+          .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
-      svg.append("g")
-        .attr("class", "y axis")
-        .call(d3.svg.axis().scale(y).orient("left").ticks(5).outerTickSize(0).innerTickSize(2));
+      svg.append('g')
+        .attr('class', 'y axis')
+        .call(d3.svg.axis().scale(y).orient('left').ticks(5).outerTickSize(0).innerTickSize(2));
 
       var threshold = svg.append('g')
         .attr('class', 'x axis')
-        .attr("transform", function(d) { return "translate(0," + (height + 10) + ")"; })
+        .attr('transform', function(d) { return 'translate(0,' + (height + 10) + ')'; })
         .selectAll('.threshold')
         .data(chartdata.thresholds)
         .enter()
         .append('g')
           .attr('class', 'threshold')
-          .attr("transform", function(d) {
+          .attr('transform', function(d) {
             var indices = d.indices;
             var start = x(chartdata.data[indices[0]].x);
-            return "translate(" + start + ",0)";
+            return 'translate(' + start + ',0)';
           });
 
       threshold
@@ -557,7 +566,7 @@ define([
           var end = x(chartdata.data[indices[1]].x) + x.rangeBand();
           return end - start;
         })
-        .attr("fill", 'none')
+        .attr('fill', 'none')
         .attr('stroke', function(d){ return d.clr; });
 
       threshold
@@ -584,7 +593,7 @@ define([
       svg
         .append('g')
         .attr('class', 'label')
-        .attr("transform", function(d) { return "translate(" + (-30) + "," + (height / 2) + ")"; })
+        .attr('transform', function(d) { return 'translate(' + (-30) + ',' + (height / 2) + ')'; })
         .append('text')
         .text(compareChartConfig.y_label)
         .attr('text-anchor', 'middle')
@@ -593,24 +602,24 @@ define([
       svg
         .append('g')
         .attr('class', 'label')
-        .attr("transform", function(d) { return "translate(" + (width/2) + "," + (height + 40) + ")"; })
+        .attr('transform', function(d) { return 'translate(' + (width/2) + ',' + (height + 40) + ')'; })
         .append('text')
         .text(compareChartConfig.x_label[view])
         .attr('text-anchor', 'middle');
 
-      var bar = svg.selectAll(".bar")
+      var bar = svg.selectAll('.bar')
           .data(chartdata.data)
-        .enter().append("g")
-          .attr("class", "bar")
-          .attr("transform", function(d) { return "translate(" + x(d.x) + "," + y(d.y) + ")"; });
+        .enter().append('g')
+          .attr('class', 'bar')
+          .attr('transform', function(d) { return 'translate(' + x(d.x) + ',' + y(d.y) + ')'; });
 
-      bar.append("rect")
-          .attr("x", 1)
-          .attr("width", x.rangeBand())
-          .attr("height", function(d) { return height - y(d.y); })
+      bar.append('rect')
+          .attr('x', 1)
+          .attr('width', x.rangeBand())
+          .attr('height', function(d) { return height - y(d.y); })
           .attr('class', function(d, i) {
-            if (i === chartdata.selectedIndex) return 'building-bar selected'
-            if(i === chartdata.avgIndex) return 'avg-bar selected';
+            if (i === chartdata.selectedIndex) return 'building-bar selected';
+            if (i === chartdata.avgIndex) return 'avg-bar selected';
             return null;
           })
           .style('fill', function(d, i) {
@@ -629,12 +638,12 @@ define([
             return '>= ' + d.x + ' && < ' + (d.x + d.dx);
           });
 
-      //// Set selected building marker
+      // Set selected building marker
       var xBandWidth = x.rangeBand();
-      var xpos = chartdata.selectedIndex === null ? 0 : x(chartdata.data[chartdata.selectedIndex].x)  + (xBandWidth / 2);
+      var xpos = chartdata.selectedIndex === null ? 0 : x(chartdata.data[chartdata.selectedIndex].x) + (xBandWidth / 2);
       var ypos = chartdata.selectedIndex === null ? 0 : y(chartdata.data[chartdata.selectedIndex].y);
 
-      var selectedCityHighlight = container.select("#compare-chart").append('div')
+      var selectedCityHighlight = container.select('#compare-chart').append('div')
         .attr('class', 'selected-city-highlight-html')
         .style('top', (margin.top - 70) + 'px')
         .style('left', (margin.left + xpos) + 'px')
@@ -663,14 +672,13 @@ define([
         .attr('class', 'line')
         .style('height', (ypos + 5) + 'px');
 
-      //// Set average label and fill
+      // Set average label and fill
       if (chartdata.avgIndex === null) return;
       if (chartdata.mean === null) return;
 
       xpos = x(chartdata.data[chartdata.avgIndex].x);
 
       var avgPadding = 5;
-      var leftEdge = xpos + 100 + xBandWidth;
       var avgClass = 'avg-highlight-html';
       if (chartdata.avgIndex >= chartdata.selectedIndex) {
         xpos += xBandWidth + avgPadding;
@@ -679,9 +687,9 @@ define([
         avgClass += ' align-right';
       }
 
-      ypos =  y(chartdata.data[chartdata.avgIndex].y); // top of bar
+      ypos = y(chartdata.data[chartdata.avgIndex].y); // top of bar
 
-      var avgHighlight = container.select("#compare-chart").append('div')
+      var avgHighlight = container.select('#compare-chart').append('div')
         .attr('class', avgClass)
         .style('top', (margin.top + ypos) + 'px')
         .style('left', (margin.left + xpos) + 'px');
@@ -703,7 +711,7 @@ define([
       var avgBoxHeight = avgHighlight.node().offsetHeight;
       if ((ypos + avgBoxHeight) > height) {
         ypos += (height - (ypos + avgBoxHeight));
-        avgHighlight.style('top', (margin.top + ypos) + 'px')
+        avgHighlight.style('top', (margin.top + ypos) + 'px');
       }
     },
 
@@ -750,7 +758,7 @@ define([
           if (!this.validNumber(value)) {
             value = null;
           } else {
-            value = +(value.toFixed(1))
+            value = +(value.toFixed(1));
           }
 
           const clr = (colorScales.hasOwnProperty(metric.field) && metric.colorize) ?
@@ -767,10 +775,9 @@ define([
             influencer: metric.influencer
           });
         });
-
       });
 
-      return o.sort((a,b) => {
+      return o.sort((a, b) => {
         return a.year - b.year;
       });
     }

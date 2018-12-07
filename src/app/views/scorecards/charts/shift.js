@@ -153,7 +153,7 @@ define([
 
       rootElm.style('margin-left', (yearWidth - diameter/2) + 'px');
 
-      const margin = {top: 0, right: 0, bottom: 0, left: 0};
+      const margin = { top: 0, right: 0, bottom: 0, left: 0 };
       let width = baseWidth - margin.left - margin.right;
       let height = rootElm.node().offsetHeight - margin.top - margin.bottom;
 
@@ -196,7 +196,7 @@ define([
           if (!colorize) return null;
 
           const field = d.values[0].field;
-          return 'url(#' + this.getGradientId(gradientID, field); + ')';
+          return 'url(#' + this.getGradientId(gradientID, field) + ')';
         })
         .attr('d', d => line(d.values));
 

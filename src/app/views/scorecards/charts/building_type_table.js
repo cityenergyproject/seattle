@@ -4,8 +4,7 @@ define([
   'backbone',
   'd3',
   'text!templates/scorecards/charts/building_type_table.html'
-], function($, _, Backbone, d3, TableTemplate){
-
+], function($, _, Backbone, d3, TableTemplate) {
   const ORDINALS = ['1st', '2nd', '3rd', '4th'];
 
   var BuildingTypeTableView = Backbone.View.extend({
@@ -34,13 +33,15 @@ define([
     getThresholds: function(typ, schema) {
       const thresholds = this.thresholds[typ] ? this.thresholds[typ][this.year] : null;
 
-      return this.schema.map((d,i) => {
+      return this.schema.map((d, i) => {
         let clr = d.color;
         let val;
 
-        if (!thresholds) return  {
-          clr: null,
-          val: 'n/a'
+        if (!thresholds) {
+          return {
+            clr: null,
+            val: 'n/a'
+          };
         }
 
         if (i === 0) {
@@ -56,17 +57,17 @@ define([
         return {
           clr,
           val
-        }
+        };
       });
     },
 
     getThresholdHeaders: function() {
-      return this.schema.map((d,i) => {
+      return this.schema.map((d, i) => {
         return {
           clr: d.color,
           label: `${d.label.replace(' ', '-<br>')} Use`,
           quartile: `${ORDINALS[i]} Quartile`
-        }
+        };
       });
     },
 
@@ -113,7 +114,7 @@ define([
     render: function(){
       const rows = this.computeRows();
 
-      rows.sort((a,b) => {
+      rows.sort((a, b) => {
         return d3.ascending(a.label, b.label);
       });
 

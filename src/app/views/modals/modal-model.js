@@ -15,7 +15,7 @@ define([
       return null;
     },
 
-    cartoUrl: (tablename) => {
+    cartoUrl: tablename => {
       return `https://cityenergy-seattle.carto.com/api/v2/sql?q=select * from ${tablename} WHERE active=true&format=csv`;
     },
 
@@ -82,7 +82,7 @@ define([
         return this;
       }
 
-      d3.text(url, (payload) => {
+      d3.text(url, payload => {
         if (!payload) {
           console.error(`No modal data for (${selected})`);
           return this;

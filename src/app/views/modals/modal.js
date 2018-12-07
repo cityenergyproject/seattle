@@ -34,7 +34,7 @@ define([
 
       this.listenTo(model, 'change:selected', this.onModalChange);
       this.listenTo(model, 'change:viewdata', this.onViewDataChange);
-      this.listenTo(model, 'sync', this.onModalSync,  this);
+      this.listenTo(model, 'sync', this.onModalSync, this);
     },
 
     onModalSync: function() {
