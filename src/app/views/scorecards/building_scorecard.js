@@ -182,13 +182,14 @@ define([
           data: [building],
           name: name,
           year: selected_year,
+          parent: el[0],
           emissionsChartData
         });
       }
 
       el.find('#fuel-use-chart').html(this.charts[view].chart_fueluse.render());
       this.charts[view].chart_fueluse.fixlabels(viewSelector);
-
+      this.charts[view].chart_fueluse.afterRender();
 
       // render Change from Last Year chart
       // selected_year, avail_years

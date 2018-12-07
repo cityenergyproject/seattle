@@ -18,6 +18,7 @@ define([
       this.building_name = options.name || '';
       this.year = options.year || '';
       this.isCity = options.isCity || false;
+      this.viewParent = options.parent;
 
       this.fuels = [
         {
@@ -277,7 +278,7 @@ define([
       const selectedBuilding = this.data[0];
       const averageEmissionsIntensity = d3.mean(data.map(d => d.emissionsIntensity));
 
-      const parent = d3.select('#emissions-intensity-chart');
+      const parent = d3.select(this.viewParent).select('.emissions-intensity-chart');
       if (!parent.node()) return;
 
       const margin = { top: 50, right: 30, bottom: 40, left: 40 };
@@ -425,7 +426,7 @@ define([
         .html('KG/SF')
         .classed(`quartile-${selectedQuartile}`, true);
 
-      const legendParent = d3.select('.emissions-dots');
+      const legendParent = d3.select(this.viewParent).select('.emissions-dots');
       if (legendParent.node()) {
         const legendWidth = legendParent.node().offsetWidth;
         const dotMargin = 15;
@@ -435,7 +436,7 @@ define([
 
         const expectedWidth = dotMargin * (dots.length - 1) + d3.sum(dots.map(dot => size(dotScale.invert(dot)) * 2));
 
-        const legendSvg = d3.select('.emissions-dots').append('svg')
+        const legendSvg = legendParent.append('svg')
           .attr('width', legendWidth)
           .attr('height', 100);
         const legendContainer = legendSvg.append('g')
@@ -484,7 +485,8 @@ define([
     renderPieChart: function(id, data, width, height) {
       const radius = Math.min(width, height) / 2;
 
-      const svg = d3.select(`#${id}`)
+      const parent = d3.select(this.viewParent);
+      const svg = parent.select(`#${id}`)
         .append('svg')
         .attr('width', width)
         .attr('height', height)
@@ -533,12 +535,14 @@ define([
       this.renderPieChart('energy-consumption-pie-chart', pieData, 100, 100);
     },
 
-    render: function(){
-      var d = this.chartData();
+    render: function() {
+      return this.template(this.chartData());
+    },
+
+    afterRender: function() {
       this.renderEmissionsChart(this.emissionsChartData);
       this.renderEnergyConsumptionPieChart(this.data[0]);
       this.renderEmissionsPieChart(this.data[0]);
-      return this.template(d);
     }
   });
 
