@@ -92,7 +92,7 @@ define([
 
     closeReport: function(evt) {
       evt.preventDefault();
-      this.state.set({[this.activekey]: false});
+      this.state.set({ [this.activekey]: false });
     },
 
     toggleView: function(evt) {
@@ -109,7 +109,7 @@ define([
         return false;
       }
 
-      scorecardState.set({'view': value});
+      scorecardState.set({ 'view': value });
     },
 
     loadView: function(view) {
@@ -130,7 +130,7 @@ define([
     getLinksTable: function() {
       const city = this.state.get('city');
       const table = city && city.get && city.get('scorecard');
-      return (table && table.links_table) || 'links'
+      return (table && table.links_table) || 'links';
     },
 
     renderLinks: function(building, building_type, isBuildingRenderer) {
@@ -172,6 +172,7 @@ define([
       const building = this.state.get('building');
       let name;
       let building_type;
+      let energy_star_score;
       const isBuildingRenderer = this.viewclass === BuildingScorecard;
 
       if (isBuildingRenderer) {
@@ -179,6 +180,7 @@ define([
         const buildingModel = buildings.get(building);
         name = buildingModel.get('property_name');
         building_type = buildingModel.get('property_type');
+        energy_star_score = buildingModel.get('energy_star_score');
       } else {
         name = 'Citywide Report';
         building_type = 'citywide';
@@ -186,7 +188,8 @@ define([
 
       this.$el.html(this.template({
         building_view: this.viewclass === BuildingScorecard,
-        name
+        name,
+        energy_star_score
       }));
 
       this.renderLinks(building, building_type, isBuildingRenderer);

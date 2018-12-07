@@ -1,4 +1,8 @@
-<div class='scorecard-wrapper'>
+<% if (energy_star_score) { %>
+  <div class='scorecard-wrapper'>
+<% } else { %>
+  <div class='scorecard-wrapper no-energy-star-score'>
+<% } %>
 
   <!-- Navigation -->
   <div class='scorecard--nav'>
