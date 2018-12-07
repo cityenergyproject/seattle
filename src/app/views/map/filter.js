@@ -19,9 +19,8 @@ define([
             BuildingColorBucketCalculator, HistogramView, Formatters, ThresholdUtils,
             FilterSectionHeader, FilterTemplate, FilterQuartileTemplate, FilterContainer,
             FilterBuildingDetailsTemplate, FilterPropertyTypeTemplate){
-
   var MapControlView = Backbone.View.extend({
-    className: "map-control",
+    className: 'map-control',
     $container: $('#map-controls-content--inner'),
     viewType: 'filter',
 
@@ -83,21 +82,20 @@ define([
       var tableTemplate = _.template(FilterBuildingDetailsTemplate);
       var tableData = this.getTableData();
 
-      this.$el.find('.building-details').html(tableTemplate({table: tableData.data}));
+      this.$el.find('.building-details').html(tableTemplate({ table: tableData.data }));
 
       if (this.histogram) {
-        this.histogram.updateHighlight(tableData.selected_value)
+        this.histogram.updateHighlight(tableData.selected_value);
       }
-
     },
 
     getCompareBuildings: function() {
       var buildings = this.allBuildings;
-      var o = Array.apply(null, Array(5)).map(function () {});
+      var o = Array.apply(null, Array(5)).map(function() {});
 
       var selected_buildings = this.state.get('selected_buildings') || [];
 
-      selected_buildings.forEach(function(building,i){
+      selected_buildings.forEach(function(building, i){
         var model = buildings.get(building.id);
         if (!model) return;
 
@@ -152,7 +150,7 @@ define([
           value,
           unit,
           cell_klass: klasses.join(' ')
-        }
+        };
       });
 
       return o;
@@ -175,7 +173,7 @@ define([
       let median;
 
       if (propertyType) {
-        const subset = buildings.where({[this.propertyTypeKey]: category.values[0]});
+        const subset = buildings.where({ [this.propertyTypeKey]: category.values[0] });
         median = d3.median(subset, d => d.get(this.layer.field_name));
       } else {
         median = d3.median(buildings.pluck(this.layer.field_name));
@@ -189,7 +187,6 @@ define([
         propertyType,
         value
       ];
-
     },
 
     memorize: function() {
@@ -248,7 +245,7 @@ define([
       var template = _.template(FilterContainer);
       var quartileTemplate = _.template(FilterQuartileTemplate);
       var fieldName = this.layer.field_name;
-      var idField = this.layer.id || fieldName.toLowerCase().replace(/\s/g, "-");
+      var idField = this.layer.id || fieldName.toLowerCase().replace(/\s/g, '-');
       var $el = $('#' + idField);
 
       var layerID = this.layer.id ? this.layer.id : fieldName;
@@ -258,16 +255,11 @@ define([
       var $section = this.$section();
       var filterRange = this.layer.filter_range;
       var rangeSliceCount = this.layer.range_slice_count;
-      var colorStops = this.layer.color_range;
-      var buildings = this.activeBuildings;
-      var bucketCalculator = this.bucketCalculator;
       var extent = this.bucketCalculator.toExtent();
       var gradientCalculator = this.gradientCalculator;
-      var buckets = this.buckets;
-      var gradientStops = this.gradientStops;
       var filterTemplate = _.template(FilterTemplate);
       var stateFilters = this.state.get('filters');
-      var filterState = _.findWhere(stateFilters, {field: idField}) || {min: extent[0], max: extent[1]};
+      var filterState = _.findWhere(stateFilters, { field: idField }) || { min: extent[0], max: extent[1] };
       var filterRangeMin = (filterRange && _.isNaN(filterRange.min)) ? filterRange.min : extent[0];
       var filterRangeMax = (filterRange && _.isNaN(filterRange.max)) ? filterRange.max : extent[1];
       var bucketGradients = this.bucketGradients;
@@ -284,10 +276,10 @@ define([
       containerKlass = containerKlass.join(' ');
 
       if ($el.length === 0) {
-        this.$el.html(template(_.extend({containerKlass: containerKlass}, _.defaults(this.layer, {description: null}))));
-        this.$el.find('.filter-wrapper').html(filterTemplate({id: layerID}));
-        this.$el.find('.building-details').html(tableTemplate({table: tableData.data}));
-        this.$el.find('.proptype-median-wrapper').html(propTypeTemplate({proptype, proptype_val}));
+        this.$el.html(template(_.extend({ containerKlass: containerKlass }, _.defaults(this.layer, { description: null }))));
+        this.$el.find('.filter-wrapper').html(filterTemplate({ id: layerID }));
+        this.$el.find('.building-details').html(tableTemplate({ table: tableData.data }));
+        this.$el.find('.proptype-median-wrapper').html(propTypeTemplate({ proptype, proptype_val }));
         this.$el.attr('id', idField);
       } else {
         this.$el = $el;
@@ -295,8 +287,8 @@ define([
 
       if (isDirty) {
         this.$el.find('.control-cell--inner')[0].className = `control-cell--inner ${containerKlass}`;
-        this.$el.find('.building-details').html(tableTemplate({table: tableData.data}));
-        this.$el.find('.proptype-median-wrapper').html(propTypeTemplate({proptype, proptype_val}));
+        this.$el.find('.building-details').html(tableTemplate({ table: tableData.data }));
+        this.$el.find('.proptype-median-wrapper').html(propTypeTemplate({ proptype, proptype_val }));
       }
 
       this.domit($section, this.$el, isCurrent, isUpdate, idField);
@@ -339,7 +331,7 @@ define([
           width: this.histogram.xScale.rangeBand() * svgScaleFactor,
           labels: this.threshold_labels,
           positions: this.histogram.xScale.range().map(d => d * svgScaleFactor)
-        }
+        };
 
         this.$el.find('.quartiles').html(quartileTemplate(qlabels));
       }
@@ -367,7 +359,7 @@ define([
         }
 
         const slider = this.$el.find('.range.filter').ionRangeSlider(slideOptions);
-        this.$filter = slider.data("ionRangeSlider");
+        this.$filter = slider.data('ionRangeSlider');
       }
 
       // if this is a slider update, skip
@@ -406,12 +398,12 @@ define([
             }
           });
 
-        switch(positionInCategory){
+        switch (positionInCategory){
           case 0:
             section.find('.category-control-container').prepend(elm);
             break;
           default:
-            section.find(".category-control-container > div:nth-child(" + positionInCategory + ")").after(elm);
+            section.find('.category-control-container > div:nth-child(' + positionInCategory + ')').after(elm);
         }
       }
     },
@@ -430,7 +422,7 @@ define([
       const thresholds = this.threshold_values;
 
       if (values.from !== values.min || values.to !== values.max){
-        var newFilter = {field: fieldName};
+        var newFilter = { field: fieldName };
 
         if (this.isThreshold) newFilter.threshold = true;
 
@@ -439,22 +431,21 @@ define([
         // want to use the rangeSlider extents to filter the data on the map.
         if (!thresholds) {
           if (values.from !== values.min) newFilter.min = values.from;
-          if (values.to   !== values.max) newFilter.max = values.to;
+          if (values.to !== values.max) newFilter.max = values.to;
         } else {
           if (values.from !== values.min && values.from !== 0) newFilter.min = thresholds[values.from - 1];
-          if (values.to   !== values.max && values.to !== 3) newFilter.max = thresholds[values.to];
+          if (values.to !== values.max && values.to !== 3) newFilter.max = thresholds[values.to];
         }
 
         filters.push(newFilter);
       }
 
       // fire event for other non Filter.js listeners
-      this.state.set({filters: filters});
+      this.state.set({ filters });
       this.render(true);
     },
 
     onPrettifyHandler: function(min, max, histogram) {
-
       if (this.isThreshold) {
         const labels = this.layer.slider_labels;
         return function(num) {
@@ -463,16 +454,16 @@ define([
       }
 
       return function(num) {
-        switch(num) {
+        switch (num) {
           case min: return num.toLocaleString();
-          case max: return num.toLocaleString() + "+";
+          case max: return num.toLocaleString() + '+';
           default: return num.toLocaleString();
         }
       };
     },
 
     events: {
-      'click' : 'showLayer',
+      'click': 'showLayer',
       'click .more-info': 'toggleMoreInfo',
       'click .compare-closer': 'closeCompare'
     },
@@ -480,14 +471,12 @@ define([
     closeCompare: function(evt) {
       evt.preventDefault();
       evt.stopImmediatePropagation();
-      this.state.set({building_compare_active: false});
+      this.state.set({ building_compare_active: false });
     },
 
     showLayer: function(){
       var layerID = this.layer.id ? this.layer.id : this.layer.field_name;
-
-      ///layer_thresholds: this.threshold_values
-      this.state.set({layer: layerID ,sort: this.layer.field_name, order: 'desc'});
+      this.state.set({ layer: layerID, sort: this.layer.field_name, order: 'desc' });
     },
 
     toggleMoreInfo: function(){
@@ -496,21 +485,20 @@ define([
     },
 
     $section: function(){
-      var sectionName = this.layer.section,
-          safeSectionName = sectionName.toLowerCase().replace(/\s/g, "-"),
-          $sectionEl = $("#" + safeSectionName);
+      var sectionName = this.layer.section;
+      var safeSectionName = sectionName.toLowerCase().replace(/\s/g, '-');
+      var $sectionEl = $('#' + safeSectionName);
 
       // if section exists return it, because every filter calls this fn
       if ($sectionEl.length > 0){ return $sectionEl; }
 
       var template = _.template(FilterSectionHeader);
 
-      $sectionEl = $(template({category: sectionName})).appendTo(this.$container);
+      $sectionEl = $(template({ category: sectionName })).appendTo(this.$container);
 
       return $sectionEl;
     }
   });
 
   return MapControlView;
-
 });

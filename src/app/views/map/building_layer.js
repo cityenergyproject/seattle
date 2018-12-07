@@ -7,7 +7,6 @@ define([
   'text!templates/map/building_info.html'
 ], function($, _, Backbone, CityBuildings,
         BuildingColorBucketCalculator, BuildingInfoTemplate){
-
   const baseCartoCSS = {
     dots: [
     '{marker-fill: #CCC;' +
@@ -64,7 +63,7 @@ define([
     var building = this.toBuilding();
     if (typeof building === 'undefined') return null;
 
-    return {lat: building.get('lat'), lng: building.get('lng')};
+    return { lat: building.get('lat'), lng: building.get('lng') };
   };
 
   BuildingInfoPresenter.prototype.toBuilding = function() {
@@ -141,7 +140,7 @@ define([
     if (!this.controls || !this.controls._wrapped) return this.defaultColor;
 
     // TODO: fix hacky way to deal w/ quartiles
-    var filter = this.controls._wrapped.find((item) => {
+    var filter = this.controls._wrapped.find(item => {
       if (item.viewType !== 'filter') return false;
 
       if (item.layer.id === 'site_eui_quartiles') {
@@ -270,7 +269,7 @@ define([
         if (e.popup._buildingid === self.state.get('building')) {
           e.popup._buildingid = null;
           self._popupid = undefined;
-          self.state.set({building: null});
+          self.state.set({ building: null });
         }
       });
 
@@ -345,28 +344,13 @@ define([
       if (!buildingId) return;
 
       this.onClearPopups();
-
-      this.state.set({building_compare_active: true});
-      /*
-      $('#compare-building').attr('disabled', 'disabled');
-
-      // Add building to selected_buildings
-      var selectedBuildings = this.makeSelectedBuildingsState(buildingId);
-
-      if (selectedBuildings) {
-        this.state.set({
-          selected_buildings: selectedBuildings,
-          building_compare_active: true
-        });
-      }
-      */
+      this.state.set({ building_compare_active: true });
       return false;
     },
 
     onViewReportClick: function(evt) {
       if (evt.preventDefault) evt.preventDefault();
-      var buildingId = this.state.get('building');
-      this.state.set({report_active: true});
+      this.state.set({ report_active: true });
       return false;
     },
 
@@ -386,11 +370,6 @@ define([
         propertyId = this.footprints_cfg.property_id;
       }
 
-      var selected_buildings = this.state.get('selected_buildings') || [];
-
-      var disableCompareBtn = this.isSelectedBuilding(selected_buildings, building_id);
-      if (selected_buildings.length >= 5) disableCompareBtn = true;
-
       var template = _.template(BuildingInfoTemplate);
 
       var presenter = new BuildingInfoPresenter(
@@ -408,7 +387,6 @@ define([
        .setContent(template({
           data: presenter.toPopulatedLabels(),
           compare_disabled: ''
-          // compare_disabled: disableCompareBtn ? 'disabled="disable"' : '',
         }));
 
       this._popupid = building_id;
@@ -537,7 +515,7 @@ define([
         user_name: this.allBuildings.cartoDbUser,
         type: 'cartodb',
         sublayers: [this.toCartoSublayer()]
-      }, {https: true}).addTo(this.leafletMap).on('done', this.onCartoLoad, this);
+      }, { https: true }).addTo(this.leafletMap).on('done', this.onCartoLoad, this);
 
       return this;
     },

@@ -34,8 +34,8 @@ define([
     },
 
     onContinue: function() {
-      if ($('#remember-continue').is(":checked")) {
-        Store.set(this.storekey, {'mobile_opt_out': true});
+      if ($('#remember-continue').is(':checked')) {
+        Store.set(this.storekey, { mobile_opt_out: true });
       }
 
       this.$el.toggleClass('forceoff', true);

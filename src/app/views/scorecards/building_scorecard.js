@@ -68,10 +68,10 @@ define([
         const yearWhereClause = years.reduce((a, b) => {
           if (!a.length) return `year=${b}`;
           return a + ` OR year=${b}`;
-        },'');
+        }, '');
 
         // Get building data for all years
-        d3.json(`https://cityenergy-seattle.carto.com/api/v2/sql?q=SELECT+ST_X(the_geom)+AS+lng%2C+ST_Y(the_geom)+AS+lat%2C*+FROM+${table}+WHERE+id=${id} AND(${yearWhereClause})`, (payload) => {
+        d3.json(`https://cityenergy-seattle.carto.com/api/v2/sql?q=SELECT+ST_X(the_geom)+AS+lng%2C+ST_Y(the_geom)+AS+lat%2C*+FROM+${table}+WHERE+id=${id} AND(${yearWhereClause})`, payload => {
           if (!this.state.get('report_active')) return;
 
           if (!payload) {
@@ -81,7 +81,7 @@ define([
 
           var data = {};
           payload.rows.forEach(d => {
-            data[d.year] = {...d};
+            data[d.year] = { ...d };
           });
 
           this.scoreCardData = {
@@ -132,8 +132,6 @@ define([
     },
 
     processBuilding: function(buildings, building_data, selected_year, avail_years, view) {
-      var scorecardState = this.state.get('scorecard');
-
       var building = building_data[selected_year];
 
       var config = this.state.get('city').get('scorecard');
@@ -154,7 +152,6 @@ define([
       var sqft = +(building.reported_gross_floor_area);
       var prop_type = building.property_type;
       var id = building.id;
-      var eui = building.site_eui;
 
       var chartdata = this.prepareCompareChartData(config, buildings, building, selected_year, view, prop_type, id);
 
@@ -281,7 +278,7 @@ define([
         annual: annual,
         save_pct: save_pct,
         savings: savings
-      }
+      };
     },
 
     viewlabels: function(view, config) {
@@ -293,7 +290,9 @@ define([
     },
 
     compare: function(building, view, config, chartdata) {
-      var change_pct, change_label, isValid;
+      var change_pct;
+      var change_label;
+      var isValid;
       var compareConfig = config.compare_chart;
 
       if (view === 'eui') {
@@ -303,7 +302,7 @@ define([
 
         change_label = building.higher_or_lower.toLowerCase();
       } else {
-        change_pct = Math.abs(chartdata.building_value - chartdata.mean); // ((chartdata.building_value - chartdata.mean) / chartdata.building_value);
+        change_pct = Math.abs(chartdata.building_value - chartdata.mean);
         isValid = _.isNumber(change_pct) && _.isNumber(chartdata.building_value) && _.isFinite(change_pct);
         change_pct = this.formatters.fixedZero(change_pct);
 
@@ -316,7 +315,7 @@ define([
         change_label: change_label,
         change_pct: change_pct,
         error: !isValid ? compareConfig.nodata[view] : ''
-      }
+      };
 
       return o;
     },
@@ -324,7 +323,8 @@ define([
     calculateEuiBins: function(data_min, data_max, thresholds, schema) {
       var me = this;
       var _bins = [];
-      var min, max;
+      var min;
+      var max;
 
       schema.forEach(function(d, i) {
         min = (thresholds[i - 1]) ? thresholds[i - 1] : data_min;
@@ -363,11 +363,8 @@ define([
     },
 
     getThresholdLabels: function(thresholds) {
-      var _ = [];
-
       var prev = 0;
       return thresholds.map(function(d, i) {
-
         var start = prev;
         var end = start + d.steps;
         prev = end + 1;

@@ -23,7 +23,7 @@ define([
 
       // reset all
       // TODO: fix slowness when resetting
-      $('.reset-all-filters').on('click', (e) => {
+      $('.reset-all-filters').on('click', e => {
         if (e.preventDefault) e.preventDefault();
 
         var city = this.state.get('city').toJSON();
@@ -33,12 +33,12 @@ define([
         var default_layer = city.years[year].default_layer;
 
         this.state.set({
-          'categories': cat_defaults,
-          'filters': [],
-          'metrics': [default_layer],
-          'layer': default_layer,
+          categories: cat_defaults,
+          filters: [],
+          metrics: [default_layer],
+          layer: default_layer,
           sort: default_layer,
-          'reset_all': true
+          reset_all: true
         });
 
         return false;
@@ -49,7 +49,7 @@ define([
       var val = this.state.get('reset_all');
 
       if (val) {
-        this.state.set('reset_all', false, {silent: true});
+        this.state.set('reset_all', false, { silent: true });
         this.onBuildings();
       }
     },
@@ -72,11 +72,10 @@ define([
 
       var template = _.template(ProptypeSelectListTemplate);
 
-      $('#building-proptype-selector').html(template({items, current: this.getCurrentCatValue()}));
+      $('#building-proptype-selector').html(template({ items, current: this.getCurrentCatValue() }));
 
-      var me = this;
-      const selector = $('#building-proptype-selector > select').selectize({
-        onChange: (val) => {
+      $('#building-proptype-selector > select').selectize({
+        onChange: val => {
           if (val === '*') val = null;
 
           const currentCategories = this.state.get('categories');
@@ -107,7 +106,6 @@ define([
     },
 
     getThreshold: function(propType) {
-
       // TODO: This will fail loudly
       const availableThresholds = this.state.get('city').get('scorecard').thresholds.eui;
       const year = this.state.get('year');
@@ -127,15 +125,12 @@ define([
       var lng = this.state.get('lng');
       var zoom = this.state.get('zoom');
 
-
-
       if (!this.leafletMap){
-        this.leafletMap = new L.Map(
-                                this.el, {
-                                  center: [lat, lng],
-                                  zoom: zoom,
-                                  scrollWheelZoom: false,
-                              });
+        this.leafletMap = new L.Map(this.el, {
+          center: [lat, lng],
+          zoom: zoom,
+          scrollWheelZoom: false,
+        });
 
         this.leafletMap.attributionControl.setPrefix('');
 
@@ -156,9 +151,10 @@ define([
         // TODO: Possibly remove the need for this
         // layer to make seperate Carto calls
         this.currentLayerView = new BuildingLayer({
-                                      leafletMap: this.leafletMap,
-                                      state: this.state,
-                                      mapView: this});
+          leafletMap: this.leafletMap,
+          state: this.state,
+          mapView: this
+        });
       }
     },
 
@@ -167,9 +163,10 @@ define([
       var zoom = target.getZoom();
       var center = target.getCenter();
       this.state.set({
-          lat: center.lat.toFixed(5),
-          lng: center.lng.toFixed(5),
-          zoom: zoom});
+        lat: center.lat.toFixed(5),
+        lng: center.lng.toFixed(5),
+        zoom: zoom
+      });
     },
 
     onMapChange: function() {

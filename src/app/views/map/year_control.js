@@ -41,7 +41,7 @@ define([
 
     selectYear: function(event) {
       var year = $(event.target).val();
-      this.state.set({year: year});
+      this.state.set({ year: year });
     },
   });
 

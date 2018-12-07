@@ -42,7 +42,7 @@ define([
         return false;
       }
 
-      scorecardState.set({'view': value});
+      scorecardState.set({ 'view': value });
     },
 
     onViewChange: function() {
@@ -60,7 +60,7 @@ define([
       var table = scorecardConfig.citywide.table;
 
       // Get building data for all years
-      d3.json(`https://cityenergy-seattle.carto.com/api/v2/sql?q=SELECT * FROM ${table} WHERE year is not null`, (payload) => {
+      d3.json(`https://cityenergy-seattle.carto.com/api/v2/sql?q=SELECT * FROM ${table} WHERE year is not null`, payload => {
         if (!this.state.get('city_report_active')) return;
 
         if (!payload) {
@@ -70,7 +70,7 @@ define([
 
         var data = {};
         payload.rows.forEach(d => {
-          data[d.year] = {...d};
+          data[d.year] = { ...d };
         });
 
         this.scoreCardData = data;
@@ -101,7 +101,7 @@ define([
         consumption: this.formatters.fixedZero(data.total_consump),
         ghg: this.formatters.fixedZero(data.total_emissions),
         gfa: this.formatters.fixedZero(data.total_gfa)
-      }
+      };
     },
 
     show: function(view) {
@@ -109,10 +109,9 @@ define([
         return console.error('No city scorecard data found');
       }
 
-      var scorecardState = this.state.get('scorecard');
       var buildings = this.state.get('allbuildings');
       var city = this.state.get('city');
-      var years = _.keys(city.get('years')).map(d => +d).sort((a,b) => {
+      var years = _.keys(city.get('years')).map(d => +d).sort((a, b) => {
         return a - b;
       });
       var year = this.state.get('year');
@@ -202,7 +201,7 @@ define([
           if (!this.validNumber(value)) {
             value = null;
           } else {
-            value = +(value.toFixed(1))
+            value = +(value.toFixed(1));
           }
 
           const clr = '#999';
@@ -218,10 +217,9 @@ define([
             influencer: metric.influencer
           });
         });
-
       });
 
-      return o.sort((a,b) => {
+      return o.sort((a, b) => {
         return a.year - b.year;
       });
     }

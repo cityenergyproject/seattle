@@ -91,7 +91,7 @@ define([
         const rows = this.parse(d3.csv.parse(payload), props.reflinks);
 
         this.set({
-          cache: _.extend(cache, {[selected]: rows}),
+          cache: _.extend(cache, { [selected]: rows }),
           viewdata: rows
         });
       });
