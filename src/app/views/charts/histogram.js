@@ -2,13 +2,11 @@ define([
   'jquery',
   'underscore',
   'backbone',
-], function($, _, Backbone){
-
+], function($, _, Backbone) {
   var HistogramView = Backbone.View.extend({
     className: 'histogram',
 
     initialize: function(options){
-
       this.aspectRatio = options.aspectRatio || 7/1;
       this.height = 100;
       this.width = this.height * this.aspectRatio;
@@ -21,10 +19,10 @@ define([
       this.slices = options.slices; // Not sure why we have slices, when that value can be extrapulated from this.gradients
 
       this.chart = d3.select(this.el).append('svg')
-                            .style({width: '100%', height: '100%'})
-                            .attr('viewBox', '0 0 ' + this.width + ' ' + this.height)
-                            .attr('preserveAspectRatio', "none")
-                            .style('background', 'transparent');
+        .style({ width: '100%', height: '100%' })
+        .attr('viewBox', '0 0 ' + this.width + ' ' + this.height)
+        .attr('preserveAspectRatio', 'none')
+        .style('background', 'transparent');
 
       this.g = this.chart.append('g');
     },
@@ -82,7 +80,7 @@ define([
           ? context.findQuantileIndexForValue(ctxValue, quantiles) :
             null;
 
-      bars.classed('highlight', function(d,i) {
+      bars.classed('highlight', function(d, i) {
         return i === highlightIndex;
       });
     },
@@ -108,13 +106,13 @@ define([
         xScale.rangeRoundBands([0, this.width], 0.1, 0);
       }
 
-      const bardata = xScale.domain().map((d,i) => {
+      const bardata = xScale.domain().map((d, i) => {
         return {
           ...gradients[i],
           idx: i,
           data: d,
           xpos: xScale(d)
-        }
+        };
       });
 
       const filterValueForXpos = d3.scale.linear()
@@ -126,12 +124,12 @@ define([
 
       // draw
       const bars = this.g.selectAll('rect')
-          .data(bardata, function(d){return d.color;});
+          .data(bardata, function(d) { return d.color; });
 
       bars.enter().append('rect');
 
       bars
-      .style('fill', (d,i) => {
+      .style('fill', (d, i) => {
         // not on a continous scale
         // so just need the color from data
         if (isThreshold) return d.color;
@@ -143,13 +141,13 @@ define([
         return colorScale(filterValueForXpos(d.xpos));
       })
       .attr({
-        width: () => {
+        'width': () => {
           return xScale.rangeBand();
         },
         'stroke-width': 0,
-        height: (d) => yScale(d.count),
-        x: (d, i) => xScale(d.data),
-        y: d => (height - yScale(d.count))
+        'height': d => yScale(d.count),
+        'x': (d, i) => xScale(d.data),
+        'y': d => (height - yScale(d.count))
       });
 
       bars.exit().remove();

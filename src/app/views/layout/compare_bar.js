@@ -61,14 +61,14 @@ define([
           return b;
         });
 
-        this.state.set({selected_buildings: changed});
+        this.state.set({ selected_buildings: changed });
       }
     },
 
     onBarClickHandler: function(evt) {
       evt.preventDefault();
       var mode = this.state.get('building_compare_active');
-      this.state.set({building_compare_active: !mode});
+      this.state.set({ building_compare_active: !mode });
     },
 
     onCloseHandler: function(evt) {
@@ -89,7 +89,7 @@ define([
 
         if (wasSelected && filtered.length) filtered[0].selected = true;
 
-        this.state.set({selected_buildings: filtered});
+        this.state.set({ selected_buildings: filtered });
       }
     },
 
@@ -106,7 +106,7 @@ define([
       this._lastPropertyType = propertyType;
 
       const o = {
-        compares: Array.apply(null, Array(5)).map(function () {})
+        compares: Array.apply(null, Array(5)).map(function() {})
       };
 
       const selected_buildings = this.state.get('selected_buildings') || [];
@@ -114,7 +114,6 @@ define([
       const buildings = this.state.get('allbuildings');
       if (!buildings) return this.template(o);
 
-      const len = buildings.length - 1;
       selected_buildings.forEach((building, i) => {
         var model = buildings.get(building.id);
 
@@ -129,12 +128,10 @@ define([
         });
       });
 
-
-
-      return this.template(o)
+      return this.template(o);
     },
 
-    render: function(){
+    render: function() {
       this.$el.html(this.getContent());
 
       return this;

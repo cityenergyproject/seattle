@@ -22,7 +22,7 @@ define([
 
       document.title = name;
 
-      $('#title').html(this.template({url_name: url_name, title: name, logo_link: logo_link, banner_images: banner_images}));
+      $('#title').html(this.template({ url_name: url_name, title: name, logo_link: logo_link, banner_images: banner_images }));
       return this;
     }
   });
