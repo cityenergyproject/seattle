@@ -344,9 +344,11 @@ define([
 
 
       // Bring selected building to front
-      const buildingData = data.filter(d => d.id === selectedBuilding.id)[0];
       const scatterpointData = data.slice();
-      scatterpointData.push(buildingData);
+      const buildingData = data.filter(d => d.id === selectedBuilding.id)[0];
+      if (buildingData) {
+        scatterpointData.push(buildingData);
+      }
 
       const quartileColors = {
         1: '#0047BA',
