@@ -20,9 +20,9 @@ $sc-font-lg: 1.5rem;
 $sc-font-lgr: 3rem;
 
 // Energy source colors
-$gas-color: $sc-red;
-$electric-color: $sc-green;
-$steam-color: $sc-orange;
+$gas-color: #C24E2B;
+$electric-color: #D5846C;
+$steam-color: #E7B9AC;
 
 #scorecard {
   display: none;
@@ -657,15 +657,15 @@ $steam-color: $sc-orange;
 
 
       &.gas {
-        color: #C04F31;
+        color: $gas-color;
       }
 
       &.electricity {
-        color: #DE8F41;
+        color: $electric-color;
       }
 
       &.steam {
-        color: #F7C34D;
+        color: $steam-color;
       }
     }
 
