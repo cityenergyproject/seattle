@@ -23,43 +23,35 @@ define([
       return _.isNumber(x) && _.isFinite(x);
     },
 
-    calculateChange: function() {
+    calculateChange: function(years) {
       if (!this.data || !this.data.length) return null;
 
-      const years = [];
-
-      this.data.filter(d => {
-        return d.influencer;
-      }).forEach(d => {
-        years.push({
-          yr: d.year,
-          val: d.value
+      const yearData = this.data
+        .filter(d => d.influencer)
+        .filter(d => years.indexOf(d.year) >= 0)
+        .map(d => {
+          return {
+            yr: d.year,
+            val: d.value
+          };
         });
-      });
 
-      years.sort((a, b) => {
-        return a.yr - b.yr;
-      });
+      yearData.sort((a, b) => a.yr - b.yr);
 
-      var last = years.length - 1;
-      if (years.length < 2) {
-        return null;
-      }
+      if (yearData.length < 2) return null;
 
-      return ((years[last].val - years[last - 1].val) / years[last].val) * 100;
+      const previousValue = yearData[0].val;
+      const selectedValue = yearData[1].val;
+      if (previousValue == null || selectedValue == null) return null;
+      return ((selectedValue - previousValue) / selectedValue) * 100;
     },
 
     extractChangeData: function() {
-      this.data.sort((a, b) => {
-        return a.year - b.year;
-      });
+      this.data.sort((a, b) => a.year - b.year);
 
-      const years = d3.set(this.data.map(d => d.year)).values().slice(-2);
-
-      const change = this.calculateChange();
-
+      const years = [parseInt(this.previous_year), parseInt(this.selected_year)];
+      const change = this.calculateChange(years);
       const direction = (change < 0) ? 'decreased' : change === 0 ? '': 'increased';
-
       const isValid = this.validNumber(change);
 
       return {
@@ -137,9 +129,7 @@ define([
       if (!isValid) return;
 
       // Filter data to past two years
-      const allowedYears = d3.set(data.map(d => d.year)).values()
-        .map(y => parseInt(y))
-        .slice(-2);
+      const allowedYears = [parseInt(this.previous_year), parseInt(this.selected_year)];
       const filteredData = data.filter(d => allowedYears.indexOf(d.year) >= 0);
 
       const diameter = 10;

@@ -173,6 +173,7 @@ define([
       let name;
       let building_type;
       let energy_star_score;
+      let comments;
       const isBuildingRenderer = this.viewclass === BuildingScorecard;
 
       if (isBuildingRenderer) {
@@ -181,6 +182,7 @@ define([
         name = buildingModel.get('property_name');
         building_type = buildingModel.get('property_type');
         energy_star_score = buildingModel.get('energy_star_score');
+        comments = buildingModel.get('comments');
       } else {
         name = 'Citywide Report';
         building_type = 'citywide';
@@ -188,6 +190,7 @@ define([
 
       this.$el.html(this.template({
         building_view: this.viewclass === BuildingScorecard,
+        comments,
         name,
         energy_star_score
       }));

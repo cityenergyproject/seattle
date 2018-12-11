@@ -175,16 +175,19 @@ define([
       const data = this.data;
 
       let total_ghg_emissions;
+      let total_ghg_emissions_intensity;
       let total_usage;
 
       let fuels;
       if (this.isCity) {
         fuels = this.getCityWideFuels([...this.fuels], data);
         total_ghg_emissions = data.total_emissions;
+        total_ghg_emissions_intensity = data.total_emissions_intensity;
         total_usage = data.total_consump;
       } else {
         fuels = this.getBuildingFuels([...this.fuels], data);
         total_ghg_emissions = this.getSum('total_ghg_emissions', data);
+        total_ghg_emissions_intensity = this.getSum('total_ghg_emissions_intensity', data);
         total_usage = this.getSum('total_kbtu', data);
       }
 
@@ -200,7 +203,7 @@ define([
         fuels,
         totals,
         total_ghg_emissions,
-        total_ghg_emissions_intensity: data[0].total_ghg_emissions_intensity,
+        total_ghg_emissions_intensity,
         isCity: this.isCity,
         building_name: this.building_name,
         year: this.year,

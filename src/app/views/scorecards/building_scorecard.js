@@ -4,10 +4,10 @@ define([
   'backbone',
   './charts/fuel',
   './charts/shift',
-  './charts/list',
+  './charts/comments',
   'models/building_color_bucket_calculator',
   'text!templates/scorecards/building.html'
-], function($, _, Backbone, FuelUseView, ShiftView, ListView, BuildingColorBucketCalculator, BuildingTemplate){
+], function($, _, Backbone, FuelUseView, ShiftView, CommentView, BuildingColorBucketCalculator, BuildingTemplate){
   var BuildingScorecard = Backbone.View.extend({
     initialize: function(options){
       this.state = options.state;
@@ -163,6 +163,7 @@ define([
         type: prop_type,
         id: id,
         year: selected_year,
+        year_built: building.yearbuilt,
         view: view,
         ess_logo: this.energyStarCertified(view, building, config),
         value: value,
@@ -191,12 +192,11 @@ define([
       this.charts[view].chart_fueluse.fixlabels(viewSelector);
       this.charts[view].chart_fueluse.afterRender();
 
-      // render Change from Last Year chart
-      // selected_year, avail_years
+      // render Energy Use Trends chart
       if (!this.charts[view].chart_shift) {
         var shiftConfig = config.change_chart.building;
-        var previousYear = selected_year - 1;
-        var hasPreviousYear = avail_years.indexOf(previousYear) > -1;
+        var previousYear = avail_years[0];
+        var hasPreviousYear = previousYear !== selected_year;
 
         const change_data = hasPreviousYear ? this.extractChangeData(building_data, buildings, building, shiftConfig) : null;
 
@@ -204,8 +204,8 @@ define([
           formatters: this.formatters,
           data: change_data,
           no_year: !hasPreviousYear,
-          selected_year: selected_year,
           previous_year: previousYear,
+          selected_year,
           view
         });
       }
@@ -214,23 +214,15 @@ define([
         el.find('#compare-shift-chart').html(t);
       }, viewSelector);
 
-
       // render compare chart
       // TODO: move into seperate Backbone View
       this.renderCompareChart(config, chartdata, view, prop_type, name, viewSelector);
 
+      if (!this.commentview) {
+        this.commentview = new CommentView({ building });
 
-      // render list view
-      // only need to render once since it's not split across view's
-      if (!this.listview) {
-        this.listview = new ListView({
-          building,
-          formatters: this.formatters,
-          config: config.list.building
-        });
-
-        this.listview.render(markup => {
-          this.parentEl.find('#building-information').html(markup);
+        this.commentview.render(markup => {
+          this.parentEl.find('#building-comments').html(markup);
         });
       }
     },
@@ -713,7 +705,6 @@ define([
       }
     },
 
-
     extractChangeData: function(yearly, buildings, building, config) {
       const o = [];
       const colorScales = {};
@@ -738,7 +729,6 @@ define([
           colorScales[metric.field] = scale;
         }
       });
-
 
       Object.keys(yearly).forEach(year => {
         const bldings = yearly[year];
@@ -775,12 +765,8 @@ define([
         });
       });
 
-      return o.sort((a, b) => {
-        return a.year - b.year;
-      });
+      return o.sort((a, b) => a.year - b.year);
     }
-
-
   });
 
   return BuildingScorecard;

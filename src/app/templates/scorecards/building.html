@@ -4,7 +4,8 @@
         <li class='sc-txt white small light'><%= addr %></li>
         <li class='sc-txt white small light'><%= sqft %> <span class='sqft'>ft²</span></li>
         <li class='sc-txt white small light'><%= type %></li>
-        <li class='sc-txt white small light'>Building ID <%= id %></li>
+        <li class='sc-txt white small light'>OSE Building ID: <%= id %></li>
+        <li class='sc-txt white small light'>Built: <%= year_built %></li>
         <% if (ess_logo) { %>
         <li class='sc-txt white small light ess-certified'><img class='ess-logo' src='images/scorecard/energy-star-logo.svg'/><span>This building is ENERGY STAR Certified</span></li>
         <% } %>
@@ -57,8 +58,12 @@
 <div class='scorecard--section'>
   <div class='inner'>
     <div class='section-head'>
-      <h3 class='sc-heading'>Compared to Average</h3>
-      <p class='sc-txt small bold'>See how this building measures up against other buildings of the same type:</p>
+      <% if (view === 'eui') { %>
+        <h3 class='sc-heading'>Energy Use Compared to Average</h3>
+      <% } else { %>
+        <h3 class='sc-heading'>Energy Star Score Compared to Average</h3>
+      <% } %>
+      <p class='sc-txt small bold'>See how this building measures up against other buildings of the same primary use:</p>
     </div>
 
     <div class='row'>
@@ -66,7 +71,7 @@
         <% if(compare.isValid) { %>
           <p class='compare-logo <%= compare.change_label %> <%= view %>'><span><%= compare.change_pct %></span></p>
           <% if (view === 'eui') { %>
-            <p class="sc-txt light pg">This building’s EUI is <span class='change-txt bold <%= compare.change_label %> <%= view %>'><%= compare.change_pct %> <%= compare.change_label %></span> than the average <%= type %> in Seattle.</p>
+            <p class="sc-txt light pg">This building’s energy use per square foot (EUI) is <span class='change-txt bold <%= compare.change_label %> <%= view %>'><%= compare.change_pct %> <%= compare.change_label %></span> than the average <%= type %> in Seattle.</p>
           <% } else { %>
             <p class="sc-txt light pg">This building’s ENERGY STAR Score is <span class='change-txt bold <%= compare.change_label %> <%= view %>'><%= compare.change_pct %> points <%= compare.change_label %></span> than the average <%= type %> in Seattle.</p>
           <% } %>
