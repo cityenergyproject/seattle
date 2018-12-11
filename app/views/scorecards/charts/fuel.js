@@ -86,7 +86,7 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
       });
 
       return fuels.filter(function (d) {
-        return d.usage.isValid && d.emissions.isValid;
+        return d.usage.isValid || d.emissions.isValid;
       });
     },
 
@@ -471,12 +471,22 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
     },
 
     renderEmissionsPieChart: function renderEmissionsPieChart(data) {
-      var pieData = [{ type: 'gas', value: data.gas_ghg_percent * 100 }, { type: 'electricity', value: data.electricity_ghg_percent * 100 }, { type: 'steam', value: data.steam_ghg_percent * 100 }];
+      var pieData = data.map(function (d) {
+        return {
+          type: d.key,
+          value: d.emissions.pct
+        };
+      });
       this.renderPieChart('emissions-pie-chart', pieData, 100, 100);
     },
 
     renderEnergyConsumptionPieChart: function renderEnergyConsumptionPieChart(data) {
-      var pieData = [{ type: 'gas', value: data.gas_pct * 100 }, { type: 'electricity', value: data.electricity_pct * 100 }, { type: 'steam', value: data.steam_pct * 100 }];
+      var pieData = data.map(function (d) {
+        return {
+          type: d.key,
+          value: d.usage.pct
+        };
+      });
       this.renderPieChart('energy-consumption-pie-chart', pieData, 100, 100);
     },
 
@@ -486,8 +496,10 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
 
     afterRender: function afterRender() {
       this.renderEmissionsChart(this.emissionsChartData);
-      this.renderEnergyConsumptionPieChart(this.data[0]);
-      this.renderEmissionsPieChart(this.data[0]);
+
+      var buildingFuels = this.getBuildingFuels([].concat(_toConsumableArray(this.fuels)), this.data);
+      this.renderEnergyConsumptionPieChart(buildingFuels);
+      this.renderEmissionsPieChart(buildingFuels);
     }
   });
 

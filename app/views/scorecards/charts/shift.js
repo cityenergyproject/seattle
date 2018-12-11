@@ -245,10 +245,22 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
           var rect2 = me.makeRect(this);
           var attempts = 10;
 
+          var rect1Delta = -2;
+          var rect2Delta = 2;
+
+          if (d3.select(prev).data() && d3.select(this).data()) {
+            var rect1Data = d3.select(prev).data()[0];
+            var rect2Data = d3.select(this).data()[0];
+            if (rect1Data.value != undefined && rect2Data.value != undefined) {
+              rect1Delta = rect1Data.value < rect2Data.value ? 2 : -2;
+              rect2Delta = -rect1Delta;
+            }
+          }
+
           while (me.collision(rect1, rect2) && attempts > 0) {
             attempts--;
-            prev.style.top = rect1.top - 2 + 'px';
-            this.style.top = rect2.top + 2 + 'px';
+            prev.style.top = rect1.top + rect1Delta + 'px';
+            this.style.top = rect2.top + rect2Delta + 'px';
 
             rect1 = me.makeRect(prev);
             rect2 = me.makeRect(this);
