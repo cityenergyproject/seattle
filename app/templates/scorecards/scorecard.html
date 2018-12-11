@@ -22,7 +22,10 @@
   </div>
 
   <% if (building_view) { %>
-  <div id='building-information' class='scorecard--section'></div>
+
+    <% if (comments) { %>
+      <div id='building-comments' class='scorecard--section'></div>
+    <% } %>
 
   <!-- Links -->
   <div id='links' class='scorecard--section'></div>

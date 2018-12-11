@@ -117,7 +117,6 @@ define(['jquery', 'underscore', 'backbone', 'text!templates/layout/compare_bar.h
       var buildings = this.state.get('allbuildings');
       if (!buildings) return this.template(o);
 
-      var len = buildings.length - 1;
       selected_buildings.forEach(function (building, i) {
         var model = buildings.get(building.id);
 

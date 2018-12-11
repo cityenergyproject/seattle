@@ -19,30 +19,30 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
       return _.isNumber(x) && _.isFinite(x);
     },
 
-    calculateChange: function calculateChange() {
+    calculateChange: function calculateChange(years) {
       if (!this.data || !this.data.length) return null;
 
-      var years = [];
-
-      this.data.filter(function (d) {
+      var yearData = this.data.filter(function (d) {
         return d.influencer;
-      }).forEach(function (d) {
-        years.push({
+      }).filter(function (d) {
+        return years.indexOf(d.year) >= 0;
+      }).map(function (d) {
+        return {
           yr: d.year,
           val: d.value
-        });
+        };
       });
 
-      years.sort(function (a, b) {
+      yearData.sort(function (a, b) {
         return a.yr - b.yr;
       });
 
-      var last = years.length - 1;
-      if (years.length < 2) {
-        return null;
-      }
+      if (yearData.length < 2) return null;
 
-      return (years[last].val - years[last - 1].val) / years[last].val * 100;
+      var previousValue = yearData[0].val;
+      var selectedValue = yearData[1].val;
+      if (previousValue == null || selectedValue == null) return null;
+      return (selectedValue - previousValue) / selectedValue * 100;
     },
 
     extractChangeData: function extractChangeData() {
@@ -50,14 +50,9 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
         return a.year - b.year;
       });
 
-      var years = d3.set(this.data.map(function (d) {
-        return d.year;
-      })).values().slice(-2);
-
-      var change = this.calculateChange();
-
+      var years = [parseInt(this.previous_year), parseInt(this.selected_year)];
+      var change = this.calculateChange(years);
       var direction = change < 0 ? 'decreased' : change === 0 ? '' : 'increased';
-
       var isValid = this.validNumber(change);
 
       return {
@@ -130,11 +125,7 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
       if (!isValid) return;
 
       // Filter data to past two years
-      var allowedYears = d3.set(data.map(function (d) {
-        return d.year;
-      })).values().map(function (y) {
-        return parseInt(y);
-      }).slice(-2);
+      var allowedYears = [parseInt(this.previous_year), parseInt(this.selected_year)];
       var filteredData = data.filter(function (d) {
         return allowedYears.indexOf(d.year) >= 0;
       });

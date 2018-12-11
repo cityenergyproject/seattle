@@ -61,12 +61,12 @@ define(['jquery', 'underscore', 'backbone', 'models/building_comparator', 'model
   };
 
   MetricAverageCalculator.prototype.calculateField = function (field) {
-    var fieldName = field.field_name,
-        values = _.map(this.buildings, function (building) {
+    var fieldName = field.field_name;
+    var values = _.map(this.buildings, function (building) {
       return building.get(fieldName);
-    }),
-        median = Math.round(d3.median(values) * 10) / 10,
-        gradientCalculator = this.gradientCalculators[fieldName];
+    });
+    var median = Math.round(d3.median(values) * 10) / 10;
+    var gradientCalculator = this.gradientCalculators[fieldName];
 
     return _.extend({}, field, {
       median: median,
@@ -89,14 +89,22 @@ define(['jquery', 'underscore', 'backbone', 'models/building_comparator', 'model
   BuildingMetricCalculator.prototype.renderField = function (field) {
     var fieldName = field.field_name;
     var gradients = this.gradientCalculators[fieldName];
-    slices = field.range_slice_count, aspectRatio = 4 / 1;
-    gradientStops = gradients.toGradientStops(), filterRange = field.filter_range, bucketCalculator = new BuildingBucketCalculator(this.buildings, fieldName, slices, filterRange), value = this.currentBuilding.get(fieldName), currentColor = gradients.toColor(value), buckets = bucketCalculator.toBuckets(), bucketGradients = _.map(gradientStops, function (stop, bucketIndex) {
+    var slices = field.range_slice_count;
+    var aspectRatio = 4 / 1;
+    var gradientStops = gradients.toGradientStops();
+    var filterRange = field.filter_range;
+    var bucketCalculator = new BuildingBucketCalculator(this.buildings, fieldName, slices, filterRange);
+    var value = this.currentBuilding.get(fieldName);
+    var currentColor = gradients.toColor(value);
+    var buckets = bucketCalculator.toBuckets();
+    var bucketGradients = _.map(gradientStops, function (stop, bucketIndex) {
       return {
         current: _.indexOf(gradientStops, currentColor),
         color: stop,
         count: buckets[bucketIndex] || 0
       };
-    }), histogram = new HistogramView({
+    });
+    var histogram = new HistogramView({
       gradients: bucketGradients,
       slices: slices,
       aspectRatio: aspectRatio,
@@ -131,7 +139,7 @@ define(['jquery', 'underscore', 'backbone', 'models/building_comparator', 'model
   };
 
   var BuildingComparisonView = Backbone.View.extend({
-    el: "#buildings",
+    el: '#buildings',
     metrics: [],
     sortedBy: {},
 
@@ -300,23 +308,23 @@ define(['jquery', 'underscore', 'backbone', 'models/building_comparator', 'model
     },
 
     renderTableBody: function renderTableBody() {
-      var buildings = this.buildings,
-          $body = this.$el.find('tbody'),
-          template = _.template(TableBodyRowsTemplate),
-          buildingFields = _.values(this.state.get('city').pick('property_name', 'building_type')),
-          cityFields = this.state.get('city').get('map_layers'),
-          buildingId = this.state.get('city').get('property_id'),
-          currentBuilding = this.state.get('building'),
-          metricFieldNames = this.state.get('metrics'),
-          metricFields = _.map(metricFieldNames, function (name) {
+      var buildings = this.buildings;
+      var $body = this.$el.find('tbody');
+      var template = _.template(TableBodyRowsTemplate);
+      var buildingFields = _.values(this.state.get('city').pick('property_name', 'building_type'));
+      var cityFields = this.state.get('city').get('map_layers');
+      var buildingId = this.state.get('city').get('property_id');
+      var currentBuilding = this.state.get('building');
+      var metricFieldNames = this.state.get('metrics');
+      var metricFields = _.map(metricFieldNames, function (name) {
         return _.findWhere(cityFields, { field_name: name });
-      }),
-          report = this.report.toRows(buildings),
-          metrics = new MetricAverageCalculator(buildings, metricFields, this.gradientCalculators).calculate(),
-          building = buildings.find(function (b) {
+      });
+      var report = this.report.toRows(buildings);
+      var metrics = new MetricAverageCalculator(buildings, metricFields, this.gradientCalculators).calculate();
+      var building = buildings.find(function (b) {
         return b.get(buildingId) == currentBuilding;
-      }),
-          buildingMetrics = new BuildingMetricCalculator(building, this.allBuildings, metricFields, this.gradientCalculators);
+      });
+      var buildingMetrics = new BuildingMetricCalculator(building, this.allBuildings, metricFields, this.gradientCalculators);
 
       $body.replaceWith(template({
         currentBuilding: currentBuilding,
@@ -335,23 +343,23 @@ define(['jquery', 'underscore', 'backbone', 'models/building_comparator', 'model
     },
 
     onRowClick: function onRowClick(event) {
-      var $target = $(event.target),
-          $row = $target.closest('tr'),
-          buildingId = $row.attr('id');
+      var $target = $(event.target);
+      var $row = $target.closest('tr');
+      var buildingId = $row.attr('id');
 
-      console.log("onRowClick buildingstate before", this.state.get('building'), "will set with", buildingId);
+      console.log('onRowClick buildingstate before', this.state.get('building'), 'will set with', buildingId);
       this.state.set({ building: buildingId });
-      console.log("onRowClick buildingstate after:", this.state.get('building'));
-      console.log("changedAttributes", this.state.changedAttributes());
-      console.log("attributes", this.state.attributes);
+      console.log('onRowClick buildingstate after:', this.state.get('building'));
+      console.log('changedAttributes', this.state.changedAttributes());
+      console.log('attributes', this.state.attributes);
     },
 
     removeMetric: function removeMetric(event) {
-      var $target = $(event.target),
-          $parent = $target.closest('th'),
-          removedField = $parent.find('input').val(),
-          sortedField = this.state.get('sort'),
-          metrics = this.state.get('metrics');
+      var $target = $(event.target);
+      var $parent = $target.closest('th');
+      var removedField = $parent.find('input').val();
+      var sortedField = this.state.get('sort');
+      var metrics = this.state.get('metrics');
 
       if (metrics.length == 1) {
         return false;
@@ -364,8 +372,8 @@ define(['jquery', 'underscore', 'backbone', 'models/building_comparator', 'model
     },
 
     changeActiveMetric: function changeActiveMetric(event) {
-      var $target = $(event.target),
-          fieldName = $target.val();
+      var $target = $(event.target);
+      var fieldName = $target.val();
       this.state.set({ layer: fieldName, sort: fieldName, building: null });
     },
 
@@ -373,8 +381,8 @@ define(['jquery', 'underscore', 'backbone', 'models/building_comparator', 'model
       var $target = $(event.target);
       var $parent = $target.closest('th');
       var $sortInput = $parent.find('input');
-      var sortField = $sortInput.val(),
-          sortOrder = this.state.get('order');
+      var sortField = $sortInput.val();
+      var sortOrder = this.state.get('order');
       sortOrder = sortOrder == 'asc' ? 'desc' : 'asc';
       this.state.set({ sort: sortField, order: sortOrder, building: null });
     },
@@ -382,8 +390,8 @@ define(['jquery', 'underscore', 'backbone', 'models/building_comparator', 'model
     onSort: function onSort(force) {
       if (!this.buildingsExist() || this.buildings.length < 2) return;
 
-      var sortField = this.state.get('sort'),
-          sortOrder = this.state.get('order');
+      var sortField = this.state.get('sort');
+      var sortOrder = this.state.get('order');
 
       // Skip if the order && field are the same as last sort
       if (!force && this.previousState.sort && this.previousState.order && this.previousState.sort === sortField && this.previousState.order === sortOrder) return;

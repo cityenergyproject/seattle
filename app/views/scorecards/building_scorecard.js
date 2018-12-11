@@ -2,7 +2,7 @@
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', './charts/list', 'models/building_color_bucket_calculator', 'text!templates/scorecards/building.html'], function ($, _, Backbone, FuelUseView, ShiftView, ListView, BuildingColorBucketCalculator, BuildingTemplate) {
+define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', './charts/comments', 'models/building_color_bucket_calculator', 'text!templates/scorecards/building.html'], function ($, _, Backbone, FuelUseView, ShiftView, CommentView, BuildingColorBucketCalculator, BuildingTemplate) {
   var BuildingScorecard = Backbone.View.extend({
     initialize: function initialize(options) {
       this.state = options.state;
@@ -164,6 +164,7 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
         type: prop_type,
         id: id,
         year: selected_year,
+        year_built: building.yearbuilt,
         view: view,
         ess_logo: this.energyStarCertified(view, building, config),
         value: value,
@@ -192,12 +193,11 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
       this.charts[view].chart_fueluse.fixlabels(viewSelector);
       this.charts[view].chart_fueluse.afterRender();
 
-      // render Change from Last Year chart
-      // selected_year, avail_years
+      // render Energy Use Trends chart
       if (!this.charts[view].chart_shift) {
         var shiftConfig = config.change_chart.building;
-        var previousYear = selected_year - 1;
-        var hasPreviousYear = avail_years.indexOf(previousYear) > -1;
+        var previousYear = avail_years[0];
+        var hasPreviousYear = previousYear !== selected_year;
 
         var change_data = hasPreviousYear ? this.extractChangeData(building_data, buildings, building, shiftConfig) : null;
 
@@ -205,8 +205,8 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
           formatters: this.formatters,
           data: change_data,
           no_year: !hasPreviousYear,
-          selected_year: selected_year,
           previous_year: previousYear,
+          selected_year: selected_year,
           view: view
         });
       }
@@ -219,17 +219,11 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
       // TODO: move into seperate Backbone View
       this.renderCompareChart(config, chartdata, view, prop_type, name, viewSelector);
 
-      // render list view
-      // only need to render once since it's not split across view's
-      if (!this.listview) {
-        this.listview = new ListView({
-          building: building,
-          formatters: this.formatters,
-          config: config.list.building
-        });
+      if (!this.commentview) {
+        this.commentview = new CommentView({ building: building });
 
-        this.listview.render(function (markup) {
-          _this2.parentEl.find('#building-information').html(markup);
+        this.commentview.render(function (markup) {
+          _this2.parentEl.find('#building-comments').html(markup);
         });
       }
     },
@@ -724,7 +718,6 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
         return a.year - b.year;
       });
     }
-
   });
 
   return BuildingScorecard;

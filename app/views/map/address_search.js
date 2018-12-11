@@ -1,7 +1,6 @@
 'use strict';
 
 define(['jquery', 'underscore', 'backbone', 'toastr', 'text!templates/map/address_search.html'], function ($, _, Backbone, toastr, AddressSearchTemplate) {
-
   var AddressSearchView = Backbone.View.extend({
     $container: $('#search'),
 
@@ -22,13 +21,13 @@ define(['jquery', 'underscore', 'backbone', 'toastr', 'text!templates/map/addres
     render: function render() {
       var searchTemplate = _.template(AddressSearchTemplate);
       this.$container.html(searchTemplate());
-      this.$el = this.$container.find("input");
+      this.$el = this.$container.find('input');
       this.delegateEvents(this.events);
       return this;
     },
 
     events: {
-      'search': 'search'
+      search: 'search'
     },
 
     search: function search() {
@@ -36,16 +35,16 @@ define(['jquery', 'underscore', 'backbone', 'toastr', 'text!templates/map/addres
       var url = 'https://search.mapzen.com/v1/search';
       var search = this.$el.val();
       var center = this.state.get('city').get('center');
-      if (search === "") {
+      if (search === '') {
         this.clearMarker();
         return;
       }
       $.ajax({
         url: url,
         data: {
-          api_key: 'search-oqsffOQ',
-          text: search + " " + this.state.get('city').get('address_search_regional_context'),
-          size: 10,
+          'api_key': 'search-oqsffOQ',
+          'text': search + ' ' + this.state.get('city').get('address_search_regional_context'),
+          'size': 10,
           'focus.point.lat': center[0],
           'focus.point.lon': center[1],
           'boundary.rect.min_lat': 38.79163,

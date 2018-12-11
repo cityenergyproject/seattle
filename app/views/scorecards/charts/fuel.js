@@ -179,16 +179,19 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
       var data = this.data;
 
       var total_ghg_emissions = void 0;
+      var total_ghg_emissions_intensity = void 0;
       var total_usage = void 0;
 
       var fuels = void 0;
       if (this.isCity) {
         fuels = this.getCityWideFuels([].concat(_toConsumableArray(this.fuels)), data);
         total_ghg_emissions = data.total_emissions;
+        total_ghg_emissions_intensity = data.total_emissions_intensity;
         total_usage = data.total_consump;
       } else {
         fuels = this.getBuildingFuels([].concat(_toConsumableArray(this.fuels)), data);
         total_ghg_emissions = this.getSum('total_ghg_emissions', data);
+        total_ghg_emissions_intensity = this.getSum('total_ghg_emissions_intensity', data);
         total_usage = this.getSum('total_kbtu', data);
       }
 
@@ -204,7 +207,7 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
         fuels: fuels,
         totals: totals,
         total_ghg_emissions: total_ghg_emissions,
-        total_ghg_emissions_intensity: data[0].total_ghg_emissions_intensity,
+        total_ghg_emissions_intensity: total_ghg_emissions_intensity,
         isCity: this.isCity,
         building_name: this.building_name,
         year: this.year,
@@ -327,11 +330,13 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
       svg.append('g').classed('label', true).attr('transform', 'translate(8, ' + (height / 2 + margin.top) + ') rotate(-90)').append('text').attr('text-anchor', 'middle').text('Energy Use Per Square Foot (EUI)');
 
       // Bring selected building to front
+      var scatterpointData = data.slice();
       var buildingData = data.filter(function (d) {
         return d.id === selectedBuilding.id;
       })[0];
-      var scatterpointData = data.slice();
-      scatterpointData.push(buildingData);
+      if (buildingData) {
+        scatterpointData.push(buildingData);
+      }
 
       var quartileColors = {
         1: '#0047BA',

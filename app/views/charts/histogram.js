@@ -5,12 +5,10 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 define(['jquery', 'underscore', 'backbone'], function ($, _, Backbone) {
-
   var HistogramView = Backbone.View.extend({
     className: 'histogram',
 
     initialize: function initialize(options) {
-
       this.aspectRatio = options.aspectRatio || 7 / 1;
       this.height = 100;
       this.width = this.height * this.aspectRatio;
@@ -22,7 +20,7 @@ define(['jquery', 'underscore', 'backbone'], function ($, _, Backbone) {
       this.fieldName = options.fieldName;
       this.slices = options.slices; // Not sure why we have slices, when that value can be extrapulated from this.gradients
 
-      this.chart = d3.select(this.el).append('svg').style({ width: '100%', height: '100%' }).attr('viewBox', '0 0 ' + this.width + ' ' + this.height).attr('preserveAspectRatio', "none").style('background', 'transparent');
+      this.chart = d3.select(this.el).append('svg').style({ width: '100%', height: '100%' }).attr('viewBox', '0 0 ' + this.width + ' ' + this.height).attr('preserveAspectRatio', 'none').style('background', 'transparent');
 
       this.g = this.chart.append('g');
     },
@@ -128,17 +126,17 @@ define(['jquery', 'underscore', 'backbone'], function ($, _, Backbone) {
         //
         return colorScale(filterValueForXpos(d.xpos));
       }).attr({
-        width: function width() {
+        'width': function width() {
           return xScale.rangeBand();
         },
         'stroke-width': 0,
-        height: function height(d) {
+        'height': function height(d) {
           return yScale(d.count);
         },
-        x: function x(d, i) {
+        'x': function x(d, i) {
           return xScale(d.data);
         },
-        y: function y(d) {
+        'y': function y(d) {
           return height - yScale(d.count);
         }
       });
