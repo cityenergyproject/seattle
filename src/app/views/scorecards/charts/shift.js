@@ -259,10 +259,22 @@ define([
           let rect2 = me.makeRect(this);
           let attempts = 10;
 
+          let rect1Delta = -2;
+          let rect2Delta = 2;
+
+          if (d3.select(prev).data() && d3.select(this).data()) {
+            const rect1Data = d3.select(prev).data()[0];
+            const rect2Data = d3.select(this).data()[0];
+            if (rect1Data.value != undefined && rect2Data.value != undefined) {
+              rect1Delta = (rect1Data.value < rect2Data.value) ? 2 : -2;
+              rect2Delta = -(rect1Delta);
+            }
+          }
+
           while (me.collision(rect1, rect2) && attempts > 0) {
             attempts--;
-            prev.style.top = (rect1.top - 2) + 'px';
-            this.style.top = (rect2.top + 2) + 'px';
+            prev.style.top = (rect1.top + rect1Delta) + 'px';
+            this.style.top = (rect2.top + rect2Delta) + 'px';
 
             rect1 = me.makeRect(prev);
             rect2 = me.makeRect(this);
