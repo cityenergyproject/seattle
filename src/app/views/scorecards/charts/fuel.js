@@ -86,9 +86,7 @@ define([
         d.usage.amt = usage_amt;
       });
 
-      return fuels.filter(d => {
-        return d.usage.isValid && d.emissions.isValid;
-      });
+      return fuels.filter(d => d.usage.isValid || d.emissions.isValid);
     },
 
     getCityWideFuels: function(fuels, data) {
@@ -523,20 +521,22 @@ define([
     },
 
     renderEmissionsPieChart: function(data) {
-      const pieData = [
-        { type: 'gas', value: data.gas_ghg_percent * 100 },
-        { type: 'electricity', value: data.electricity_ghg_percent * 100 },
-        { type: 'steam', value: data.steam_ghg_percent * 100 }
-      ];
+      const pieData = data.map(d => {
+        return {
+          type: d.key,
+          value: d.emissions.pct
+        };
+      });
       this.renderPieChart('emissions-pie-chart', pieData, 100, 100);
     },
 
     renderEnergyConsumptionPieChart: function(data) {
-      const pieData = [
-        { type: 'gas', value: data.gas_pct * 100 },
-        { type: 'electricity', value: data.electricity_pct * 100 },
-        { type: 'steam', value: data.steam_pct * 100 }
-      ];
+      const pieData = data.map(d => {
+        return {
+          type: d.key,
+          value: d.usage.pct
+        };
+      });
       this.renderPieChart('energy-consumption-pie-chart', pieData, 100, 100);
     },
 
@@ -546,8 +546,10 @@ define([
 
     afterRender: function() {
       this.renderEmissionsChart(this.emissionsChartData);
-      this.renderEnergyConsumptionPieChart(this.data[0]);
-      this.renderEmissionsPieChart(this.data[0]);
+
+      const buildingFuels = this.getBuildingFuels([...this.fuels], this.data);
+      this.renderEnergyConsumptionPieChart(buildingFuels);
+      this.renderEmissionsPieChart(buildingFuels);
     }
   });
 
