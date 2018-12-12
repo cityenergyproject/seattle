@@ -77,8 +77,8 @@ async function writeZip(outputDir) {
     archive.on('error', err => reject(err));
     archive.pipe(output);
 
-    archive.glob(path.join(outputDir, '*.pdf'));
-    archive.glob(path.join(outputDir, outputCSVFilename));
+    archive.glob('*.pdf', { cwd: outputDir });
+    archive.glob(outputCSVFilename, { cwd: outputDir });
 
     archive.finalize();
   });
