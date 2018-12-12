@@ -4,6 +4,8 @@ const port = 3000;
 const spawn = require('child_process').spawn;
 const moment = require('moment');
 const multer = require('multer');
+const fs = require('fs');
+const path = require('path');
 
 const config = require('./pdf-generator-config');
 
@@ -22,10 +24,13 @@ app.use(express.static('static'));
 
 // Accept a POST request, spawn off a process to generate the PDFs
 app.post('/accept-csv', upload.single('csv'), (req, res) => {
+  const outputPath = path.join(config.outputDirectory, req.file.filename.split('-')[0]);
+  fs.mkdirSync(outputPath);
+
   const pdfProcess = spawn('node', [
     config.scriptLocation,
     '--input-csv', req.file.path,
-    '--output-dir', config.outputDirectory,
+    '--output-dir', outputPath,
     '--base-url', config.baseUrl,
     '--email', req.body.email,
     '--upload-to-s3'

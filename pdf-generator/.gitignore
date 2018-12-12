@@ -1,3 +1,5 @@
 /node_modules
+/output
+/uploads
 config.json
 pdf-generator-config.js
