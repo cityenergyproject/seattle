@@ -35,3 +35,36 @@ On EC2:
  sudo yum install libXtst.x86_64
  sudo yum install libXScrnSaver.x86_64
  ```
+
+ 4. Install git:
+
+ ```bash
+ sudo yum install git
+ ```
+
+ 5. Clone the repo:
+
+ ```bash
+ git clone https://github.com/cityenergyproject/seattle.git
+ ```
+
+ 6. Make a symlink since we'll only be dealing with a subdirectory:
+
+ ```bash
+ ln -s seattle/pdf-generator .
+ ```
+
+ 7. Install dependencies:
+
+ ```bash
+ cd pdf-generator
+ npm install
+ ```
+
+ 8. Copy and change config file:
+
+ ```bash
+ cp pdf-generator-config-example.js pdf-generator-config.js
+ ```
+
+ 9. Create a `config.json` with the AWS credentials.
