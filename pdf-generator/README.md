@@ -68,3 +68,15 @@ On EC2:
  ```
 
  9. Create a `config.json` with the AWS credentials.
+
+ 10. Install [pm2](https://github.com/Unitech/pm2):
+
+ ```bash
+ sudo npm install pm2 -g
+ ```
+
+ and keep the server running:
+
+ ```bash
+ pm2 start server.js
+ ```
