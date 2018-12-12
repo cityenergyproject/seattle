@@ -180,7 +180,7 @@ async function sendEmail(email, url) {
 
   const zipPath = await writeZip(commander.outputDir);
 
-  if (commander.uploadToS3) {
+  if (commander.uploadToS3 && config.environment === 'production') {
     const s3data = await uploadToS3(zipPath);
     if (commander.email) {
       await sendEmail(commander.email, s3data.Location);
