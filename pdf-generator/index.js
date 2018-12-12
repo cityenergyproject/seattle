@@ -1,16 +1,24 @@
 #!/usr/bin/env node
 
+const AWS = require('aws-sdk');
 const archiver = require('archiver');
 const commander = require('commander');
 const csvParse = require('csv-parse');
 const csvStringify = require('csv-stringify');
 const fs = require('fs');
+const moment = require('moment');
 const path = require('path');
 const process = require('process');
 const puppeteer = require('puppeteer');
+const config = require('./pdf-generator-config');
 
+const bucket = 'seattle-energy';
 const endpoint = '#seattle';
 const parameters = 'report_active=true';
+const outputCSVFilename = 'generated-pdfs.csv';
+const outputZipFilename = 'generated-pdfs.zip';
+
+AWS.config.loadFromPath('./config.json');
 
 function getBuildingUrl(buildingId, baseUrl, year) {
   return `${baseUrl}/${endpoint}/${year}?${parameters}&building=${buildingId}`;
@@ -58,18 +66,19 @@ async function writeCSV(filename, records) {
 
 async function writeZip(outputDir) {
   return new Promise((resolve, reject) => {
-    var output = fs.createWriteStream(path.join(outputDir, 'example.zip'));
+    const outputPath = path.join(outputDir, outputZipFilename);
+    var output = fs.createWriteStream(outputPath);
     var archive = archiver('zip', {
       zlib: { level: 9 }
     });
 
-    output.on('close', resolve);
+    output.on('close', () => resolve(outputPath));
     archive.on('warning', err => reject(err));
     archive.on('error', err => reject(err));
     archive.pipe(output);
 
     archive.glob(path.join(outputDir, '*.pdf'));
-    archive.glob(path.join(outputDir, 'output.csv'));
+    archive.glob(path.join(outputDir, outputCSVFilename));
 
     archive.finalize();
   });
@@ -96,13 +105,69 @@ async function downloadPdfs(records, batchSize, baseUrl, outputDir, year) {
   return outputRecords;
 }
 
+async function uploadToS3(filename) {
+  return new Promise((resolve, reject) => {
+    const s3 = new AWS.S3({
+      apiVersion: '2006-03-01',
+      params: { Bucket: bucket }
+    });
+
+    const params = {
+      Key: `${moment().format('YYYYMMDDHHmmss')}-generated-pdfs.zip`,
+      Body: fs.createReadStream(filename)
+    };
+
+    s3.upload(params, {}, (err, data) => {
+      if (err) return reject(err);
+      return resolve(data);
+    });
+  });
+}
+
+async function sendEmail(email, url) {
+  const body = `Your scorecard PDFs are ready: ${url}`;
+  return new Promise((resolve, reject) => {
+    var params = {
+      Destination: {
+        CcAddresses: config.email.cc,
+        ToAddresses: [email]
+      },
+      Message: {
+        Body: {
+          Html: {
+            Data: body
+          },
+          Text: {
+            Data: body
+          }
+        },
+        Subject: {
+          Data: 'City Energy Project: Scorecards generated'
+        }
+      },
+      ReplyToAddresses: config.email.replyTo,
+      ReturnPath: config.email.returnPath,
+      Source: config.email.from,
+      Tags: [{ Name: 'project', Value: 'cityenergyproject-seattle' }]
+    };
+
+    const ses = new AWS.SES({ apiVersion: '2010-12-01' });
+    ses.sendEmail(params, function(err, data) {
+      if (err) return reject(err);
+      return resolve(data);
+    });
+  });
+}
+
 (async () => {
   commander
     .option('-i --input-csv <input-csv>', 'The CSV to read on input')
     .option('-y --year [year]', 'The year to get data for', '2017')
     .option('-b --batch-size [batch-size]', 'Batch size when downloading PDFs', 5)
+    .option('-e --email [email]', 'Email address to notify on completion')
     .option('--base-url [base-url]', 'Base URL to get scorecards from', 'http://www.seattle.gov/energybenchmarkingmap')
     .option('-o --output-dir [output-dir]', 'The directory to put generated files in', '.')
+    .option('--upload-to-s3', 'Upload to S3')
     .parse(process.argv);
 
   if (!commander.inputCsv) {
@@ -111,6 +176,14 @@ async function downloadPdfs(records, batchSize, baseUrl, outputDir, year) {
 
   const records = await openCSV(commander.inputCsv);
   const outputRecords = await downloadPdfs(records, commander.batchSize, commander.baseUrl, commander.outputDir, commander.year);
-  await writeCSV(path.join(commander.outputDir, 'output.csv'), outputRecords);
-  await writeZip(commander.outputDir);
+  await writeCSV(path.join(commander.outputDir, outputCSVFilename), outputRecords);
+
+  const zipPath = await writeZip(commander.outputDir);
+
+  if (commander.uploadToS3) {
+    const s3data = await uploadToS3(zipPath);
+    if (commander.email) {
+      await sendEmail(commander.email, s3data.Location);
+    }
+  }
 })();

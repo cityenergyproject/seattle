@@ -1,0 +1,41 @@
+<!doctype html>
+<html>
+    <head>
+        <style>
+            body {
+                font-family: sans-serif;
+                margin-left: 10%;
+                margin-top: 5%;
+                width: 50%;
+            }
+
+            label {
+                display: inline-block;
+                width: 15%;
+            }
+
+            .form-row {
+                margin-bottom: 5px;
+                margin-top: 5px;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>City Energy Project Seattle PDF Scorecard Generator</h1>
+        <p>This tool generates a PDF for every building in a CSV you provide below. The CSV must have a column named <strong>property_id</strong> with the property's id in it. Other columns can be included if desired.</p>
+        <p>As this process will take a few minutes, please enter an email address. A link to the generated PDFs will be sent to you when the process is complete.</p>
+        <form method='post' action='/accept-csv' enctype='multipart/form-data'>
+            <div class='form-row'>
+                <label for='email'>email</label>
+                <input id='email' name='email' type='email' />
+            </div>
+            <div class='form-row'>
+                <label for='csv'>CSV</label>
+                <input id='csv' name='csv' type='file' />
+            </div>
+            <div class='form-row'>
+                <button type='submit'>submit</button>
+            </div>
+        </form>
+    </body>
+</html>
