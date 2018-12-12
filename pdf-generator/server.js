@@ -6,6 +6,7 @@ const moment = require('moment');
 const multer = require('multer');
 const fs = require('fs');
 const path = require('path');
+const Mustache = require('mustache');
 
 const config = require('./pdf-generator-config');
 
@@ -39,6 +40,12 @@ app.post('/accept-csv', upload.single('csv'), (req, res) => {
   pdfProcess.stderr.on('data', data => console.warn(data.toString()));
   pdfProcess.stdout.on('data', data => console.log(data.toString()));
   pdfProcess.on('close', () => console.log('pdfProcess closed'));
+
+  return new Promise((resolve, reject) => {
+    fs.readFile(path.join('static', 'requestProcessing.html'), (err, data) => {
+      resolve(res.send(Mustache.render(data.toString(), { email: req.body.email })));
+    });
+  });
 
   return res.send(`We are generating the PDFs for the buildings you requested. When they are ready ${req.body.email} will receive an email.`);
 });
