@@ -15,8 +15,8 @@ const config = require('./pdf-generator-config');
 const bucket = 'seattle-energy';
 const endpoint = '#seattle';
 const parameters = 'report_active=true';
-const outputCSVFilename = 'generated-pdfs.csv';
-const outputZipFilename = 'generated-pdfs.zip';
+const outputCSVFilename = 'scorecards.csv';
+const outputZipFilename = 'scorecards-pdfs.zip';
 
 AWS.config.loadFromPath('./config.json');
 
