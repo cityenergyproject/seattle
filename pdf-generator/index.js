@@ -113,7 +113,6 @@ async function uploadToS3(filename) {
     });
 
     const params = {
-      ACL: 'public-read',
       Key: `${moment().format('YYYYMMDDHHmmss')}-generated-pdfs.zip`,
       Body: fs.createReadStream(filename)
     };
