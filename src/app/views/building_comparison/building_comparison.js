@@ -8,8 +8,7 @@ define([
   'views/charts/histogram',
   'text!templates/building_comparison/table_head.html',
   'text!templates/building_comparison/table_body.html'
-], function($, _, Backbone, BuildingComparator, BuildingColorBucketCalculator, BuildingBucketCalculator, HistogramView, TableHeadTemplate,TableBodyRowsTemplate){
-
+], function($, _, Backbone, BuildingComparator, BuildingColorBucketCalculator, BuildingBucketCalculator, HistogramView, TableHeadTemplate, TableBodyRowsTemplate) {
   var ReportTranslator = function(buildingId, buildingFields, buildings, gradientCalculators) {
     this.buildingId = buildingId;
     this.buildingFields = buildingFields;
@@ -55,7 +54,6 @@ define([
       this.lookup[id].metrics = metrics;
       this.lookup[id].metrichash = metrichash;
     }, this);
-
   };
 
   ReportTranslator.prototype.toRows = function(buildings) {
@@ -73,13 +71,14 @@ define([
 
   MetricAverageCalculator.prototype.calculateField = function(field){
     var fieldName = field.field_name;
-    var values = _.map(this.buildings, function(building){return building.get(fieldName);});
+    var values = _.map(this.buildings, building => building.get(fieldName));
     var median = Math.round(d3.median(values) * 10) / 10;
     var gradientCalculator = this.gradientCalculators[fieldName];
 
+    // TODO: don't hardcode this. Use isYear attribute instead.
     return _.extend({}, field, {
       median: median,
-      isYear: (field.field_name == 'yearbuilt'),  // TODO: don't hardcode this. Use isYear attribute instead.
+      isYear: (field.field_name == 'yearbuilt'),
       color: gradientCalculator.toColor(median)
     });
   };
@@ -125,8 +124,8 @@ define([
 
   BuildingMetricCalculator.prototype.render = function(rowContainer) {
     rowContainer.find('td.metric').each(_.bind(function(index, cell) {
-      var field = this.metricFields[index],
-          histogram = this.renderField(field);
+      var field = this.metricFields[index];
+      var histogram = this.renderField(field);
 
       $(cell).find('.histogram').replaceWith(histogram.render());
     }, this));
@@ -139,10 +138,10 @@ define([
   };
 
   MetricsValidator.prototype.toValidFields = function(){
-    var allValidFields = _.intersection(this.metrics.concat([this.newField]), this.cityFields),
-        lastValidField = _.last(allValidFields);
+    var allValidFields = _.intersection(this.metrics.concat([this.newField]), this.cityFields);
+    var lastValidField = _.last(allValidFields);
     if (allValidFields.length > 5) {
-      allValidFields = _.first(allValidFields,4).concat([lastValidField]);
+      allValidFields = _.first(allValidFields, 4).concat([lastValidField]);
     }
     return allValidFields;
   };
@@ -182,8 +181,8 @@ define([
     },
 
     onBuildings: function(){
-      var layers = this.state.get('city').get('map_layers'),
-          fields = _.where(layers, {display_type: 'range'});
+      var layers = this.state.get('city').get('map_layers');
+      var fields = _.where(layers, { display_type: 'range' });
 
       var buildings = this.allBuildings = this.state.get('allbuildings');
 
@@ -197,8 +196,8 @@ define([
         return memo;
       }, {});
 
-      var buildingFields = _.values(this.state.get('city').pick('property_name', 'building_type')),
-          buildingId = this.state.get('city').get('property_id');
+      var buildingFields = _.values(this.state.get('city').pick('property_name', 'building_type'));
+      var buildingId = this.state.get('city').get('property_id');
 
       this.report = new ReportTranslator(buildingId, buildingFields, buildings, gradientCalculators);
       this.updateBuildings();
@@ -217,13 +216,11 @@ define([
     },
 
     preCalculateTable: function() {
-      if (!this.state.get('city')) { return; }
-      if (!this.gradientCalculators) { return; }
-      if (!this.buildingsExist()) { return; }
+      if (!this.state.get('city')) return;
+      if (!this.gradientCalculators) return;
+      if (!this.buildingsExist()) return;
 
-      var metricFieldNames = this.state.get('metrics'),
-          cityFields = this.state.get('city').get('map_layers');
-
+      var metricFieldNames = this.state.get('metrics');
       this.report.updateMetrics(this.buildings, metricFieldNames);
     },
 
@@ -240,24 +237,24 @@ define([
     },
 
     onScroll: function() {
-      var $container = this.$el.find('.building-report-header-container'),
-          topOfScreen = $(window).scrollTop(),
-          topOfTable  = $container.offset().top,
-          scrolledPastTableHead = topOfScreen > topOfTable;
+      var $container = this.$el.find('.building-report-header-container');
+      var topOfScreen = $(window).scrollTop();
+      var topOfTable = $container.offset().top;
+      var scrolledPastTableHead = topOfScreen > topOfTable;
 
       $container.toggleClass('fixed', scrolledPastTableHead);
     },
 
     onLayerChange: function() {
-      if(!this.state.get('city')) { return; }
+      if (!this.state.get('city')) return;
 
-      var metrics = this.state.get('metrics'),
-          newLayer = this.state.get('layer'),
-          cityFields = _.pluck(this.state.get('city').get('map_layers'), 'field_name'),
-          validator = new MetricsValidator(cityFields, metrics, newLayer),
-          validMetrics = validator.toValidFields();
+      var metrics = this.state.get('metrics');
+      var newLayer = this.state.get('layer');
+      var cityFields = _.pluck(this.state.get('city').get('map_layers'), 'field_name');
+      var validator = new MetricsValidator(cityFields, metrics, newLayer);
+      var validMetrics = validator.toValidFields();
 
-      this.state.set({metrics: validMetrics});
+      this.state.set({ metrics: validMetrics });
       return this;
     },
 
@@ -279,21 +276,21 @@ define([
     },
 
     renderTableHead: function(){
-      var $head = this.$el.find('thead'),
-          city = this.state.get('city'),
-          currentLayerName = this.state.get('layer'),
-          sortColumn = this.state.get('sort'),
-          sortOrder = this.state.get('order'),
-          mapLayers = city.get('map_layers'),
-          currentLayer = _.findWhere(mapLayers, {field_name: currentLayerName}),
-          template = _.template(TableHeadTemplate),
-          metrics = this.state.get('metrics');
+      var $head = this.$el.find('thead');
+      var city = this.state.get('city');
+      var currentLayerName = this.state.get('layer');
+      var sortColumn = this.state.get('sort');
+      var sortOrder = this.state.get('order');
+      var mapLayers = city.get('map_layers');
+      var currentLayer = _.findWhere(mapLayers, { field_name: currentLayerName });
+      var template = _.template(TableHeadTemplate);
+      var metrics = this.state.get('metrics');
 
       metrics = _.chain(metrics)
-                 .map(function(m){ return _.findWhere(mapLayers, {field_name: m}); })
+                 .map(function(m){ return _.findWhere(mapLayers, { field_name: m }); })
                  .map(function(layer){
-                  var current = layer.field_name == currentLayerName,
-                      sorted = layer.field_name == sortColumn;
+                   var current = layer.field_name == currentLayerName;
+                   var sorted = layer.field_name == sortColumn;
                    return _.extend({
                      current: current ? 'current' : '',
                      sorted: sorted ? 'sorted ' + sortOrder : '',
@@ -312,12 +309,11 @@ define([
       var buildings = this.buildings;
       var $body = this.$el.find('tbody');
       var template = _.template(TableBodyRowsTemplate);
-      var buildingFields = _.values(this.state.get('city').pick('property_name', 'building_type'));
       var cityFields = this.state.get('city').get('map_layers');
       var buildingId = this.state.get('city').get('property_id');
       var currentBuilding = this.state.get('building');
       var metricFieldNames = this.state.get('metrics');
-      var metricFields = _.map(metricFieldNames, function(name) { return _.findWhere(cityFields, {field_name: name}); });
+      var metricFields = _.map(metricFieldNames, function(name) { return _.findWhere(cityFields, { field_name: name }); });
       var report = this.report.toRows(buildings);
       var metrics = new MetricAverageCalculator(buildings, metricFields, this.gradientCalculators).calculate();
       var building = buildings.find(function(b) { return b.get(buildingId) == currentBuilding; });
