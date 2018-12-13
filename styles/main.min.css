@@ -2354,9 +2354,15 @@ header {
     top: 0;
     left: 0;
     display: none; }
-  #scorecard.show-eui-view #eui-scorecard-view,
+  #scorecard.show-eui-view #eui-scorecard-view {
+    display: block; }
   #scorecard.show-ess-view #ess-scorecard-view {
     display: block; }
+  #scorecard.show-ess-view #eui-scorecard-view {
+    display: block; }
+    #scorecard.show-ess-view #eui-scorecard-view .scorecard--details,
+    #scorecard.show-ess-view #eui-scorecard-view .scorecard-compare-chart {
+      display: none; }
   @media print {
     #scorecard {
       overflow: visible; }
@@ -2380,6 +2386,8 @@ header {
     #scorecard #eui-scorecard-view {
       page-break-after: always;
       overflow: visible; }
+      #scorecard #eui-scorecard-view .scorecard--details {
+        display: none; }
     #scorecard #comparison-view-link {
       display: none; }
     #scorecard #ess-scorecard-view {
@@ -2389,13 +2397,10 @@ header {
       #scorecard #ess-scorecard-view #compare-shift-chart,
       #scorecard #ess-scorecard-view #fuel-use-chart {
         display: none; }
-      #scorecard #ess-scorecard-view .scorecard--details {
-        position: absolute;
-        top: 0; }
     #scorecard .scorecard--section, #scorecard .scorecard--details {
       page-break-inside: avoid; }
     #scorecard #fuel-use-chart {
-      page-break-inside: unset; }
+      page-break-inside: avoid; }
     #scorecard #building-type-table {
       page-break-after: always; } }
 
@@ -2405,6 +2410,15 @@ header {
     overflow: visible; }
   #scorecard .scorecard-wrapper.no-energy-star-score #ess-scorecard-view {
     display: none !important; }
+  #scorecard .scorecard-wrapper.no-energy-star-score #eui-scorecard-view {
+    /*
+       * Fuel use chart was breaking to next page, looks bad when no
+       * Energy Star score
+       */ }
+    #scorecard .scorecard-wrapper.no-energy-star-score #eui-scorecard-view .scorecard--details {
+      display: block; }
+    #scorecard .scorecard-wrapper.no-energy-star-score #eui-scorecard-view #fuel-use-chart {
+      page-break-inside: unset; }
   #footer {
     display: none; } }
 

@@ -55,7 +55,7 @@
   </div>
 </div>
 
-<div class='scorecard--section'>
+<div class='scorecard--section scorecard-compare-chart'>
   <div class='inner'>
     <div class='section-head'>
       <% if (view === 'eui') { %>
@@ -84,6 +84,8 @@
   </div>
 </div>
 
-<div id='fuel-use-chart' class='scorecard--section'></div>
+<% if (view === 'eui') { %>
+  <div id='fuel-use-chart' class='scorecard--section'></div>
 
-<div id='compare-shift-chart' class='scorecard--section avoid-break'></div>
+  <div id='compare-shift-chart' class='scorecard--section avoid-break'></div>
+<% } %>
