@@ -193,7 +193,7 @@ define([
       this.charts[view].chart_fueluse.afterRender();
 
       // render Energy Use Trends chart
-      if (!this.charts[view].chart_shift) {
+      if (view === 'eui' && !this.charts[view].chart_shift) {
         var shiftConfig = config.change_chart.building;
         var previousYear = avail_years[0];
         var hasPreviousYear = previousYear !== selected_year;
@@ -210,9 +210,11 @@ define([
         });
       }
 
-      this.charts[view].chart_shift.render(t => {
-        el.find('#compare-shift-chart').html(t);
-      }, viewSelector);
+      if (this.charts[view].chart_shift) {
+        this.charts[view].chart_shift.render(t => {
+          el.find('#compare-shift-chart').html(t);
+        }, viewSelector);
+      }
 
       // render compare chart
       // TODO: move into seperate Backbone View
@@ -228,10 +230,10 @@ define([
     },
 
     full_address: function(building) {
-      var zip = building.zip; // building.get('zip');
-      var state = building.state; // building.get('state');
-      var city = building.city; // building.get('city');
-      var addr = building.reported_address; // building.get('reported_address');
+      var zip = building.zip;
+      var state = building.state;
+      var city = building.city;
+      var addr = building.reported_address;
 
       return addr + ', ' + city + ' ' + state + ' ' + zip;
     },

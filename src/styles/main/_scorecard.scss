@@ -1009,9 +1009,23 @@ $steam-color: #E7B9AC;
     display: none;
   };
 
-  &.show-eui-view #eui-scorecard-view,
-  &.show-ess-view #ess-scorecard-view  {
+  &.show-eui-view #eui-scorecard-view {
     display: block;
+  }
+
+  &.show-ess-view {
+    #ess-scorecard-view {
+      display: block;
+    }
+
+    #eui-scorecard-view {
+      display: block;
+
+      .scorecard--details,
+      .scorecard-compare-chart {
+        display: none;
+      }
+    }
   }
 
   @media print {
@@ -1047,6 +1061,10 @@ $steam-color: #E7B9AC;
     #eui-scorecard-view {
       page-break-after: always;
       overflow: visible;
+
+      .scorecard--details {
+        display: none;
+      }
     }
 
     #comparison-view-link {
@@ -1062,11 +1080,6 @@ $steam-color: #E7B9AC;
       #fuel-use-chart {
         display: none;
       }
-
-      .scorecard--details {
-        position: absolute;
-        top: 0;
-      }
     }
 
     .scorecard--section, .scorecard--details {
@@ -1074,7 +1087,7 @@ $steam-color: #E7B9AC;
     }
 
     #fuel-use-chart {
-      page-break-inside: unset;
+      page-break-inside: avoid;
     }
 
     #building-type-table {
@@ -1092,6 +1105,20 @@ $steam-color: #E7B9AC;
   #scorecard .scorecard-wrapper.no-energy-star-score {
     #ess-scorecard-view {
       display: none !important;
+    }
+
+    #eui-scorecard-view {
+      .scorecard--details {
+        display: block;
+      }
+
+      /*
+       * Fuel use chart was breaking to next page, looks bad when no
+       * Energy Star score
+       */
+      #fuel-use-chart {
+        page-break-inside: unset;
+      }
     }
   }
 
