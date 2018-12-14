@@ -2,7 +2,13 @@
 
 This is a tool that generates PDFs of scorecards for a list of buildings.
 
+## Running it locally
+
+You can run pdf-generator on your local machine. From the `pdf-generator` directory run `npm install` then `node index.js` to see the documentation for the script.
+
 ## Deploy
+
+You can also run `pdf-generator` as a server. Here we document doing so with AWS.
 
 Create an EC2 instance running Amazon Linux.
 
