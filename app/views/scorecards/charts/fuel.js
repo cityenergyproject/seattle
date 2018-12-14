@@ -447,8 +447,8 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
 
     renderPieChart: function renderPieChart(id, data, width, height) {
       var radius = Math.min(width, height) / 2;
-
       var parent = d3.select(this.viewParent);
+
       var svg = parent.select('#' + id).append('svg').attr('width', width).attr('height', height).append('g').attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')');
 
       var pie = d3.layout.pie().sort(null).value(function (d) {
@@ -495,11 +495,15 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
     },
 
     afterRender: function afterRender() {
-      this.renderEmissionsChart(this.emissionsChartData);
+      var filteredFuelData = this.fuels;
 
-      var buildingFuels = this.getBuildingFuels([].concat(_toConsumableArray(this.fuels)), this.data);
-      this.renderEnergyConsumptionPieChart(buildingFuels);
-      this.renderEmissionsPieChart(buildingFuels);
+      if (!this.isCity) {
+        this.renderEmissionsChart(this.emissionsChartData);
+        filteredFuelData = this.getBuildingFuels([].concat(_toConsumableArray(this.fuels)), this.data);
+      }
+
+      this.renderEnergyConsumptionPieChart(filteredFuelData);
+      this.renderEmissionsPieChart(filteredFuelData);
     }
   });
 

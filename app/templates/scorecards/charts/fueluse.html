@@ -9,15 +9,17 @@
     <% } %>
   </div>
 
-  <div class='emissions-intensity-chart-container row'>
-    <div id='emissions-intensity-chart' class='col-8 emissions-intensity-chart'></div>
-    <div class='col-4 emissions-intensity-chart-legend'>
-      <div class='notes'>This building’s greenhouse gas (GHG) emissions per square foot was <strong><%= total_ghg_emissions_intensity %> KG/SF</strong> in <%= year %> with a total of <strong><%= total_ghg_emissions %> metric tons (MT)</strong> for the year.</div>
-      <div class='emissions-dots'>
-        <div class='emissions-dots-title'>total emissions</div>
+  <% if (!isCity) { %>
+    <div class='emissions-intensity-chart-container row'>
+      <div id='emissions-intensity-chart' class='col-8 emissions-intensity-chart'></div>
+      <div class='col-4 emissions-intensity-chart-legend'>
+        <div class='notes'>This building’s greenhouse gas (GHG) emissions per square foot was <strong><%= total_ghg_emissions_intensity %> KG/SF</strong> in <%= year %> with a total of <strong><%= total_ghg_emissions %> metric tons (MT)</strong> for the year.</div>
+        <div class='emissions-dots'>
+          <div class='emissions-dots-title'>total emissions</div>
+        </div>
       </div>
     </div>
-  </div>
+  <% } %>
 
   <div id='fueluse-chart' class='row'>
     <% if (fuels.length === 0) { %>
@@ -27,7 +29,12 @@
         <div class='row fc-labels fc-panel'>
           <div class='col-6'>
             <div class='fc-label'>
+              <% if (isCity) { %>
+              <span><strong>Energy Consumption</strong></span>
+              <% } else { %>
               <span><strong>Building Energy Consumption</strong></span>
+              <% } %>
+
               <span>(% kBtu)</span>
             </div>
             <div class='pie-chart-container'>
@@ -44,7 +51,12 @@
           </div>
           <div class='col-6'>
             <div class='fc-label'>
+              <% if (isCity) { %>
+              <span><strong>Emissions</strong></span>
+              <% } else { %>
               <span><strong>Building Emissions</strong></span>
+              <% } %>
+
               <% if (fuels.length > 1) { %>
                 <span>(% ghg)</span>
               <% } %>

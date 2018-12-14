@@ -135,7 +135,7 @@ define(['jquery', 'underscore', 'backbone', 'toastr', 'fusejs', 'autocomplete', 
       }
 
       // autocomplete setup
-      this.autocomplete = new autoComplete({
+      this.autocomplete = new autoComplete({ // eslint-disable-line no-undef
         selector: '#address-search',
         menuClass: 'address-search-results',
         minChars: 3,

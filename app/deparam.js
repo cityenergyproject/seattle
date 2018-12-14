@@ -7,17 +7,16 @@ define(['jquery'], function ($) {
 
     // Iterate over all name=value pairs.
     $.each(params.replace(/\+/g, ' ').split('&'), function (j, v) {
-      var param = v.split('='),
-          key = decodeURIComponent(param[0]),
-          val,
-          cur = obj,
-          i = 0,
-
+      var param = v.split('=');
+      var key = decodeURIComponent(param[0]);
+      var val;
+      var cur = obj;
+      var i = 0;
 
       // If key is more complex than 'foo', like 'a[]' or 'a[b][c]', split it
       // into its component parts.
-      keys = key.split(']['),
-          keys_last = keys.length - 1;
+      var keys = key.split('][');
+      var keys_last = keys.length - 1;
 
       // If the first keys part contains [ and the last ends with ], then []
       // are correctly balanced.
