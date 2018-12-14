@@ -4,17 +4,17 @@ define(['jquery'], function($){
     var coerce_types = { 'true': !0, 'false': !1, 'null': null };
 
     // Iterate over all name=value pairs.
-    $.each( params.replace( /\+/g, ' ' ).split( '&' ), function(j,v){
-      var param = v.split( '=' ),
-        key = decodeURIComponent( param[0] ),
-        val,
-        cur = obj,
-        i = 0,
+    $.each(params.replace(/\+/g, ' ').split('&'), function(j, v) {
+      var param = v.split('=');
+      var key = decodeURIComponent(param[0]);
+      var val;
+      var cur = obj;
+      var i = 0;
 
-        // If key is more complex than 'foo', like 'a[]' or 'a[b][c]', split it
-        // into its component parts.
-        keys = key.split( '][' ),
-        keys_last = keys.length - 1;
+      // If key is more complex than 'foo', like 'a[]' or 'a[b][c]', split it
+      // into its component parts.
+      var keys = key.split('][');
+      var keys_last = keys.length - 1;
 
       // If the first keys part contains [ and the last ends with ], then []
       // are correctly balanced.
@@ -61,13 +61,13 @@ define(['jquery'], function($){
           // Simple key, even simpler rules, since only scalars and shallow
           // arrays are allowed.
 
-          if ( $.isArray( obj[key] ) ) {
+          if ($.isArray(obj[key])) {
             // val is already an array, so push on the next value.
-            obj[key].push( val );
-          } else if ( obj[key] !== undefined ) {
+            obj[key].push(val);
+          } else if (obj[key] !== undefined) {
             // val isn't an array, but since a second value has been specified,
             // convert val into an array.
-            obj[key] = [ obj[key], val ];
+            obj[key] = [obj[key], val];
           } else {
             // val is a scalar.
             obj[key] = val;
