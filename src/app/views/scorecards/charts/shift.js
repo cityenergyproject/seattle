@@ -128,9 +128,10 @@ define([
 
       if (!isValid) return;
 
+      const years = [parseInt(this.previous_year), parseInt(this.selected_year)];
+      const filteredData = data.filter(d => d.year >= years[0] && d.year <= years[1]);
       const diameter = 10;
-      const yearExtent = d3.extent(data, d => d.year);
-      const valueExtent = d3.extent(data, d => d.value);
+      const valueExtent = d3.extent(filteredData, d => d.value);
 
       const yearWidth = yearsElm.select('p').node().offsetWidth;
       let baseWidth = yearsElm.node().offsetWidth - (yearWidth * 2);
@@ -150,11 +151,11 @@ define([
           .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
       const gradientID = 'gradient-' + this.view;
-      this.setSVGGradient(rootElm, gradientID, data);
+      this.setSVGGradient(rootElm, gradientID, filteredData);
 
       const x = d3.scale.linear()
         .range([0, width])
-        .domain(yearExtent);
+        .domain(years);
 
       const y = d3.scale.linear()
         .domain(valueExtent)
@@ -166,7 +167,7 @@ define([
 
       const connections = d3.nest()
         .key(d => d.label)
-        .entries(data);
+        .entries(filteredData);
 
       svg.selectAll('.line')
         .data(connections)
@@ -187,7 +188,7 @@ define([
         .attr('d', d => line(d.values));
 
       var bar = svg.selectAll('.dot')
-          .data(data)
+          .data(filteredData)
         .enter().append('g')
           .attr('class', d => {
             const colorize = d.colorize ? '' : ' no-clr';
@@ -205,7 +206,7 @@ define([
       var lastyear = x.domain().slice(-1)[0];
 
       var label = rootElm.selectAll('.label')
-        .data(data)
+        .data(filteredData)
       .enter().append('div')
         .attr('class', 'label')
         .attr('class', d => {
