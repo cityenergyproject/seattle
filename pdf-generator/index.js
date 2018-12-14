@@ -37,14 +37,14 @@ async function pageToPdf(buildingId, baseUrl, outputDir, year) {
   console.log(`Generating PDF for building ${buildingId}`);
   try {
     await page.goto(getBuildingUrl(buildingId, baseUrl, year), { waitUntil: 'networkidle0' });
+    await page.pdf({
+      path: path.join(outputDir, `${buildingId}.pdf`),
+      preferCSSPageSize: true
+    });
   } catch (e) {
-    console.log(`Exception in goto() call for building ${buildingId}`);
+    console.log(`Exception creating PDF for building ${buildingId}`);
     status = 'page load error';
   }
-  await page.pdf({
-    path: path.join(outputDir, `${buildingId}.pdf`),
-    preferCSSPageSize: true
-  });
   await browser.close();
   return status;
 }
