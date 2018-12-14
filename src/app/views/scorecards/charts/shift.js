@@ -128,13 +128,9 @@ define([
 
       if (!isValid) return;
 
-      // Filter data to past two years
-      const allowedYears = [parseInt(this.previous_year), parseInt(this.selected_year)];
-      const filteredData = data.filter(d => allowedYears.indexOf(d.year) >= 0);
-
       const diameter = 10;
-      const yearExtent = d3.extent(filteredData, function(d){ return d.year; });
-      const valueExtent = d3.extent(filteredData, function(d) { return d.value; });
+      const yearExtent = d3.extent(data, d => d.year);
+      const valueExtent = d3.extent(data, d => d.value);
 
       const yearWidth = yearsElm.select('p').node().offsetWidth;
       let baseWidth = yearsElm.node().offsetWidth - (yearWidth * 2);
@@ -154,23 +150,23 @@ define([
           .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
       const gradientID = 'gradient-' + this.view;
-      this.setSVGGradient(rootElm, gradientID, filteredData);
+      this.setSVGGradient(rootElm, gradientID, data);
 
-      const x = d3.scale.ordinal()
-          .range([0, width])
-          .domain(yearExtent);
+      const x = d3.scale.linear()
+        .range([0, width])
+        .domain(yearExtent);
 
       const y = d3.scale.linear()
-          .domain(valueExtent)
-          .range([height, 0]);
+        .domain(valueExtent)
+        .range([height, 0]);
 
       const line = d3.svg.line()
-          .x(function(d) { return x(d.year); })
-          .y(function(d) { return y(d.value); });
+        .x(d => x(d.year))
+        .y(d => y(d.value));
 
       const connections = d3.nest()
         .key(d => d.label)
-        .entries(filteredData);
+        .entries(data);
 
       svg.selectAll('.line')
         .data(connections)
@@ -191,7 +187,7 @@ define([
         .attr('d', d => line(d.values));
 
       var bar = svg.selectAll('.dot')
-          .data(filteredData)
+          .data(data)
         .enter().append('g')
           .attr('class', d => {
             const colorize = d.colorize ? '' : ' no-clr';
@@ -206,10 +202,10 @@ define([
         .attr('fill', d => d.clr);
 
       var firstyear = x.domain()[0];
-      var lastyear = x.domain()[1];
+      var lastyear = x.domain().slice(-1)[0];
 
       var label = rootElm.selectAll('.label')
-        .data(filteredData)
+        .data(data)
       .enter().append('div')
         .attr('class', 'label')
         .attr('class', d => {
