@@ -19,6 +19,7 @@ define([
       this.year = options.year || '';
       this.isCity = options.isCity || false;
       this.viewParent = options.parent;
+      this.pieCharts = {};
 
       this.fuels = [
         {
@@ -487,14 +488,16 @@ define([
 
     renderPieChart: function(id, data, width, height) {
       const radius = Math.min(width, height) / 2;
-
       const parent = d3.select(this.viewParent);
+      if (this.pieCharts[id]) return;
+
       const svg = parent.select(`#${id}`)
         .append('svg')
         .attr('width', width)
         .attr('height', height)
         .append('g')
           .attr('transform', `translate(${width / 2},${height / 2})`);
+      this.pieCharts[id] = svg;
 
       var pie = d3.layout.pie()
         .sort(null)
@@ -545,11 +548,15 @@ define([
     },
 
     afterRender: function() {
-      this.renderEmissionsChart(this.emissionsChartData);
+      let filteredFuelData = this.fuels;
 
-      const buildingFuels = this.getBuildingFuels([...this.fuels], this.data);
-      this.renderEnergyConsumptionPieChart(buildingFuels);
-      this.renderEmissionsPieChart(buildingFuels);
+      if (!this.isCity) {
+        this.renderEmissionsChart(this.emissionsChartData);
+        filteredFuelData = this.getBuildingFuels([...this.fuels], this.data);
+      }
+
+      this.renderEnergyConsumptionPieChart(filteredFuelData);
+      this.renderEmissionsPieChart(filteredFuelData);
     }
   });
 

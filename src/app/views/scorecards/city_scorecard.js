@@ -137,12 +137,14 @@ define([
         this.chart_fueluse = new FuelUseView({
           formatters: this.formatters,
           data: data[year],
-          isCity: true
+          isCity: true,
+          parent: el[0]
         });
       }
 
       el.find('#fuel-use-chart').html(this.chart_fueluse.render());
       this.chart_fueluse.fixlabels(viewSelector);
+      this.chart_fueluse.afterRender();
 
 
       if (!this.chart_shift) {
