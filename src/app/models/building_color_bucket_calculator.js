@@ -9,8 +9,6 @@ define([
     this.thresholds = thresholds;
     this.colorStops = colorStops;
     this.cssFillType = cssFillType || 'marker-fill';
-
-
     this.memoized = {};
     this.memoized.fieldValues = {};
     this.memoized.colorGradients = {};
@@ -19,8 +17,6 @@ define([
     this.memoized.bucketStops = this.calcBucketStops();
     this.memoized.gradientStops = this.calcGradientStops();
   };
-
-
 
   BuildingColorBucketCalculator.prototype.calcBucketStops = function() {
     const range = this.colorStops;
@@ -33,10 +29,10 @@ define([
 
 
   BuildingColorBucketCalculator.prototype.calcGradientStops = function() {
-    var range = this.colorStops,
-        buckets = this.buckets,
-        bucketStops = this.toBucketStops(),
-        gradientScale = d3.scale.linear().range(range).domain(bucketStops);
+    var range = this.colorStops;
+    var buckets = this.buckets;
+    var bucketStops = this.toBucketStops();
+    var gradientScale = d3.scale.linear().range(range).domain(bucketStops);
 
     return _.map(_.range(buckets), gradientScale);
   };
@@ -48,7 +44,6 @@ define([
 
     const stops = this.toGradientStops();
     const fieldName = this.fieldName;
-    const fieldValues = this.getFieldValues();
     const gradient = this.colorGradient();
     const cssFillType = this.cssFillType;
     let css;
@@ -61,23 +56,14 @@ define([
         }
         return `[${fieldName}>=${min}]{${cssFillType}:${stop}}`;
       });
-
     } else {
-      css = this.memoized.cartoCSS[this.fieldName] = _.map(stops, (stop) => {
+      css = this.memoized.cartoCSS[this.fieldName] = _.map(stops, stop => {
         const min = _.min(gradient.invertExtent(stop));
         return `[${fieldName}>=${min}]{${cssFillType}:${stop}}`;
       });
     }
-
-    /*
-    console.log('FieldName: ', fieldName);
-    console.log("CartoCSS stops", stops);
-    console.log("CartoCSS stops", _.map(stops, function(stop) { return gradient.invertExtent(stop);}));
-    console.log('CartoCSS rules: ', css);
-    */
-
     return css;
-  }
+  };
 
   BuildingColorBucketCalculator.prototype.getFieldValues = function() {
     if (this.memoized.fieldValues.hasOwnProperty(this.fieldName)) {
@@ -132,12 +118,12 @@ define([
   // Calculated in constructor
   BuildingColorBucketCalculator.prototype.toBucketStops = function() {
     return this.memoized.bucketStops;
-  }
+  };
 
   // Calculated in constructor
   BuildingColorBucketCalculator.prototype.toGradientStops = function() {
     return this.memoized.gradientStops;
-  }
+  };
 
   BuildingColorBucketCalculator.prototype.toCartoCSS = function() {
     return this.cartoCSS();

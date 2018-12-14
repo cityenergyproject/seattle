@@ -92,9 +92,7 @@ define([
 
         return acc;
       }, init);
-
     }
-
 
     this._tobuckets = buckets;
 

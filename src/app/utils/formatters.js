@@ -1,5 +1,5 @@
 define(['d3'], function(d3) {
-  const QUARTILES = ["1st quartile", "2nd quartile", "3rd quartile", "4th quartile"];
+  const QUARTILES = ['1st quartile', '2nd quartile', '3rd quartile', '4th quartile'];
 
   const types = {
     default: d => d,
@@ -12,10 +12,10 @@ define(['d3'], function(d3) {
     quartile: idx => {
       return QUARTILES[idx] || '';
     },
-    threshold: (labels) => {
-      return (idx) => {
+    threshold: labels => {
+      return idx => {
         return labels[idx] || '';
-      }
+      };
     }
   };
 

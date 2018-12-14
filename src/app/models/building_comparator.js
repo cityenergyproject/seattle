@@ -7,7 +7,7 @@ define([
   }
 
   BuildingComparator.prototype.isNumber = function(obj){
-    return parseFloat(obj) !== NaN;
+    return !isNaN(parseFloat(obj));
   };
 
   BuildingComparator.prototype.compareString = function(a, b, ascending){
@@ -26,9 +26,9 @@ define([
   };
 
   BuildingComparator.prototype.compare = function(building, other){
-    var a = building.get(this.field),
-        b = other.get(this.field),
-        ascending = (this.ascending ? 1 : -1);
+    var a = building.get(this.field);
+    var b = other.get(this.field);
+    var ascending = (this.ascending ? 1 : -1);
     return this.getComparator(a, b)(a, b, ascending);
   };
 

@@ -246,7 +246,11 @@ define([
       const center = this.state.get('city').get('center');
       const api_key = this.SEARCH_API_KEY;
 
-      try { this.xhr.abort(); } catch (e){}
+      try {
+        this.xhr.abort();
+      } catch (e) {
+        //
+      }
 
       this.xhr = $.ajax({
         url: url,

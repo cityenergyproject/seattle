@@ -1,7 +1,8 @@
 define([
+  'underscore',
   'backbone',
   'd3'
-], function(Backbone, d3) {
+], function(_, Backbone, d3) {
   const Modals = Backbone.Model.extend({
     defaults: {
       selected: null,

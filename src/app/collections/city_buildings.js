@@ -2,9 +2,8 @@ define([
   'underscore',
   'backbone',
 ], function(_, Backbone) {
-
   var urlTemplate = _.template(
-    "https://<%= cartoDbUser %>.carto.com/api/v2/sql"
+    'https://<%= cartoDbUser %>.carto.com/api/v2/sql'
   );
 
   function isNumeric(n) {
@@ -54,16 +53,16 @@ define([
       return false;
     }
     // Handle situations where there's only a min or only a max
-    if (range.min && range.max)
+    if (range.min && range.max) {
       return (_value >= range.min && _value <= range.max);
-    if (range.min)
+    } else if (range.min) {
       return (_value >= range.min);
-    if (range.max)
+    } else if (range.max) {
       return (_value <= range.max);
+    }
   }
 
   function cityBuildingsFilterizer(buildings, categories, ranges) {
-
     var normalizedCategories = normalizeCityBuildingCategories(categories);
     var normalizedRanges = normalizeCityBuildingRanges(ranges);
 
@@ -100,27 +99,28 @@ define([
     prefix = prefix || '';
     return _.map(this.ranges, function(range) {
       // Handle situations where there's only a min or only a max
-      if (range.min && range.max)
-        return prefix + range.field + " BETWEEN " + range.min + " AND " + range.max;
-      if (range.min)
-        return prefix + range.field + " >= " + range.min;
-      if (range.max)
-        return prefix + range.field + " <= " + range.max;
+      if (range.min && range.max) {
+        return prefix + range.field + ' BETWEEN ' + range.min + ' AND ' + range.max;
+      } else if (range.min) {
+        return prefix + range.field + ' >= ' + range.min;
+      } else if (range.max) {
+        return prefix + range.field + ' <= ' + range.max;
+      }
     });
   };
 
   CityBuildingQuery.prototype.toWrappedValue = function(value) {
-    return "'" + value + "'";
+    return `'${value}'`;
   };
 
   CityBuildingQuery.prototype.toCategorySql = function(prefix) {
     prefix = prefix || '';
     var self = this;
     return _.map(this.categories, function(category){
-      var operation = (category.other === 'false' || category.other === false) ? "IN" : "NOT IN",
-          values = _.map(category.values, self.toWrappedValue);
-      if (values.length === 0) return "";
-      return prefix + category.field + " " + operation + " (" + values.join(', ') + ")";
+      var operation = (category.other === 'false' || category.other === false) ? 'IN' : 'NOT IN';
+      var values = _.map(category.values, self.toWrappedValue);
+      if (values.length === 0) return '';
+      return prefix + category.field + ' ' + operation + ' (' + values.join(', ') + ')';
     });
   };
 
@@ -135,8 +135,8 @@ define([
     var categorySql = this.toCategorySql();
     var yearSql = this.toYearSql();
     var filterSql = yearSql.concat(rangeSql).concat(categorySql).join(' AND ');
-    var output = ["SELECT ST_X(the_geom) AS lng, ST_Y(the_geom) AS lat,* FROM " + table].concat(filterSql).filter(function(e) { return e.length > 0; });
-    return output.join(" WHERE ");
+    var output = ['SELECT ST_X(the_geom) AS lng, ST_Y(the_geom) AS lat,* FROM ' + table].concat(filterSql).filter(function(e) { return e.length > 0; });
+    return output.join(' WHERE ');
   };
 
   CityBuildingQuery.prototype.toSqlComponents = function(prefix) {
@@ -159,7 +159,7 @@ define([
     },
     fetch: function(year, categories, range) {
       var query = this.toSql(year, categories, range);
-      var result = Backbone.Collection.prototype.fetch.apply(this, [{data: {q: query}}]);
+      var result = Backbone.Collection.prototype.fetch.apply(this, [{ data: { q: query } }]);
       return result;
     },
     parse: function(data){
