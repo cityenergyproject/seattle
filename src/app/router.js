@@ -25,7 +25,6 @@ define([
             YearControlView, ActivityIndicator,
             BuildingCounts, CompareBar, ScorecardController,
             Button, MobileAlert, ModalModel, ModalController, FooterView) {
-
   var RouterState = Backbone.Model.extend({
     queryFields: [
       'filters', 'categories', 'layer',
@@ -41,10 +40,9 @@ define([
       scorecard: new ScorecardModel()
     },
 
-    toQuery: function () {
-      var query, attributes = this.pick(this.queryFields);
-      query = $.param(this.mapAttributesToParams(attributes));
-      return '?' + query;
+    toQuery: function() {
+      var attributes = this.pick(this.queryFields);
+      return '?' + $.param(this.mapAttributesToParams(attributes));
     },
 
     mapAttributesToParams: function(attributes) {
@@ -56,7 +54,7 @@ define([
         delete attributes.city_report_active;
       }
 
-      if (attributes.hasOwnProperty('building') && _.isNull(attributes.building))  {
+      if (attributes.hasOwnProperty('building') && _.isNull(attributes.building)) {
         delete attributes.building;
       }
 
@@ -75,17 +73,17 @@ define([
       return params;
     },
 
-    toUrl: function (){
+    toUrl: function() {
       var path;
       if (this.get('year')) {
-        path = "/" + this.get('url_name') + "/" + this.get('year') + this.toQuery();
+        path = '/' + this.get('url_name') + '/' + this.get('year') + this.toQuery();
       } else {
-        path = "/" + this.get('url_name') + this.toQuery();
+        path = '/' + this.get('url_name') + this.toQuery();
       }
       return path;
     },
 
-    asBuildings: function () {
+    asBuildings: function() {
       return new CityBuildings(null, this.pick('tableName', 'cartoDbUser'));
     }
   });
@@ -109,7 +107,7 @@ define([
     const currentLayer = this.layer;
     const defaultLayer = this.city.years[year].default_layer;
 
-    const match = _.find(this.city.map_layers, (lyr) => {
+    const match = _.find(this.city.map_layers, lyr => {
       const name = lyr.id || lyr.field_name;
       return name === currentLayer;
     });
@@ -136,9 +134,9 @@ define([
 
 
   StateBuilder.prototype.toState = function() {
-    var year = this.toYear(),
-        layer = this.toLayer(year),
-        categories = this.toCategory();
+    var year = this.toYear();
+    var layer = this.toLayer(year);
+    var categories = this.toCategory();
 
     return {
       year: year,
@@ -149,34 +147,33 @@ define([
       order: 'desc',
       categories: categories,
       layer_thresholds: this.layer_thresholds
-    }
+    };
   };
 
   var Router = Backbone.Router.extend({
     state: new RouterState({}),
-    routes:{
-        "": "root",
-        ":cityname": "city",
-        ":cityname/": "city",
-        ":cityname/:year": "year",
-        ":cityname/:year/": "year",
-        ":cityname/:year?:params": "year",
-        ":cityname/:year/?:params": "year",
+    routes: {
+      '': 'root',
+      ':cityname': 'city',
+      ':cityname/': 'city',
+      ':cityname/:year': 'year',
+      ':cityname/:year/': 'year',
+      ':cityname/:year?:params': 'year',
+      ':cityname/:year/?:params': 'year',
     },
 
     initialize: function(){
-      const activityIndicator = new ActivityIndicator({state: this.state});
-      const yearControlView = new YearControlView({state: this.state});
-      const mapView = new MapView({state: this.state});
-      const addressSearchView = new AddressSearchView({mapView: mapView, state: this.state});
-
-      const buildingCounts = new BuildingCounts({state: this.state});
-      const compareBar = new CompareBar({state: this.state});
-      const scorecardController = new ScorecardController({state: this.state, mapView: mapView});
-      const mobileAlert = new MobileAlert({state: this.state});
-      const footerView = new FooterView({state: this.state});
-
-      const button = new Button({
+      const state = this.state;
+      new ActivityIndicator({ state });
+      new YearControlView({ state });
+      const mapView = new MapView({ state });
+      new AddressSearchView({ state, mapView });
+      new BuildingCounts({ state });
+      new CompareBar({ state });
+      new ScorecardController({ state, mapView });
+      new MobileAlert({ state });
+      new FooterView({ state });
+      new Button({
         el: '#city-scorcard-toggle',
         onClick: _.bind(this.toggleCityScorecard, this),
         value: 'Citywide Report'
@@ -186,7 +183,7 @@ define([
     },
 
     toggleCityScorecard: function() {
-      this.state.set({city_report_active: true});
+      this.state.set({ city_report_active: true });
     },
 
     onChange: function(){
@@ -198,18 +195,16 @@ define([
         this.onYearChange();
       }
 
-      this.navigate(this.state.toUrl(), {trigger: false, replace: true});
+      this.navigate(this.state.toUrl(), { trigger: false, replace: true });
     },
 
-    onCityChange: function(){
-      this.state.trigger("showActivityLoader");
+    onCityChange: function() {
+      this.state.trigger('showActivityLoader');
       var city = new CityModel(this.state.pick('url_name', 'year'));
-      city.fetch({success: _.bind(this.onCitySync, this)});
-
+      city.fetch({ success: _.bind(this.onCitySync, this) });
     },
 
     onYearChange: function() {
-      var year = this.state.get('year');
       var previous = this.state.previous('year');
 
       // skip undefined since it's most likely the
@@ -226,7 +221,11 @@ define([
       var categories = this.state.get('categories');
 
       var newState = new StateBuilder(results, year, layer, categories).toState();
-      var defaultMapState = {lat: city.get('center')[0], lng: city.get('center')[1], zoom: city.get('zoom')};
+      var defaultMapState = {
+        lat: city.get('center')[0],
+        lng: city.get('center')[1],
+        zoom: city.get('zoom')
+      };
       var mapState = this.state.pick('lat', 'lng', 'zoom');
 
       // Configure modals
@@ -235,7 +234,7 @@ define([
           available: _.extend({}, results.modals)
         });
 
-        var modalController = new ModalController({state: this.state});
+        var modalController = new ModalController({ state: this.state });
 
         newState = _.extend(newState, {
           modal: modalModel,
@@ -247,7 +246,7 @@ define([
 
       // set this to silent because  `fetchBuildings`
       // will trigger a state change
-      this.state.set(_.extend({city: city}, newState, mapState));
+      this.state.set(_.extend({ city }, newState, mapState));
 
       var thisYear = this.state.get('year');
       if (!thisYear) console.error('Uh no, there is no year available!');
@@ -263,22 +262,21 @@ define([
     },
 
     onBuildingsSync: function() {
-      this.state.set({allbuildings: this.allBuildings});
-      this.state.trigger("hideActivityLoader");
+      this.state.set({ allbuildings: this.allBuildings });
+      this.state.trigger('hideActivityLoader');
     },
 
-    root: function () {
-      // TODO: This is not needed
-      this.navigate('/seattle', {trigger: true, replace: true});
+    root: function() {
+      this.navigate('/seattle', { trigger: true, replace: true });
     },
 
     city: function(cityname){
-      this.state.set({url_name: cityname});
+      this.state.set({ url_name: cityname });
     },
 
     year: function(cityname, year, params){
       params = params ? deparam(params) : {};
-      this.state.set(_.extend({}, this.state.mapParamsToState(params), {url_name: cityname, year: year}));
+      this.state.set(_.extend({}, this.state.mapParamsToState(params), { url_name: cityname, year }));
     }
   });
 
