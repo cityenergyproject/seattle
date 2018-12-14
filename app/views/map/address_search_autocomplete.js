@@ -257,7 +257,9 @@ define(['jquery', 'underscore', 'backbone', 'toastr', 'fusejs', 'autocomplete', 
 
       try {
         this.xhr.abort();
-      } catch (e) {}
+      } catch (e) {
+        //
+      }
 
       this.xhr = $.ajax({
         url: url,

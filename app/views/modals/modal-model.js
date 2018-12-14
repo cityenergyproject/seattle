@@ -2,7 +2,7 @@
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-define(['backbone', 'd3'], function (Backbone, d3) {
+define(['underscore', 'backbone', 'd3'], function (_, Backbone, d3) {
   var Modals = Backbone.Model.extend({
     defaults: {
       selected: null,

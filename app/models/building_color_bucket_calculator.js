@@ -8,7 +8,6 @@ define(['underscore', 'd3'], function (_, d3) {
     this.thresholds = thresholds;
     this.colorStops = colorStops;
     this.cssFillType = cssFillType || 'marker-fill';
-
     this.memoized = {};
     this.memoized.fieldValues = {};
     this.memoized.colorGradients = {};
@@ -30,10 +29,10 @@ define(['underscore', 'd3'], function (_, d3) {
   };
 
   BuildingColorBucketCalculator.prototype.calcGradientStops = function () {
-    var range = this.colorStops,
-        buckets = this.buckets,
-        bucketStops = this.toBucketStops(),
-        gradientScale = d3.scale.linear().range(range).domain(bucketStops);
+    var range = this.colorStops;
+    var buckets = this.buckets;
+    var bucketStops = this.toBucketStops();
+    var gradientScale = d3.scale.linear().range(range).domain(bucketStops);
 
     return _.map(_.range(buckets), gradientScale);
   };
@@ -45,7 +44,6 @@ define(['underscore', 'd3'], function (_, d3) {
 
     var stops = this.toGradientStops();
     var fieldName = this.fieldName;
-    var fieldValues = this.getFieldValues();
     var gradient = this.colorGradient();
     var cssFillType = this.cssFillType;
     var css = void 0;
@@ -64,14 +62,6 @@ define(['underscore', 'd3'], function (_, d3) {
         return '[' + fieldName + '>=' + min + ']{' + cssFillType + ':' + stop + '}';
       });
     }
-
-    /*
-    console.log('FieldName: ', fieldName);
-    console.log("CartoCSS stops", stops);
-    console.log("CartoCSS stops", _.map(stops, function(stop) { return gradient.invertExtent(stop);}));
-    console.log('CartoCSS rules: ', css);
-    */
-
     return css;
   };
 

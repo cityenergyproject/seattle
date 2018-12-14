@@ -1,7 +1,7 @@
-"use strict";
+'use strict';
 
 define(['d3'], function (d3) {
-  var QUARTILES = ["1st quartile", "2nd quartile", "3rd quartile", "4th quartile"];
+  var QUARTILES = ['1st quartile', '2nd quartile', '3rd quartile', '4th quartile'];
 
   var types = {
     default: function _default(d) {

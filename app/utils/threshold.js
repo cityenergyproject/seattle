@@ -1,15 +1,18 @@
 'use strict';
 
 define(['underscore', 'd3'], function (_, d3) {
-
   var getThresholds = function getThresholds(thresholds, proptype, yr) {
-    if (!thresholds[proptype]) return {
-      error: 'No threshold for property type'
-    };
+    if (!thresholds[proptype]) {
+      return {
+        error: 'No threshold for property type'
+      };
+    }
 
-    if (!thresholds[proptype][yr]) return {
-      error: 'No thresholds for year'
-    };
+    if (!thresholds[proptype][yr]) {
+      return {
+        error: 'No thresholds for year'
+      };
+    }
 
     return {
       data: thresholds[proptype][yr]

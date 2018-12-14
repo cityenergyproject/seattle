@@ -2,8 +2,8 @@
 
 define(['jquery'], function ($) {
   var deparam = function deparam(params, coerce) {
-    var obj = {},
-        coerce_types = { 'true': !0, 'false': !1, 'null': null };
+    var obj = {};
+    var coerce_types = { 'true': !0, 'false': !1, 'null': null };
 
     // Iterate over all name=value pairs.
     $.each(params.replace(/\+/g, ' ').split('&'), function (j, v) {
@@ -28,7 +28,6 @@ define(['jquery'], function ($) {
         // Split first keys part into two parts on the [ and add them back onto
         // the beginning of the keys array.
         keys = keys.shift().split('[').concat(keys);
-
         keys_last = keys.length - 1;
       } else {
         // Basic 'foo' style key.
