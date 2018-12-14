@@ -19,7 +19,6 @@ define([
       this.year = options.year || '';
       this.isCity = options.isCity || false;
       this.viewParent = options.parent;
-      this.pieCharts = {};
 
       this.fuels = [
         {
@@ -489,7 +488,6 @@ define([
     renderPieChart: function(id, data, width, height) {
       const radius = Math.min(width, height) / 2;
       const parent = d3.select(this.viewParent);
-      if (this.pieCharts[id]) return;
 
       const svg = parent.select(`#${id}`)
         .append('svg')
@@ -497,7 +495,6 @@ define([
         .attr('height', height)
         .append('g')
           .attr('transform', `translate(${width / 2},${height / 2})`);
-      this.pieCharts[id] = svg;
 
       var pie = d3.layout.pie()
         .sort(null)

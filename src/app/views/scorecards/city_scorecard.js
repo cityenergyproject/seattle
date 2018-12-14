@@ -142,9 +142,11 @@ define([
         });
       }
 
-      el.find('#fuel-use-chart').html(this.chart_fueluse.render());
-      this.chart_fueluse.fixlabels(viewSelector);
-      this.chart_fueluse.afterRender();
+      if (view === 'eui') {
+        el.find('#fuel-use-chart').html(this.chart_fueluse.render());
+        this.chart_fueluse.fixlabels(viewSelector);
+        this.chart_fueluse.afterRender();
+      }
 
 
       if (!this.chart_shift) {
@@ -165,9 +167,11 @@ define([
         });
       }
 
-      this.chart_shift.render(t => {
-        el.find('#compare-shift-chart').html(t);
-      }, viewSelector);
+      if (view === 'eui' && this.chart_shift) {
+        this.chart_shift.render(t => {
+          el.find('#compare-shift-chart').html(t);
+        }, viewSelector);
+      }
 
       if (!this.building_table) {
         this.building_table = new BuildingTypeTableView({
