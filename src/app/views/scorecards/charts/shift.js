@@ -122,25 +122,16 @@ define([
 
     renderChangeChart: function(isValid, data, selector) {
       const container = d3.select(selector);
-
       const rootElm = container.select('#change-chart-vis');
-      const yearsElm = container.select('#change-chart-years');
 
       if (!isValid) return;
 
       const years = [parseInt(this.previous_year), parseInt(this.selected_year)];
       const filteredData = data.filter(d => d.year >= years[0] && d.year <= years[1]);
-      const diameter = 10;
       const valueExtent = d3.extent(filteredData, d => d.value);
 
-      const yearWidth = yearsElm.select('p').node().offsetWidth;
-      let baseWidth = yearsElm.node().offsetWidth - (yearWidth * 2);
-
-      baseWidth += diameter;
-
-      rootElm.style('margin-left', (yearWidth - diameter/2) + 'px');
-
-      const margin = { top: 0, right: 0, bottom: 0, left: 0 };
+      const baseWidth = rootElm.node().offsetWidth;
+      const margin = { top: 20, right: 50, bottom: 0, left: 50 };
       let width = baseWidth - margin.left - margin.right;
       let height = rootElm.node().offsetHeight - margin.top - margin.bottom;
 
@@ -149,9 +140,6 @@ define([
           .attr('height', height + margin.top + margin.bottom)
         .append('g')
           .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
-
-      const gradientID = 'gradient-' + this.view;
-      this.setSVGGradient(rootElm, gradientID, filteredData);
 
       const x = d3.scale.linear()
         .range([0, width])
@@ -164,6 +152,21 @@ define([
       const line = d3.svg.line()
         .x(d => x(d.year))
         .y(d => y(d.value));
+
+      const xAxis = svg.append('g')
+        .classed('x-axis', true)
+        .attr('transform', 'translate(0, -30)');
+
+      xAxis.selectAll('.year')
+        .data(d3.set(filteredData.map(d => d.year)).values().sort())
+        .enter().append('text')
+        .classed('year', true)
+        .text(d => d)
+        .style('text-anchor', 'middle')
+        .attr('transform', d => `translate(${x(d)}, 0)`);
+
+      const gradientID = 'gradient-' + this.view;
+      this.setSVGGradient(rootElm, gradientID, filteredData);
 
       const connections = d3.nest()
         .key(d => d.label)
@@ -208,7 +211,6 @@ define([
       var label = rootElm.selectAll('.label')
         .data(filteredData)
       .enter().append('div')
-        .attr('class', 'label')
         .attr('class', d => {
           const colorize = d.colorize ? '' : ' no-clr';
           const field = d.field;
@@ -220,7 +222,7 @@ define([
           if (d.year === firstyear) return x(d.year) + 'px';
           return x(d.year) + 10 +'px';
         })
-        .style('top', d => { return y(d.value) + 'px'; });
+        .style('top', d => (y(d.value) + margin.top) + 'px');
 
       var innerLabel = label.append('table').append('td');
 
@@ -233,11 +235,10 @@ define([
         .text(d => d.unit);
 
       label.each(function(d) {
-        var el = d3.select(this);
-        var w = el.node().offsetWidth;
-
-        if (d.year === firstyear) {
-          el.style('margin-left', -(w + 10) + 'px');
+        if (d.year === lastyear) {
+          const el = d3.select(this);
+          const width = el.node().offsetWidth;
+          el.style('margin-left', `${width + 25}px`);
         }
       });
 

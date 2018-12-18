@@ -774,28 +774,11 @@ $steam-color: #E7B9AC;
 
     }
 
-    #change-chart-years {
-      position: relative;
-      width: 100%;
-      height: 24px;
-
-      p {
-        float: left;
-        //position: absolute;
-        //top: 0;
-        //right: calc(100% - 10px);
-        margin: 0;
-        padding: 0;
-        line-height: 1;
-        font-size: 24px;
-        font-weight: 500;
-      }
-
-      p:last-child {
-        float: right;
-        //right: auto;
-        //left: calc(100% - 10px);
-      }
+    .year {
+      fill: $base-font-color;
+      font-size: 24px;
+      font-weight: 500;
+      text-anchor: middle;
     }
 
     #change-chart-vis {
