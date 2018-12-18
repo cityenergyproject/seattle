@@ -118,9 +118,7 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
       var _this2 = this;
 
       var container = d3.select(selector);
-
       var rootElm = container.select('#change-chart-vis');
-      var yearsElm = container.select('#change-chart-years');
 
       if (!isValid) return;
 
@@ -128,26 +126,16 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
       var filteredData = data.filter(function (d) {
         return d.year >= years[0] && d.year <= years[1];
       });
-      var diameter = 10;
       var valueExtent = d3.extent(filteredData, function (d) {
         return d.value;
       });
 
-      var yearWidth = yearsElm.select('p').node().offsetWidth;
-      var baseWidth = yearsElm.node().offsetWidth - yearWidth * 2;
-
-      baseWidth += diameter;
-
-      rootElm.style('margin-left', yearWidth - diameter / 2 + 'px');
-
-      var margin = { top: 0, right: 0, bottom: 0, left: 0 };
+      var baseWidth = rootElm.node().offsetWidth;
+      var margin = { top: 20, right: 50, bottom: 0, left: 50 };
       var width = baseWidth - margin.left - margin.right;
       var height = rootElm.node().offsetHeight - margin.top - margin.bottom;
 
       var svg = rootElm.append('svg').attr('width', width + margin.left + margin.right).attr('height', height + margin.top + margin.bottom).append('g').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
-
-      var gradientID = 'gradient-' + this.view;
-      this.setSVGGradient(rootElm, gradientID, filteredData);
 
       var x = d3.scale.linear().range([0, width]).domain(years);
 
@@ -158,6 +146,19 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
       }).y(function (d) {
         return y(d.value);
       });
+
+      var xAxis = svg.append('g').classed('x-axis', true).attr('transform', 'translate(0, -30)');
+
+      xAxis.selectAll('.year').data(d3.set(filteredData.map(function (d) {
+        return d.year;
+      })).values().sort()).enter().append('text').classed('year', true).text(function (d) {
+        return d;
+      }).style('text-anchor', 'middle').attr('transform', function (d) {
+        return 'translate(' + x(d) + ', 0)';
+      });
+
+      var gradientID = 'gradient-' + this.view;
+      this.setSVGGradient(rootElm, gradientID, filteredData);
 
       var connections = d3.nest().key(function (d) {
         return d.label;
@@ -194,7 +195,7 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
       var firstyear = x.domain()[0];
       var lastyear = x.domain().slice(-1)[0];
 
-      var label = rootElm.selectAll('.label').data(filteredData).enter().append('div').attr('class', 'label').attr('class', function (d) {
+      var label = rootElm.selectAll('.label').data(filteredData).enter().append('div').attr('class', function (d) {
         var colorize = d.colorize ? '' : ' no-clr';
         var field = d.field;
 
@@ -205,7 +206,7 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
         if (d.year === firstyear) return x(d.year) + 'px';
         return x(d.year) + 10 + 'px';
       }).style('top', function (d) {
-        return y(d.value) + 'px';
+        return y(d.value) + margin.top + 'px';
       });
 
       var innerLabel = label.append('table').append('td');
@@ -218,11 +219,10 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
       });
 
       label.each(function (d) {
-        var el = d3.select(this);
-        var w = el.node().offsetWidth;
-
-        if (d.year === firstyear) {
-          el.style('margin-left', -(w + 10) + 'px');
+        if (d.year === lastyear) {
+          var el = d3.select(this);
+          var _width = el.node().offsetWidth;
+          el.style('margin-left', _width + 25 + 'px');
         }
       });
 

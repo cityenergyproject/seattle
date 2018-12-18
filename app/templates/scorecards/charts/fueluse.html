@@ -2,8 +2,8 @@
   <div class='section-head'>
     <h3 class='sc-heading'>Fuel Use and Emissions</h3>
   <% if (!isCity) { %>
-      <p class='sc-txt small bold'>The climate impact of a building is determined by the types of fuels consumed during the operation of the building and the carbon intensity of those fuels. In Seattle, electricity has a very low climate impact and most emissions come from fossil fuels burned onsite (such as gas) or offsite (such as steam).</p>
-      <p class='sc-txt small bold' style='margin-top: 10px;'>See how this building’s climate impact compares to buildings of the same type:</p>
+      <p class='sc-txt small bold'>A building’s climate impact results from the fuels used to power, heat, and cool it. In Seattle, nearly all of our electricity comes from low carbon sources and has a much lower climate impact compared to fossil fuels burned either onsite (gas) or offsite (steam).</p>
+      <p class='sc-txt small bold' style='margin-top: 10px;'>See how this building’s climate impact compares to buildings of the same primary use:</p>
     <% } else { %>
       <p class='sc-txt small bold'>See the breakdown of different fuel types contributing to citywide GHG emissions:</p>
     <% } %>
@@ -13,7 +13,7 @@
     <div class='emissions-intensity-chart-container row'>
       <div id='emissions-intensity-chart' class='col-8 emissions-intensity-chart'></div>
       <div class='col-4 emissions-intensity-chart-legend'>
-        <div class='notes'>This building’s greenhouse gas (GHG) emissions per square foot was <strong><%= total_ghg_emissions_intensity %> KG/SF</strong> in <%= year %> with a total of <strong><%= total_ghg_emissions %> metric tons (MT)</strong> for the year.</div>
+        <div class='notes'>This building’s greenhouse gas (GHG) emissions per square foot was <strong><%= total_ghg_emissions_intensity %> KG/SF</strong> in <%= year %> with a total of <strong><%= totals.emissions %> metric tons (MT)</strong> for the year.</div>
         <div class='emissions-dots'>
           <div class='emissions-dots-title'>total emissions</div>
         </div>
