@@ -273,14 +273,14 @@
                         "label": "{property_name}",
                         "color_range": ["#1f5dbe","#599b67","#ffd552","#da863f","#ab2328"],
                         "range_slice_count": 18,
-                        "unit": "ktbu/sf",
+                        "unit": "kbtu/sf",
                         "colorize": true,
                         "influencer": true
                     },
                     {
                         "field": "building_type_eui_wn",
                         "label": "Building Type Average",
-                        "unit": "ktbu/sf",
+                        "unit": "kbtu/sf",
                         "colorize": false
                     }
 
@@ -293,7 +293,7 @@
                         "label": "Usage",
                         "color_range": ["#1f5dbe","#599b67","#ffd552","#da863f","#ab2328"],
                         "range_slice_count": 18,
-                        "unit": "ktbu",
+                        "unit": "kbtu",
                         "colorize": true,
                         "influencer": true
                     },
