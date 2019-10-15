@@ -34,6 +34,8 @@ app.post('/accept-csv', upload.single('csv'), (req, res) => {
     '--output-dir', outputPath,
     '--base-url', config.baseUrl,
     '--email', req.body.email,
+    '--s3-bucket', config.s3Bucket,
+    '--year', req.body.year,
     '--upload-to-s3'
   ]);
 

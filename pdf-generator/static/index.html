@@ -17,8 +17,28 @@
                 <input id='csv' name='csv' type='file' />
             </div>
             <div class='form-row'>
+                <label for='year'>year</label>
+                <select name='year'>
+                </select>
+            </div>
+            <div class='form-row'>
                 <button type='submit'>submit</button>
             </div>
         </form>
+
+        <script>
+            const firstYear = 2015;
+            const lastYear = (new Date()).getFullYear() - 1;
+            const yearSelector = document.getElementsByName('year')[0];
+
+            for (let year = firstYear; year <= lastYear; year++) {
+                let option = document.createElement('option');
+                option.innerText = year;
+                if (year === lastYear) {
+                    option.setAttribute('selected', '');
+                }
+                yearSelector.appendChild(option);
+            }
+        </script>
     </body>
 </html>

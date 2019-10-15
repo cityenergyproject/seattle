@@ -12,7 +12,6 @@ const process = require('process');
 const puppeteer = require('puppeteer');
 const config = require('./pdf-generator-config');
 
-const bucket = 'seattle-energy';
 const endpoint = '#seattle';
 const parameters = 'report_active=true';
 const outputCSVFilename = 'scorecards.csv';
@@ -43,6 +42,7 @@ async function pageToPdf(buildingId, baseUrl, outputDir, year) {
     });
   } catch (e) {
     console.log(`Exception creating PDF for building ${buildingId}`);
+    console.log(e);
     status = 'page load error';
   }
   await browser.close();
@@ -110,7 +110,7 @@ async function downloadPdfs(records, batchSize, baseUrl, outputDir, year) {
   return outputRecords;
 }
 
-async function uploadToS3(filename) {
+async function uploadToS3(filename, bucket) {
   return new Promise((resolve, reject) => {
     const s3 = new AWS.S3({
       apiVersion: '2006-03-01',
@@ -172,6 +172,7 @@ async function sendEmail(email, url) {
     .option('-e --email [email]', 'Email address to notify on completion')
     .option('--base-url [base-url]', 'Base URL to get scorecards from', 'http://www.seattle.gov/energybenchmarkingmap')
     .option('-o --output-dir [output-dir]', 'The directory to put generated files in', '.')
+    .option('--s3-bucket [s3-bucket]', 'S3 bucket to upload zip file to')
     .option('--upload-to-s3', 'Upload to S3')
     .parse(process.argv);
 
@@ -185,8 +186,8 @@ async function sendEmail(email, url) {
 
   const zipPath = await writeZip(commander.outputDir);
 
-  if (commander.uploadToS3 && config.environment === 'production') {
-    const s3data = await uploadToS3(zipPath);
+  if (commander.uploadToS3 && config.environment === 'production' && commander.s3Bucket) {
+    const s3data = await uploadToS3(zipPath, s3Bucket);
     if (commander.email) {
       await sendEmail(commander.email, s3data.Location);
     }
