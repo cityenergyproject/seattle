@@ -17,8 +17,6 @@ const parameters = 'report_active=true';
 const outputCSVFilename = 'scorecards.csv';
 const outputZipFilename = 'scorecards-pdfs.zip';
 
-AWS.config.loadFromPath('./config.json');
-
 function getBuildingUrl(buildingId, baseUrl, year) {
   return `${baseUrl}/${endpoint}/${year}?${parameters}&building=${buildingId}`;
 }
@@ -186,8 +184,12 @@ async function sendEmail(email, url) {
 
   const zipPath = await writeZip(commander.outputDir);
 
+  if (config.environment !== 'production') {
+    AWS.config.loadFromPath('./config.json');
+  }
+
   if (commander.uploadToS3 && config.environment === 'production' && commander.s3Bucket) {
-    const s3data = await uploadToS3(zipPath, s3Bucket);
+    const s3data = await uploadToS3(zipPath, commander.s3Bucket);
     if (commander.email) {
       await sendEmail(commander.email, s3data.Location);
     }
