@@ -3,9 +3,9 @@
 Here is how the data was updated in November/December 2018 when 2017 data was added to the map:
 
 1. **Before you upload the data to Carto**, make sure it is consistent with the data that is already in Carto:
-  1. Delete `cartodb_id` column from update data if present.
-  2. Delete all `NA` values in the update data if present.
-  3. Otherwise, ensure each column that is present in the master dataset is in our new data and has the same name.
+    1. Delete `cartodb_id` column from update data if present.
+    2. Delete all `NA` values in the update data if present.
+    3. Otherwise, ensure each column that is present in the master dataset is in our new data and has the same name.
 2. Upload update data to Carto as a new dataset. We'll use `seattle_buildings_2017_update`, but you should update the year accordingly.
 3. In the uploaded dataset, make everything that should be numeric is numeric. Look at the master dataset and if any columns are text but should be numeric, update them::
 
