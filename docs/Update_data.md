@@ -47,8 +47,8 @@ Here is how the data was updated in November/December 2018 when 2017 data was ad
 
 7. Rename our master dataset for copy to `seattle_buildings_master_20191015` where the date on the end matches the current date.
 8. Edit the configuration file `src/cities/seattle.json`:
-  1. Replace any instance of the old name for the master dataset with the new master dataset name (`seattle_buildings_master_20191015`).
-  2. Find `years` and add a new entry under the most recent year. If this is currently
+    1. Replace any instance of the old name for the master dataset with the new master dataset name (`seattle_buildings_master_20191015`).
+    2. Find `years` and add a new entry under the most recent year. If this is currently
 
    ```json
    "years": {
@@ -92,7 +92,7 @@ Here is how the data was updated in November/December 2018 when 2017 data was ad
 
    That is, change the `table_name` entries and add the latest year.
 
-  3. Under `eui` and each category of building, add a year entry for the latest year. For example, if you have:
+    3. Under `eui` and each category of building, add a year entry for the latest year. For example, if you have:
 
    ```json
    "Distribution Center": {
