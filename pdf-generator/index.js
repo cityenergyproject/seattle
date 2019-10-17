@@ -171,6 +171,7 @@ async function sendEmail(email, url) {
     .option('--base-url [base-url]', 'Base URL to get scorecards from', 'http://www.seattle.gov/energybenchmarkingmap')
     .option('-o --output-dir [output-dir]', 'The directory to put generated files in', '.')
     .option('--s3-bucket [s3-bucket]', 'S3 bucket to upload zip file to')
+    .option('--region [region]', 'AWS region to use')
     .option('--upload-to-s3', 'Upload to S3')
     .parse(process.argv);
 
@@ -187,6 +188,8 @@ async function sendEmail(email, url) {
   if (config.environment !== 'production') {
     AWS.config.loadFromPath('./config.json');
   }
+
+  AWS.config.update({ region: commander.region });
 
   if (commander.uploadToS3 && config.environment === 'production' && commander.s3Bucket) {
     const s3data = await uploadToS3(zipPath, commander.s3Bucket);
