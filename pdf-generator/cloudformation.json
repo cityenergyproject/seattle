@@ -84,12 +84,16 @@
         "KeyName" : { "Ref" : "KeyPair" },
         "ImageId" : "ami-0b69ea66ff7391e80",
         "IamInstanceProfile": { "Ref": "InstanceProfile" },
-        "InstanceType": "t2.small",
-        "SecurityGroups" : [ { "Ref" : "InstanceSecurityGroup" } ],
+        "InstanceType": "t2.micro",
+        "SubnetId": "subnet-c3b42cf9",
         "Tags": [
           {
             "Key": "client",
             "Value": "seattle-energy-2019"
+          },
+          {
+            "Key": "Name",
+            "Value": "seattle-energy"
           }
         ],
         "UserData": {
