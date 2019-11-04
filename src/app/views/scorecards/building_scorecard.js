@@ -117,6 +117,63 @@ define([
       return filter.getColorForValue(value);
     },
 
+    getCompareChartBinnedData: function(config, buildings, prop_type, view, selected_year) {
+      var compareField = this.getViewField(view);
+
+      var buildingsOfType = buildings.where({ property_type: prop_type }).map(function(m) {
+        return m.toJSON();
+      });
+
+      var buildingsOfType_max = d3.max(buildingsOfType, function(d){
+        if (d.hasOwnProperty(compareField)) return d[compareField];
+        return 0;
+      });
+
+      var buildingsOfType_min = d3.min(buildingsOfType, function(d){
+        if (d.hasOwnProperty(compareField)) return d[compareField];
+        return 0;
+      });
+
+      var _bins;
+      if (view === 'eui') {
+       _bins = this.calculateEuiBins(buildingsOfType_min, buildingsOfType_max, config.thresholds.eui[prop_type][selected_year], config.thresholds.eui_schema);
+      } else {
+        _bins = this.calculateEnergyStarBins(config.thresholds.energy_star);
+      }
+
+      var data = d3.layout.histogram()
+          .bins(_bins)
+          .value(function(d) {
+            return d[compareField];
+          })(buildingsOfType);
+
+      data.forEach(function(d, i) {
+        d.min = _bins[i];
+        d.max = _bins[i + 1];
+      });
+
+      return data;
+    },
+
+    getCompareChartColor: function(data, thresholds, id) {
+      var selectedIndex = null;
+
+      data.forEach(function(d, i) {
+        if (selectedIndex !== null) return;
+
+        var f = d.find(function(r) {
+          return r.id === id;
+        });
+
+        if (f) selectedIndex = i;
+      });
+
+      const threshold = thresholds.filter(d => {
+        return selectedIndex >= d.indices[0] && selectedIndex <= d.indices[1];
+      })[0];
+      return threshold.clr;
+    },
+
     getViewField: function(view) {
       return view === 'eui' ? 'site_eui' : 'energy_star_score';
     },
@@ -134,6 +191,12 @@ define([
     processBuilding: function(buildings, building_data, selected_year, avail_years, view) {
       var building = building_data[selected_year];
 
+      var name = building.property_name;
+      var address = this.full_address(building);
+      var sqft = +(building.reported_gross_floor_area);
+      var prop_type = building.property_type;
+      var id = building.id;
+
       var config = this.state.get('city').get('scorecard');
 
       var viewSelector = `#${view}-scorecard-view`;
@@ -141,17 +204,23 @@ define([
       var compareField = this.getViewField(view);
 
       var value = building.hasOwnProperty(compareField) ? building[compareField] : null;
-      var valueColor = this.getColor(compareField, value);
+      let data = this.getCompareChartBinnedData(config, buildings, prop_type, view, selected_year);
+
+      let thresholds;
+      if (view === 'eui') {
+        thresholds = this.getThresholdLabels(config.thresholds.eui_schema);
+      } else {
+        thresholds = this.getThresholdLabels(config.thresholds.energy_star);
+      }
+
+      let valueColor = this.getColor(compareField, value);
+      if (compareField === 'site_eui') {
+        valueColor = this.getCompareChartColor(data, thresholds, id);
+      }
       if (!_.isNumber(value) || !_.isFinite(value)) {
         value = null;
         valueColor = '#aaa';
       }
-
-      var name = building.property_name;
-      var address = this.full_address(building);
-      var sqft = +(building.reported_gross_floor_area);
-      var prop_type = building.property_type;
-      var id = building.id;
 
       var chartdata = this.prepareCompareChartData(config, buildings, building, selected_year, view, prop_type, id);
 
@@ -377,48 +446,23 @@ define([
     },
 
     prepareCompareChartData: function(config, buildings, building, selected_year, view, prop_type, id) {
-      var compareField = this.getViewField(view);
-      var building_value = building.hasOwnProperty(compareField) ? building[compareField] : null;
+      var buildingsOfType = buildings.where({ property_type: prop_type }).map(function(m) {
+        return m.toJSON();
+      });
+      let compareField = this.getViewField(view);
+      let building_value = building.hasOwnProperty(compareField) ? building[compareField] : null;
 
       if (!this.validNumber(building_value)) {
         building_value = null;
       }
+      let data = this.getCompareChartBinnedData(config, buildings, prop_type, view, selected_year);
 
-      var buildingsOfType = buildings.where({ property_type: prop_type }).map(function(m) {
-        return m.toJSON();
-      });
-
-      var buildingsOfType_max = d3.max(buildingsOfType, function(d){
-        if (d.hasOwnProperty(compareField)) return d[compareField];
-        return 0;
-      });
-
-      var buildingsOfType_min = d3.min(buildingsOfType, function(d){
-        if (d.hasOwnProperty(compareField)) return d[compareField];
-        return 0;
-      });
-
-      var _bins;
-      var thresholds;
+      let thresholds;
       if (view === 'eui') {
-       _bins = this.calculateEuiBins(buildingsOfType_min, buildingsOfType_max, config.thresholds.eui[prop_type][selected_year], config.thresholds.eui_schema);
-       thresholds = this.getThresholdLabels(config.thresholds.eui_schema);
+        thresholds = this.getThresholdLabels(config.thresholds.eui_schema);
       } else {
         thresholds = this.getThresholdLabels(config.thresholds.energy_star);
-        _bins = this.calculateEnergyStarBins(config.thresholds.energy_star);
       }
-
-      var data = d3.layout.histogram()
-          .bins(_bins)
-          .value(function(d) {
-            return d[compareField];
-          })(buildingsOfType);
-
-      data.forEach(function(d, i) {
-        d.min = _bins[i];
-        d.max = _bins[i + 1];
-      });
-
 
       var selectedIndex = null;
       var avgIndex = null;
@@ -461,11 +505,9 @@ define([
       let selectedColor;
 
       if (compareField === 'site_eui') {
-        thresholds.forEach(d => {
-          if (selectedIndex >= d.indices[0] && selectedIndex <= d.indices[1]) {
-            selectedColor = d.clr;
-          }
+        selectedColor = this.getCompareChartColor(data, thresholds, id);
 
+        thresholds.forEach(d => {
           if (avgIndex >= d.indices[0] && avgIndex <= d.indices[1]) {
             avgColor = d.clr;
           }
