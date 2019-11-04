@@ -217,6 +217,7 @@
         "BucketName": {
           "Fn::Sub": "seattle-energy-${AWS::Region}-${AWS::AccountId}"
         },
+        "AccessControl": "PublicRead",
         "Tags": [
           {
             "Key": "client",
