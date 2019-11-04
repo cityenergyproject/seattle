@@ -500,10 +500,16 @@ $steam-color: #E7B9AC;
 
         .outer {
           position: absolute;
-          left: calc(100% + 10px);
           top: 50%;
           width: 150px;
+          left: calc(100% + 10px);
           transform: translateY(-50%);
+
+          &.overflow {
+            left: unset;
+            right: calc(100% + 10px);
+            text-align: right;
+          }
 
           p {
             margin: 0;

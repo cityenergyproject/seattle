@@ -554,8 +554,10 @@ define([
 
       var compareChartConfig = config.compare_chart;
       var margin = { top: 80, right: 30, bottom: 40, left: 40 };
-      var width = 620 - margin.left - margin.right;
-      var height = 300 - margin.top - margin.bottom;
+      var outerWidth = 620;
+      var outerHeight = 300;
+      var width = outerWidth - margin.left - margin.right;
+      var height = outerHeight - margin.top - margin.bottom;
 
       if (chartdata.building_value === null) margin.top = 20;
 
@@ -689,7 +691,12 @@ define([
         .attr('class', 'circle');
 
       var innerCircle = circle.append('div').attr('class', 'inner');
-      var outerCircle = circle.append('div').attr('class', 'outer');
+      var outerCircle = circle.append('div').classed({
+        outer: true,
+
+        // Overflow if the left pos and width (150) exceed chart's width
+        overflow: (xpos + margin.left + 60 + 150) > outerWidth
+      });
 
       innerCircle.append('p')
         .text(chartdata.building_value)
