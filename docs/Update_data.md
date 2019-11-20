@@ -46,7 +46,7 @@ Here is how the data was updated in November/December 2018 when 2017 data was ad
  ```
 
 7. Rename our master dataset for copy to `seattle_buildings_master_20191015` where the date on the end matches the current date.
-8. Edit the configuration file `src/cities/seattle.json`:
+8. On your computer, in a local copy of this repository, edit the configuration file `src/cities/seattle.json`:
     1. Replace any instance of the old name for the master dataset with the new master dataset name (`seattle_buildings_master_20191015`).
     2. Find `years` and add a new entry under the most recent year. If this is currently
 
@@ -115,7 +115,7 @@ Here is how the data was updated in November/December 2018 when 2017 data was ad
 
    You need one of these for each year, and you can update the breaks as needed.
 
-9. Test the updated configuration file and master dataset. In a console, move to the directory that contains the project for the map code, including your updated configuration file. Run the following:
+9. Still on your computer, test the updated configuration file and master dataset. In a console, move to the directory that contains the project for the map code, including your updated configuration file. Run the following:
 
   ```bash
   python -m SimpleHTTPServer
@@ -129,4 +129,5 @@ Here is how the data was updated in November/December 2018 when 2017 data was ad
 
   and confirm that the site works as expected, including the data for the latest year.
 
-11. Once you are satisfied with the updates to the data and the configuration file, deploy the new version of the site by either updating the configuration file on the server or zipping up the entire code bundle and deploying that.
+11. Once you are satisfied with the updates to the data and the configuration file, put your changes to the configuration file (`src/cities/seattle.json`) in GitHub.
+12. Deploy the new version of the site by either updating the configuration file on the server or zipping up the entire code bundle and deploying that.
