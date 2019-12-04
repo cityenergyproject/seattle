@@ -189,6 +189,9 @@ define([
               item.formatted_value = (item.matched) ?
                   item.value.replace(re, '<b>$1</b>') :
                   item.value;
+              if (item.key === 'property_id') {
+                item.formatted_value = 'Property ID: ' + item.formatted_value;
+              }
             });
 
           return template(result);

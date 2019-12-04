@@ -41,7 +41,7 @@
             {
                 "name": "property_id",
                 "key": "id",
-                "hide": true
+                "hide": false
             }
         ],
         "fuse_options": {
