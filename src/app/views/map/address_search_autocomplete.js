@@ -190,7 +190,7 @@ define([
                   item.value.replace(re, '<b>$1</b>') :
                   item.value;
               if (item.key === 'property_id') {
-                item.formatted_value = 'Property ID: ' + item.formatted_value;
+                item.formatted_value = 'Building ID: ' + item.formatted_value;
               }
             });
 
