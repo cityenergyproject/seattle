@@ -101,6 +101,11 @@ $steam-color: #E7B9AC;
     &.light { font-weight: $sc-weight-lt; }
     &.bold { font-weight: $sc-weight-bd; }
 
+    &.sc-addr,
+    &.sc-sqft {
+      font-weight: bold;
+    }
+
     &.pg { line-height: 1.2; }
   }
 
