@@ -626,6 +626,21 @@ define([
         })
         .text(function(d){ return d.label; });
 
+      // Show min and max on Energy Star chart
+      if (view === 'ess') {
+        svg.select('.x.axis').selectAll('.label')
+          .data([1, 100])
+          .enter()
+            .append('g')
+              .attr('class', 'label')
+              .attr('transform', d => {
+                const labelX = d === 1 ? 0 : width - 5;
+                return `translate(${labelX}, 3)`;
+              })
+            .append('text')
+              .text(d => d);
+      }
+
       svg
         .append('g')
         .attr('class', 'label')
