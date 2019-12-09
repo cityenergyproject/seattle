@@ -20,7 +20,7 @@
       <% _.each(links, function(item) { %>
       <td>
         <div class='link-link'>
-          <p><%= item.link_txt %></p>
+          <a href='<%= item.link_href %>' target='_blank' class='link-button'><%= item.link_txt %> &gt;</a>
           <a href='<%= item.link_href %>' target='_blank'><%= item.link_href %></a>
         </div>
       </td>
