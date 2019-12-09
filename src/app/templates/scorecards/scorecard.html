@@ -6,13 +6,18 @@
 
   <!-- Navigation -->
   <div class='scorecard--nav'>
-    <a id='back-to-map-link' class='sc-link' href='#'>&lt; Back to Map</a>
-    <div>
-      <h2 class='sc-heading large'><%= name %></h2>
-      <% if (building_view) { %>
-      <a id='comparison-view-link' class='sc-link' href='#'>Building Comparison View &gt;</a>
-      <% } %>
+    <div class='scorecard--nav-left'>
+      <a id='back-to-map-link' class='sc-link' href='#'>&lt; Back to Map</a>
+      <div>
+        <h2 class='sc-heading large'><%= name %></h2>
+      </div>
     </div>
+    <% if (building_view) { %>
+      <div class='scorecard--nav-right'>
+        <a id='comparison-view-link' class='sc-link' href='#'>Building Comparison View &gt;</a>
+        <h2 class='sc-heading large'><%= year %> Performance Profile</h2>
+      </div>
+    <% } %>
   </div>
 
   <!-- Dynamic content -->

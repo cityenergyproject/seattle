@@ -179,6 +179,9 @@ $steam-color: #E7B9AC;
 
 
   .scorecard--nav {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
     margin: 1rem 1rem;
 
     & > div {
@@ -186,10 +189,8 @@ $steam-color: #E7B9AC;
       margin: 0.5rem 0 0;
     }
 
-    #comparison-view-link {
-      position: absolute;
-      bottom: 0;
-      right: 0;
+    &-right {
+      text-align: right;
     }
   }
   .ess-certified {

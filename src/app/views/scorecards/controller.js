@@ -175,8 +175,10 @@ define([
       let energy_star_score;
       let comments;
       const isBuildingRenderer = this.viewclass === BuildingScorecard;
+      let year;
 
       if (isBuildingRenderer) {
+        year = this.state.get('year');
         const buildings = this.state.get('allbuildings');
         const buildingModel = buildings.get(building);
         name = buildingModel.get('property_name');
@@ -192,7 +194,8 @@ define([
         building_view: this.viewclass === BuildingScorecard,
         comments,
         name,
-        energy_star_score
+        energy_star_score,
+        year
       }));
 
       this.renderLinks(building, building_type, isBuildingRenderer);
