@@ -47,6 +47,15 @@ $steam-color: #f7c34e;
     margin: 0 auto;
   }
 
+  #back-to-map-link {
+    background: $sc-red;
+    color: white;
+    display: inline-block;
+    font-weight: 500;
+    padding: 10px;
+    text-transform: uppercase;
+  }
+
   #scorecard-content {
     position: relative;
     width: 100%;
@@ -178,21 +187,19 @@ $steam-color: #f7c34e;
   }
 
 
-  .scorecard--nav {
+  .scorecard--nav,
+  .scorecard--header {
+    align-items: center;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     margin: 1rem 1rem;
-
-    & > div {
-      position: relative;
-      margin: 0.5rem 0 0;
-    }
-
-    &-right {
-      text-align: right;
-    }
   }
+
+  .scorecard--nav {
+    margin: 1rem 0;
+  }
+
   .ess-certified {
     .ess-logo {
       display: inline-block;
