@@ -410,7 +410,7 @@ $steam-color: #E7B9AC;
     }
 
     .y.axis text, .label text {
-      fill: #CBCBCB;
+      fill: $tick-color;
     }
 
     .label text {
@@ -542,7 +542,7 @@ $steam-color: #E7B9AC;
     }
 
     .x.axis text, .label text {
-      fill: #CBCBCB;
+      fill: $tick-color;
     }
 
     .avg-highlight-html.selected-building {
@@ -595,13 +595,13 @@ $steam-color: #E7B9AC;
     }
 
     .emissions-dots-label {
-      fill: #CBCBCB;
+      color: $tick-color;
       font-family: $base-font-family;
       font-size: 10px;
     }
 
     .emissions-dots-title {
-      color: #CBCBCB;
+      color: $tick-color;
       font-size: 10px;
       text-align: center;
       text-transform: uppercase;
