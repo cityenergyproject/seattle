@@ -45,7 +45,10 @@
                     <%= fuel.label %> <%= fuel.usage.pct_raw %>%
                   </div>
                 <% }); %>
-                <div class='energy-consumption-total'><%= totals.usage %> kBtu</div>
+                <div class='energy-consumption-total'>
+                  <span class='quantity'><%= totals.usage %></span>
+                  <span class='units'>kBtu</span>
+                </div>
               </div>
             </div>
           </div>
@@ -69,7 +72,10 @@
                     <%= fuel.label %> <%= fuel.emissions.pct_raw %>%
                   </div>
                 <% }); %>
-                <div class='emissions-total'><%= totals.emissions %> metric tons</div>
+                <div class='emissions-total'>
+                  <span class='quantity'><%= totals.emissions %></span>
+                  <span class='units'>metric tons</span>
+                </div>
               </div>
             </div>
           </div>

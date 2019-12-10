@@ -21,8 +21,8 @@ $sc-font-lgr: 3rem;
 
 // Energy source colors
 $gas-color: #C24E2B;
-$electric-color: #D5846C;
-$steam-color: #E7B9AC;
+$electric-color: #0048ba;
+$steam-color: #f7c34e;
 
 #scorecard {
   display: none;
@@ -752,9 +752,13 @@ $steam-color: #E7B9AC;
       .energy-consumption-total,
       .emissions-total {
         border-top: 1px solid #CBCBCB;
-        font-weight: bold;
+        color: $brownish-gray;
         margin-top: 5px;
         padding-top: 5px;
+
+        .quantity {
+          font-weight: bold;
+        }
       }
 
       .energy-consumption-item,

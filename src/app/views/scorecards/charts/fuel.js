@@ -510,9 +510,9 @@ define([
         .innerRadius(0);
 
       const arcColors = {
-        gas: '#C24E2B',
-        electricity: '#D5846C',
-        steam: '#E7B9AC'
+        gas: '#c24e2b',
+        electricity: '#0048ba',
+        steam: '#f7c34e'
       };
 
       arcs.append('path')
