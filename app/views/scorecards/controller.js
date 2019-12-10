@@ -169,8 +169,10 @@ define(['jquery', 'underscore', 'backbone', './building_scorecard', './city_scor
       var energy_star_score = void 0;
       var comments = void 0;
       var isBuildingRenderer = this.viewclass === BuildingScorecard;
+      var year = void 0;
 
       if (isBuildingRenderer) {
+        year = this.state.get('year');
         var buildings = this.state.get('allbuildings');
         var buildingModel = buildings.get(building);
         name = buildingModel.get('property_name');
@@ -186,7 +188,8 @@ define(['jquery', 'underscore', 'backbone', './building_scorecard', './city_scor
         building_view: this.viewclass === BuildingScorecard,
         comments: comments,
         name: name,
-        energy_star_score: energy_star_score
+        energy_star_score: energy_star_score,
+        year: year
       }));
 
       this.renderLinks(building, building_type, isBuildingRenderer);

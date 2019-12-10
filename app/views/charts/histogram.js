@@ -99,7 +99,7 @@ define(['jquery', 'underscore', 'backbone'], function ($, _, Backbone) {
         return _extends({}, gradients[i], {
           idx: i,
           data: d,
-          xpos: xScale(d)
+          xpos: xScale(d) + xScale.rangeBand() / 2
         });
       });
 

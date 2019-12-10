@@ -1736,6 +1736,8 @@ header {
       font-weight: 300; }
     #scorecard .sc-txt.bold {
       font-weight: 500; }
+    #scorecard .sc-txt.sc-addr, #scorecard .sc-txt.sc-sqft {
+      font-weight: bold; }
     #scorecard .sc-txt.pg {
       line-height: 1.2; }
   #scorecard .sc-list {
@@ -1775,14 +1777,22 @@ header {
     #scorecard .sc-toggle label.cb-plain input[type=checkbox]:checked ~ span {
       opacity: 1.0; }
   #scorecard .scorecard--nav {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: row;
+            flex-direction: row;
+    -webkit-box-pack: justify;
+        -ms-flex-pack: justify;
+            justify-content: space-between;
     margin: 1rem 1rem; }
     #scorecard .scorecard--nav > div {
       position: relative;
       margin: 0.5rem 0 0; }
-    #scorecard .scorecard--nav #comparison-view-link {
-      position: absolute;
-      bottom: 0;
-      right: 0; }
+    #scorecard .scorecard--nav-right {
+      text-align: right; }
   #scorecard .ess-certified .ess-logo {
     display: inline-block;
     width: 40px;
@@ -2021,11 +2031,16 @@ header {
         #scorecard #compare-chart .selected-city-highlight-html .circle .outer,
         #scorecard #emissions-intensity-chart .selected-city-highlight-html .circle .outer {
           position: absolute;
-          left: calc(100% + 10px);
           top: 50%;
           width: 150px;
+          left: calc(100% + 10px);
           -webkit-transform: translateY(-50%);
                   transform: translateY(-50%); }
+          #scorecard #compare-chart .selected-city-highlight-html .circle .outer.overflow,
+          #scorecard #emissions-intensity-chart .selected-city-highlight-html .circle .outer.overflow {
+            left: unset;
+            right: calc(100% + 10px);
+            text-align: right; }
           #scorecard #compare-chart .selected-city-highlight-html .circle .outer p,
           #scorecard #emissions-intensity-chart .selected-city-highlight-html .circle .outer p {
             margin: 0;
@@ -2292,12 +2307,20 @@ header {
         font-size: 1.3rem; }
     #scorecard #links table .link-link {
       margin-left: 3rem;
-      margin-top: 1rem;
-      border-top: 1px dashed #ccc;
       padding-top: 1rem; }
+      #scorecard #links table .link-link .link-button {
+        display: inline-block;
+        padding: 1em;
+        background: #0047ba;
+        color: white;
+        margin-bottom: 1em;
+        text-decoration: none;
+        text-transform: uppercase; }
       #scorecard #links table .link-link p {
         font-weight: bold; }
       #scorecard #links table .link-link a {
+        color: #0047ba;
+        text-decoration: underline;
         word-break: break-word;
         word-wrap: break-word; }
     #scorecard #links table tr.ad td {

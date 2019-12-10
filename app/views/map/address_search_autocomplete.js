@@ -191,6 +191,9 @@ define(['jquery', 'underscore', 'backbone', 'toastr', 'fusejs', 'autocomplete', 
             return skipRender.indexOf(d.key) === -1;
           }).forEach(function (item) {
             item.formatted_value = item.matched ? item.value.replace(re, '<b>$1</b>') : item.value;
+            if (item.key === 'property_id') {
+              item.formatted_value = 'Building ID: ' + item.formatted_value;
+            }
           });
 
           return template(result);
