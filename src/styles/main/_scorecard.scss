@@ -17,7 +17,7 @@ $sc-font-tiny: 0.75rem;
 $sc-font-sm: 0.75rem;
 $sc-font-std: 1rem;
 $sc-font-lg: 1.5rem;
-$sc-font-lgr: 3rem;
+$sc-font-lgr: 4rem;
 
 // Energy source colors
 $gas-color: #C24E2B;
@@ -73,6 +73,9 @@ $steam-color: #f7c34e;
     &.small { font-size: $sc-font-sm; }
     &.large { font-size: $sc-font-lg; }
     &.xlarge { font-size: $sc-font-lgr; }
+    &.number {
+      margin: 0.5rem 0;
+    }
 
     &.light { font-weight: $sc-weight-lt; }
     &.normal-weight { font-weight: $sc-weight; }
