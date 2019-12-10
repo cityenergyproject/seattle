@@ -460,9 +460,9 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
       var arc = d3.svg.arc().outerRadius(radius - 10).innerRadius(0);
 
       var arcColors = {
-        gas: '#C24E2B',
-        electricity: '#D5846C',
-        steam: '#E7B9AC'
+        gas: '#c24e2b',
+        electricity: '#0048ba',
+        steam: '#f7c34e'
       };
 
       arcs.append('path').attr('d', arc).style('fill', function (d) {
