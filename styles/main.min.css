@@ -1948,7 +1948,7 @@ header {
     #scorecard #compare-chart .y.axis text, #scorecard #compare-chart .label text,
     #scorecard #emissions-intensity-chart .y.axis text,
     #scorecard #emissions-intensity-chart .label text {
-      fill: #CBCBCB; }
+      fill: #5d5d5d; }
     #scorecard #compare-chart .label text,
     #scorecard #emissions-intensity-chart .label text {
       text-transform: uppercase; }
@@ -2057,7 +2057,7 @@ header {
     fill: none;
     stroke: #CBCBCB; }
   #scorecard #emissions-intensity-chart .x.axis text, #scorecard #emissions-intensity-chart .label text {
-    fill: #CBCBCB; }
+    fill: #5d5d5d; }
   #scorecard #emissions-intensity-chart .avg-highlight-html.selected-building {
     opacity: 1; }
     #scorecard #emissions-intensity-chart .avg-highlight-html.selected-building.right-aligned {
@@ -2104,11 +2104,11 @@ header {
               flex-direction: column;
       margin-bottom: 50px; }
     #scorecard .emissions-intensity-chart-legend .emissions-dots-label {
-      fill: #CBCBCB;
+      color: #5d5d5d;
       font-family: "Ubuntu", "Helvetica Neue", "Helvetica", "Roboto", "Arial", sans-serif;
       font-size: 10px; }
     #scorecard .emissions-intensity-chart-legend .emissions-dots-title {
-      color: #CBCBCB;
+      color: #5d5d5d;
       font-size: 10px;
       text-align: center;
       text-transform: uppercase;
