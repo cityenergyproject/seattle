@@ -1048,8 +1048,12 @@ $steam-color: #f7c34e;
   }
 
   @media print {
+    // TODO this gets us a bit closer on Edge but introduces some issues with
+    // existing elements that will need to be hidden
     & {
       overflow: visible;
+      bottom: inherit;
+      position: relative;
     }
 
     & * {
@@ -1091,7 +1095,7 @@ $steam-color: #f7c34e;
     }
 
     #ess-scorecard-view {
-      page-break-before: always;
+      // page-break-before: always;
       position: static;
       overflow: visible;
 
@@ -1103,14 +1107,17 @@ $steam-color: #f7c34e;
 
     .scorecard--section, .scorecard--details {
       page-break-inside: avoid;
+      break-inside: avoid;
     }
 
     #fuel-use-chart {
       page-break-inside: avoid;
+      break-inside: avoid;
     }
 
     #building-type-table {
       page-break-after: always;
+      break-after: always;
     }
   }
 }
@@ -1137,6 +1144,7 @@ $steam-color: #f7c34e;
        */
       #fuel-use-chart {
         page-break-inside: unset;
+        break-inside: unset;
       }
     }
   }

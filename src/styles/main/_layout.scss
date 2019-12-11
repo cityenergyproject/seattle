@@ -40,6 +40,10 @@ $building-comparison-metric-row-height: 4em;
   @include media($large-screen-up) {
     bottom: $metric-footer-height + $footer-height;
   }
+
+  @media print {
+    display: none;
+  }
 }
 
 header {
