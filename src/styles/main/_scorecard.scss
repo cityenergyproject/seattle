@@ -1080,10 +1080,6 @@ $steam-color: #f7c34e;
     #eui-scorecard-view {
       page-break-after: always;
       overflow: visible;
-
-      .scorecard--details {
-        display: none;
-      }
     }
 
     #comparison-view-link {
@@ -1097,6 +1093,10 @@ $steam-color: #f7c34e;
 
       #compare-shift-chart,
       #fuel-use-chart {
+        display: none;
+      }
+
+      .scorecard--details {
         display: none;
       }
     }
