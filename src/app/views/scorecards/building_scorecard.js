@@ -95,8 +95,7 @@ define([
     },
 
     show: function(buildings, building_data, selected_year, avail_years) {
-      this.processBuilding(buildings, building_data, selected_year, avail_years, 'eui');
-      this.processBuilding(buildings, building_data, selected_year, avail_years, 'ess');
+      this.processBuilding(buildings, building_data, selected_year, avail_years);
     },
 
     getColor: function(field, value) {
@@ -188,8 +187,9 @@ define([
       return !!building[certifiedField];
     },
 
-    processBuilding: function(buildings, building_data, selected_year, avail_years, view) {
+    processBuilding: function(buildings, building_data, selected_year, avail_years) {
       var building = building_data[selected_year];
+      const view = this.state.get('scorecard').get('view');
 
       var name = building.property_name;
       var address = this.full_address(building);
@@ -199,20 +199,14 @@ define([
 
       var config = this.state.get('city').get('scorecard');
 
-      var viewSelector = `#${view}-scorecard-view`;
+      var viewSelector = `#scorecard-view`;
       var el = this.$el.find(viewSelector);
-      var compareField = this.getViewField(view);
+      var compareField = this.getViewField('eui');
 
       var value = building.hasOwnProperty(compareField) ? building[compareField] : null;
-      let data = this.getCompareChartBinnedData(config, buildings, prop_type, view, selected_year);
+      let data = this.getCompareChartBinnedData(config, buildings, prop_type, 'eui', selected_year);
 
-      let thresholds;
-      if (view === 'eui') {
-        thresholds = this.getThresholdLabels(config.thresholds.eui_schema);
-      } else {
-        thresholds = this.getThresholdLabels(config.thresholds.energy_star);
-      }
-
+      let thresholds = this.getThresholdLabels(config.thresholds.eui_schema);
       let valueColor = this.getColor(compareField, value);
       if (compareField === 'site_eui') {
         valueColor = this.getCompareChartColor(data, thresholds, id);
@@ -222,32 +216,34 @@ define([
         valueColor = '#aaa';
       }
 
-      var chartdata = this.prepareCompareChartData(config, buildings, building, selected_year, view, prop_type, id);
+      var chartdata = this.prepareCompareChartData(config, buildings, building, selected_year, 'eui', prop_type, id);
+      var essChartData = this.prepareCompareChartData(config, buildings, building, selected_year, 'ess', prop_type, id);
 
       el.html(this.template({
         active: 'active',
-        name: name,
+        name,
         addr: address,
         sqft: sqft.toLocaleString(),
         type: prop_type,
-        id: id,
+        id,
         year: selected_year,
         year_built: building.yearbuilt,
-        view: view,
-        ess_logo: this.energyStarCertified(view, building, config),
-        value: value,
-        valueColor: valueColor,
+        view,
+        ess_logo: this.energyStarCertified('eui', building, config),
+        value,
+        valueColor,
         costs: this.costs(building, selected_year),
-        compare: this.compare(building, view, config, chartdata)
+        compareEui: this.compare(building, 'eui', config, chartdata),
+        compareEss: this.compare(building, 'ess', config, essChartData)
       }));
 
       // set chart hash
-      if (!this.charts.hasOwnProperty(view)) this.charts[view] = {};
+      if (!this.charts.hasOwnProperty('eui')) this.charts['eui'] = {};
 
       // render fuel use chart
-      if (!this.charts[view].chart_fueluse) {
+      if (!this.charts['eui'].chart_fueluse) {
         const emissionsChartData = this.prepareEmissionsChartData(buildings, prop_type);
-        this.charts[view].chart_fueluse = new FuelUseView({
+        this.charts['eui'].chart_fueluse = new FuelUseView({
           formatters: this.formatters,
           data: [building],
           name: name,
@@ -257,37 +253,38 @@ define([
         });
       }
 
-      el.find('#fuel-use-chart').html(this.charts[view].chart_fueluse.render());
-      this.charts[view].chart_fueluse.fixlabels(viewSelector);
-      this.charts[view].chart_fueluse.afterRender();
+      el.find('#fuel-use-chart').html(this.charts['eui'].chart_fueluse.render());
+      this.charts['eui'].chart_fueluse.fixlabels(viewSelector);
+      this.charts['eui'].chart_fueluse.afterRender();
 
       // render Energy Use Trends chart
-      if (view === 'eui' && !this.charts[view].chart_shift) {
+      if (!this.charts['eui'].chart_shift) {
         var shiftConfig = config.change_chart.building;
         var previousYear = avail_years[0];
         var hasPreviousYear = previousYear !== selected_year;
 
         const change_data = hasPreviousYear ? this.extractChangeData(building_data, buildings, building, shiftConfig) : null;
 
-        this.charts[view].chart_shift = new ShiftView({
+        this.charts['eui'].chart_shift = new ShiftView({
           formatters: this.formatters,
           data: change_data,
           no_year: !hasPreviousYear,
           previous_year: previousYear,
           selected_year,
-          view
+          view: 'eui'
         });
       }
 
-      if (this.charts[view].chart_shift) {
-        this.charts[view].chart_shift.render(t => {
+      if (this.charts['eui'].chart_shift) {
+        this.charts['eui'].chart_shift.render(t => {
           el.find('#compare-shift-chart').html(t);
         }, viewSelector);
       }
 
-      // render compare chart
-      // TODO: move into seperate Backbone View
-      this.renderCompareChart(config, chartdata, view, prop_type, name, viewSelector);
+      // Render compare charts
+      this.renderCompareChart(config, chartdata, 'eui', prop_type, name, viewSelector);
+      this.renderCompareChart(config, essChartData, 'ess', prop_type, name, viewSelector + ' .screen-only');
+      this.renderCompareChart(config, essChartData, 'ess', prop_type, name, viewSelector + ' .print-only');
 
       if (!this.commentview) {
         this.commentview = new CommentView({ building });
@@ -569,7 +566,7 @@ define([
           .domain([0, d3.max(chartdata.data, function(d) { return d.y; })])
           .range([height, 0]);
 
-      var svg = container.select('#compare-chart').append('svg')
+      var svg = container.select(`.${view}-compare-chart`).append('svg')
           .attr('width', width + margin.left + margin.right)
           .attr('height', height + margin.top + margin.bottom)
         .append('g')
@@ -694,7 +691,7 @@ define([
       var xpos = chartdata.selectedIndex === null ? 0 : x(chartdata.data[chartdata.selectedIndex].x) + (xBandWidth / 2);
       var ypos = chartdata.selectedIndex === null ? 0 : y(chartdata.data[chartdata.selectedIndex].y);
 
-      var selectedCityHighlight = container.select('#compare-chart').append('div')
+      var selectedCityHighlight = container.select(`.${view}-compare-chart`).append('div')
         .attr('class', 'selected-city-highlight-html')
         .style('top', (margin.top - 70) + 'px')
         .style('left', (margin.left + xpos) + 'px')
@@ -745,7 +742,7 @@ define([
 
       ypos = y(chartdata.data[chartdata.avgIndex].y); // top of bar
 
-      var avgHighlight = container.select('#compare-chart').append('div')
+      var avgHighlight = container.select(`.${view}-compare-chart`).append('div')
         .attr('class', avgClass)
         .style('top', (margin.top + ypos) + 'px')
         .style('left', (margin.left + xpos) + 'px');

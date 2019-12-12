@@ -78,6 +78,7 @@ define([
         d.emissions.pct = d.emissions.pct_raw = emmission_pct * 100;
         d.emissions.pct_actual = emmission_pct;
         d.emissions.amt = emmission_amt;
+        d.emissions.cars = this.formatters.fixedOne(emmission_amt / this.TYPICAL_CAR_EMMISSION);
 
         d.usage = {};
         d.usage.isValid = this.validFuel(usage_pct, usage_amt);

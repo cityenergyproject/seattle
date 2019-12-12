@@ -85,7 +85,18 @@
         <% if (fuels.length >= 1) { %>
         <div class='fc-row notes'>
           <% if(totals.emissions > 0) { %>
-          <p><strong><%= totals.emissions %> MT CO<sub>2</sub>E</strong> is the equivalent of <strong><%= cars %> passenger vehicles driven</strong> for one year.</p>
+          <p>
+            <strong><%= totals.emissions %> MT CO<sub>2</sub>E</strong> is the equivalent of <strong><%= cars %> passenger vehicles driven</strong> for one year.
+          </p>
+          <p>
+            Of these passenger vehicles
+            <% _.each(fuels, function(fuel, i) { %>
+            <%= fuel.emissions.cars %> are attributable to <%= fuel.label.toLowerCase() %><% if (i <= fuels.length - 2) { %>, <% } else if (i === fuels.length - 1) { %>. <% } %>
+            <% if (i === fuels.length - 2) { %>
+            and
+            <% } %>
+            <% }); %>
+          </p>
           <% } %>
         </div>
         <% } %>

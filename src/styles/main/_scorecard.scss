@@ -151,11 +151,24 @@ $steam-color: #f7c34e;
   }
 
   .sc-toggle {
+    margin-bottom: 1rem;
+
+    .sc-heading {
+      margin-bottom: .25rem;
+    }
+
+    .sc-toggle-row {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+    }
 
     label {
-      display: inline-block;
       font-weight: 400;
       margin: 0;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
     }
 
     label + label {
@@ -165,26 +178,34 @@ $steam-color: #f7c34e;
     label.cb-plain {
       line-height: 1;
 
+      &.sc-txt {
+        text-transform: uppercase;
+      }
+
       input[type="checkbox"] {
         display: none;
       }
 
-      span {
-        opacity: 0.25;
-      }
-
-      span.cb {
-        content: ' ';
+      .cb {
         display: inline-block;
-        width: 10px;
-        height: 10px;
+        width: 16px;
+        height: 16px;
         margin-right: 5px;
-        border-radius: 10px;
-        background: white;
+        border-radius: 50%;
+        border: 1px solid $sc-blue;
+
+        .cb-inner {
+          background: $sc-blue;
+          display: none;
+          border-radius: 50%;
+          margin: 2px;
+          width: 10px;
+          height: 10px;
+        }
       }
 
-      input[type=checkbox]:checked ~ span {
-        opacity: 1.0;
+      input[type=checkbox]:checked ~ .cb .cb-inner {
+        display: block;
       }
     }
   }
@@ -220,6 +241,7 @@ $steam-color: #f7c34e;
   }
 
   .scorecard--details {
+    margin-bottom: 1rem;
     position: relative;
     padding: 0 1rem;
     background: $blue;
@@ -302,11 +324,6 @@ $steam-color: #f7c34e;
         text-align: left;
       }
     }
-
-    .sc-toggle {
-      position: absolute;
-      bottom: 1rem;
-    }
   }
 
   .compare-desc {
@@ -387,7 +404,7 @@ $steam-color: #f7c34e;
     }
   }
 
-  #compare-chart,
+  .compare-chart,
   #emissions-intensity-chart {
     position: relative;
 
@@ -1012,7 +1029,7 @@ $steam-color: #f7c34e;
     .header { font-size: 0.75rem; }
 
     .gray-bk {
-      background: #f1f1f1;
+      background: $sc-offwhite;
     }
 
     .no-border {
@@ -1020,36 +1037,41 @@ $steam-color: #f7c34e;
     }
   }
 
-  #eui-scorecard-view,
-  #ess-scorecard-view {
-    position: relative;
-    top: 0;
-    left: 0;
-    display: none;
-  };
+  .scorecard-compare-chart {
+    border: 1px solid $sc-offwhite;
 
-  &.show-eui-view #eui-scorecard-view {
+    &.eui-selected {
+      .scorecard-compare-section {
+        &.eui {
+          display: block;
+        }
+        &.ess {
+          display: none;
+        }
+      }
+    }
+
+    &.ess-selected {
+      .scorecard-compare-section {
+        &.ess {
+          display: block;
+        }
+        &.eui {
+          display: none;
+        }
+      }
+    }
+
+    &.print-only {
+      display: none;
+    }
+  }
+
+  &.show-eui-view #scorecard-view {
     display: block;
   }
 
-  &.show-ess-view {
-    #ess-scorecard-view {
-      display: block;
-    }
-
-    #eui-scorecard-view {
-      display: block;
-
-      .scorecard--details,
-      .scorecard-compare-chart {
-        display: none;
-      }
-    }
-  }
-
   @media print {
-    // TODO this gets us a bit closer on Edge but introduces some issues with
-    // existing elements that will need to be hidden
     & {
       overflow: visible;
       bottom: inherit;
@@ -1076,38 +1098,32 @@ $steam-color: #f7c34e;
 
     #back-to-map-link { display: none; }
 
-    #eui-scorecard-view,
-    #ess-scorecard-view  {
+    #scorecard-view {
       display: block !important;
-    }
-
-    #eui-scorecard-view {
       page-break-after: always;
       overflow: visible;
-
-      .scorecard--details {
-        display: none;
-      }
     }
 
     #comparison-view-link {
       display: none;
     }
 
-    #ess-scorecard-view {
-      // page-break-before: always;
-      position: static;
-      overflow: visible;
-
-      #compare-shift-chart,
-      #fuel-use-chart {
-        display: none;
-      }
-    }
-
     .scorecard--section, .scorecard--details {
       page-break-inside: avoid;
       break-inside: avoid;
+    }
+
+    .scorecard-compare-chart {
+      border: none;
+      border-bottom: 1px solid $sc-offwhite;
+
+      &.print-only {
+        display: block;
+      }
+
+      &.screen-only {
+        display: none;
+      }
     }
 
     #fuel-use-chart {
@@ -1129,11 +1145,7 @@ $steam-color: #f7c34e;
   }
 
   #scorecard .scorecard-wrapper.no-energy-star-score {
-    #ess-scorecard-view {
-      display: none !important;
-    }
-
-    #eui-scorecard-view {
+    #scorecard-view {
       .scorecard--details {
         display: block;
       }

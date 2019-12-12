@@ -10,21 +10,16 @@
         <li class='sc-txt white small light ess-certified'><img class='ess-logo' src='images/scorecard/energy-star-logo.svg'/><span>This building is ENERGY STAR Certified</span></li>
         <% } %>
       </ul>
-      <div class='sc-toggle'>
-        <h4 class='sc-heading small white'>TOGGLE VIEW:</h4>
-        <label class='cb-plain sc-txt white small'><input class="sc-toggle--input" type="checkbox" <%= view === 'eui' ? 'checked' : '' %> data-view='eui'/><span class='cb'></span><span>EUI</span></label>
-        <label class='cb-plain sc-txt white small'><input class="sc-toggle--input" type="checkbox" <%= view === 'ess' ? 'checked' : '' %> data-view='ess'/><span class='cb'></span><span>ENERGY STAR Score</span></label>
-      </div>
   </div>
   <div class='col-4 middle'>
     <div class='circle-bk'>
-      <h4 class='sc-heading'><%= year %> <%= view === 'eui' ? 'EUI' : 'ENERGY STAR ®' %></h4>
+      <h4 class='sc-heading'><%= year %> EUI</h4>
       <% if (value !== null) { %>
         <h3 class='sc-heading orange xlarge number' style="color:<%= valueColor %>;"><%= value %></h3>
       <% } else { %>
         <h3 class='sc-heading xlarge nodata' style="color:<%= valueColor %>;">n/a</h3>
       <% } %>
-      <p class='sc-heading orange small' style="color:<%= valueColor %>;"><%= view === 'eui' ? 'kBtu/ft²' : 'Score' %></p>
+      <p class='sc-heading orange small' style="color:<%= valueColor %>;">kBtu/ft²</p>
     </div>
   </div>
   <div class='col-4'>
@@ -46,37 +41,79 @@
   </div>
 </div>
 
-<div class='scorecard--section scorecard-compare-chart'>
+<div class='scorecard--section scorecard-compare-chart <%= view %>-selected'>
   <div class='inner'>
-    <div class='section-head'>
-      <% if (view === 'eui') { %>
-        <h3 class='sc-heading'>Energy Use Compared to Average</h3>
-      <% } else { %>
-        <h3 class='sc-heading'>Energy Star Score Compared to Average</h3>
-      <% } %>
-      <p class='sc-txt small bold'>See how this building measures up against other buildings of the same primary use:</p>
+    <div class='sc-toggle'>
+      <h4 class='sc-heading small'>TOGGLE VIEW:</h4>
+      <div class='sc-toggle-row'>
+        <label class='cb-plain sc-txt small'><input class="sc-toggle--input" type="checkbox" <%= view === 'eui' ? 'checked' : '' %> data-view='eui'/><span class='cb'><span class='cb-inner'></span></span><span>Energy Use Intensity (EUI)</span></label>
+        <label class='cb-plain sc-txt small'><input class="sc-toggle--input" type="checkbox" <%= view === 'ess' ? 'checked' : '' %> data-view='ess'/><span class='cb'><span class='cb-inner'></span></span><span>ENERGY STAR Score</span></label>
+      </div>
     </div>
 
-    <div class='row'>
-      <div class='col-4 compare-desc'>
-        <% if(compare.isValid) { %>
-          <p class='compare-logo <%= compare.change_label %> <%= view %>'><span><%= compare.change_pct %></span></p>
-          <% if (view === 'eui') { %>
-            <p class="sc-txt light pg">This building’s energy use per square foot (EUI) is <span class='change-txt bold <%= compare.change_label %> <%= view %>'><%= compare.change_pct %> <%= compare.change_label %></span> than the average <%= type %> in Seattle.</p>
-          <% } else { %>
-            <p class="sc-txt light pg">This building’s ENERGY STAR Score is <span class='change-txt bold <%= compare.change_label %> <%= view %>'><%= compare.change_pct %> points <%= compare.change_label %></span> than the average <%= type %> in Seattle.</p>
-          <% } %>
-        <% } else { %>
-          <p class='not-available'><%= compare.error %></p>
-        <% } %>
+    <div class='scorecard-compare-section eui'>
+      <div class='section-head'>
+        <h3 class='sc-heading'>Energy Use Compared to Average</h3>
+        <p class='sc-txt small bold'>See how this building measures up against other buildings of the same primary use:</p>
       </div>
-      <div id='compare-chart' class='col-8'></div>
+
+      <div class='row'>
+        <div class='col-4 compare-desc'>
+          <% if(compareEui.isValid) { %>
+            <p class='compare-logo <%= compareEui.change_label %> eui'><span><%= compareEui.change_pct %></span></p>
+            <p class="sc-txt light pg">This building’s energy use per square foot (EUI) is <span class='change-txt bold <%= compareEui.change_label %> eui'><%= compareEui.change_pct %> <%= compareEui.change_label %></span> than the average <%= type %> in Seattle.</p>
+          <% } else { %>
+            <p class='not-available'><%= compareEui.error %></p>
+          <% } %>
+        </div>
+        <div class='col-8 eui-compare-chart compare-chart'></div>
+      </div>
     </div>
+
+    <div class='scorecard-compare-section ess screen-only'>
+      <div class='section-head'>
+        <h3 class='sc-heading'>Energy Star Score Compared to Average</h3>
+        <p class='sc-txt small bold'>See how this building measures up against other buildings of the same primary use:</p>
+      </div>
+
+      <div class='row'>
+        <div class='col-4 compare-desc'>
+          <% if(compareEss.isValid) { %>
+            <p class='compare-logo <%= compareEss.change_label %> ess'><span><%= compareEss.change_pct %></span></p>
+            <p class="sc-txt light pg">This building’s ENERGY STAR Score is <span class='change-txt bold <%= compareEss.change_label %> ess'><%= compareEss.change_pct %> points <%= compareEss.change_label %></span> than the average <%= type %> in Seattle.</p>
+          <% } else { %>
+            <p class='not-available'><%= compareEss.error %></p>
+          <% } %>
+        </div>
+        <div class='col-8 ess-compare-chart compare-chart'></div>
+      </div>
+    </div>
+
   </div>
 </div>
 
-<% if (view === 'eui') { %>
-  <div id='fuel-use-chart' class='scorecard--section'></div>
+<div id='compare-shift-chart' class='scorecard--section avoid-break'></div>
+<div id='fuel-use-chart' class='scorecard--section'></div>
 
-  <div id='compare-shift-chart' class='scorecard--section avoid-break'></div>
-<% } %>
+<div class='scorecard--section scorecard-compare-chart print-only'>
+  <div class='inner'>
+    <div class='scorecard-compare-section ess'>
+      <div class='section-head'>
+        <h3 class='sc-heading'>Energy Star Score Compared to Average</h3>
+        <p class='sc-txt small bold'>See how this building measures up against other buildings of the same primary use:</p>
+      </div>
+
+      <div class='row'>
+        <div class='col-4 compare-desc'>
+          <% if(compareEss.isValid) { %>
+            <p class='compare-logo <%= compareEss.change_label %> ess'><span><%= compareEss.change_pct %></span></p>
+            <p class="sc-txt light pg">This building’s ENERGY STAR Score is <span class='change-txt bold <%= compareEss.change_label %> ess'><%= compareEss.change_pct %> points <%= compareEss.change_label %></span> than the average <%= type %> in Seattle.</p>
+          <% } else { %>
+            <p class='not-available'><%= compareEss.error %></p>
+          <% } %>
+        </div>
+        <div class='col-8 ess-compare-chart compare-chart'></div>
+      </div>
+    </div>
+  </div>
+</div>
