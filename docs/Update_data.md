@@ -118,7 +118,7 @@ Here is how the data was updated in November/December 2018 when 2017 data was ad
 9. Still on your computer, test the updated configuration file and master dataset. In a console, move to the directory that contains the project for the map code, including your updated configuration file. Run the following:
 
   ```bash
-  python -m SimpleHTTPServer
+  python -m http.server
   ```
 
 10. Open the local version of the site in a browser:

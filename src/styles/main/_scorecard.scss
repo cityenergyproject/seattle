@@ -17,12 +17,12 @@ $sc-font-tiny: 0.75rem;
 $sc-font-sm: 0.75rem;
 $sc-font-std: 1rem;
 $sc-font-lg: 1.5rem;
-$sc-font-lgr: 3rem;
+$sc-font-lgr: 4rem;
 
 // Energy source colors
 $gas-color: #C24E2B;
-$electric-color: #D5846C;
-$steam-color: #E7B9AC;
+$electric-color: #0048ba;
+$steam-color: #f7c34e;
 
 #scorecard {
   display: none;
@@ -47,6 +47,15 @@ $steam-color: #E7B9AC;
     margin: 0 auto;
   }
 
+  #back-to-map-link {
+    background: $sc-red;
+    color: white;
+    display: inline-block;
+    font-weight: 500;
+    padding: 10px;
+    text-transform: uppercase;
+  }
+
   #scorecard-content {
     position: relative;
     width: 100%;
@@ -64,6 +73,9 @@ $steam-color: #E7B9AC;
     &.small { font-size: $sc-font-sm; }
     &.large { font-size: $sc-font-lg; }
     &.xlarge { font-size: $sc-font-lgr; }
+    &.number {
+      margin: 0.5rem 0;
+    }
 
     &.light { font-weight: $sc-weight-lt; }
     &.normal-weight { font-weight: $sc-weight; }
@@ -101,6 +113,11 @@ $steam-color: #E7B9AC;
     &.light { font-weight: $sc-weight-lt; }
     &.bold { font-weight: $sc-weight-bd; }
 
+    &.sc-addr,
+    &.sc-sqft {
+      font-weight: bold;
+    }
+
     &.pg { line-height: 1.2; }
   }
 
@@ -134,11 +151,24 @@ $steam-color: #E7B9AC;
   }
 
   .sc-toggle {
+    margin-bottom: 1rem;
+
+    .sc-heading {
+      margin-bottom: .25rem;
+    }
+
+    .sc-toggle-row {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+    }
 
     label {
-      display: inline-block;
       font-weight: 400;
       margin: 0;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
     }
 
     label + label {
@@ -148,45 +178,52 @@ $steam-color: #E7B9AC;
     label.cb-plain {
       line-height: 1;
 
+      &.sc-txt {
+        text-transform: uppercase;
+      }
+
       input[type="checkbox"] {
         display: none;
       }
 
-      span {
-        opacity: 0.25;
-      }
-
-      span.cb {
-        content: ' ';
+      .cb {
         display: inline-block;
-        width: 10px;
-        height: 10px;
+        width: 16px;
+        height: 16px;
         margin-right: 5px;
-        border-radius: 10px;
-        background: white;
+        border-radius: 50%;
+        border: 1px solid $sc-blue;
+
+        .cb-inner {
+          background: $sc-blue;
+          display: none;
+          border-radius: 50%;
+          margin: 2px;
+          width: 10px;
+          height: 10px;
+        }
       }
 
-      input[type=checkbox]:checked ~ span {
-        opacity: 1.0;
+      input[type=checkbox]:checked ~ .cb .cb-inner {
+        display: block;
       }
     }
   }
 
+
+  .scorecard--nav,
+  .scorecard--header {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin: 1rem 1rem;
+  }
 
   .scorecard--nav {
-    margin: 1rem 1rem;
-
-    & > div {
-      position: relative;
-      margin: 0.5rem 0 0;
-    }
-
-    #comparison-view-link {
-      position: absolute;
-      bottom: 0;
-      right: 0;
-    }
+    margin: 1rem 0;
   }
+
   .ess-certified {
     .ess-logo {
       display: inline-block;
@@ -204,6 +241,7 @@ $steam-color: #E7B9AC;
   }
 
   .scorecard--details {
+    margin-bottom: 1rem;
     position: relative;
     padding: 0 1rem;
     background: $blue;
@@ -286,11 +324,6 @@ $steam-color: #E7B9AC;
         text-align: left;
       }
     }
-
-    .sc-toggle {
-      position: absolute;
-      bottom: 1rem;
-    }
   }
 
   .compare-desc {
@@ -371,7 +404,7 @@ $steam-color: #E7B9AC;
     }
   }
 
-  #compare-chart,
+  .compare-chart,
   #emissions-intensity-chart {
     position: relative;
 
@@ -404,7 +437,7 @@ $steam-color: #E7B9AC;
     }
 
     .y.axis text, .label text {
-      fill: #CBCBCB;
+      fill: $tick-color;
     }
 
     .label text {
@@ -536,7 +569,7 @@ $steam-color: #E7B9AC;
     }
 
     .x.axis text, .label text {
-      fill: #CBCBCB;
+      fill: $tick-color;
     }
 
     .avg-highlight-html.selected-building {
@@ -589,13 +622,13 @@ $steam-color: #E7B9AC;
     }
 
     .emissions-dots-label {
-      fill: #CBCBCB;
+      color: $tick-color;
       font-family: $base-font-family;
       font-size: 10px;
     }
 
     .emissions-dots-title {
-      color: #CBCBCB;
+      color: $tick-color;
       font-size: 10px;
       text-align: center;
       text-transform: uppercase;
@@ -746,9 +779,13 @@ $steam-color: #E7B9AC;
       .energy-consumption-total,
       .emissions-total {
         border-top: 1px solid #CBCBCB;
-        font-weight: bold;
+        color: $brownish-gray;
         margin-top: 5px;
         padding-top: 5px;
+
+        .quantity {
+          font-weight: bold;
+        }
       }
 
       .energy-consumption-item,
@@ -904,15 +941,25 @@ $steam-color: #E7B9AC;
 
       .link-link {
         margin-left: 3rem;
-        margin-top: 1rem;
-        border-top: 1px dashed #ccc;
         padding-top: 1rem;
+
+        .link-button {
+          display: inline-block;
+          padding: 1em;
+          background: #0047ba;
+          color: white;
+          margin-bottom: 1em;
+          text-decoration: none;
+          text-transform: uppercase;
+        }
 
         p {
           font-weight: bold;
         }
 
         a {
+          color: #0047ba;
+          text-decoration: underline;
           word-break: break-word;
           word-wrap: break-word;
         }
@@ -986,7 +1033,7 @@ $steam-color: #E7B9AC;
     .header { font-size: 0.75rem; }
 
     .gray-bk {
-      background: #f1f1f1;
+      background: $sc-offwhite;
     }
 
     .no-border {
@@ -994,36 +1041,45 @@ $steam-color: #E7B9AC;
     }
   }
 
-  #eui-scorecard-view,
-  #ess-scorecard-view {
-    position: relative;
-    top: 0;
-    left: 0;
-    display: none;
-  };
+  .scorecard-compare-chart {
+    border: 1px solid $sc-offwhite;
 
-  &.show-eui-view #eui-scorecard-view {
-    display: block;
-  }
-
-  &.show-ess-view {
-    #ess-scorecard-view {
-      display: block;
-    }
-
-    #eui-scorecard-view {
-      display: block;
-
-      .scorecard--details,
-      .scorecard-compare-chart {
-        display: none;
+    &.eui-selected {
+      .scorecard-compare-section {
+        &.eui {
+          display: block;
+        }
+        &.ess {
+          display: none;
+        }
       }
     }
+
+    &.ess-selected {
+      .scorecard-compare-section {
+        &.ess {
+          display: block;
+        }
+        &.eui {
+          display: none;
+        }
+      }
+    }
+
+    &.print-only {
+      display: none;
+    }
+  }
+
+  &.show-eui-view #scorecard-view {
+    display: block;
   }
 
   @media print {
     & {
       overflow: visible;
+      bottom: inherit;
+      position: relative;
     }
 
     & * {
@@ -1051,45 +1107,42 @@ $steam-color: #E7B9AC;
 
     #back-to-map-link { display: none; }
 
-    #eui-scorecard-view,
-    #ess-scorecard-view  {
+    #scorecard-view {
       display: block !important;
-    }
-
-    #eui-scorecard-view {
       page-break-after: always;
       overflow: visible;
-
-      .scorecard--details {
-        display: none;
-      }
     }
 
     #comparison-view-link {
       display: none;
     }
 
-    #ess-scorecard-view {
-      page-break-before: always;
-      position: static;
-      overflow: visible;
+    .scorecard--section, .scorecard--details {
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
 
-      #compare-shift-chart,
-      #fuel-use-chart {
+    .scorecard-compare-chart {
+      border: none;
+      border-bottom: 1px solid $sc-offwhite;
+
+      &.print-only {
+        display: block;
+      }
+
+      &.screen-only {
         display: none;
       }
     }
 
-    .scorecard--section, .scorecard--details {
-      page-break-inside: avoid;
-    }
-
     #fuel-use-chart {
       page-break-inside: avoid;
+      break-inside: avoid;
     }
 
     #building-type-table {
       page-break-after: always;
+      break-after: always;
     }
 
     .scorecard--print-footer {
@@ -1120,11 +1173,7 @@ $steam-color: #E7B9AC;
   }
 
   #scorecard .scorecard-wrapper.no-energy-star-score {
-    #ess-scorecard-view {
-      display: none !important;
-    }
-
-    #eui-scorecard-view {
+    #scorecard-view {
       .scorecard--details {
         display: block;
       }
@@ -1135,6 +1184,7 @@ $steam-color: #E7B9AC;
        */
       #fuel-use-chart {
         page-break-inside: unset;
+        break-inside: unset;
       }
     }
   }

@@ -78,6 +78,7 @@ define([
         d.emissions.pct = d.emissions.pct_raw = emmission_pct * 100;
         d.emissions.pct_actual = emmission_pct;
         d.emissions.amt = emmission_amt;
+        d.emissions.cars = this.formatters.fixedOne(emmission_amt / this.TYPICAL_CAR_EMMISSION);
 
         d.usage = {};
         d.usage.isValid = this.validFuel(usage_pct, usage_amt);
@@ -510,9 +511,9 @@ define([
         .innerRadius(0);
 
       const arcColors = {
-        gas: '#C24E2B',
-        electricity: '#D5846C',
-        steam: '#E7B9AC'
+        gas: '#c24e2b',
+        electricity: '#0048ba',
+        steam: '#f7c34e'
       };
 
       arcs.append('path')

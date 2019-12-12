@@ -7,18 +7,19 @@
   <!-- Navigation -->
   <div class='scorecard--nav'>
     <a id='back-to-map-link' class='sc-link' href='#'>&lt; Back to Map</a>
-    <div>
-      <h2 class='sc-heading large'><%= name %></h2>
-      <% if (building_view) { %>
-      <a id='comparison-view-link' class='sc-link' href='#'>Building Comparison View &gt;</a>
-      <% } %>
-    </div>
+    <a id='comparison-view-link' class='sc-link' href='#'>Building Comparison View &gt;</a>
+  </div>
+
+  <div class='scorecard--header'>
+    <h2 class='sc-heading large'><%= name %></h2>
+    <% if (building_view) { %>
+      <h2 class='sc-heading large'><%= year %> Performance Profile</h2>
+    <% } %>
   </div>
 
   <!-- Dynamic content -->
   <div id='scorecard-content'>
-    <div id='ess-scorecard-view' class='ess'></div>
-    <div id='eui-scorecard-view' class='eui'></div>
+    <div id='scorecard-view'></div>
   </div>
 
   <% if (building_view) { %>

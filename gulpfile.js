@@ -75,6 +75,7 @@ gulp.task('default', gulp.series('clean', 'fileinclude', 'styles', 'scripts', 'i
 
 gulp.task('connect', function() {
   connect.server({
+    host: '0.0.0.0',
     root: 'dist',
     port: process.env.PORT || 8080,
     livereload: false
