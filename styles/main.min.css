@@ -673,12 +673,19 @@ header {
   padding: 0.3em 1em;
   border: 1px solid white;
   border-radius: 1em;
-  margin: 0.5em 1em; }
+  margin: 0.5em 1em;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: row;
+          flex-direction: row; }
   .search-wrapper .address-search:focus {
     border-color: inherit;
     box-shadow: none; }
   .search-wrapper .address-search {
-    padding: 0 0 0 3px;
+    padding: 0;
     margin: 0;
     border: 0 none;
     display: block; }
