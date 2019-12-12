@@ -77,6 +77,7 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
         d.emissions.pct = d.emissions.pct_raw = emmission_pct * 100;
         d.emissions.pct_actual = emmission_pct;
         d.emissions.amt = emmission_amt;
+        d.emissions.cars = _this.formatters.fixedOne(emmission_amt / _this.TYPICAL_CAR_EMMISSION);
 
         d.usage = {};
         d.usage.isValid = _this.validFuel(usage_pct, usage_amt);

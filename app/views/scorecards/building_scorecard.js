@@ -94,8 +94,7 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
     },
 
     show: function show(buildings, building_data, selected_year, avail_years) {
-      this.processBuilding(buildings, building_data, selected_year, avail_years, 'eui');
-      this.processBuilding(buildings, building_data, selected_year, avail_years, 'ess');
+      this.processBuilding(buildings, building_data, selected_year, avail_years);
     },
 
     getColor: function getColor(field, value) {
@@ -185,10 +184,11 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
       return !!building[certifiedField];
     },
 
-    processBuilding: function processBuilding(buildings, building_data, selected_year, avail_years, view) {
+    processBuilding: function processBuilding(buildings, building_data, selected_year, avail_years) {
       var _this2 = this;
 
       var building = building_data[selected_year];
+      var view = this.state.get('scorecard').get('view');
 
       var name = building.property_name;
       var address = this.full_address(building);
@@ -198,20 +198,14 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
 
       var config = this.state.get('city').get('scorecard');
 
-      var viewSelector = '#' + view + '-scorecard-view';
+      var viewSelector = '#scorecard-view';
       var el = this.$el.find(viewSelector);
-      var compareField = this.getViewField(view);
+      var compareField = this.getViewField('eui');
 
       var value = building.hasOwnProperty(compareField) ? building[compareField] : null;
-      var data = this.getCompareChartBinnedData(config, buildings, prop_type, view, selected_year);
+      var data = this.getCompareChartBinnedData(config, buildings, prop_type, 'eui', selected_year);
 
-      var thresholds = void 0;
-      if (view === 'eui') {
-        thresholds = this.getThresholdLabels(config.thresholds.eui_schema);
-      } else {
-        thresholds = this.getThresholdLabels(config.thresholds.energy_star);
-      }
-
+      var thresholds = this.getThresholdLabels(config.thresholds.eui_schema);
       var valueColor = this.getColor(compareField, value);
       if (compareField === 'site_eui') {
         valueColor = this.getCompareChartColor(data, thresholds, id);
@@ -221,7 +215,8 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
         valueColor = '#aaa';
       }
 
-      var chartdata = this.prepareCompareChartData(config, buildings, building, selected_year, view, prop_type, id);
+      var chartdata = this.prepareCompareChartData(config, buildings, building, selected_year, 'eui', prop_type, id);
+      var essChartData = this.prepareCompareChartData(config, buildings, building, selected_year, 'ess', prop_type, id);
 
       el.html(this.template({
         active: 'active',
@@ -233,20 +228,21 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
         year: selected_year,
         year_built: building.yearbuilt,
         view: view,
-        ess_logo: this.energyStarCertified(view, building, config),
+        ess_logo: this.energyStarCertified('eui', building, config),
         value: value,
         valueColor: valueColor,
         costs: this.costs(building, selected_year),
-        compare: this.compare(building, view, config, chartdata)
+        compareEui: this.compare(building, 'eui', config, chartdata),
+        compareEss: this.compare(building, 'ess', config, essChartData)
       }));
 
       // set chart hash
-      if (!this.charts.hasOwnProperty(view)) this.charts[view] = {};
+      if (!this.charts.hasOwnProperty('eui')) this.charts['eui'] = {};
 
       // render fuel use chart
-      if (!this.charts[view].chart_fueluse) {
+      if (!this.charts['eui'].chart_fueluse) {
         var emissionsChartData = this.prepareEmissionsChartData(buildings, prop_type);
-        this.charts[view].chart_fueluse = new FuelUseView({
+        this.charts['eui'].chart_fueluse = new FuelUseView({
           formatters: this.formatters,
           data: [building],
           name: name,
@@ -256,37 +252,38 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
         });
       }
 
-      el.find('#fuel-use-chart').html(this.charts[view].chart_fueluse.render());
-      this.charts[view].chart_fueluse.fixlabels(viewSelector);
-      this.charts[view].chart_fueluse.afterRender();
+      el.find('#fuel-use-chart').html(this.charts['eui'].chart_fueluse.render());
+      this.charts['eui'].chart_fueluse.fixlabels(viewSelector);
+      this.charts['eui'].chart_fueluse.afterRender();
 
       // render Energy Use Trends chart
-      if (view === 'eui' && !this.charts[view].chart_shift) {
+      if (!this.charts['eui'].chart_shift) {
         var shiftConfig = config.change_chart.building;
         var previousYear = avail_years[0];
         var hasPreviousYear = previousYear !== selected_year;
 
         var change_data = hasPreviousYear ? this.extractChangeData(building_data, buildings, building, shiftConfig) : null;
 
-        this.charts[view].chart_shift = new ShiftView({
+        this.charts['eui'].chart_shift = new ShiftView({
           formatters: this.formatters,
           data: change_data,
           no_year: !hasPreviousYear,
           previous_year: previousYear,
           selected_year: selected_year,
-          view: view
+          view: 'eui'
         });
       }
 
-      if (this.charts[view].chart_shift) {
-        this.charts[view].chart_shift.render(function (t) {
+      if (this.charts['eui'].chart_shift) {
+        this.charts['eui'].chart_shift.render(function (t) {
           el.find('#compare-shift-chart').html(t);
         }, viewSelector);
       }
 
-      // render compare chart
-      // TODO: move into seperate Backbone View
-      this.renderCompareChart(config, chartdata, view, prop_type, name, viewSelector);
+      // Render compare charts
+      this.renderCompareChart(config, chartdata, 'eui', prop_type, name, viewSelector);
+      this.renderCompareChart(config, essChartData, 'ess', prop_type, name, viewSelector + ' .screen-only');
+      this.renderCompareChart(config, essChartData, 'ess', prop_type, name, viewSelector + ' .print-only');
 
       if (!this.commentview) {
         this.commentview = new CommentView({ building: building });
@@ -574,7 +571,7 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
         return d.y;
       })]).range([height, 0]);
 
-      var svg = container.select('#compare-chart').append('svg').attr('width', width + margin.left + margin.right).attr('height', height + margin.top + margin.bottom).append('g').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+      var svg = container.select('.' + view + '-compare-chart').append('svg').attr('width', width + margin.left + margin.right).attr('height', height + margin.top + margin.bottom).append('g').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
       svg.append('g').attr('class', 'y axis').call(d3.svg.axis().scale(y).orient('left').ticks(5).outerTickSize(0).innerTickSize(2));
 
@@ -662,7 +659,7 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
       var xpos = chartdata.selectedIndex === null ? 0 : x(chartdata.data[chartdata.selectedIndex].x) + xBandWidth / 2;
       var ypos = chartdata.selectedIndex === null ? 0 : y(chartdata.data[chartdata.selectedIndex].y);
 
-      var selectedCityHighlight = container.select('#compare-chart').append('div').attr('class', 'selected-city-highlight-html').style('top', margin.top - 70 + 'px').style('left', margin.left + xpos + 'px').style('display', function (d) {
+      var selectedCityHighlight = container.select('.' + view + '-compare-chart').append('div').attr('class', 'selected-city-highlight-html').style('top', margin.top - 70 + 'px').style('left', margin.left + xpos + 'px').style('display', function (d) {
         return chartdata.selectedIndex === null || chartdata.building_value === null ? 'none' : null;
       });
 
@@ -701,7 +698,7 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
 
       ypos = y(chartdata.data[chartdata.avgIndex].y); // top of bar
 
-      var avgHighlight = container.select('#compare-chart').append('div').attr('class', avgClass).style('top', margin.top + ypos + 'px').style('left', margin.left + xpos + 'px');
+      var avgHighlight = container.select('.' + view + '-compare-chart').append('div').attr('class', avgClass).style('top', margin.top + ypos + 'px').style('left', margin.left + xpos + 'px');
 
       var avgHighlightContent = avgHighlight.append('div');
 

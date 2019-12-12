@@ -1684,6 +1684,13 @@ header {
     width: 100%;
     max-width: 960px;
     margin: 0 auto; }
+  #scorecard #back-to-map-link {
+    background: #C04F31;
+    color: white;
+    display: inline-block;
+    font-weight: 500;
+    padding: 10px;
+    text-transform: uppercase; }
   #scorecard #scorecard-content {
     position: relative;
     width: 100%; }
@@ -1700,7 +1707,9 @@ header {
     #scorecard .sc-heading.large {
       font-size: 1.5rem; }
     #scorecard .sc-heading.xlarge {
-      font-size: 3rem; }
+      font-size: 4rem; }
+    #scorecard .sc-heading.number {
+      margin: 0.5rem 0; }
     #scorecard .sc-heading.light {
       font-weight: 300; }
     #scorecard .sc-heading.normal-weight {
@@ -1754,29 +1763,63 @@ header {
       margin-bottom: 2rem; }
       #scorecard .scorecard--section .section-head .sc-heading {
         margin-bottom: 0.75rem; }
-  #scorecard .sc-toggle label {
-    display: inline-block;
-    font-weight: 400;
-    margin: 0; }
-  #scorecard .sc-toggle label + label {
-    margin-left: 0.5rem; }
-  #scorecard .sc-toggle label.cb-plain {
-    line-height: 1; }
-    #scorecard .sc-toggle label.cb-plain input[type="checkbox"] {
-      display: none; }
-    #scorecard .sc-toggle label.cb-plain span {
-      opacity: 0.25; }
-    #scorecard .sc-toggle label.cb-plain span.cb {
-      content: ' ';
-      display: inline-block;
-      width: 10px;
-      height: 10px;
-      margin-right: 5px;
-      border-radius: 10px;
-      background: white; }
-    #scorecard .sc-toggle label.cb-plain input[type=checkbox]:checked ~ span {
-      opacity: 1.0; }
-  #scorecard .scorecard--nav {
+  #scorecard .sc-toggle {
+    margin-bottom: 1rem; }
+    #scorecard .sc-toggle .sc-heading {
+      margin-bottom: .25rem; }
+    #scorecard .sc-toggle .sc-toggle-row {
+      display: -webkit-box;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-box-orient: horizontal;
+      -webkit-box-direction: normal;
+          -ms-flex-direction: row;
+              flex-direction: row;
+      -webkit-box-align: center;
+          -ms-flex-align: center;
+              align-items: center; }
+    #scorecard .sc-toggle label {
+      font-weight: 400;
+      margin: 0;
+      display: -webkit-box;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-box-orient: horizontal;
+      -webkit-box-direction: normal;
+          -ms-flex-direction: row;
+              flex-direction: row;
+      -webkit-box-align: center;
+          -ms-flex-align: center;
+              align-items: center; }
+    #scorecard .sc-toggle label + label {
+      margin-left: 0.5rem; }
+    #scorecard .sc-toggle label.cb-plain {
+      line-height: 1; }
+      #scorecard .sc-toggle label.cb-plain.sc-txt {
+        text-transform: uppercase; }
+      #scorecard .sc-toggle label.cb-plain input[type="checkbox"] {
+        display: none; }
+      #scorecard .sc-toggle label.cb-plain .cb {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        margin-right: 5px;
+        border-radius: 50%;
+        border: 1px solid #0047BA; }
+        #scorecard .sc-toggle label.cb-plain .cb .cb-inner {
+          background: #0047BA;
+          display: none;
+          border-radius: 50%;
+          margin: 2px;
+          width: 10px;
+          height: 10px; }
+      #scorecard .sc-toggle label.cb-plain input[type=checkbox]:checked ~ .cb .cb-inner {
+        display: block; }
+  #scorecard .scorecard--nav,
+  #scorecard .scorecard--header {
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
     display: -webkit-box;
     display: -ms-flexbox;
     display: flex;
@@ -1788,11 +1831,8 @@ header {
         -ms-flex-pack: justify;
             justify-content: space-between;
     margin: 1rem 1rem; }
-    #scorecard .scorecard--nav > div {
-      position: relative;
-      margin: 0.5rem 0 0; }
-    #scorecard .scorecard--nav-right {
-      text-align: right; }
+  #scorecard .scorecard--nav {
+    margin: 1rem 0; }
   #scorecard .ess-certified .ess-logo {
     display: inline-block;
     width: 40px;
@@ -1804,6 +1844,7 @@ header {
     width: 100px;
     line-height: 1.15; }
   #scorecard .scorecard--details {
+    margin-bottom: 1rem;
     position: relative;
     padding: 0 1rem;
     background: #0047ba;
@@ -1862,9 +1903,6 @@ header {
         width: 35%;
         margin-left: 5%;
         text-align: left; }
-    #scorecard .scorecard--details .sc-toggle {
-      position: absolute;
-      bottom: 1rem; }
   #scorecard .compare-desc {
     text-align: center;
     padding-right: 2rem; }
@@ -1920,60 +1958,60 @@ header {
       color: #90AE60; }
     #scorecard .compare-desc .change-txt.higher.eui, #scorecard .compare-desc .change-txt.lower.ess, #scorecard .compare-desc .change-txt.increased {
       color: #C04F31; }
-  #scorecard #compare-chart,
+  #scorecard .compare-chart,
   #scorecard #emissions-intensity-chart {
     position: relative; }
-    #scorecard #compare-chart .bar rect,
+    #scorecard .compare-chart .bar rect,
     #scorecard #emissions-intensity-chart .bar rect {
       fill: #F1F1F1;
       shape-rendering: crispEdges; }
-      #scorecard #compare-chart .bar rect.selected,
+      #scorecard .compare-chart .bar rect.selected,
       #scorecard #emissions-intensity-chart .bar rect.selected {
         fill: #DE8F41; }
-      #scorecard #compare-chart .bar rect.avg-bar,
+      #scorecard .compare-chart .bar rect.avg-bar,
       #scorecard #emissions-intensity-chart .bar rect.avg-bar {
         opacity: 0.5; }
-    #scorecard #compare-chart .axis path,
+    #scorecard .compare-chart .axis path,
     #scorecard #emissions-intensity-chart .axis path {
       shape-rendering: crispEdges; }
-    #scorecard #compare-chart .y.axis path,
+    #scorecard .compare-chart .y.axis path,
     #scorecard #emissions-intensity-chart .y.axis path {
       fill: none;
       stroke: #CBCBCB; }
-    #scorecard #compare-chart text,
+    #scorecard .compare-chart text,
     #scorecard #emissions-intensity-chart text {
       font-family: "Ubuntu", "Helvetica Neue", "Helvetica", "Roboto", "Arial", sans-serif;
       font-size: 10px;
       text-transform: lowercase; }
-    #scorecard #compare-chart .y.axis text, #scorecard #compare-chart .label text,
+    #scorecard .compare-chart .y.axis text, #scorecard .compare-chart .label text,
     #scorecard #emissions-intensity-chart .y.axis text,
     #scorecard #emissions-intensity-chart .label text {
       fill: #5d5d5d; }
-    #scorecard #compare-chart .label text,
+    #scorecard .compare-chart .label text,
     #scorecard #emissions-intensity-chart .label text {
       text-transform: uppercase; }
-    #scorecard #compare-chart .axis line,
+    #scorecard .compare-chart .axis line,
     #scorecard #emissions-intensity-chart .axis line {
       fill: none;
       shape-rendering: crispEdges; }
-    #scorecard #compare-chart .y.axis line,
+    #scorecard .compare-chart .y.axis line,
     #scorecard #emissions-intensity-chart .y.axis line {
       display: none; }
-    #scorecard #compare-chart .x.axis line,
+    #scorecard .compare-chart .x.axis line,
     #scorecard #emissions-intensity-chart .x.axis line {
       stroke-width: 1.5; }
-    #scorecard #compare-chart .avg-highlight-html,
+    #scorecard .compare-chart .avg-highlight-html,
     #scorecard #emissions-intensity-chart .avg-highlight-html {
       position: absolute;
       opacity: 0.5; }
-      #scorecard #compare-chart .avg-highlight-html > div,
+      #scorecard .compare-chart .avg-highlight-html > div,
       #scorecard #emissions-intensity-chart .avg-highlight-html > div {
         position: relative;
         width: 100px; }
-      #scorecard #compare-chart .avg-highlight-html.align-right > div,
+      #scorecard .compare-chart .avg-highlight-html.align-right > div,
       #scorecard #emissions-intensity-chart .avg-highlight-html.align-right > div {
         text-align: right; }
-      #scorecard #compare-chart .avg-highlight-html p,
+      #scorecard .compare-chart .avg-highlight-html p,
       #scorecard #emissions-intensity-chart .avg-highlight-html p {
         margin: 0;
         padding: 0;
@@ -1981,30 +2019,30 @@ header {
         font-size: 24px;
         font-weight: 500;
         color: #DE8F41; }
-      #scorecard #compare-chart .avg-highlight-html p:first-child, #scorecard #compare-chart .avg-highlight-html p:last-child,
+      #scorecard .compare-chart .avg-highlight-html p:first-child, #scorecard .compare-chart .avg-highlight-html p:last-child,
       #scorecard #emissions-intensity-chart .avg-highlight-html p:first-child,
       #scorecard #emissions-intensity-chart .avg-highlight-html p:last-child {
         font-size: 10px;
         font-weight: 400;
         text-transform: uppercase; }
-      #scorecard #compare-chart .avg-highlight-html p:first-child,
+      #scorecard .compare-chart .avg-highlight-html p:first-child,
       #scorecard #emissions-intensity-chart .avg-highlight-html p:first-child {
         color: #666; }
-      #scorecard #compare-chart .avg-highlight-html p:last-child,
+      #scorecard .compare-chart .avg-highlight-html p:last-child,
       #scorecard #emissions-intensity-chart .avg-highlight-html p:last-child {
         margin-top: -2px; }
-    #scorecard #compare-chart .selected-city-highlight-html,
+    #scorecard .compare-chart .selected-city-highlight-html,
     #scorecard #emissions-intensity-chart .selected-city-highlight-html {
       position: absolute;
       margin-left: -30px; }
-      #scorecard #compare-chart .selected-city-highlight-html .circle,
+      #scorecard .compare-chart .selected-city-highlight-html .circle,
       #scorecard #emissions-intensity-chart .selected-city-highlight-html .circle {
         position: relative;
         width: 60px;
         height: 60px;
         border-radius: 30px;
         border: 1px solid #0047ba; }
-        #scorecard #compare-chart .selected-city-highlight-html .circle .inner,
+        #scorecard .compare-chart .selected-city-highlight-html .circle .inner,
         #scorecard #emissions-intensity-chart .selected-city-highlight-html .circle .inner {
           position: absolute;
           top: 50%;
@@ -2014,21 +2052,21 @@ header {
           text-align: center;
           -webkit-transform: translateY(-50%);
                   transform: translateY(-50%); }
-          #scorecard #compare-chart .selected-city-highlight-html .circle .inner p,
+          #scorecard .compare-chart .selected-city-highlight-html .circle .inner p,
           #scorecard #emissions-intensity-chart .selected-city-highlight-html .circle .inner p {
             margin: 0;
             padding: 0;
             line-height: 1;
             color: #DE8F41;
             font-size: 10px; }
-          #scorecard #compare-chart .selected-city-highlight-html .circle .inner p:first-child,
+          #scorecard .compare-chart .selected-city-highlight-html .circle .inner p:first-child,
           #scorecard #emissions-intensity-chart .selected-city-highlight-html .circle .inner p:first-child {
             font-size: 24px;
             font-weight: 500; }
-          #scorecard #compare-chart .selected-city-highlight-html .circle .inner p:last-child,
+          #scorecard .compare-chart .selected-city-highlight-html .circle .inner p:last-child,
           #scorecard #emissions-intensity-chart .selected-city-highlight-html .circle .inner p:last-child {
             margin-top: -2px; }
-        #scorecard #compare-chart .selected-city-highlight-html .circle .outer,
+        #scorecard .compare-chart .selected-city-highlight-html .circle .outer,
         #scorecard #emissions-intensity-chart .selected-city-highlight-html .circle .outer {
           position: absolute;
           top: 50%;
@@ -2036,17 +2074,17 @@ header {
           left: calc(100% + 10px);
           -webkit-transform: translateY(-50%);
                   transform: translateY(-50%); }
-          #scorecard #compare-chart .selected-city-highlight-html .circle .outer.overflow,
+          #scorecard .compare-chart .selected-city-highlight-html .circle .outer.overflow,
           #scorecard #emissions-intensity-chart .selected-city-highlight-html .circle .outer.overflow {
             left: unset;
             right: calc(100% + 10px);
             text-align: right; }
-          #scorecard #compare-chart .selected-city-highlight-html .circle .outer p,
+          #scorecard .compare-chart .selected-city-highlight-html .circle .outer p,
           #scorecard #emissions-intensity-chart .selected-city-highlight-html .circle .outer p {
             margin: 0;
             padding: 0;
             line-height: 1; }
-      #scorecard #compare-chart .selected-city-highlight-html .line,
+      #scorecard .compare-chart .selected-city-highlight-html .line,
       #scorecard #emissions-intensity-chart .selected-city-highlight-html .line {
         position: absolute;
         top: 60px;
@@ -2366,21 +2404,20 @@ header {
     background: #f1f1f1; }
   #scorecard #building-type-table .no-border {
     border: 0; }
-  #scorecard #eui-scorecard-view,
-  #scorecard #ess-scorecard-view {
-    position: relative;
-    top: 0;
-    left: 0;
-    display: none; }
-  #scorecard.show-eui-view #eui-scorecard-view {
-    display: block; }
-  #scorecard.show-ess-view #ess-scorecard-view {
-    display: block; }
-  #scorecard.show-ess-view #eui-scorecard-view {
-    display: block; }
-    #scorecard.show-ess-view #eui-scorecard-view .scorecard--details,
-    #scorecard.show-ess-view #eui-scorecard-view .scorecard-compare-chart {
+  #scorecard .scorecard-compare-chart {
+    border: 1px solid #f1f1f1; }
+    #scorecard .scorecard-compare-chart.eui-selected .scorecard-compare-section.eui {
+      display: block; }
+    #scorecard .scorecard-compare-chart.eui-selected .scorecard-compare-section.ess {
       display: none; }
+    #scorecard .scorecard-compare-chart.ess-selected .scorecard-compare-section.ess {
+      display: block; }
+    #scorecard .scorecard-compare-chart.ess-selected .scorecard-compare-section.eui {
+      display: none; }
+    #scorecard .scorecard-compare-chart.print-only {
+      display: none; }
+  #scorecard.show-eui-view #scorecard-view {
+    display: block; }
   @media print {
     #scorecard {
       overflow: visible; }
@@ -2398,25 +2435,21 @@ header {
       margin-top: 0; }
     #scorecard #back-to-map-link {
       display: none; }
-    #scorecard #eui-scorecard-view,
-    #scorecard #ess-scorecard-view {
-      display: block !important; }
-    #scorecard #eui-scorecard-view {
+    #scorecard #scorecard-view {
+      display: block !important;
       page-break-after: always;
       overflow: visible; }
-      #scorecard #eui-scorecard-view .scorecard--details {
-        display: none; }
     #scorecard #comparison-view-link {
       display: none; }
-    #scorecard #ess-scorecard-view {
-      page-break-before: always;
-      position: static;
-      overflow: visible; }
-      #scorecard #ess-scorecard-view #compare-shift-chart,
-      #scorecard #ess-scorecard-view #fuel-use-chart {
-        display: none; }
     #scorecard .scorecard--section, #scorecard .scorecard--details {
       page-break-inside: avoid; }
+    #scorecard .scorecard-compare-chart {
+      border: none;
+      border-bottom: 1px solid #f1f1f1; }
+      #scorecard .scorecard-compare-chart.print-only {
+        display: block; }
+      #scorecard .scorecard-compare-chart.screen-only {
+        display: none; }
     #scorecard #fuel-use-chart {
       page-break-inside: avoid; }
     #scorecard #building-type-table {
@@ -2426,16 +2459,14 @@ header {
   body {
     background-color: #fff;
     overflow: visible; }
-  #scorecard .scorecard-wrapper.no-energy-star-score #ess-scorecard-view {
-    display: none !important; }
-  #scorecard .scorecard-wrapper.no-energy-star-score #eui-scorecard-view {
+  #scorecard .scorecard-wrapper.no-energy-star-score #scorecard-view {
     /*
        * Fuel use chart was breaking to next page, looks bad when no
        * Energy Star score
        */ }
-    #scorecard .scorecard-wrapper.no-energy-star-score #eui-scorecard-view .scorecard--details {
+    #scorecard .scorecard-wrapper.no-energy-star-score #scorecard-view .scorecard--details {
       display: block; }
-    #scorecard .scorecard-wrapper.no-energy-star-score #eui-scorecard-view #fuel-use-chart {
+    #scorecard .scorecard-wrapper.no-energy-star-score #scorecard-view #fuel-use-chart {
       page-break-inside: unset; }
   #footer {
     display: none; } }
