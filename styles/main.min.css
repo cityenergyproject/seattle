@@ -508,6 +508,9 @@ body {
   @media screen and (min-width: 56.25em) {
     .main-container {
       bottom: 6em; } }
+  @media print {
+    .main-container {
+      display: none; } }
 
 header {
   height: 0em; }
@@ -522,6 +525,9 @@ header {
   height: 3em;
   position: relative;
   z-index: 2; }
+  @media print {
+    #toolbar {
+      display: none; } }
 
 .iframed #toolbar {
   position: fixed;
@@ -2427,7 +2433,9 @@ header {
     display: block; }
   @media print {
     #scorecard {
-      overflow: visible; }
+      overflow: visible;
+      bottom: inherit;
+      position: relative; }
     #scorecard * {
       -webkit-print-color-adjust: exact !important;
       /* Chrome, Safari */
@@ -2449,7 +2457,9 @@ header {
     #scorecard #comparison-view-link {
       display: none; }
     #scorecard .scorecard--section, #scorecard .scorecard--details {
-      page-break-inside: avoid; }
+      page-break-inside: avoid;
+      -webkit-column-break-inside: avoid;
+              break-inside: avoid; }
     #scorecard .scorecard-compare-chart {
       border: none;
       border-bottom: 1px solid #f1f1f1; }
@@ -2458,9 +2468,14 @@ header {
       #scorecard .scorecard-compare-chart.screen-only {
         display: none; }
     #scorecard #fuel-use-chart {
-      page-break-inside: avoid; }
+      page-break-inside: avoid;
+      -webkit-column-break-inside: avoid;
+              break-inside: avoid; }
     #scorecard #building-type-table {
-      page-break-after: always; } }
+      page-break-after: always;
+      -webkit-break-after: always;
+         -moz-break-after: always;
+              break-after: always; } }
 
 @media print {
   body {
@@ -2474,7 +2489,9 @@ header {
     #scorecard .scorecard-wrapper.no-energy-star-score #scorecard-view .scorecard--details {
       display: block; }
     #scorecard .scorecard-wrapper.no-energy-star-score #scorecard-view #fuel-use-chart {
-      page-break-inside: unset; }
+      page-break-inside: unset;
+      -webkit-column-break-inside: unset;
+              break-inside: unset; }
   #footer {
     display: none; } }
 
