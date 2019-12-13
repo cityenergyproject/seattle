@@ -17,11 +17,18 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
     },
 
     events: {
-      'click .sc-toggle--input': 'toggleView'
+      'click .sc-toggle--input': 'toggleView',
+      'click .ways-to-save-button': 'scrollToLinks'
     },
 
     close: function close() {
       this.scoreCardData = null;
+    },
+
+    scrollToLinks: function scrollToLinks(evt) {
+      evt.preventDefault();
+      this.parentEl[0].scrollTo(0, this.parentEl.find('#links')[0].offsetTop);
+      return false;
     },
 
     toggleView: function toggleView(evt) {

@@ -1897,25 +1897,32 @@ header {
         width: 150px; }
         #scorecard .scorecard--details [class^="col"].middle .eui-desc p:first-child {
           font-weight: 500; }
+    #scorecard .scorecard--details .details-box-wrapper {
+      float: right;
+      width: auto; }
     #scorecard .scorecard--details .details-box {
-      text-align: left; }
+      text-align: right; }
       #scorecard .scorecard--details .details-box + .details-box {
         margin-top: 1rem; }
-      #scorecard .scorecard--details .details-box > h4 {
-        text-align: right; }
-      #scorecard .scorecard--details .details-box > div {
+      #scorecard .scorecard--details .details-box .details-numbers {
         margin-top: 1rem;
-        text-align: left;
-        overflow: hidden; }
-      #scorecard .scorecard--details .details-box > div > * {
-        float: left;
         text-align: right; }
-      #scorecard .scorecard--details .details-box > div p {
-        width: 60%; }
-      #scorecard .scorecard--details .details-box > div h4 {
-        width: 35%;
-        margin-left: 5%;
-        text-align: left; }
+        #scorecard .scorecard--details .details-box .details-numbers h4:last-of-type {
+          border-top: 1px solid white;
+          margin-top: .5rem;
+          padding-top: .5rem; }
+      #scorecard .scorecard--details .details-box .ways-to-save-button {
+        background: white;
+        border-radius: 2px;
+        color: #0047BA;
+        display: inline-block;
+        font-size: 15px;
+        margin-top: 1rem;
+        padding: .5rem;
+        text-transform: uppercase; }
+        @media print {
+          #scorecard .scorecard--details .details-box .ways-to-save-button {
+            display: none; } }
   #scorecard .compare-desc {
     text-align: center;
     padding-right: 2rem; }
