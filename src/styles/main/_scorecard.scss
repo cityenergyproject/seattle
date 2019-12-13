@@ -113,26 +113,29 @@ $steam-color: #f7c34e;
     &.light { font-weight: $sc-weight-lt; }
     &.bold { font-weight: $sc-weight-bd; }
 
-    &.sc-addr,
-    &.sc-sqft {
+    &.sc-addr {
       font-weight: bold;
     }
 
     &.pg { line-height: 1.2; }
   }
 
+  .sc-address {
+    margin-bottom: 1rem;
 
-  .sc-list {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-
-    li {}
-    li + li {
-      margin-top: 8px;
+    .sc-addr {
+      margin-bottom: .5rem;
     }
   }
 
+  .sc-details-value {
+    margin-bottom: .5rem;
+
+    label {
+      display: inline-block;
+      font-weight: bold;
+    }
+  }
 
   .scorecard--section {
     border-bottom: 1px solid $sc-offwhite;

@@ -199,7 +199,6 @@ define([
       const view = this.state.get('scorecard').get('view');
 
       var name = building.property_name;
-      var address = this.full_address(building);
       var sqft = +(building.reported_gross_floor_area);
       var prop_type = building.property_type;
       var id = building.id;
@@ -229,7 +228,8 @@ define([
       el.html(this.template({
         active: 'active',
         name,
-        addr: address,
+        addr1: building.reported_address,
+        addr2: this.addressLine2(building),
         sqft: sqft.toLocaleString(),
         type: prop_type,
         id,
@@ -302,13 +302,20 @@ define([
       }
     },
 
-    full_address: function(building) {
-      var zip = building.zip;
-      var state = building.state;
+    addressLine2: function(building) {
       var city = building.city;
-      var addr = building.reported_address;
+      var state = building.state;
+      var zip = building.zip;
 
-      return addr + ', ' + city + ' ' + state + ' ' + zip;
+      var addr = city;
+      if (state) {
+        addr += ' ' + state;
+      }
+      if (zip) {
+        addr += ' ' + zip;
+      }
+
+      return addr;
     },
 
     costs: function(building, year) {
