@@ -292,36 +292,42 @@ $steam-color: #f7c34e;
       }
     }
 
+    .details-box-wrapper {
+      float: right;
+      width: auto;
+    }
+
     .details-box {
-      text-align: left;
+      text-align: right;
 
       & + .details-box {
         margin-top: 1rem;
       }
 
-      & > h4 {
-        text-align: right;
-      }
-
-      & > div {
+      .details-numbers {
         margin-top: 1rem;
-        text-align: left;
-        overflow: hidden;
-      }
-
-      & > div > * {
-        float: left;
         text-align: right;
+
+        h4:last-of-type {
+          border-top: 1px solid white;
+          margin-top: .5rem;
+          padding-top: .5rem;
+        }
       }
 
-      & > div p {
-        width: 60%;
-      }
+      .ways-to-save-button {
+        background: white;
+        border-radius: 2px;
+        color: $sc-blue;
+        display: inline-block;
+        font-size: 15px;
+        margin-top: 1rem;
+        padding: .5rem;
+        text-transform: uppercase;
 
-      & > div h4 {
-        width: 35%;
-        margin-left: 5%;
-        text-align: left;
+        @media print {
+          display: none;
+        }
       }
     }
   }

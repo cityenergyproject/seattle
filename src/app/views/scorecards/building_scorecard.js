@@ -22,11 +22,18 @@ define([
     },
 
     events: {
-      'click .sc-toggle--input': 'toggleView'
+      'click .sc-toggle--input': 'toggleView',
+      'click .ways-to-save-button': 'scrollToLinks'
     },
 
     close: function() {
       this.scoreCardData = null;
+    },
+
+    scrollToLinks: function(evt) {
+      evt.preventDefault();
+      this.parentEl[0].scrollTo(0, this.parentEl.find('#links')[0].offsetTop);
+      return false;
     },
 
     toggleView: function(evt) {

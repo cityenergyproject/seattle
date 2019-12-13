@@ -22,21 +22,16 @@
       <p class='sc-heading orange small' style="color:<%= valueColor %>;">kBtu/ft²</p>
     </div>
   </div>
-  <div class='col-4'>
+  <div class='col-4 details-box-wrapper'>
     <div class='details-box'>
-      <h4 class='sc-heading white'>Cost of Energy</h4>
-      <div>
-        <p class='sc-txt small white light pg'>This building currently spends an estimated <%= costs.per_sqft %>/ft² annually on energy or <span class='bold'><%= costs.annual %></span></p>
+      <h4 class='sc-heading white'>Annual Cost of Energy</h4>
+      <div class='details-numbers'>
         <h4 class='sc-heading white large'><%= costs.per_sqft %><span class='sc-heading white small'>/ft²</span></h4>
+        <h4 class='sc-heading white large'><%= costs.annual %><span class='sc-heading white small'> total</span></h4>
       </div>
-    </div>
-
-    <div class='details-box'>
-      <h4 class='sc-heading white'>Savings opportunities</h4>
-      <div>
-        <p class='sc-txt small white light pg'>By reducing energy use by <%= costs.save_pct %>, this building could save up to <span class='bold'><%= costs.savings %></span> annually on energy costs.</p>
-        <h4 class='sc-heading white large'><%= costs.savings %></h4>
-      </div>
+      <a class='ways-to-save-button' href='#'>
+        See ways to save &gt;
+      </a>
     </div>
   </div>
 </div>
