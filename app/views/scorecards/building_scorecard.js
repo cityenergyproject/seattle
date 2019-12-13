@@ -198,7 +198,6 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
       var view = this.state.get('scorecard').get('view');
 
       var name = building.property_name;
-      var address = this.full_address(building);
       var sqft = +building.reported_gross_floor_area;
       var prop_type = building.property_type;
       var id = building.id;
@@ -228,7 +227,8 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
       el.html(this.template({
         active: 'active',
         name: name,
-        addr: address,
+        addr1: building.reported_address,
+        addr2: this.addressLine2(building),
         sqft: sqft.toLocaleString(),
         type: prop_type,
         id: id,
@@ -301,13 +301,20 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
       }
     },
 
-    full_address: function full_address(building) {
-      var zip = building.zip;
-      var state = building.state;
+    addressLine2: function addressLine2(building) {
       var city = building.city;
-      var addr = building.reported_address;
+      var state = building.state;
+      var zip = building.zip;
 
-      return addr + ', ' + city + ' ' + state + ' ' + zip;
+      var addr = city;
+      if (state) {
+        addr += ' ' + state;
+      }
+      if (zip) {
+        addr += ' ' + zip;
+      }
+
+      return addr;
     },
 
     costs: function costs(building, year) {

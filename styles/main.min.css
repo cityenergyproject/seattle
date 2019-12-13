@@ -1758,16 +1758,19 @@ header {
       font-weight: 300; }
     #scorecard .sc-txt.bold {
       font-weight: 500; }
-    #scorecard .sc-txt.sc-addr, #scorecard .sc-txt.sc-sqft {
+    #scorecard .sc-txt.sc-addr {
       font-weight: bold; }
     #scorecard .sc-txt.pg {
       line-height: 1.2; }
-  #scorecard .sc-list {
-    margin: 0;
-    padding: 0;
-    list-style: none; }
-    #scorecard .sc-list li + li {
-      margin-top: 8px; }
+  #scorecard .sc-address {
+    margin-bottom: 1rem; }
+    #scorecard .sc-address .sc-addr {
+      margin-bottom: .5rem; }
+  #scorecard .sc-details-value {
+    margin-bottom: .5rem; }
+    #scorecard .sc-details-value label {
+      display: inline-block;
+      font-weight: bold; }
   #scorecard .scorecard--section {
     border-bottom: 1px solid #f1f1f1; }
     #scorecard .scorecard--section .inner {
