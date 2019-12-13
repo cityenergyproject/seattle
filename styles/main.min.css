@@ -2382,6 +2382,8 @@ header {
     #scorecard #links table tr.ad a {
       display: block;
       margin-top: 2rem; }
+  #scorecard .scorecard--print-footer {
+    display: none; }
   #scorecard #building-type-table table {
     color: #646569;
     font-size: 0.725rem; }
@@ -2433,49 +2435,77 @@ header {
     display: block; }
   @media print {
     #scorecard {
-      overflow: visible;
-      bottom: inherit;
-      position: relative; }
-    #scorecard * {
-      -webkit-print-color-adjust: exact !important;
-      /* Chrome, Safari */
-      color-adjust: exact !important;
-      /*Firefox*/ }
-    #scorecard #scorecard .scorecard-wrapper {
-      width: 7in;
-      max-width: 7in; }
-    #scorecard .sc-toggle {
-      display: none; }
-    #scorecard .scorecard--nav {
-      margin-top: 0; }
-    #scorecard #back-to-map-link {
-      display: none; }
-    #scorecard #scorecard-view {
-      display: block !important;
-      page-break-after: always;
-      overflow: visible; }
-    #scorecard #comparison-view-link {
-      display: none; }
-    #scorecard .scorecard--section, #scorecard .scorecard--details {
-      page-break-inside: avoid;
-      -webkit-column-break-inside: avoid;
-              break-inside: avoid; }
-    #scorecard .scorecard-compare-chart {
-      border: none;
-      border-bottom: 1px solid #f1f1f1; }
-      #scorecard .scorecard-compare-chart.print-only {
-        display: block; }
-      #scorecard .scorecard-compare-chart.screen-only {
+      /* Avoid header added by Seattle from peaking through on print */ }
+      #scorecard {
+        overflow: visible;
+        bottom: inherit;
+        position: relative; }
+      #scorecard * {
+        -webkit-print-color-adjust: exact !important;
+        /* Chrome, Safari */
+        color-adjust: exact !important;
+        /*Firefox*/ }
+      #scorecard #seaGovHeader {
         display: none; }
-    #scorecard #fuel-use-chart {
-      page-break-inside: avoid;
-      -webkit-column-break-inside: avoid;
-              break-inside: avoid; }
-    #scorecard #building-type-table {
-      page-break-after: always;
-      -webkit-break-after: always;
-         -moz-break-after: always;
-              break-after: always; } }
+      #scorecard #scorecard .scorecard-wrapper {
+        width: 7in;
+        max-width: 7in; }
+      #scorecard .sc-toggle {
+        display: none; }
+      #scorecard .scorecard--nav {
+        margin-top: 0; }
+      #scorecard #back-to-map-link {
+        display: none; }
+      #scorecard #scorecard-view {
+        display: block !important;
+        page-break-after: always;
+        overflow: visible; }
+      #scorecard #comparison-view-link {
+        display: none; }
+      #scorecard .scorecard--section, #scorecard .scorecard--details {
+        page-break-inside: avoid;
+        -webkit-column-break-inside: avoid;
+                break-inside: avoid; }
+      #scorecard .scorecard-compare-chart {
+        border: none;
+        border-bottom: 1px solid #f1f1f1; }
+        #scorecard .scorecard-compare-chart.print-only {
+          display: block; }
+        #scorecard .scorecard-compare-chart.screen-only {
+          display: none; }
+      #scorecard #fuel-use-chart {
+        page-break-inside: avoid;
+        -webkit-column-break-inside: avoid;
+                break-inside: avoid; }
+      #scorecard #building-type-table {
+        page-break-after: always;
+        -webkit-break-after: always;
+           -moz-break-after: always;
+                break-after: always; }
+      #scorecard .scorecard--print-footer {
+        -webkit-box-align: center;
+            -ms-flex-align: center;
+                align-items: center;
+        bottom: 10px;
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-orient: horizontal;
+        -webkit-box-direction: normal;
+            -ms-flex-direction: row;
+                flex-direction: row;
+        -webkit-box-pack: justify;
+            -ms-flex-pack: justify;
+                justify-content: space-between;
+        left: 30px;
+        right: 30px;
+        bottom: 15px;
+        position: fixed;
+        height: 40px;
+        font-size: 14px;
+        font-weight: bold; }
+        #scorecard .scorecard--print-footer img {
+          max-height: 100%; } }
 
 @media print {
   body {
