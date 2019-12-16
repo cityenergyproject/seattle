@@ -144,7 +144,6 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
       if (view === 'eui') {
         el.find('#fuel-use-chart').html(this.chart_fueluse.render());
         this.chart_fueluse.fixlabels(viewSelector);
-        this.chart_fueluse.afterRender();
       }
 
       if (!this.chart_shift) {
