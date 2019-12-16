@@ -2351,12 +2351,13 @@ header {
       padding: 0 10px;
       line-height: 1.2;
       vertical-align: top;
-      font-size: 0.875rem;
-      color: #999; }
+      font-size: 0.875rem; }
+    #scorecard #links table .link-cell {
+      color: #5d5d5d; }
     #scorecard #links table .link-num {
       width: 2rem;
       height: 2rem;
-      background: green;
+      background: #5d5d5d;
       border-radius: 2rem;
       text-align: center;
       line-height: 2rem;
@@ -2367,8 +2368,6 @@ header {
       display: block;
       margin-left: 3rem;
       vertical-align: top; }
-      #scorecard #links table .link-content strong {
-        font-size: 1.3rem; }
     #scorecard #links table .link-link {
       margin-left: 3rem;
       padding-top: 1rem; }
