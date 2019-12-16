@@ -198,6 +198,7 @@ define([
         emissions: d3.format(',d')(d3.round(total_ghg_emissions, 0))
       };
 
+      console.log('fuels', fuels);
       return {
         fuels,
         totals,
@@ -486,75 +487,14 @@ define([
       this.hideLabels(barLabels);
     },
 
-    renderPieChart: function(id, data, width, height) {
-      const radius = Math.min(width, height) / 2;
-      const parent = d3.select(this.viewParent);
-
-      const svg = parent.select(`#${id}`)
-        .append('svg')
-        .attr('width', width)
-        .attr('height', height)
-        .append('g')
-          .attr('transform', `translate(${width / 2},${height / 2})`);
-
-      var pie = d3.layout.pie()
-        .sort(null)
-        .value(d => d.value);
-
-      const arcs = svg.selectAll('.arc')
-        .data(pie(data))
-        .enter().append('g')
-          .classed('arc', true);
-
-      const arc = d3.svg.arc()
-        .outerRadius(radius - 10)
-        .innerRadius(0);
-
-      const arcColors = {
-        gas: '#c24e2b',
-        electricity: '#0048ba',
-        steam: '#f7c34e'
-      };
-
-      arcs.append('path')
-        .attr('d', arc)
-        .style('fill', d => arcColors[d.data.type]);
-    },
-
-    renderEmissionsPieChart: function(data) {
-      const pieData = data.map(d => {
-        return {
-          type: d.key,
-          value: d.emissions.pct
-        };
-      });
-      this.renderPieChart('emissions-pie-chart', pieData, 100, 100);
-    },
-
-    renderEnergyConsumptionPieChart: function(data) {
-      const pieData = data.map(d => {
-        return {
-          type: d.key,
-          value: d.usage.pct
-        };
-      });
-      this.renderPieChart('energy-consumption-pie-chart', pieData, 100, 100);
-    },
-
     render: function() {
       return this.template(this.chartData());
     },
 
     afterRender: function() {
-      let filteredFuelData = this.fuels;
-
       if (!this.isCity) {
         this.renderEmissionsChart(this.emissionsChartData);
-        filteredFuelData = this.getBuildingFuels([...this.fuels], this.data);
       }
-
-      this.renderEnergyConsumptionPieChart(filteredFuelData);
-      this.renderEmissionsPieChart(filteredFuelData);
     }
   });
 

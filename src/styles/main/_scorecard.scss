@@ -646,7 +646,7 @@ $steam-color: #f7c34e;
   }
 
   #fueluse-chart {
-    .margin-top { margin-top: 1rem; }
+    margin-top: 1rem;
 
     .fc-panel {
       display: inline-block;
@@ -781,34 +781,74 @@ $steam-color: #f7c34e;
       transform: translateY(-50%);
     }
 
-    .pie-chart-container {
+    .bar-chart-container {
+      align-items: center;
       display: flex;
       flex-direction: row;
+      font-size: .8rem;
+      margin-top: 1rem;
 
-      .energy-consumption-total,
-      .emissions-total {
-        border-top: 1px solid #CBCBCB;
+      &:first-of-type {
+        margin-top: 0;
+      }
+
+      .bar-label {
+      }
+
+      .bar-chart-label {
         color: $brownish-gray;
-        margin-top: 5px;
-        padding-top: 5px;
+        text-align: right;
+        width: 20%;
+      }
+
+      .bar-chart {
+        display: flex;
+        flex-direction: row;
+        flex-grow: 1;
+        margin: 0 1rem;
+
+        .bar-item {
+          text-align: center;
+          white-space: nowrap;
+        }
+
+        .bar {
+          height: 30px;
+        }
+      }
+
+      .bar-chart-total {
+        color: $brownish-gray;
+        width: 20%;
 
         .quantity {
           font-weight: bold;
         }
       }
 
-      .energy-consumption-item,
-      .emissions-item {
+      .bar-item {
         &.gas {
           color: $gas-color;
+
+          .bar {
+            background: rgba($gas-color, 0.75);
+          }
         }
 
         &.electricity {
           color: $electric-color;
+
+          .bar {
+            background: rgba($electric-color, 0.75);
+          }
         }
 
         &.steam {
           color: $steam-color;
+
+          .bar {
+            background: rgba($steam-color, 0.75);
+          }
         }
       }
     }
