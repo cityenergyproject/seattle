@@ -919,17 +919,16 @@ $steam-color: #f7c34e;
         line-height: 1.2;
         vertical-align: top;
         font-size: 0.875rem;
-        color: #999;
       }
 
       .link-cell {
-
+        color: $brownish-gray;
       }
 
       .link-num {
         width: 2rem;
         height: 2rem;
-        background: green;
+        background: $brownish-gray;
         border-radius: 2rem;
         text-align: center;
         line-height: 2rem;
@@ -942,10 +941,6 @@ $steam-color: #f7c34e;
         display: block;
         margin-left: 3rem;
         vertical-align: top;
-
-        strong {
-          font-size: 1.3rem;
-        }
       }
 
       .link-link {
