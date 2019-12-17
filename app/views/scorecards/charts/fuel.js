@@ -298,11 +298,14 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
       var parent = d3.select(this.viewParent).select('.emissions-intensity-chart');
       if (!parent.node()) return;
 
-      var margin = { top: 50, right: 30, bottom: 40, left: 40 };
-      var width = parent.node().offsetWidth - margin.left - margin.right;
-      var height = 300 - margin.top - margin.bottom;
+      var outerWidth = parent.node().offsetWidth;
+      var outerHeight = 300;
 
-      var svg = parent.append('svg').attr('width', width + margin.left + margin.right).attr('height', height + margin.top + margin.bottom);
+      var margin = { top: 50, right: 30, bottom: 40, left: 40 };
+      var width = outerWidth - margin.left - margin.right;
+      var height = outerHeight - margin.top - margin.bottom;
+
+      var svg = parent.append('svg').attr('viewBox', '0 0 ' + outerWidth + ' ' + outerHeight);
 
       var container = svg.append('g').attr('width', width).attr('height', height).attr('transform', 'translate(' + margin.left + ', ' + margin.top + ')');
 
@@ -371,30 +374,38 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
       container.append('line').attr('stroke', '#1F5DBE').attr('x1', x(selectedBuilding.total_ghg_emissions_intensity)).attr('x2', x(selectedBuilding.total_ghg_emissions_intensity)).attr('y1', y(selectedBuilding.site_eui) - size(selectedBuilding.total_ghg_emissions) - 3).attr('y2', -margin.top);
 
       // Text for average
-      var averageText = parent.append('div');
-      averageText.classed('avg-highlight-html', true).style('top', margin.top + 'px').style('left', margin.left + x(averageEmissionsIntensity) + 5 + 'px');
-
-      var averageTextContent = averageText.append('div');
       var averageQuartile = this.findQuartile(quartiles, averageEmissionsIntensity);
-      averageTextContent.append('p').text('Building type average');
-      averageTextContent.append('p').text(d3.format('.2f')(averageEmissionsIntensity)).classed('quartile-' + averageQuartile, true);
-      averageTextContent.append('p').html('KG/SF').classed('quartile-' + averageQuartile, true);
+
+      var averageTextGroup = svg.append('g').classed('callout-text callout-average-text', true).attr('transform', 'translate(' + (margin.left + x(averageEmissionsIntensity) + 5) + ', ' + margin.top + ')');
+      var averageTextLabel = averageTextGroup.append('text').text('Building type average');
+
+      var currentHeight = averageTextLabel.node().getBBox().height + 4;
+      var averageTextValue = averageTextGroup.append('text').text(d3.format('.2f')(averageEmissionsIntensity)).attr('transform', 'translate(0, ' + currentHeight + ')').classed('value quartile-' + averageQuartile, true);
+
+      currentHeight = averageTextValue.node().getBBox().height + 2;
+      averageTextGroup.append('text').text('KG/SF').attr('transform', 'translate(0, ' + currentHeight + ')').classed('units quartile-' + averageQuartile, true);
 
       // Text for selected building
-      var selectedText = parent.append('div').classed('avg-highlight-html selected-building', true).style('top', '0px');
-
       var selectedBuildingX = x(selectedBuilding.total_ghg_emissions_intensity);
-      if (selectedBuildingX <= width * 0.75) {
-        selectedText.style('left', margin.left + selectedBuildingX + 5 + 'px');
-      } else {
-        selectedText.style('right', width - selectedBuildingX + margin.right + 5 + 'px').classed('right-aligned', true);
-      }
-
-      var selectedTextContent = selectedText.append('div');
       var selectedQuartile = this.findQuartile(quartiles, selectedBuilding.total_ghg_emissions_intensity);
-      selectedTextContent.append('p').text(selectedBuilding.property_name);
-      selectedTextContent.append('p').text(d3.format('.2f')(selectedBuilding.total_ghg_emissions_intensity)).classed('quartile-' + selectedQuartile, true);
-      selectedTextContent.append('p').html('KG/SF').classed('quartile-' + selectedQuartile, true);
+
+      var selectedTextGroup = svg.append('g').classed('callout-text callout-selected-text', true);
+      var selectedTextLabel = selectedTextGroup.append('text').text(selectedBuilding.property_name).classed('selected-label', true);
+      currentHeight = selectedTextLabel.node().getBBox().height + 4;
+
+      var selectedTextValue = selectedTextGroup.append('text').text(d3.format('.2f')(selectedBuilding.total_ghg_emissions_intensity)).attr('transform', 'translate(0, ' + currentHeight + ')').classed('value quartile-' + selectedQuartile, true);
+
+      currentHeight = selectedTextValue.node().getBBox().height + 2;
+      selectedTextGroup.append('text').text('KG/SF').attr('transform', 'translate(0, ' + currentHeight + ')').classed('units quartile-' + selectedQuartile, true);
+
+      var labelOnLeft = margin.left + selectedBuildingX + selectedTextGroup.node().getBBox().width > width;
+      selectedTextGroup.attr('text-anchor', labelOnLeft ? 'end' : 'start').attr('transform', function () {
+        var x = margin.left + selectedBuildingX + 5;
+        if (labelOnLeft) {
+          x -= 10;
+        }
+        return 'translate(' + x + ', 5)';
+      });
 
       var legendParent = d3.select(this.viewParent).select('.emissions-dots');
       if (legendParent.node()) {
@@ -410,7 +421,7 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
           return size(dotScale.invert(dot)) * 2;
         }));
 
-        var legendSvg = legendParent.append('svg').attr('width', legendWidth).attr('height', 100);
+        var legendSvg = legendParent.append('svg').attr('viewBox', '0 0 ' + legendWidth + ' 100');
         var legendContainer = legendSvg.append('g').attr('transform', 'translate(' + (legendWidth - expectedWidth) / 2 + ', 15)');
 
         var xDotPosition = 0;

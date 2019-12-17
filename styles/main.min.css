@@ -1417,6 +1417,8 @@ header {
         text-align: right; }
     .leaflet-popup-content .building-info .building-popup-chart td.nodata {
       font-size: 0.85em !important; }
+      .leaflet-popup-content .building-info .building-popup-chart td.nodata a {
+        color: #0047ba; }
   .leaflet-popup-content .building-info button {
     width: 100%;
     margin: 1rem 0 0;
@@ -2068,6 +2070,31 @@ header {
       #scorecard .compare-chart .avg-highlight-html p:last-child,
       #scorecard #emissions-intensity-chart .avg-highlight-html p:last-child {
         margin-top: -2px; }
+    #scorecard .compare-chart .callout-text text,
+    #scorecard #emissions-intensity-chart .callout-text text {
+      dominant-baseline: central;
+      fill: #b7b7b7;
+      text-transform: uppercase; }
+      #scorecard .compare-chart .callout-text text.value,
+      #scorecard #emissions-intensity-chart .callout-text text.value {
+        font-size: 24px;
+        font-weight: 500;
+        line-height: 24px; }
+      #scorecard .compare-chart .callout-text text.quartile-1,
+      #scorecard #emissions-intensity-chart .callout-text text.quartile-1 {
+        fill: #0047BA; }
+      #scorecard .compare-chart .callout-text text.quartile-2,
+      #scorecard #emissions-intensity-chart .callout-text text.quartile-2 {
+        fill: #90AE60; }
+      #scorecard .compare-chart .callout-text text.quartile-3,
+      #scorecard #emissions-intensity-chart .callout-text text.quartile-3 {
+        fill: #F7C34D; }
+      #scorecard .compare-chart .callout-text text.quartile-4,
+      #scorecard #emissions-intensity-chart .callout-text text.quartile-4 {
+        fill: #C04F31; }
+    #scorecard .compare-chart .callout-text.callout-selected-text .selected-label,
+    #scorecard #emissions-intensity-chart .callout-text.callout-selected-text .selected-label {
+      fill: #0047BA; }
     #scorecard .compare-chart .selected-city-highlight-html,
     #scorecard #emissions-intensity-chart .selected-city-highlight-html {
       position: absolute;
@@ -2427,6 +2454,8 @@ header {
         margin-bottom: 1em;
         text-decoration: none;
         text-transform: uppercase; }
+      #scorecard #links table .link-link .link-text {
+        display: block; }
       #scorecard #links table .link-link p {
         font-weight: bold; }
       #scorecard #links table .link-link a {
@@ -2478,6 +2507,8 @@ header {
     border: 0; }
   #scorecard .scorecard-compare-chart {
     border: 1px solid #f1f1f1; }
+    #scorecard .scorecard-compare-chart .not-available a {
+      color: #0047BA; }
     #scorecard .scorecard-compare-chart.eui-selected .scorecard-compare-section.eui {
       display: block; }
     #scorecard .scorecard-compare-chart.eui-selected .scorecard-compare-section.ess {
@@ -2485,9 +2516,17 @@ header {
     #scorecard .scorecard-compare-chart.ess-selected .scorecard-compare-section.ess {
       display: block; }
     #scorecard .scorecard-compare-chart.ess-selected .scorecard-compare-section.eui {
-      display: none; }
+      float: left;
+      margin-left: -10000px; }
+    @media print {
+      #scorecard .scorecard-compare-chart.ess-selected .scorecard-compare-section.ess {
+        display: none; }
+      #scorecard .scorecard-compare-chart.ess-selected .scorecard-compare-section.eui {
+        float: none;
+        margin: 0; } }
     #scorecard .scorecard-compare-chart.print-only {
-      display: none; }
+      float: left;
+      margin-left: -10000px; }
   #scorecard.show-eui-view #scorecard-view {
     display: block; }
   @media print {
@@ -2526,7 +2565,8 @@ header {
         border: none;
         border-bottom: 1px solid #f1f1f1; }
         #scorecard .scorecard-compare-chart.print-only {
-          display: block; }
+          float: none;
+          margin: 0; }
         #scorecard .scorecard-compare-chart.screen-only {
           display: none; }
       #scorecard #fuel-use-chart {

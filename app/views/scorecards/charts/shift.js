@@ -124,7 +124,7 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
 
       var years = [parseInt(this.previous_year), parseInt(this.selected_year)];
       var filteredData = data.filter(function (d) {
-        return d.year >= years[0] && d.year <= years[1];
+        return d.year >= years[0] && d.year <= years[1] && d.value;
       });
       var valueExtent = d3.extent(filteredData, function (d) {
         return d.value;
