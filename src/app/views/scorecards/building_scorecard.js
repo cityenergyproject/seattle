@@ -557,16 +557,21 @@ define([
 
     renderCompareChart: function(config, chartdata, view, prop_type, name, viewSelector) {
       const container = d3.select(viewSelector);
+      const rootElm = container.select(`.${view}-compare-chart`);
 
       if (chartdata.selectedIndex === null && (chartdata.avgIndex === null || chartdata.mean === null)) {
         console.warn('Could not find required data!', view, chartdata);
         return;
       }
 
+      var outerWidth = rootElm.node().offsetWidth;
+      var outerHeight = rootElm.node().offsetHeight;
+
+      // Don't bother rendering a chart if it will be invisible
+      if (outerWidth <= 0 || outerHeight <= 0) return;
+
       var compareChartConfig = config.compare_chart;
       var margin = { top: 80, right: 30, bottom: 40, left: 40 };
-      var outerWidth = 620;
-      var outerHeight = 300;
       var width = outerWidth - margin.left - margin.right;
       var height = outerHeight - margin.top - margin.bottom;
 
@@ -580,9 +585,9 @@ define([
           .domain([0, d3.max(chartdata.data, function(d) { return d.y; })])
           .range([height, 0]);
 
-      var svg = container.select(`.${view}-compare-chart`).append('svg')
-          .attr('width', width + margin.left + margin.right)
-          .attr('height', height + margin.top + margin.bottom)
+      var svg = rootElm.append('svg')
+          .attr('width', outerWidth)
+          .attr('height', outerHeight)
         .append('g')
           .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 

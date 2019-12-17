@@ -198,7 +198,6 @@ define([
         emissions: d3.format(',d')(d3.round(total_ghg_emissions, 0))
       };
 
-      console.log('fuels', fuels);
       return {
         fuels,
         totals,
