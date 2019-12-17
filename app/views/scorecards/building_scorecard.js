@@ -562,16 +562,21 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
 
     renderCompareChart: function renderCompareChart(config, chartdata, view, prop_type, name, viewSelector) {
       var container = d3.select(viewSelector);
+      var rootElm = container.select('.' + view + '-compare-chart');
 
       if (chartdata.selectedIndex === null && (chartdata.avgIndex === null || chartdata.mean === null)) {
         console.warn('Could not find required data!', view, chartdata);
         return;
       }
 
+      var outerWidth = rootElm.node().offsetWidth;
+      var outerHeight = rootElm.node().offsetHeight;
+
+      // Don't bother rendering a chart if it will be invisible
+      if (outerWidth <= 0 || outerHeight <= 0) return;
+
       var compareChartConfig = config.compare_chart;
       var margin = { top: 80, right: 30, bottom: 40, left: 40 };
-      var outerWidth = 620;
-      var outerHeight = 300;
       var width = outerWidth - margin.left - margin.right;
       var height = outerHeight - margin.top - margin.bottom;
 
@@ -585,7 +590,7 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
         return d.y;
       })]).range([height, 0]);
 
-      var svg = container.select('.' + view + '-compare-chart').append('svg').attr('width', width + margin.left + margin.right).attr('height', height + margin.top + margin.bottom).append('g').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+      var svg = rootElm.append('svg').attr('width', outerWidth).attr('height', outerHeight).append('g').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
       svg.append('g').attr('class', 'y axis').call(d3.svg.axis().scale(y).orient('left').ticks(5).outerTickSize(0).innerTickSize(2));
 

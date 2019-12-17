@@ -1777,8 +1777,14 @@ header {
       padding: 1rem; }
     #scorecard .scorecard--section .section-head {
       margin-bottom: 2rem; }
+      @media print {
+        #scorecard .scorecard--section .section-head {
+          margin-bottom: .5rem; } }
       #scorecard .scorecard--section .section-head .sc-heading {
         margin-bottom: 0.75rem; }
+        @media print {
+          #scorecard .scorecard--section .section-head .sc-heading {
+            margin-bottom: .5rem; } }
   #scorecard .sc-toggle {
     margin-bottom: 1rem; }
     #scorecard .sc-toggle .sc-heading {
@@ -1847,6 +1853,10 @@ header {
         -ms-flex-pack: justify;
             justify-content: space-between;
     margin: 1rem 1rem; }
+    @media print {
+      #scorecard .scorecard--nav,
+      #scorecard .scorecard--header {
+        margin: 0.5rem 1rem; } }
   #scorecard .scorecard--nav {
     margin: 1rem 0; }
   #scorecard .ess-certified .ess-logo {
@@ -1866,6 +1876,9 @@ header {
     background: #0047ba;
     height: 210px;
     overflow: hidden; }
+    @media print {
+      #scorecard .scorecard--details {
+        height: 160px; } }
     #scorecard .scorecard--details [class^="col"] {
       height: 100%;
       padding-top: 1rem;
@@ -1983,7 +1996,8 @@ header {
       color: #C04F31; }
   #scorecard .compare-chart,
   #scorecard #emissions-intensity-chart {
-    position: relative; }
+    position: relative;
+    height: 250px; }
     #scorecard .compare-chart .bar rect,
     #scorecard #emissions-intensity-chart .bar rect {
       fill: #F1F1F1;
@@ -2154,6 +2168,10 @@ header {
             justify-content: space-between; }
     #scorecard .emissions-intensity-chart-legend .notes {
       font-size: 16px; }
+    #scorecard .emissions-intensity-chart-legend-label {
+      color: #5d5d5d;
+      font-weight: 500;
+      text-transform: uppercase; }
     #scorecard .emissions-intensity-chart-legend .emissions-dots {
       border: 1px solid #CBCBCB;
       display: -webkit-box;
@@ -2163,7 +2181,7 @@ header {
       -webkit-box-direction: normal;
           -ms-flex-direction: column;
               flex-direction: column;
-      margin-bottom: 50px; }
+      margin-bottom: 48px; }
     #scorecard .emissions-intensity-chart-legend .emissions-dots-label {
       color: #5d5d5d;
       font-family: "Ubuntu", "Helvetica Neue", "Helvetica", "Roboto", "Arial", sans-serif;
@@ -2325,6 +2343,9 @@ header {
       position: relative;
       margin: 30px 0;
       height: 200px; }
+      @media print {
+        #scorecard #change-chart #change-chart-vis {
+          height: 150px; } }
       #scorecard #change-chart #change-chart-vis svg {
         overflow: visible; }
       #scorecard #change-chart #change-chart-vis path {
@@ -2483,9 +2504,9 @@ header {
         /*Firefox*/ }
       #scorecard #seaGovHeader {
         display: none; }
-      #scorecard #scorecard .scorecard-wrapper {
-        width: 7in;
-        max-width: 7in; }
+      #scorecard .scorecard-wrapper {
+        width: 8in;
+        max-width: 8in; }
       #scorecard .sc-toggle {
         display: none; }
       #scorecard .scorecard--nav {
@@ -2494,7 +2515,6 @@ header {
         display: none; }
       #scorecard #scorecard-view {
         display: block !important;
-        page-break-after: always;
         overflow: visible; }
       #scorecard #comparison-view-link {
         display: none; }
@@ -2512,7 +2532,11 @@ header {
       #scorecard #fuel-use-chart {
         page-break-inside: avoid;
         -webkit-column-break-inside: avoid;
-                break-inside: avoid; }
+                break-inside: avoid;
+        page-break-before: always;
+        -webkit-break-before: always;
+           -moz-break-before: always;
+                break-before: always; }
       #scorecard #building-type-table {
         page-break-after: always;
         -webkit-break-after: always;
@@ -2522,7 +2546,6 @@ header {
         -webkit-box-align: center;
             -ms-flex-align: center;
                 align-items: center;
-        bottom: 10px;
         display: -webkit-box;
         display: -ms-flexbox;
         display: flex;
@@ -2533,13 +2556,15 @@ header {
         -webkit-box-pack: justify;
             -ms-flex-pack: justify;
                 justify-content: space-between;
-        left: 30px;
-        right: 30px;
-        bottom: 15px;
+        left: 0;
+        right: 0;
+        bottom: 0;
         position: fixed;
         height: 40px;
-        font-size: 14px;
+        font-size: 12px;
         font-weight: bold; }
+        #scorecard .scorecard--print-footer a {
+          color: #0047BA; }
         #scorecard .scorecard--print-footer img {
           max-height: 100%; } }
 
@@ -2554,6 +2579,8 @@ header {
        */ }
     #scorecard .scorecard-wrapper.no-energy-star-score #scorecard-view .scorecard--details {
       display: block; }
+    #scorecard .scorecard-wrapper.no-energy-star-score #scorecard-view .scorecard-compare-chart.scorecard-energy-star-print-only {
+      display: none; }
     #scorecard .scorecard-wrapper.no-energy-star-score #scorecard-view #fuel-use-chart {
       page-break-inside: unset;
       -webkit-column-break-inside: unset;

@@ -131,11 +131,12 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
       });
 
       var baseWidth = rootElm.node().offsetWidth;
+      var baseHeight = rootElm.node().offsetHeight;
       var margin = { top: 20, right: 50, bottom: 0, left: 50 };
       var width = baseWidth - margin.left - margin.right;
-      var height = rootElm.node().offsetHeight - margin.top - margin.bottom;
+      var height = baseHeight - margin.top - margin.bottom;
 
-      var svg = rootElm.append('svg').attr('width', width + margin.left + margin.right).attr('height', height + margin.top + margin.bottom).append('g').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+      var svg = rootElm.append('svg').attr('width', baseWidth).attr('height', baseHeight).append('g').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
       var x = d3.scale.linear().range([0, width]).domain(years);
 
