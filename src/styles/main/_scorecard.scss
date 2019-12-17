@@ -623,11 +623,17 @@ $steam-color: #f7c34e;
       font-size: 16px;
     }
 
+    &-label {
+      color: $tick-color;
+      font-weight: 500;
+      text-transform: uppercase;
+    }
+
     .emissions-dots {
       border: 1px solid #CBCBCB;
       display: flex;
       flex-direction: column;
-      margin-bottom: 50px;
+      margin-bottom: 48px;
     }
 
     .emissions-dots-label {
