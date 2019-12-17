@@ -127,7 +127,9 @@ define([
       if (!isValid) return;
 
       const years = [parseInt(this.previous_year), parseInt(this.selected_year)];
-      const filteredData = data.filter(d => d.year >= years[0] && d.year <= years[1]);
+      const filteredData = data.filter(d => (
+        d.year >= years[0] && d.year <= years[1] && d.value
+      ));
       const valueExtent = d3.extent(filteredData, d => d.value);
 
       const baseWidth = rootElm.node().offsetWidth;
