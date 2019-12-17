@@ -1132,13 +1132,27 @@ $steam-color: #f7c34e;
           display: block;
         }
         &.eui {
-          display: none;
+          float: left;
+          margin-left: -10000px;
+        }
+      }
+
+      @media print {
+        .scorecard-compare-section {
+          &.ess {
+            display: none;
+          }
+          &.eui {
+            float: none;
+            margin: 0;
+          }
         }
       }
     }
 
     &.print-only {
-      display: none;
+      float: left;
+      margin-left: -10000px;
     }
   }
 
@@ -1197,7 +1211,8 @@ $steam-color: #f7c34e;
       border-bottom: 1px solid $sc-offwhite;
 
       &.print-only {
-        display: block;
+        float: none;
+        margin: 0;
       }
 
       &.screen-only {
