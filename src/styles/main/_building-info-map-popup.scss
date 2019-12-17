@@ -131,6 +131,10 @@
 
     td.nodata {
       font-size: 0.85em !important;
+
+      a {
+        color: $base-font-color;
+      }
     }
   } // end .building-popup-chart
 
