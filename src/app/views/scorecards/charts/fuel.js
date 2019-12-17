@@ -283,13 +283,15 @@ define([
       const parent = d3.select(this.viewParent).select('.emissions-intensity-chart');
       if (!parent.node()) return;
 
+      const outerWidth = parent.node().offsetWidth;
+      const outerHeight = 300;
+
       const margin = { top: 50, right: 30, bottom: 40, left: 40 };
-      const width = parent.node().offsetWidth - margin.left - margin.right;
-      const height = 300 - margin.top - margin.bottom;
+      const width = outerWidth - margin.left - margin.right;
+      const height = outerHeight - margin.top - margin.bottom;
 
       const svg = parent.append('svg')
-        .attr('width', width + margin.left + margin.right)
-        .attr('height', height + margin.top + margin.bottom);
+        .attr('viewBox', `0 0 ${outerWidth} ${outerHeight}`);
 
       const container = svg.append('g')
         .attr('width', width)
@@ -389,46 +391,58 @@ define([
         .attr('y2', -margin.top);
 
       // Text for average
-      const averageText = parent.append('div');
-      averageText
-        .classed('avg-highlight-html', true)
-        .style('top', `${margin.top}px`)
-        .style('left', `${margin.left + x(averageEmissionsIntensity) + 5}px`);
-
-      const averageTextContent = averageText.append('div');
       const averageQuartile = this.findQuartile(quartiles, averageEmissionsIntensity);
-      averageTextContent.append('p')
+
+      const averageTextGroup = svg.append('g')
+        .classed('callout-text callout-average-text', true)
+        .attr('transform', `translate(${margin.left + x(averageEmissionsIntensity) + 5}, ${margin.top})`);
+      const averageTextLabel = averageTextGroup.append('text')
         .text('Building type average');
-      averageTextContent.append('p')
+
+      let currentHeight = averageTextLabel.node().getBBox().height + 4;
+      const averageTextValue = averageTextGroup.append('text')
         .text(d3.format('.2f')(averageEmissionsIntensity))
-        .classed(`quartile-${averageQuartile}`, true);
-      averageTextContent.append('p')
-        .html('KG/SF')
-        .classed(`quartile-${averageQuartile}`, true);
+        .attr('transform', `translate(0, ${currentHeight})`)
+        .classed(`value quartile-${averageQuartile}`, true);
+
+      currentHeight = averageTextValue.node().getBBox().height + 2;
+      averageTextGroup.append('text')
+        .text('KG/SF')
+        .attr('transform', `translate(0, ${currentHeight})`)
+        .classed(`units quartile-${averageQuartile}`, true);
 
       // Text for selected building
-      const selectedText = parent.append('div')
-        .classed('avg-highlight-html selected-building', true)
-        .style('top', '0px');
-
       const selectedBuildingX = x(selectedBuilding.total_ghg_emissions_intensity);
-      if (selectedBuildingX <= (width * 0.75)) {
-        selectedText.style('left', `${margin.left + selectedBuildingX + 5}px`);
-      } else {
-        selectedText.style('right', `${width - selectedBuildingX + margin.right + 5}px`)
-          .classed('right-aligned', true);
-      }
-
-      const selectedTextContent = selectedText.append('div');
       const selectedQuartile = this.findQuartile(quartiles, selectedBuilding.total_ghg_emissions_intensity);
-      selectedTextContent.append('p')
-        .text(selectedBuilding.property_name);
-      selectedTextContent.append('p')
+
+      const selectedTextGroup = svg.append('g')
+        .classed('callout-text callout-selected-text', true);
+      const selectedTextLabel = selectedTextGroup.append('text')
+        .text(selectedBuilding.property_name)
+        .classed('selected-label', true);
+      currentHeight = selectedTextLabel.node().getBBox().height + 4;
+
+      const selectedTextValue = selectedTextGroup.append('text')
         .text(d3.format('.2f')(selectedBuilding.total_ghg_emissions_intensity))
-        .classed(`quartile-${selectedQuartile}`, true);
-      selectedTextContent.append('p')
-        .html('KG/SF')
-        .classed(`quartile-${selectedQuartile}`, true);
+        .attr('transform', `translate(0, ${currentHeight})`)
+        .classed(`value quartile-${selectedQuartile}`, true);
+
+      currentHeight = selectedTextValue.node().getBBox().height + 2;
+      selectedTextGroup.append('text')
+        .text('KG/SF')
+        .attr('transform', `translate(0, ${currentHeight})`)
+        .classed(`units quartile-${selectedQuartile}`, true);
+
+      const labelOnLeft = (margin.left + selectedBuildingX + selectedTextGroup.node().getBBox().width) > width;
+      selectedTextGroup
+        .attr('text-anchor', labelOnLeft ? 'end' : 'start')
+        .attr('transform', () => {
+          let x = margin.left + selectedBuildingX + 5;
+          if (labelOnLeft) {
+            x -= 10;
+          }
+          return `translate(${x}, 5)`;
+        });
 
       const legendParent = d3.select(this.viewParent).select('.emissions-dots');
       if (legendParent.node()) {
@@ -441,8 +455,7 @@ define([
         const expectedWidth = dotMargin * (dots.length - 1) + d3.sum(dots.map(dot => size(dotScale.invert(dot)) * 2));
 
         const legendSvg = legendParent.append('svg')
-          .attr('width', legendWidth)
-          .attr('height', 100);
+          .attr('viewBox', `0 0 ${legendWidth} 100`);
         const legendContainer = legendSvg.append('g')
           .attr('transform', `translate(${(legendWidth - expectedWidth) / 2}, 15)`);
 

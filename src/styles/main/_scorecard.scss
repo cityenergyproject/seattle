@@ -520,6 +520,39 @@ $steam-color: #f7c34e;
       }
     }
 
+    .callout-text {
+      text {
+        dominant-baseline: central;
+        fill: $medium-gray;
+        text-transform: uppercase;
+
+        &.value {
+          font-size: 24px;
+          font-weight: 500;
+          line-height: 24px;
+        }
+
+        &.quartile-1 {
+          fill: $sc-blue;
+        }
+        &.quartile-2 {
+          fill: $sc-green;
+        }
+        &.quartile-3 {
+          fill: $sc-yellow;
+        }
+        &.quartile-4 {
+          fill: $sc-red;
+        }
+      }
+
+      &.callout-selected-text {
+        .selected-label {
+          fill: $sc-blue;
+        }
+      }
+    }
+
     .selected-city-highlight-html {
       position: absolute;
       margin-left: -30px;
