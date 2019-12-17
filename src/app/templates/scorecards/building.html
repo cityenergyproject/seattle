@@ -80,7 +80,9 @@
             <p class='compare-logo <%= compareEss.change_label %> ess'><span><%= compareEss.change_pct %></span></p>
             <p class="sc-txt light pg">This building’s ENERGY STAR Score is <span class='change-txt bold <%= compareEss.change_label %> ess'><%= compareEss.change_pct %> points <%= compareEss.change_label %></span> than the average <%= type %> in Seattle.</p>
           <% } else { %>
-            <p class='not-available'><%= compareEss.error %></p>
+            <p class='not-available'>
+              We don't have an ENERGY STAR score for this building for this year. Contact <a href="mailto:energybenchmarking@seattle.gov">energybenchmarking@seattle.gov</a> if this is incorrect.
+            </p>
           <% } %>
         </div>
         <div class='col-8 ess-compare-chart compare-chart'></div>
@@ -107,7 +109,9 @@
             <p class='compare-logo <%= compareEss.change_label %> ess'><span><%= compareEss.change_pct %></span></p>
             <p class="sc-txt light pg">This building’s ENERGY STAR Score is <span class='change-txt bold <%= compareEss.change_label %> ess'><%= compareEss.change_pct %> points <%= compareEss.change_label %></span> than the average <%= type %> in Seattle.</p>
           <% } else { %>
-            <p class='not-available'><%= compareEss.error %></p>
+            <p class='not-available'>
+              We don't have an ENERGY STAR score for this building for this year. Contact <a href="mailto:energybenchmarking@seattle.gov">energybenchmarking@seattle.gov</a> if this is incorrect.
+            </p>
           <% } %>
         </div>
         <div class='col-8 ess-compare-chart compare-chart'></div>

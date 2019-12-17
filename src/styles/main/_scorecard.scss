@@ -1152,6 +1152,12 @@ $steam-color: #f7c34e;
   .scorecard-compare-chart {
     border: 1px solid $sc-offwhite;
 
+    .not-available {
+      a {
+        color: $sc-blue;
+      }
+    }
+
     &.eui-selected {
       .scorecard-compare-section {
         &.eui {
