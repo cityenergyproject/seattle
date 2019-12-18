@@ -669,8 +669,8 @@ $steam-color: #f7c34e;
     flex-direction: column;
     justify-content: space-between;
 
-    .notes {
-      font-size: 16px;
+    &-box {
+      margin-top: 1rem;
     }
 
     &-label {
@@ -715,18 +715,14 @@ $steam-color: #f7c34e;
     }
 
     .fc-row {
-      height: 36px;
-      overflow: hidden;
-
       &.notes {
-        font-size: 16px;
-        height: auto;
-        padding: 0 0.5rem;
-      }
+        p {
+          margin-top: 1rem;
 
-      &.fc-headers {
-        height: 24px;
-        line-height: 24px;
+          &:first-of-type {
+            margin-top: 0;
+          }
+        }
       }
     }
 
