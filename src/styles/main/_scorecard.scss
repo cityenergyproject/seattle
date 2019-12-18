@@ -483,8 +483,7 @@ $steam-color: #f7c34e;
       stroke-width: 1.5;
     }
 
-    .avg-highlight-html {
-      position: absolute;
+    .average-building-highlight {
       opacity: 0.5;
 
       & > div {
@@ -492,31 +491,33 @@ $steam-color: #f7c34e;
         width: 100px;
       }
 
-      &.align-right > div {
-        text-align: right;
+      text {
+        dominant-baseline: central;
       }
 
-      p {
-        margin: 0;
-        padding: 0;
+      tspan {
+        text-anchor: start;
+      }
+
+      &.align-right tspan {
+        text-anchor: end;
+      }
+
+      .value {
         line-height: 1;
         font-size: 24px;
         font-weight: 500;
         color: $real-orange;
       }
 
-      p:first-child, p:last-child {
+      .label, .units {
         font-size: 10px;
         font-weight: 400;
         text-transform: uppercase;
       }
 
-      p:first-child {
-        color: #666;
-      }
-
-      p:last-child {
-        margin-top: -2px;
+      .label {
+        fill: #666;
       }
     }
 
@@ -553,70 +554,32 @@ $steam-color: #f7c34e;
       }
     }
 
-    .selected-city-highlight-html {
-      position: absolute;
-      margin-left: -30px;
+    .selected-city-highlight {
+      .value {
+        font-size: 24px;
+        font-weight: 500;
+        text-anchor: middle;
+      }
+
+      .units {
+        font-size: 10px;
+        text-anchor: middle;
+        text-transform: none;
+      }
+
+      .building-name {
+        font-size: 14px;
+        fill: $blue;
+        text-transform: uppercase;
+      }
 
       .circle {
-        position: relative;
-        width: 60px;
-        height: 60px;
-        border-radius: 30px;
-        border: 1px solid $blue;
-
-        .inner {
-          position: absolute;
-          top: 50%;
-          left: 0;
-          width: 100%;
-          padding: 0;
-          text-align: center;
-          transform: translateY(-50%);
-
-          p {
-            margin: 0;
-            padding: 0;
-            line-height: 1;
-            color: $real-orange;
-            font-size: 10px;
-          }
-
-          p:first-child {
-            font-size: 24px;
-            font-weight: 500;
-          }
-          p:last-child {
-            margin-top: -2px;
-          }
-        }
-
-        .outer {
-          position: absolute;
-          top: 50%;
-          width: 150px;
-          left: calc(100% + 10px);
-          transform: translateY(-50%);
-
-          &.overflow {
-            left: unset;
-            right: calc(100% + 10px);
-            text-align: right;
-          }
-
-          p {
-            margin: 0;
-            padding: 0;
-            line-height: 1;
-          }
-        }
+        fill: none;
+        stroke: $blue;
       }
 
       .line {
-        position: absolute;
-        top: 60px;
-        left: 50%;
-        width: 1px;
-        background: $blue;
+        stroke: $blue;
       }
     }
   }
