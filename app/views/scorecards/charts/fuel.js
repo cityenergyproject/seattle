@@ -362,7 +362,7 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
       }).attr('r', function (d) {
         return size(d.emissions);
       }).attr('fill-opacity', function (d) {
-        return d.id === selectedBuilding.id ? 1 : 0.15;
+        return d.id === selectedBuilding.id ? 1 : 0.35;
       }).attr('fill', function (d) {
         return quartileColors[_this3.findQuartile(quartiles, d.emissionsIntensity)];
       });
@@ -433,7 +433,7 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
         enterLegendDot.append('circle').attr('cx', 0).attr('cy', 0).attr('r', function (d) {
           return size(dotScale.invert(d));
         }).attr('fill', function (d) {
-          return '#F1F1F1';
+          return '#B9B9B9';
         });
 
         enterLegendDot.append('text').attr('text-anchor', 'middle').classed('emissions-dots-label', true).text(function (d) {
