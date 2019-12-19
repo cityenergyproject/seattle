@@ -1,6 +1,6 @@
 'use strict';
 
-define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/charts/shift.html'], function ($, _, Backbone, d3, ShiftTemplate) {
+define(['jquery', 'underscore', 'backbone', 'd3', '../../../../lib/wrap', 'text!templates/scorecards/charts/shift.html'], function ($, _, Backbone, d3, wrap, ShiftTemplate) {
   var ShiftView = Backbone.View.extend({
     className: 'shift-chart',
 
@@ -132,11 +132,11 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
 
       var baseWidth = rootElm.node().offsetWidth;
       var baseHeight = rootElm.node().offsetHeight;
-      var margin = { top: 20, right: 50, bottom: 0, left: 50 };
+      var margin = { top: 20, right: 150, bottom: 0, left: 50 };
       var width = baseWidth - margin.left - margin.right;
       var height = baseHeight - margin.top - margin.bottom;
 
-      var svg = rootElm.append('svg').attr('width', baseWidth).attr('height', baseHeight).append('g').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+      var svg = rootElm.append('svg').attr('viewBox', '0 0 ' + baseWidth + ' ' + baseHeight).append('g').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
       var x = d3.scale.linear().range([0, width]).domain(years);
 
@@ -180,7 +180,7 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
         return line(d.values);
       });
 
-      var bar = svg.selectAll('.dot').data(filteredData).enter().append('g').attr('class', function (d) {
+      var dot = svg.selectAll('.dot').data(filteredData).enter().append('g').attr('class', function (d) {
         var colorize = d.colorize ? '' : ' no-clr';
         var field = d.field;
 
@@ -189,97 +189,36 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
         return 'translate(' + x(d.year) + ',' + y(d.value) + ')';
       });
 
-      bar.append('circle').attr('r', 5).attr('fill', function (d) {
+      dot.append('circle').attr('r', 5).attr('fill', function (d) {
         return d.clr;
       });
 
-      var firstyear = x.domain()[0];
-      var lastyear = x.domain().slice(-1)[0];
-
-      var label = rootElm.selectAll('.label').data(filteredData).enter().append('div').attr('class', function (d) {
-        var colorize = d.colorize ? '' : ' no-clr';
-        var field = d.field;
-
-        return 'label shift-label-' + field + ' ' + colorize;
-      }).style('color', function (d) {
-        return d.clr;
-      }).style('left', function (d) {
-        if (d.year === firstyear) return x(d.year) + 'px';
-        return x(d.year) + 10 + 'px';
-      }).style('top', function (d) {
-        return y(d.value) + margin.top + 'px';
+      var dotText = dot.append('text').style('fill', function (d) {
+        return d.clr || '#acacac';
       });
 
-      var innerLabel = label.append('table').append('td');
-
-      innerLabel.append('p').text(function (d) {
+      dotText.append('tspan').classed('value', true).text(function (d) {
         return _this2.formatters.fixedOne(d.value);
       });
-      innerLabel.append('p').attr('class', 'metric small').text(function (d) {
+
+      dotText.append('tspan').attr('x', 0).attr('dy', '1em').classed('metric small', true).text(function (d) {
         return d.unit;
       });
 
-      label.each(function (d) {
-        if (d.year === lastyear) {
-          var el = d3.select(this);
-          var _width = el.node().offsetWidth;
-          el.style('margin-left', _width + 25 + 'px');
-        }
+      dotText.attr('transform', function (d, i) {
+        return 'translate(' + (-dotText[0][i].getBBox().width - 5) + ', 0)';
       });
 
-      label.filter(function (d) {
+      var lastyear = x.domain().slice(-1)[0];
+      dot.filter(function (d) {
         return d.year === lastyear;
-      }).select('table').append('td').append('span').attr('class', 'building').text(function (d) {
+      }).append('text').classed('building', true).classed('selected-building', function (d) {
+        return d.colorize;
+      }).style('fill', function (d) {
+        return d.clr || '#acacac';
+      }).attr('transform', 'translate(10, 0)').text(function (d) {
         return d.label;
-      });
-
-      var me = this;
-      var prev = void 0;
-      label.each(function (d) {
-        if (prev) {
-          var rect1 = me.makeRect(prev);
-          var rect2 = me.makeRect(this);
-          var attempts = 10;
-
-          var rect1Delta = -2;
-          var rect2Delta = 2;
-
-          if (d3.select(prev).data() && d3.select(this).data()) {
-            var rect1Data = d3.select(prev).data()[0];
-            var rect2Data = d3.select(this).data()[0];
-            if (rect1Data.value != undefined && rect2Data.value != undefined) {
-              rect1Delta = rect1Data.value < rect2Data.value ? 2 : -2;
-              rect2Delta = -rect1Delta;
-            }
-          }
-
-          while (me.collision(rect1, rect2) && attempts > 0) {
-            attempts--;
-            prev.style.top = rect1.top + rect1Delta + 'px';
-            this.style.top = rect2.top + rect2Delta + 'px';
-
-            rect1 = me.makeRect(prev);
-            rect2 = me.makeRect(this);
-          }
-        }
-        prev = this;
-      });
-    },
-
-    makeRect: function makeRect(el) {
-      var t = el.offsetTop;
-      var l = el.offsetLeft;
-
-      return {
-        top: t,
-        right: l + el.offsetWidth,
-        bottom: t + el.offsetHeight,
-        left: l
-      };
-    },
-
-    collision: function collision(rect1, rect2) {
-      return !(rect1.right < rect2.left || rect1.left > rect2.right || rect1.bottom < rect2.top || rect1.top > rect2.bottom);
+      }).call(wrap, 120);
     },
 
     chartData: function chartData(cb) {

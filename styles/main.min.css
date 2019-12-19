@@ -2312,12 +2312,6 @@ header {
           background: rgba(247, 195, 78, 0.75); }
   #scorecard #change-chart {
     text-align: center; }
-    #scorecard #change-chart .change-chart-inner {
-      position: relative;
-      display: inline-block;
-      width: 70%;
-      margin-left: -37px;
-      text-align: left; }
     #scorecard #change-chart .year {
       fill: #0047ba;
       font-size: 24px;
@@ -2329,7 +2323,7 @@ header {
       height: 200px; }
       @media print {
         #scorecard #change-chart #change-chart-vis {
-          height: 150px; } }
+          height: 125px; } }
       #scorecard #change-chart #change-chart-vis svg {
         overflow: visible; }
       #scorecard #change-chart #change-chart-vis path {
@@ -2340,41 +2334,18 @@ header {
         stroke: none; }
       #scorecard #change-chart #change-chart-vis .no-clr > circle {
         fill: #bababa; }
-      #scorecard #change-chart #change-chart-vis .label {
-        position: absolute;
-        color: #CF6F39;
-        -webkit-transform: translateY(-50%);
-                transform: translateY(-50%); }
-        #scorecard #change-chart #change-chart-vis .label table {
-          margin: 0;
-          table-layout: auto; }
-          #scorecard #change-chart #change-chart-vis .label table td {
-            padding: 0;
-            border: none; }
-        #scorecard #change-chart #change-chart-vis .label.no-clr {
-          color: #acacac; }
-        #scorecard #change-chart #change-chart-vis .label p {
-          margin: 0;
-          padding: 0;
-          line-height: 1;
-          font-size: 16px; }
-        #scorecard #change-chart #change-chart-vis .label p.metric.small {
-          font-size: 8px;
-          text-transform: uppercase; }
-        #scorecard #change-chart #change-chart-vis .label .building {
-          position: relative;
-          display: inline-block;
-          left: 0;
-          top: 0;
-          width: 75px;
-          margin-left: 15px;
-          line-height: 1.2;
+      #scorecard #change-chart #change-chart-vis tspan.value {
+        font-size: 16px; }
+      #scorecard #change-chart #change-chart-vis tspan.metric.small {
+        font-size: 8px;
+        text-transform: uppercase; }
+      #scorecard #change-chart #change-chart-vis text.building {
+        fill: #acacac;
+        font-size: 8px;
+        text-transform: uppercase; }
+        #scorecard #change-chart #change-chart-vis text.building.selected-building {
           font-size: 12px;
           color: #0047BA; }
-        #scorecard #change-chart #change-chart-vis .label.no-clr .building {
-          color: #acacac;
-          font-size: 8px;
-          text-transform: uppercase; }
   #scorecard #links {
     background: #F1F1F1; }
     #scorecard #links table td {
