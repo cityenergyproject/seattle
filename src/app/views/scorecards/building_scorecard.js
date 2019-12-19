@@ -2,12 +2,13 @@ define([
   'jquery',
   'underscore',
   'backbone',
+  '../../../lib/wrap',
   './charts/fuel',
   './charts/shift',
   './charts/comments',
   'models/building_color_bucket_calculator',
   'text!templates/scorecards/building.html'
-], function($, _, Backbone, FuelUseView, ShiftView, CommentView, BuildingColorBucketCalculator, BuildingTemplate){
+], function($, _, Backbone, wrap, FuelUseView, ShiftView, CommentView, BuildingColorBucketCalculator, BuildingTemplate){
   var BuildingScorecard = Backbone.View.extend({
     initialize: function(options){
       this.state = options.state;
@@ -586,16 +587,16 @@ define([
           .range([height, 0]);
 
       var svg = rootElm.append('svg')
-          .attr('width', outerWidth)
-          .attr('height', outerHeight)
-        .append('g')
-          .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+        .attr('viewBox', `0 0 ${outerWidth} ${outerHeight}`);
 
-      svg.append('g')
+      var chartGroup = svg.append('g')
+        .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+      chartGroup.append('g')
         .attr('class', 'y axis')
         .call(d3.svg.axis().scale(y).orient('left').ticks(5).outerTickSize(0).innerTickSize(2));
 
-      var threshold = svg.append('g')
+      var threshold = chartGroup.append('g')
         .attr('class', 'x axis')
         .attr('transform', function(d) { return 'translate(0,' + (height + 10) + ')'; })
         .selectAll('.threshold')
@@ -644,7 +645,7 @@ define([
 
       // Show min and max on Energy Star chart
       if (view === 'ess') {
-        svg.select('.x.axis').selectAll('.label')
+        chartGroup.select('.x.axis').selectAll('.label')
           .data([1, 100])
           .enter()
             .append('g')
@@ -657,7 +658,7 @@ define([
               .text(d => d);
       }
 
-      svg
+      chartGroup
         .append('g')
         .attr('class', 'label')
         .attr('transform', function(d) { return 'translate(' + (-30) + ',' + (height / 2) + ')'; })
@@ -666,7 +667,7 @@ define([
         .attr('text-anchor', 'middle')
         .attr('transform', 'rotate(-90)');
 
-      svg
+      chartGroup
         .append('g')
         .attr('class', 'label')
         .attr('transform', function(d) { return 'translate(' + (width/2) + ',' + (height + 40) + ')'; })
@@ -674,7 +675,7 @@ define([
         .text(compareChartConfig.x_label[view])
         .attr('text-anchor', 'middle');
 
-      var bar = svg.selectAll('.bar')
+      var bar = chartGroup.selectAll('.bar')
           .data(chartdata.data)
         .enter().append('g')
           .attr('class', 'bar')
@@ -709,82 +710,125 @@ define([
       var xBandWidth = x.rangeBand();
       var xpos = chartdata.selectedIndex === null ? 0 : x(chartdata.data[chartdata.selectedIndex].x) + (xBandWidth / 2);
       var ypos = chartdata.selectedIndex === null ? 0 : y(chartdata.data[chartdata.selectedIndex].y);
+      const selectedXPos = xpos;
+      const circleRadius = 30;
+      const highlightOffsetY = -70;
+      const highlightTopMargin = margin.top + highlightOffsetY;
 
-      var selectedCityHighlight = container.select(`.${view}-compare-chart`).append('div')
-        .attr('class', 'selected-city-highlight-html')
-        .style('top', (margin.top - 70) + 'px')
-        .style('left', (margin.left + xpos) + 'px')
-        .style('display', d => {
-          return chartdata.selectedIndex === null || chartdata.building_value === null ? 'none': null;
+      var selectedCityHighlight = chartGroup.append('g')
+        .classed('selected-city-highlight', true)
+        .attr('transform', `translate(${xpos - circleRadius}, ${highlightOffsetY})`);
+
+      selectedCityHighlight.append('circle')
+        .attr('cx', 0)
+        .attr('cy', 0)
+        .attr('r', circleRadius)
+        .attr('transform', `translate(${circleRadius}, ${circleRadius})`)
+        .classed('circle', true);
+
+      const selectedValueTextGroup = selectedCityHighlight.append('g')
+        .attr('transform', `translate(${circleRadius}, ${circleRadius + 5})`);
+
+      var selectedValueText = selectedValueTextGroup.append('text');
+
+      selectedValueText.append('tspan')
+        .attr('x', 0)
+        .text(chartdata.building_value)
+        .style('fill', chartdata.selectedColor)
+        .classed('value', true);
+
+      selectedValueTextGroup.append('text')
+        .text(compareChartConfig.highlight_metric[view])
+        .attr('x', 0)
+        .attr('dy', '1em')
+        .style('fill', chartdata.selectedColor)
+        .classed('units', true)
+        .call(wrap, circleRadius * 2);
+
+      selectedValueTextGroup
+        .attr('transform', () => {
+          const textGroupHeight = selectedValueTextGroup.node().getBBox().height;
+          const valueHeight = selectedValueText.node().getBBox().height;
+          return `translate(${circleRadius}, ${highlightTopMargin + valueHeight / 2 + (circleRadius - textGroupHeight / 2)})`;
         });
 
-      var circle = selectedCityHighlight.append('div')
-        .attr('class', 'circle');
+      const buildingNameText = selectedCityHighlight.append('g').append('text')
+        .text(name)
+        .classed('building-name', true)
+        .call(wrap, 150);
 
-      var innerCircle = circle.append('div').attr('class', 'inner');
-      var outerCircle = circle.append('div').classed({
-        outer: true,
+      buildingNameText
+        .attr('transform', () => {
+          const bbox = buildingNameText.node().getBBox();
+          const nodeWidth = bbox.width;
+          const nodeHeight = bbox.height;
+          let x = circleRadius * 2 + 5;
 
-        // Overflow if the left pos and width (150) exceed chart's width
-        overflow: (xpos + margin.left + 60 + 150) > outerWidth
-      });
+          if (nodeWidth + xpos + circleRadius > width) {
+            x = -(nodeWidth + 5);
+          }
+          let y = circleRadius - (nodeHeight / 2) + highlightTopMargin;
+          return `translate(${x}, ${y})`;
+        });
 
-      innerCircle.append('p')
-        .text(chartdata.building_value)
-        .style('color', chartdata.selectedColor);
+      selectedCityHighlight.append('path')
+        .classed('line', true)
+        .attr('d', d3.svg.line()([
+          [circleRadius + 1, circleRadius * 2],
+          [circleRadius + 1, margin.top + ypos - highlightTopMargin],
+        ]));
 
-      innerCircle.append('p')
-        .html(compareChartConfig.highlight_metric[view])
-        .style('color', chartdata.selectedColor);
-
-      outerCircle.append('p')
-        .text(name);
-
-      selectedCityHighlight.append('div')
-        .attr('class', 'line')
-        .style('height', (ypos + 5) + 'px');
-
+      //
       // Set average label and fill
+      //
       if (chartdata.avgIndex === null) return;
       if (chartdata.mean === null) return;
 
       xpos = x(chartdata.data[chartdata.avgIndex].x);
 
       var avgPadding = 5;
-      var avgClass = 'avg-highlight-html';
-      if (chartdata.avgIndex >= chartdata.selectedIndex) {
-        xpos += xBandWidth + avgPadding;
-      } else {
-        xpos -= (100 + avgPadding);
-        avgClass += ' align-right';
-      }
+      let xTranslate = xpos + xBandWidth + avgPadding;
 
       ypos = y(chartdata.data[chartdata.avgIndex].y); // top of bar
 
-      var avgHighlight = container.select(`.${view}-compare-chart`).append('div')
-        .attr('class', avgClass)
-        .style('top', (margin.top + ypos) + 'px')
-        .style('left', (margin.left + xpos) + 'px');
+      let yTranslate = ypos + 5;
+      var averageBuildingHighlight = chartGroup.append('g')
+        .classed('average-building-highlight', true)
+        .attr('transform', `translate(${xTranslate}, ${yTranslate})`);
 
-      var avgHighlightContent = avgHighlight.append('div');
+      const averageText = averageBuildingHighlight.append('text');
 
-      avgHighlightContent.append('p')
-        .text('Building type average');
+      averageText.append('tspan')
+        .text('Building type average')
+        .classed('label', true)
+        .call(wrap, 75);
 
-      avgHighlightContent.append('p')
+      averageText.append('tspan')
         .text(chartdata.mean)
-        .style('color', chartdata.avgColor);
+        .attr('x', 0)
+        .attr('dy', '.7em')
+        .style('fill', chartdata.avgColor)
+        .classed('value', true);
 
-      avgHighlightContent.append('p')
-        .html(compareChartConfig.highlight_metric[view])
-        .style('color', chartdata.avgColor);
+      averageText.append('tspan')
+        .text(compareChartConfig.highlight_metric[view])
+        .attr('x', 0)
+        .attr('dy', '1.5em')
+        .style('fill', chartdata.avgColor)
+        .classed('label', true);
 
-      // fix avgHighlight going to deep
-      var avgBoxHeight = avgHighlight.node().offsetHeight;
-      if ((ypos + avgBoxHeight) > height) {
-        ypos += (height - (ypos + avgBoxHeight));
-        avgHighlight.style('top', (margin.top + ypos) + 'px');
+      const averageBbox = averageBuildingHighlight.node().getBBox();
+      if (xpos < selectedXPos && xpos + averageBbox.width > selectedXPos) {
+        xTranslate = xpos - avgPadding;
+        averageBuildingHighlight.classed('align-right', true);
       }
+
+      if (ypos + averageBbox.height > height) {
+        yTranslate = height - averageBbox.height;
+      }
+
+      averageBuildingHighlight
+        .attr('transform', `translate(${xTranslate}, ${yTranslate})`);
     },
 
     extractChangeData: function(yearly, buildings, building, config) {
