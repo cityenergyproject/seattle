@@ -396,19 +396,22 @@ define([
       const averageTextGroup = svg.append('g')
         .classed('callout-text callout-average-text', true)
         .attr('transform', `translate(${margin.left + x(averageEmissionsIntensity) + 5}, ${margin.top})`);
-      const averageTextLabel = averageTextGroup.append('text')
+
+      averageTextGroup.append('text')
+        .attr('x', 0)
+        .attr('dy', '0')
         .text('Building type average');
 
-      let currentHeight = averageTextLabel.node().getBBox().height + 4;
-      const averageTextValue = averageTextGroup.append('text')
+      averageTextGroup.append('text')
         .text(d3.format('.2f')(averageEmissionsIntensity))
-        .attr('transform', `translate(0, ${currentHeight})`)
+        .attr('x', 0)
+        .attr('dy', '.8em')
         .classed(`value quartile-${averageQuartile}`, true);
 
-      currentHeight = averageTextValue.node().getBBox().height + 2;
       averageTextGroup.append('text')
         .text('KG/SF')
-        .attr('transform', `translate(0, ${currentHeight})`)
+        .attr('x', 0)
+        .attr('dy', '2.7em')
         .classed(`units quartile-${averageQuartile}`, true);
 
       // Text for selected building
@@ -417,20 +420,20 @@ define([
 
       const selectedTextGroup = svg.append('g')
         .classed('callout-text callout-selected-text', true);
-      const selectedTextLabel = selectedTextGroup.append('text')
+      selectedTextGroup.append('text')
         .text(selectedBuilding.property_name)
         .classed('selected-label', true);
-      currentHeight = selectedTextLabel.node().getBBox().height + 4;
 
-      const selectedTextValue = selectedTextGroup.append('text')
+      selectedTextGroup.append('text')
         .text(d3.format('.2f')(selectedBuilding.total_ghg_emissions_intensity))
-        .attr('transform', `translate(0, ${currentHeight})`)
+        .attr('x', 0)
+        .attr('dy', '.8em')
         .classed(`value quartile-${selectedQuartile}`, true);
 
-      currentHeight = selectedTextValue.node().getBBox().height + 2;
       selectedTextGroup.append('text')
         .text('KG/SF')
-        .attr('transform', `translate(0, ${currentHeight})`)
+        .attr('x', 0)
+        .attr('dy', '2.7em')
         .classed(`units quartile-${selectedQuartile}`, true);
 
       const labelOnLeft = (margin.left + selectedBuildingX + selectedTextGroup.node().getBBox().width) > width;
@@ -441,7 +444,7 @@ define([
           if (labelOnLeft) {
             x -= 10;
           }
-          return `translate(${x}, 5)`;
+          return `translate(${x}, 10)`;
         });
 
       const legendParent = d3.select(this.viewParent).select('.emissions-dots');
