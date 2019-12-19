@@ -13,7 +13,7 @@
     <div class='emissions-intensity-chart-container row'>
       <div id='emissions-intensity-chart' class='col-8 emissions-intensity-chart'></div>
       <div class='col-4 emissions-intensity-chart-legend'>
-        <div class='notes'>This building’s greenhouse gas (GHG) emissions per square foot was <strong><%= total_ghg_emissions_intensity %> KG/SF</strong> in <%= year %> with a total of <strong><%= totals.emissions %> metric tons (MT)</strong> for the year.</div>
+        <div class='sc-txt light pg'>This building’s greenhouse gas (GHG) emissions per square foot was <strong><%= total_ghg_emissions_intensity %> KG/SF</strong> in <%= year %> with a total of <strong><%= totals.emissions %> metric tons (MT)</strong> for the year.</div>
         <div class='emissions-intensity-chart-legend-box'>
           <div class='emissions-intensity-chart-legend-label'>legend</div>
           <div class='emissions-dots'>
@@ -75,10 +75,10 @@
         <% if (fuels.length >= 1) { %>
         <div class='fc-row notes'>
           <% if(totals.emissions > 0) { %>
-          <p>
+          <p class="sc-txt light pg">
             <strong><%= totals.emissions %> MT CO<sub>2</sub>E</strong> is the equivalent of <strong><%= cars %> passenger vehicles driven</strong> for one year.
           </p>
-          <p>
+          <p class="sc-txt light pg">
             Of these passenger vehicles
             <% _.each(fuels, function(fuel, i) { %>
             <%= fuel.emissions.cars %> are attributable to <%= fuel.label.toLowerCase() %><% if (i <= fuels.length - 2) { %>, <% } else if (i === fuels.length - 1) { %>. <% } %>

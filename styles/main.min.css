@@ -1927,6 +1927,7 @@ header {
         text-align: right; }
         #scorecard .scorecard--details .details-box .details-numbers h4:last-of-type {
           border-top: 1px solid white;
+          display: inline-block;
           margin-top: .5rem;
           padding-top: .5rem; }
       #scorecard .scorecard--details .details-box .ways-to-save-button {
@@ -2039,37 +2040,37 @@ header {
     #scorecard .compare-chart .x.axis line,
     #scorecard #emissions-intensity-chart .x.axis line {
       stroke-width: 1.5; }
-    #scorecard .compare-chart .avg-highlight-html,
-    #scorecard #emissions-intensity-chart .avg-highlight-html {
-      position: absolute;
+    #scorecard .compare-chart .average-building-highlight,
+    #scorecard #emissions-intensity-chart .average-building-highlight {
       opacity: 0.5; }
-      #scorecard .compare-chart .avg-highlight-html > div,
-      #scorecard #emissions-intensity-chart .avg-highlight-html > div {
+      #scorecard .compare-chart .average-building-highlight > div,
+      #scorecard #emissions-intensity-chart .average-building-highlight > div {
         position: relative;
         width: 100px; }
-      #scorecard .compare-chart .avg-highlight-html.align-right > div,
-      #scorecard #emissions-intensity-chart .avg-highlight-html.align-right > div {
-        text-align: right; }
-      #scorecard .compare-chart .avg-highlight-html p,
-      #scorecard #emissions-intensity-chart .avg-highlight-html p {
-        margin: 0;
-        padding: 0;
+      #scorecard .compare-chart .average-building-highlight text,
+      #scorecard #emissions-intensity-chart .average-building-highlight text {
+        dominant-baseline: central; }
+      #scorecard .compare-chart .average-building-highlight tspan,
+      #scorecard #emissions-intensity-chart .average-building-highlight tspan {
+        text-anchor: start; }
+      #scorecard .compare-chart .average-building-highlight.align-right tspan,
+      #scorecard #emissions-intensity-chart .average-building-highlight.align-right tspan {
+        text-anchor: end; }
+      #scorecard .compare-chart .average-building-highlight .value,
+      #scorecard #emissions-intensity-chart .average-building-highlight .value {
         line-height: 1;
         font-size: 24px;
         font-weight: 500;
         color: #DE8F41; }
-      #scorecard .compare-chart .avg-highlight-html p:first-child, #scorecard .compare-chart .avg-highlight-html p:last-child,
-      #scorecard #emissions-intensity-chart .avg-highlight-html p:first-child,
-      #scorecard #emissions-intensity-chart .avg-highlight-html p:last-child {
+      #scorecard .compare-chart .average-building-highlight .label, #scorecard .compare-chart .average-building-highlight .units,
+      #scorecard #emissions-intensity-chart .average-building-highlight .label,
+      #scorecard #emissions-intensity-chart .average-building-highlight .units {
         font-size: 10px;
         font-weight: 400;
         text-transform: uppercase; }
-      #scorecard .compare-chart .avg-highlight-html p:first-child,
-      #scorecard #emissions-intensity-chart .avg-highlight-html p:first-child {
-        color: #666; }
-      #scorecard .compare-chart .avg-highlight-html p:last-child,
-      #scorecard #emissions-intensity-chart .avg-highlight-html p:last-child {
-        margin-top: -2px; }
+      #scorecard .compare-chart .average-building-highlight .label,
+      #scorecard #emissions-intensity-chart .average-building-highlight .label {
+        fill: #666; }
     #scorecard .compare-chart .callout-text text,
     #scorecard #emissions-intensity-chart .callout-text text {
       dominant-baseline: central;
@@ -2095,66 +2096,28 @@ header {
     #scorecard .compare-chart .callout-text.callout-selected-text .selected-label,
     #scorecard #emissions-intensity-chart .callout-text.callout-selected-text .selected-label {
       fill: #0047BA; }
-    #scorecard .compare-chart .selected-city-highlight-html,
-    #scorecard #emissions-intensity-chart .selected-city-highlight-html {
-      position: absolute;
-      margin-left: -30px; }
-      #scorecard .compare-chart .selected-city-highlight-html .circle,
-      #scorecard #emissions-intensity-chart .selected-city-highlight-html .circle {
-        position: relative;
-        width: 60px;
-        height: 60px;
-        border-radius: 30px;
-        border: 1px solid #0047ba; }
-        #scorecard .compare-chart .selected-city-highlight-html .circle .inner,
-        #scorecard #emissions-intensity-chart .selected-city-highlight-html .circle .inner {
-          position: absolute;
-          top: 50%;
-          left: 0;
-          width: 100%;
-          padding: 0;
-          text-align: center;
-          -webkit-transform: translateY(-50%);
-                  transform: translateY(-50%); }
-          #scorecard .compare-chart .selected-city-highlight-html .circle .inner p,
-          #scorecard #emissions-intensity-chart .selected-city-highlight-html .circle .inner p {
-            margin: 0;
-            padding: 0;
-            line-height: 1;
-            color: #DE8F41;
-            font-size: 10px; }
-          #scorecard .compare-chart .selected-city-highlight-html .circle .inner p:first-child,
-          #scorecard #emissions-intensity-chart .selected-city-highlight-html .circle .inner p:first-child {
-            font-size: 24px;
-            font-weight: 500; }
-          #scorecard .compare-chart .selected-city-highlight-html .circle .inner p:last-child,
-          #scorecard #emissions-intensity-chart .selected-city-highlight-html .circle .inner p:last-child {
-            margin-top: -2px; }
-        #scorecard .compare-chart .selected-city-highlight-html .circle .outer,
-        #scorecard #emissions-intensity-chart .selected-city-highlight-html .circle .outer {
-          position: absolute;
-          top: 50%;
-          width: 150px;
-          left: calc(100% + 10px);
-          -webkit-transform: translateY(-50%);
-                  transform: translateY(-50%); }
-          #scorecard .compare-chart .selected-city-highlight-html .circle .outer.overflow,
-          #scorecard #emissions-intensity-chart .selected-city-highlight-html .circle .outer.overflow {
-            left: unset;
-            right: calc(100% + 10px);
-            text-align: right; }
-          #scorecard .compare-chart .selected-city-highlight-html .circle .outer p,
-          #scorecard #emissions-intensity-chart .selected-city-highlight-html .circle .outer p {
-            margin: 0;
-            padding: 0;
-            line-height: 1; }
-      #scorecard .compare-chart .selected-city-highlight-html .line,
-      #scorecard #emissions-intensity-chart .selected-city-highlight-html .line {
-        position: absolute;
-        top: 60px;
-        left: 50%;
-        width: 1px;
-        background: #0047ba; }
+    #scorecard .compare-chart .selected-city-highlight .value,
+    #scorecard #emissions-intensity-chart .selected-city-highlight .value {
+      font-size: 24px;
+      font-weight: 500;
+      text-anchor: middle; }
+    #scorecard .compare-chart .selected-city-highlight .units,
+    #scorecard #emissions-intensity-chart .selected-city-highlight .units {
+      font-size: 10px;
+      text-anchor: middle;
+      text-transform: none; }
+    #scorecard .compare-chart .selected-city-highlight .building-name,
+    #scorecard #emissions-intensity-chart .selected-city-highlight .building-name {
+      font-size: 14px;
+      fill: #0047ba;
+      text-transform: uppercase; }
+    #scorecard .compare-chart .selected-city-highlight .circle,
+    #scorecard #emissions-intensity-chart .selected-city-highlight .circle {
+      fill: none;
+      stroke: #0047ba; }
+    #scorecard .compare-chart .selected-city-highlight .line,
+    #scorecard #emissions-intensity-chart .selected-city-highlight .line {
+      stroke: #0047ba; }
   #scorecard #emissions-intensity-chart .x.axis path {
     fill: none;
     stroke: #CBCBCB; }
@@ -2193,8 +2156,8 @@ header {
     -webkit-box-pack: justify;
         -ms-flex-pack: justify;
             justify-content: space-between; }
-    #scorecard .emissions-intensity-chart-legend .notes {
-      font-size: 16px; }
+    #scorecard .emissions-intensity-chart-legend-box {
+      margin-top: 1rem; }
     #scorecard .emissions-intensity-chart-legend-label {
       color: #5d5d5d;
       font-weight: 500;
@@ -2229,16 +2192,10 @@ header {
       #scorecard #fueluse-chart .fc-panel.fc-bars {
         width: 70%;
         margin: 0 1rem; }
-    #scorecard #fueluse-chart .fc-row {
-      height: 36px;
-      overflow: hidden; }
-      #scorecard #fueluse-chart .fc-row.notes {
-        font-size: 16px;
-        height: auto;
-        padding: 0 0.5rem; }
-      #scorecard #fueluse-chart .fc-row.fc-headers {
-        height: 24px;
-        line-height: 24px; }
+    #scorecard #fueluse-chart .fc-row.notes p {
+      margin-top: 1rem; }
+      #scorecard #fueluse-chart .fc-row.notes p:first-of-type {
+        margin-top: 0; }
     #scorecard #fueluse-chart .fc-label {
       height: 36px;
       line-height: 36px; }
