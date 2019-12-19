@@ -3,8 +3,9 @@ define([
   'underscore',
   'backbone',
   'd3',
+  '../../../../lib/wrap',
   'text!templates/scorecards/charts/shift.html'
-], function($, _, Backbone, d3, ShiftTemplate){
+], function($, _, Backbone, d3, wrap, ShiftTemplate){
   var ShiftView = Backbone.View.extend({
     className: 'shift-chart',
 
@@ -134,13 +135,12 @@ define([
 
       const baseWidth = rootElm.node().offsetWidth;
       const baseHeight = rootElm.node().offsetHeight;
-      const margin = { top: 20, right: 50, bottom: 0, left: 50 };
+      const margin = { top: 20, right: 150, bottom: 0, left: 50 };
       let width = baseWidth - margin.left - margin.right;
       let height = baseHeight - margin.top - margin.bottom;
 
       const svg = rootElm.append('svg')
-          .attr('width', baseWidth)
-          .attr('height', baseHeight)
+        .attr('viewBox', `0 0 ${baseWidth} ${baseHeight}`)
         .append('g')
           .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
@@ -193,7 +193,7 @@ define([
         })
         .attr('d', d => line(d.values));
 
-      var bar = svg.selectAll('.dot')
+      var dot = svg.selectAll('.dot')
           .data(filteredData)
         .enter().append('g')
           .attr('class', d => {
@@ -204,104 +204,37 @@ define([
           })
           .attr('transform', d => { return 'translate(' + x(d.year) + ',' + y(d.value) + ')'; });
 
-      bar.append('circle')
+      dot.append('circle')
         .attr('r', 5)
         .attr('fill', d => d.clr);
 
-      var firstyear = x.domain()[0];
-      var lastyear = x.domain().slice(-1)[0];
+      const dotText = dot.append('text')
+        .style('fill', d => d.clr || '#acacac');
 
-      var label = rootElm.selectAll('.label')
-        .data(filteredData)
-      .enter().append('div')
-        .attr('class', d => {
-          const colorize = d.colorize ? '' : ' no-clr';
-          const field = d.field;
-
-          return `label shift-label-${field} ${colorize}`;
-        })
-        .style('color', d => d.clr)
-        .style('left', d => {
-          if (d.year === firstyear) return x(d.year) + 'px';
-          return x(d.year) + 10 +'px';
-        })
-        .style('top', d => (y(d.value) + margin.top) + 'px');
-
-      var innerLabel = label.append('table').append('td');
-
-      innerLabel
-        .append('p')
+      dotText.append('tspan')
+        .classed('value', true)
         .text(d => this.formatters.fixedOne(d.value));
-      innerLabel
-        .append('p')
-        .attr('class', 'metric small')
+
+      dotText.append('tspan')
+        .attr('x', 0)
+        .attr('dy', '1em')
+        .classed('metric small', true)
         .text(d => d.unit);
 
-      label.each(function(d) {
-        if (d.year === lastyear) {
-          const el = d3.select(this);
-          const width = el.node().offsetWidth;
-          el.style('margin-left', `${width + 25}px`);
-        }
-      });
+      dotText
+        .attr('transform', (d, i) => {
+          return `translate(${-dotText[0][i].getBBox().width - 5}, 0)`;
+        });
 
-      label.filter(d => d.year === lastyear)
-        .select('table')
-        .append('td')
-        .append('span')
-          .attr('class', 'building')
-          .text(d => d.label);
-
-      const me = this;
-      let prev;
-      label.each(function(d) {
-        if (prev) {
-          let rect1 = me.makeRect(prev);
-          let rect2 = me.makeRect(this);
-          let attempts = 10;
-
-          let rect1Delta = -2;
-          let rect2Delta = 2;
-
-          if (d3.select(prev).data() && d3.select(this).data()) {
-            const rect1Data = d3.select(prev).data()[0];
-            const rect2Data = d3.select(this).data()[0];
-            if (rect1Data.value != undefined && rect2Data.value != undefined) {
-              rect1Delta = (rect1Data.value < rect2Data.value) ? 2 : -2;
-              rect2Delta = -(rect1Delta);
-            }
-          }
-
-          while (me.collision(rect1, rect2) && attempts > 0) {
-            attempts--;
-            prev.style.top = (rect1.top + rect1Delta) + 'px';
-            this.style.top = (rect2.top + rect2Delta) + 'px';
-
-            rect1 = me.makeRect(prev);
-            rect2 = me.makeRect(this);
-          }
-        }
-        prev = this;
-      });
-    },
-
-    makeRect: function(el) {
-      const t = el.offsetTop;
-      const l = el.offsetLeft;
-
-      return {
-        top: t,
-        right: l + el.offsetWidth,
-        bottom: t + el.offsetHeight,
-        left: l
-      };
-    },
-
-    collision: function(rect1, rect2) {
-      return !(rect1.right < rect2.left ||
-              rect1.left > rect2.right ||
-              rect1.bottom < rect2.top ||
-              rect1.top > rect2.bottom);
+      const lastyear = x.domain().slice(-1)[0];
+      dot.filter(d => d.year === lastyear)
+        .append('text')
+        .classed('building', true)
+        .classed('selected-building', d => d.colorize)
+        .style('fill', d => d.clr || '#acacac')
+        .attr('transform', `translate(10, 0)`)
+        .text(d => d.label)
+        .call(wrap, 120);
     },
 
     chartData: function(cb) {
