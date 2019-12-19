@@ -370,7 +370,7 @@ define([
         .attr('cx', d => x(d.emissionsIntensity))
         .attr('cy', d => y(d.eui))
         .attr('r', d => size(d.emissions))
-        .attr('fill-opacity', d => d.id === selectedBuilding.id ? 1 : 0.15)
+        .attr('fill-opacity', d => d.id === selectedBuilding.id ? 1 : 0.35)
         .attr('fill', d => quartileColors[this.findQuartile(quartiles, d.emissionsIntensity)]);
 
       // Show average intensity
@@ -481,7 +481,7 @@ define([
           .attr('cx', 0)
           .attr('cy', 0)
           .attr('r', d => size(dotScale.invert(d)))
-          .attr('fill', d => '#F1F1F1');
+          .attr('fill', d => '#B9B9B9');
 
         enterLegendDot
           .append('text')
