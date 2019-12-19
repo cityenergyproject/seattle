@@ -2073,7 +2073,6 @@ header {
         fill: #666; }
     #scorecard .compare-chart .callout-text text,
     #scorecard #emissions-intensity-chart .callout-text text {
-      dominant-baseline: central;
       fill: #b7b7b7;
       text-transform: uppercase; }
       #scorecard .compare-chart .callout-text text.value,
