@@ -1,8 +1,10 @@
 'use strict';
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
-define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/charts/fueluse.html'], function ($, _, Backbone, d3, FuelUseTemplate) {
+define(['jquery', 'underscore', 'backbone', 'd3', '../../../../lib/wrap', 'text!templates/scorecards/charts/fueluse.html'], function ($, _, Backbone, d3, wrap, FuelUseTemplate) {
   var FuelUseView = Backbone.View.extend({
     className: 'fueluse-chart',
 
@@ -212,7 +214,6 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
         isCity: this.isCity,
         building_name: this.building_name,
         year: this.year,
-        emission_klass: fuels.length === 1 ? 'onefuel' : '',
         cars: this.formatters.fixedOne(total_ghg_emissions / this.TYPICAL_CAR_EMMISSION)
       };
     },
@@ -286,6 +287,121 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
       return i - 1;
     },
 
+
+    renderEnergyConsumptionChart: function renderEnergyConsumptionChart(data, totals) {
+      var parent = d3.select(this.viewParent).select('.energy-consumption-bar-chart-container');
+      var margin = { top: 20, right: 30, bottom: 20, left: 30 };
+      var outerWidth = parent.node().offsetWidth;
+      var outerHeight = parent.node().offsetHeight;
+      // const outerHeight = 200;
+      var width = outerWidth - margin.left - margin.right;
+
+      var svg = parent.append('svg').attr('viewBox', '0 0 ' + outerWidth + ' ' + outerHeight);
+
+      var totalBarWidth = width * (3 / 5);
+
+      var chartData = data.map(function (row, i) {
+        return _extends({}, row, {
+          emissions: _extends({}, row.emissions, {
+            pctBefore: d3.sum(data.map(function (d, k) {
+              return k >= i ? 0 : d.emissions.pct_actual;
+            }))
+          }),
+          usage: _extends({}, row.usage, {
+            pctBefore: d3.sum(data.map(function (d, k) {
+              return k >= i ? 0 : d.usage.pct_actual;
+            }))
+          })
+        });
+      });
+
+      var labels = {
+        emissions: {
+          label: 'Resulting Emissions',
+          labelUnits: '(% ghg)'
+        },
+        usage: {
+          label: 'Energy Consumed',
+          labelUnits: '(% kBtu)'
+        }
+      };
+
+      var energyConsumedGroup = svg.append('g');
+      this.renderBarChart(energyConsumedGroup, chartData, labels, totals, 10, width, totalBarWidth, 30, 'usage');
+
+      var emissionsGroup = svg.append('g').attr('transform', 'translate(0, 60)');
+      this.renderBarChart(emissionsGroup, chartData, labels, totals, 15, width, totalBarWidth, 30, 'emissions');
+    },
+
+    renderBarChart: function renderBarChart(parent, data, labels, totals, yOffset, chartWidth, barWidth, barHeight, metric) {
+      var chartGroup = parent.append('g').attr('transform', 'translate(0, ' + yOffset + ')');
+
+      // Width of text on either side of bars
+      var textWidth = (chartWidth - barWidth) / 2;
+      var barStart = textWidth;
+      var barGroup = chartGroup.append('g').attr('transform', 'translate(' + barStart + ', 15)');
+      barGroup.selectAll('.bar-item').data(data).enter().append('rect').attr('class', function (d) {
+        return d.key;
+      }).classed('bar-item', true).attr('height', barHeight).attr('width', function (d) {
+        return d[metric].pct_actual * barWidth;
+      }).attr('x', function (d) {
+        return d[metric].pctBefore * barWidth;
+      });
+
+      var labelGroup = chartGroup.append('g').classed('bar-chart-label', true).attr('transform', 'translate(' + (barStart - 5) + ', 25)');
+
+      labelGroup.append('text').attr('x', 0).text(labels[metric].label).call(wrap, textWidth);
+
+      labelGroup.selectAll('tspan').classed('bar-chart-label-name', true);
+
+      labelGroup.select('text').append('tspan').attr('x', 0).attr('dy', '1.1em').text(labels[metric].labelUnits);
+
+      var totalGroup = chartGroup.append('g').attr('transform', 'translate(' + (barStart + barWidth + 5) + ', 25)');
+
+      var totalText = totalGroup.append('text').classed('bar-chart-total', true);
+
+      totalText.append('tspan').attr('x', 0).classed('bar-chart-total-value', true).text(totals[metric]);
+      totalText.append('tspan').attr('dx', '.25em').text('kBtu');
+
+      var barLabels = chartGroup.append('g').attr('transform', 'translate(0, 10)').classed('bar-labels', true);
+      var barLabelText = barLabels.selectAll('.bar-label').data(data).enter().append('text').attr('class', function (d) {
+        return d.key;
+      }).classed('bar-label', true).attr('x', function (d) {
+        return barStart + (d[metric].pctBefore + d[metric].pct_actual / 2) * barWidth;
+      }).text(function (d) {
+        if (metric === 'usage') return d.label + ' ' + d[metric].pct + '%';
+        return d[metric].pct + '%';
+      });
+
+      barLabelText.call(detectHorizontalCollision);
+
+      function detectHorizontalCollision() {
+        this.each(function () {
+          var node = this;
+          var box = node.getBBox();
+
+          // Only have to detect horizontally, vertically will be on the same
+          var x0 = box.x;
+          var x1 = x0 + box.width;
+
+          barLabelText.each(function () {
+            if (this !== node) {
+              var otherBox = this.getBBox();
+              var otherX0 = otherBox.x;
+
+              // Only interested in labels that should be to the left of other
+              // labels
+              if (x0 < otherX0 && x1 > otherX0) {
+                var overlapSize = x1 - otherX0 + 2;
+                d3.select(node).attr('dx', -(overlapSize / 2));
+
+                d3.select(this).attr('dx', overlapSize / 2);
+              }
+            }
+          });
+        });
+      }
+    },
 
     renderEmissionsChart: function renderEmissionsChart(data) {
       var _this3 = this;
@@ -444,16 +560,6 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
       }
     },
 
-    fixlabels: function fixlabels(selector) {
-      var chart = d3.select(selector).select('#fuel-use-chart');
-
-      var headerLabels = chart.select('.fc-bars').selectAll('.fc-header');
-      this.adjSizes(headerLabels, 0);
-
-      var barLabels = chart.select('.fc-bars').selectAll('.fc-bar');
-      this.hideLabels(barLabels);
-    },
-
     render: function render() {
       return this.template(this.chartData());
     },
@@ -461,6 +567,9 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/scorecards/cha
     afterRender: function afterRender() {
       if (!this.isCity) {
         this.renderEmissionsChart(this.emissionsChartData);
+
+        var chartData = this.chartData();
+        this.renderEnergyConsumptionChart(chartData.fuels, chartData.totals);
       }
     }
   });

@@ -2183,132 +2183,6 @@ header {
       -webkit-box-ordinal-group: 3;
           -ms-flex-order: 2;
               order: 2; }
-  #scorecard #fueluse-chart {
-    margin-top: 1rem; }
-    #scorecard #fueluse-chart .fc-panel {
-      display: inline-block;
-      vertical-align: top; }
-      #scorecard #fueluse-chart .fc-panel.fc-bars {
-        width: 70%;
-        margin: 0 1rem; }
-    #scorecard #fueluse-chart .fc-row.notes p {
-      margin-top: 1rem; }
-      #scorecard #fueluse-chart .fc-row.notes p:first-of-type {
-        margin-top: 0; }
-    #scorecard #fueluse-chart .fc-label {
-      height: 36px;
-      line-height: 36px; }
-      #scorecard #fueluse-chart .fc-label > div {
-        display: inline-block;
-        vertical-align: middle; }
-      #scorecard #fueluse-chart .fc-label p {
-        margin: 0;
-        padding: 0;
-        line-height: 1;
-        font-size: 1rem;
-        font-weight: 500; }
-      #scorecard #fueluse-chart .fc-label p:last-child {
-        font-size: 0.75rem; }
-    #scorecard #fueluse-chart .fc-header {
-      display: block;
-      float: left;
-      text-align: center;
-      line-height: 24px; }
-      #scorecard #fueluse-chart .fc-header.gas {
-        color: #C24E2B; }
-      #scorecard #fueluse-chart .fc-header.electricity {
-        color: #0048ba; }
-      #scorecard #fueluse-chart .fc-header.steam {
-        color: #f7c34e; }
-    #scorecard #fueluse-chart .fc-bars .fc-row:last-child p {
-      margin-top: 0.5rem;
-      text-align: left;
-      font-size: 0.75rem;
-      font-weight: 500; }
-    #scorecard #fueluse-chart .fc-bars .fc-row:last-child p:last-child {
-      font-weight: normal; }
-    #scorecard #fueluse-chart .fc-bar {
-      position: relative;
-      height: 36px;
-      float: left;
-      text-align: center; }
-      #scorecard #fueluse-chart .fc-bar.gas {
-        background: #C04F31; }
-      #scorecard #fueluse-chart .fc-bar.electricity {
-        background: #DE8F41; }
-      #scorecard #fueluse-chart .fc-bar.steam {
-        background: #F7C34D; }
-      #scorecard #fueluse-chart .fc-bar span {
-        color: white !important;
-        line-height: 36px; }
-    #scorecard #fueluse-chart .onefuel .gas {
-      background: rgba(192, 79, 49, 0.5); }
-    #scorecard #fueluse-chart .onefuel .electricity {
-      background: rgba(222, 143, 65, 0.5); }
-    #scorecard #fueluse-chart .onefuel .steam {
-      background: rgba(247, 195, 77, 0.5); }
-    #scorecard #fueluse-chart .onefuel-msg {
-      text-transform: none;
-      font-size: 0.75em;
-      text-align: left;
-      padding: 0 10px;
-      position: relative;
-      top: 50%;
-      -webkit-transform: translateY(-50%);
-              transform: translateY(-50%); }
-    #scorecard #fueluse-chart .bar-chart-container {
-      -webkit-box-align: center;
-          -ms-flex-align: center;
-              align-items: center;
-      display: -webkit-box;
-      display: -ms-flexbox;
-      display: flex;
-      -webkit-box-orient: horizontal;
-      -webkit-box-direction: normal;
-          -ms-flex-direction: row;
-              flex-direction: row;
-      font-size: .8rem;
-      margin-top: 1rem; }
-      #scorecard #fueluse-chart .bar-chart-container:first-of-type {
-        margin-top: 0; }
-      #scorecard #fueluse-chart .bar-chart-container .bar-chart-label {
-        color: #5d5d5d;
-        text-align: right;
-        width: 20%; }
-      #scorecard #fueluse-chart .bar-chart-container .bar-chart {
-        display: -webkit-box;
-        display: -ms-flexbox;
-        display: flex;
-        -webkit-box-orient: horizontal;
-        -webkit-box-direction: normal;
-            -ms-flex-direction: row;
-                flex-direction: row;
-        -webkit-box-flex: 1;
-            -ms-flex-positive: 1;
-                flex-grow: 1;
-        margin: 0 1rem; }
-        #scorecard #fueluse-chart .bar-chart-container .bar-chart .bar-item {
-          text-align: center;
-          white-space: nowrap; }
-        #scorecard #fueluse-chart .bar-chart-container .bar-chart .bar {
-          height: 30px; }
-      #scorecard #fueluse-chart .bar-chart-container .bar-chart-total {
-        color: #5d5d5d;
-        width: 20%; }
-        #scorecard #fueluse-chart .bar-chart-container .bar-chart-total .quantity {
-          font-weight: bold; }
-      #scorecard #fueluse-chart .bar-chart-container .bar-item.gas {
-        color: #C24E2B; }
-        #scorecard #fueluse-chart .bar-chart-container .bar-item.gas .bar {
-          background: rgba(194, 78, 43, 0.75); }
-      #scorecard #fueluse-chart .bar-chart-container .bar-item.electricity {
-        color: #0048ba; }
-        #scorecard #fueluse-chart .bar-chart-container .bar-item.electricity .bar {
-          background: rgba(0, 72, 186, 0.75); }
-      #scorecard #fueluse-chart .bar-chart-container .bar-item.steam {
-        color: #f7c34e; }
-        #scorecard #fueluse-chart .bar-chart-container .bar-item.steam .bar {
-          background: rgba(247, 195, 78, 0.75); }
   #scorecard #change-chart {
     text-align: center; }
     #scorecard #change-chart .year {
@@ -2554,6 +2428,39 @@ header {
               break-inside: unset; }
   #footer {
     display: none; } }
+
+#fueluse-chart {
+  margin-top: 1rem; }
+  #fueluse-chart .fc-row.notes p {
+    margin-top: 1rem; }
+    #fueluse-chart .fc-row.notes p:first-of-type {
+      margin-top: 0; }
+  #fueluse-chart .bar-chart-container {
+    font-size: .8rem;
+    height: 150px; }
+    #fueluse-chart .bar-chart-container svg {
+      height: 100%;
+      width: 100%; }
+    #fueluse-chart .bar-chart-container .bar-item.gas,
+    #fueluse-chart .bar-chart-container .bar-label.gas {
+      fill: rgba(194, 78, 43, 0.75); }
+    #fueluse-chart .bar-chart-container .bar-item.electricity,
+    #fueluse-chart .bar-chart-container .bar-label.electricity {
+      fill: rgba(0, 72, 186, 0.75); }
+    #fueluse-chart .bar-chart-container .bar-item.steam,
+    #fueluse-chart .bar-chart-container .bar-label.steam {
+      fill: rgba(247, 195, 78, 0.75); }
+    #fueluse-chart .bar-chart-container .bar-label {
+      text-anchor: middle; }
+    #fueluse-chart .bar-chart-container .bar-chart-label {
+      fill: #5d5d5d;
+      text-anchor: end; }
+      #fueluse-chart .bar-chart-container .bar-chart-label-name {
+        font-weight: 500; }
+    #fueluse-chart .bar-chart-container .bar-chart-total {
+      fill: #5d5d5d; }
+      #fueluse-chart .bar-chart-container .bar-chart-total-value {
+        font-weight: 500; }
 
 #scorecard .pushdown {
   margin-top: 0.5em; }

@@ -2,7 +2,7 @@
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', './charts/building_type_table', 'models/building_color_bucket_calculator', 'text!templates/scorecards/city.html'], function ($, _, Backbone, FuelUseView, ShiftView, BuildingTypeTableView, BuildingColorBucketCalculator, ScorecardTemplate) {
+define(['jquery', 'underscore', 'backbone', './charts/fueluse', './charts/shift', './charts/building_type_table', 'models/building_color_bucket_calculator', 'text!templates/scorecards/city.html'], function ($, _, Backbone, FuelUseView, ShiftView, BuildingTypeTableView, BuildingColorBucketCalculator, ScorecardTemplate) {
   var CityScorecard = Backbone.View.extend({
 
     initialize: function initialize(options) {
@@ -143,7 +143,6 @@ define(['jquery', 'underscore', 'backbone', './charts/fuel', './charts/shift', '
 
       if (view === 'eui') {
         el.find('#fuel-use-chart').html(this.chart_fueluse.render());
-        this.chart_fueluse.fixlabels(viewSelector);
       }
 
       if (!this.chart_shift) {
