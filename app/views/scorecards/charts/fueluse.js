@@ -290,10 +290,11 @@ define(['jquery', 'underscore', 'backbone', 'd3', '../../../../lib/wrap', 'text!
 
     renderEnergyConsumptionChart: function renderEnergyConsumptionChart(data, totals) {
       var parent = d3.select(this.viewParent).select('.energy-consumption-bar-chart-container');
+      if (!parent.node()) return;
+
       var margin = { top: 20, right: 30, bottom: 20, left: 30 };
       var outerWidth = parent.node().offsetWidth;
       var outerHeight = parent.node().offsetHeight;
-      // const outerHeight = 200;
       var width = outerWidth - margin.left - margin.right;
 
       var svg = parent.append('svg').attr('viewBox', '0 0 ' + outerWidth + ' ' + outerHeight);

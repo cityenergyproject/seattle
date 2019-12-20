@@ -563,6 +563,7 @@ define(['jquery', 'underscore', 'backbone', '../../../lib/wrap', './charts/fuelu
       var container = d3.select(viewSelector);
       var rootElm = container.select('.' + view + '-compare-chart');
 
+      if (!rootElm.node()) return;
       if (chartdata.selectedIndex === null && (chartdata.avgIndex === null || chartdata.mean === null)) {
         console.warn('Could not find required data!', view, chartdata);
         return;
