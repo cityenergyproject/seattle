@@ -1764,6 +1764,9 @@ header {
       font-weight: bold; }
     #scorecard .sc-txt.pg {
       line-height: 1.2; }
+    @media print {
+      #scorecard .sc-txt {
+        font-size: 0.75rem; } }
   #scorecard .sc-address {
     margin-bottom: 1rem; }
     #scorecard .sc-address .sc-addr {
@@ -1777,6 +1780,9 @@ header {
     border-bottom: 1px solid #f1f1f1; }
     #scorecard .scorecard--section .inner {
       padding: 1rem; }
+      @media print {
+        #scorecard .scorecard--section .inner {
+          padding: .5rem; } }
     #scorecard .scorecard--section .section-head {
       margin-bottom: 2rem; }
       @media print {
@@ -1786,7 +1792,7 @@ header {
         margin-bottom: 0.75rem; }
         @media print {
           #scorecard .scorecard--section .section-head .sc-heading {
-            margin-bottom: .5rem; } }
+            margin-bottom: .25rem; } }
   #scorecard .sc-toggle {
     margin-bottom: 1rem; }
     #scorecard .sc-toggle .sc-heading {
@@ -2001,6 +2007,14 @@ header {
   #scorecard #emissions-intensity-chart {
     position: relative;
     height: 250px; }
+    @media print {
+      #scorecard .compare-chart,
+      #scorecard #emissions-intensity-chart {
+        height: 200px; } }
+    #scorecard .compare-chart svg,
+    #scorecard #emissions-intensity-chart svg {
+      height: 100%;
+      width: 100%; }
     #scorecard .compare-chart .bar rect,
     #scorecard #emissions-intensity-chart .bar rect {
       fill: #F1F1F1;
@@ -2117,25 +2131,27 @@ header {
     #scorecard .compare-chart .selected-city-highlight .line,
     #scorecard #emissions-intensity-chart .selected-city-highlight .line {
       stroke: #0047ba; }
-  #scorecard #emissions-intensity-chart .x.axis path {
-    fill: none;
-    stroke: #CBCBCB; }
-  #scorecard #emissions-intensity-chart .x.axis text, #scorecard #emissions-intensity-chart .label text {
-    fill: #5d5d5d; }
-  #scorecard #emissions-intensity-chart .avg-highlight-html.selected-building {
-    opacity: 1; }
-    #scorecard #emissions-intensity-chart .avg-highlight-html.selected-building.right-aligned {
-      text-align: right; }
-    #scorecard #emissions-intensity-chart .avg-highlight-html.selected-building p {
+  #scorecard #emissions-intensity-chart {
+    height: 100%; }
+    #scorecard #emissions-intensity-chart .x.axis path {
+      fill: none;
+      stroke: #CBCBCB; }
+    #scorecard #emissions-intensity-chart .x.axis text, #scorecard #emissions-intensity-chart .label text {
+      fill: #5d5d5d; }
+    #scorecard #emissions-intensity-chart .avg-highlight-html.selected-building {
+      opacity: 1; }
+      #scorecard #emissions-intensity-chart .avg-highlight-html.selected-building.right-aligned {
+        text-align: right; }
+      #scorecard #emissions-intensity-chart .avg-highlight-html.selected-building p {
+        color: #0047BA; }
+    #scorecard #emissions-intensity-chart .avg-highlight-html p.quartile-1 {
       color: #0047BA; }
-  #scorecard #emissions-intensity-chart .avg-highlight-html p.quartile-1 {
-    color: #0047BA; }
-  #scorecard #emissions-intensity-chart .avg-highlight-html p.quartile-2 {
-    color: #90AE60; }
-  #scorecard #emissions-intensity-chart .avg-highlight-html p.quartile-3 {
-    color: #F7C34D; }
-  #scorecard #emissions-intensity-chart .avg-highlight-html p.quartile-4 {
-    color: #C04F31; }
+    #scorecard #emissions-intensity-chart .avg-highlight-html p.quartile-2 {
+      color: #90AE60; }
+    #scorecard #emissions-intensity-chart .avg-highlight-html p.quartile-3 {
+      color: #F7C34D; }
+    #scorecard #emissions-intensity-chart .avg-highlight-html p.quartile-4 {
+      color: #C04F31; }
   #scorecard .emissions-intensity-chart-container {
     display: -webkit-box;
     display: -ms-flexbox;
@@ -2196,9 +2212,12 @@ header {
       height: 200px; }
       @media print {
         #scorecard #change-chart #change-chart-vis {
-          height: 125px; } }
+          height: 100px;
+          margin: 20px 0; } }
       #scorecard #change-chart #change-chart-vis svg {
-        overflow: visible; }
+        overflow: visible;
+        height: 100%;
+        width: 100%; }
       #scorecard #change-chart #change-chart-vis path {
         fill: none;
         stroke: #c5c5c5;
@@ -2255,6 +2274,9 @@ header {
         margin-bottom: 1em;
         text-decoration: none;
         text-transform: uppercase; }
+        @media print {
+          #scorecard #links table .link-link .link-button {
+            padding: .5em; } }
       #scorecard #links table .link-link .link-text {
         display: block; }
       #scorecard #links table .link-link p {
@@ -2332,105 +2354,100 @@ header {
     display: block; }
   @media print {
     #scorecard {
-      /* Avoid header added by Seattle from peaking through on print */ }
-      #scorecard {
-        overflow: visible;
-        bottom: inherit;
-        position: relative; }
-      #scorecard * {
-        -webkit-print-color-adjust: exact !important;
-        /* Chrome, Safari */
-        color-adjust: exact !important;
-        /*Firefox*/ }
-      #scorecard #seaGovHeader {
+      overflow: visible;
+      bottom: inherit;
+      position: relative; }
+    #scorecard * {
+      -webkit-print-color-adjust: exact !important;
+      /* Chrome, Safari */
+      color-adjust: exact !important;
+      /*Firefox*/ }
+    #scorecard .scorecard-wrapper {
+      width: 8in;
+      max-width: 8in; }
+    #scorecard .sc-toggle {
+      display: none; }
+    #scorecard .scorecard--nav {
+      margin-top: 0; }
+    #scorecard #back-to-map-link {
+      display: none; }
+    #scorecard #scorecard-view {
+      display: block !important;
+      overflow: visible; }
+    #scorecard #comparison-view-link {
+      display: none; }
+    #scorecard .scorecard--section, #scorecard .scorecard--details {
+      page-break-inside: avoid;
+      -webkit-column-break-inside: avoid;
+              break-inside: avoid; }
+    #scorecard .scorecard-compare-chart {
+      border: none;
+      border-bottom: 1px solid #f1f1f1; }
+      #scorecard .scorecard-compare-chart.print-only {
+        float: none;
+        margin: 0; }
+      #scorecard .scorecard-compare-chart.screen-only {
         display: none; }
-      #scorecard .scorecard-wrapper {
-        width: 8in;
-        max-width: 8in; }
-      #scorecard .sc-toggle {
-        display: none; }
-      #scorecard .scorecard--nav {
-        margin-top: 0; }
-      #scorecard #back-to-map-link {
-        display: none; }
-      #scorecard #scorecard-view {
-        display: block !important;
-        overflow: visible; }
-      #scorecard #comparison-view-link {
-        display: none; }
-      #scorecard .scorecard--section, #scorecard .scorecard--details {
-        page-break-inside: avoid;
-        -webkit-column-break-inside: avoid;
-                break-inside: avoid; }
-      #scorecard .scorecard-compare-chart {
-        border: none;
-        border-bottom: 1px solid #f1f1f1; }
-        #scorecard .scorecard-compare-chart.print-only {
-          float: none;
-          margin: 0; }
-        #scorecard .scorecard-compare-chart.screen-only {
-          display: none; }
-      #scorecard #fuel-use-chart {
-        page-break-inside: avoid;
-        -webkit-column-break-inside: avoid;
-                break-inside: avoid;
-        page-break-before: always;
-        -webkit-break-before: always;
-           -moz-break-before: always;
-                break-before: always; }
-      #scorecard #building-type-table {
-        page-break-after: always;
-        -webkit-break-after: always;
-           -moz-break-after: always;
-                break-after: always; }
-      #scorecard .scorecard--print-footer {
-        -webkit-box-align: center;
-            -ms-flex-align: center;
-                align-items: center;
-        display: -webkit-box;
-        display: -ms-flexbox;
-        display: flex;
-        -webkit-box-orient: horizontal;
-        -webkit-box-direction: normal;
-            -ms-flex-direction: row;
-                flex-direction: row;
-        -webkit-box-pack: justify;
-            -ms-flex-pack: justify;
-                justify-content: space-between;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        position: fixed;
-        height: 40px;
-        font-size: 12px;
-        font-weight: bold; }
-        #scorecard .scorecard--print-footer a {
-          color: #0047BA; }
-        #scorecard .scorecard--print-footer img {
-          max-height: 100%; } }
+    #scorecard #fuel-use-chart {
+      page-break-inside: avoid;
+      -webkit-column-break-inside: avoid;
+              break-inside: avoid; }
+    #scorecard #building-type-table {
+      page-break-after: always;
+      -webkit-break-after: always;
+         -moz-break-after: always;
+              break-after: always; }
+    #scorecard .scorecard--print-footer {
+      -webkit-box-align: center;
+          -ms-flex-align: center;
+              align-items: center;
+      display: -webkit-box;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-box-orient: horizontal;
+      -webkit-box-direction: normal;
+          -ms-flex-direction: row;
+              flex-direction: row;
+      -webkit-box-pack: justify;
+          -ms-flex-pack: justify;
+              justify-content: space-between;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      position: fixed;
+      height: 40px;
+      font-size: 12px;
+      font-weight: bold; }
+      #scorecard .scorecard--print-footer a {
+        color: #0047BA; }
+      #scorecard .scorecard--print-footer img {
+        max-height: 100%; } }
 
 @media print {
+  @page {
+    margin: 0.25in; }
   body {
     background-color: #fff;
     overflow: visible; }
-  #scorecard .scorecard-wrapper.no-energy-star-score #scorecard-view {
-    /*
-       * Fuel use chart was breaking to next page, looks bad when no
-       * Energy Star score
-       */ }
-    #scorecard .scorecard-wrapper.no-energy-star-score #scorecard-view .scorecard--details {
-      display: block; }
-    #scorecard .scorecard-wrapper.no-energy-star-score #scorecard-view .scorecard-compare-chart.scorecard-energy-star-print-only {
-      display: none; }
-    #scorecard .scorecard-wrapper.no-energy-star-score #scorecard-view #fuel-use-chart {
-      page-break-inside: unset;
-      -webkit-column-break-inside: unset;
-              break-inside: unset; }
+  /* Avoid header added by Seattle from peaking through on print */
+  #seaGovHeader {
+    display: none; }
+  #scorecard .scorecard-wrapper.no-energy-star-score .compare-chart {
+    height: 250px; }
+  #scorecard .scorecard-wrapper.no-energy-star-score #change-chart #change-chart-vis {
+    height: 200px; }
+  #scorecard .scorecard-wrapper.no-energy-star-score #scorecard-view .scorecard--details {
+    display: block; }
+  #scorecard .scorecard-wrapper.no-energy-star-score #scorecard-view .scorecard-compare-chart.scorecard-energy-star-print-only {
+    display: none; }
   #footer {
     display: none; } }
 
 #fueluse-chart {
   margin-top: 1rem; }
+  @media print {
+    #fueluse-chart {
+      margin-top: .25rem; } }
   #fueluse-chart .fc-row.notes p {
     margin-top: 1rem; }
     #fueluse-chart .fc-row.notes p:first-of-type {

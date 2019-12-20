@@ -362,7 +362,7 @@ define(['jquery', 'underscore', 'backbone', 'd3', '../../../../lib/wrap', 'text!
       var totalText = totalGroup.append('text').classed('bar-chart-total', true);
 
       totalText.append('tspan').attr('x', 0).classed('bar-chart-total-value', true).text(totals[metric]);
-      totalText.append('tspan').attr('dx', '.25em').text('kBtu');
+      totalText.append('tspan').attr('dx', '.25em').text(metric === 'usage' ? 'kBtu' : 'metric tons');
 
       var barLabels = chartGroup.append('g').attr('transform', 'translate(0, 10)').classed('bar-labels', true);
       var barLabelText = barLabels.selectAll('.bar-label').data(data).enter().append('text').attr('class', function (d) {
