@@ -118,6 +118,10 @@ $steam-color: #f7c34e;
     }
 
     &.pg { line-height: 1.2; }
+
+    @media print {
+      font-size: $sc-font-std * .75;
+    }
   }
 
   .sc-address {
@@ -142,6 +146,10 @@ $steam-color: #f7c34e;
 
     .inner {
       padding: 1rem;
+
+      @media print {
+        padding: .5rem;
+      }
     }
 
     .section-head {
@@ -155,7 +163,7 @@ $steam-color: #f7c34e;
         margin-bottom: 0.75rem;
 
         @media print {
-          margin-bottom: .5rem;
+          margin-bottom: .25rem;
         }
       }
     }
@@ -435,6 +443,15 @@ $steam-color: #f7c34e;
     position: relative;
     height: 250px;
 
+    @media print {
+      height: 200px;
+    }
+
+    svg {
+      height: 100%;
+      width: 100%;
+    }
+
     .bar rect {
       fill: #F1F1F1;
       shape-rendering: crispEdges;
@@ -585,6 +602,8 @@ $steam-color: #f7c34e;
   }
 
   #emissions-intensity-chart {
+    height: 100%;
+
     .x.axis path {
       fill: none;
       stroke: #CBCBCB;
@@ -680,11 +699,14 @@ $steam-color: #f7c34e;
       height: 200px;
 
       @media print {
-        height: 125px;
+        height: 100px;
+        margin: 20px 0;
       }
 
       svg {
         overflow: visible;
+        height: 100%;
+        width: 100%;
       }
 
       path {
@@ -770,6 +792,10 @@ $steam-color: #f7c34e;
           margin-bottom: 1em;
           text-decoration: none;
           text-transform: uppercase;
+
+          @media print {
+            padding: .5em;
+          }
         }
 
         .link-text {
@@ -930,11 +956,6 @@ $steam-color: #f7c34e;
       color-adjust: exact !important;                 /*Firefox*/
     }
 
-    /* Avoid header added by Seattle from peaking through on print */
-    #seaGovHeader {
-      display: none;
-    }
-
     .scorecard-wrapper {
       width: 8in;
       max-width: 8in;
@@ -981,8 +1002,6 @@ $steam-color: #f7c34e;
     #fuel-use-chart {
       page-break-inside: avoid;
       break-inside: avoid;
-      page-break-before: always;
-      break-before: always;
     }
 
     #building-type-table {
@@ -1015,12 +1034,31 @@ $steam-color: #f7c34e;
 }
 
 @media print {
+  @page {
+    margin: 0.25in;
+  }
+
   body {
     background-color: #fff;
     overflow: visible;
   }
 
+  /* Avoid header added by Seattle from peaking through on print */
+  #seaGovHeader {
+    display: none;
+  }
+
   #scorecard .scorecard-wrapper.no-energy-star-score {
+    // When there is no energy star chart, we can let the EUI compare chart
+    // and trends take up more space
+    .compare-chart {
+      height: 250px;
+    }
+
+    #change-chart #change-chart-vis {
+      height: 200px;
+    }
+
     #scorecard-view {
       .scorecard--details {
         display: block;
@@ -1028,15 +1066,6 @@ $steam-color: #f7c34e;
 
       .scorecard-compare-chart.scorecard-energy-star-print-only {
         display: none;
-      }
-
-      /*
-       * Fuel use chart was breaking to next page, looks bad when no
-       * Energy Star score
-       */
-      #fuel-use-chart {
-        page-break-inside: unset;
-        break-inside: unset;
       }
     }
   }

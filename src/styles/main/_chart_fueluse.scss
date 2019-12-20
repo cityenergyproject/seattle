@@ -1,6 +1,10 @@
 #fueluse-chart {
   margin-top: 1rem;
 
+  @media print {
+    margin-top: .25rem;
+  }
+
   .fc-row {
     &.notes {
       p {

@@ -371,7 +371,7 @@ define([
         .text(totals[metric]);
       totalText.append('tspan')
         .attr('dx', '.25em')
-        .text('kBtu');
+        .text(metric === 'usage' ? 'kBtu' : 'metric tons');
 
       const barLabels = chartGroup.append('g')
         .attr('transform', `translate(0, 10)`)
