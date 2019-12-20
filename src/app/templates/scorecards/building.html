@@ -61,7 +61,9 @@
             <p class='compare-logo <%= compareEui.change_label %> eui'><span><%= compareEui.change_pct %></span></p>
             <p class="sc-txt light pg">This building’s energy use per square foot (EUI) is <span class='change-txt bold <%= compareEui.change_label %> eui'><%= compareEui.change_pct %> <%= compareEui.change_label %></span> than the average <%= type %> in Seattle.</p>
           <% } else { %>
-            <p class='not-available'><%= compareEui.error %></p>
+            <p class='not-available'>
+              We don't have an EUI for this building for this year. Contact <a href="mailto:energybenchmarking@seattle.gov">energybenchmarking@seattle.gov</a> if this is incorrect.
+            </p>
           <% } %>
         </div>
         <div class='col-8 eui-compare-chart compare-chart'></div>
