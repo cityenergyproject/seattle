@@ -66,7 +66,9 @@
             </p>
           <% } %>
         </div>
-        <div class='col-8 eui-compare-chart compare-chart'></div>
+        <% if(compareEui.isValid) { %>
+          <div class='col-8 eui-compare-chart compare-chart'></div>
+        <% } %>
       </div>
     </div>
 

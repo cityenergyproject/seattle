@@ -559,6 +559,7 @@ define([
       const container = d3.select(viewSelector);
       const rootElm = container.select(`.${view}-compare-chart`);
 
+      if (!rootElm.node()) return;
       if (chartdata.selectedIndex === null && (chartdata.avgIndex === null || chartdata.mean === null)) {
         console.warn('Could not find required data!', view, chartdata);
         return;
