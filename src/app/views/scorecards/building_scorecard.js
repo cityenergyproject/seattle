@@ -3,7 +3,7 @@ define([
   'underscore',
   'backbone',
   '../../../lib/wrap',
-  './charts/fuel',
+  './charts/fueluse',
   './charts/shift',
   './charts/comments',
   'models/building_color_bucket_calculator',
@@ -262,7 +262,6 @@ define([
       }
 
       el.find('#fuel-use-chart').html(this.charts['eui'].chart_fueluse.render());
-      this.charts['eui'].chart_fueluse.fixlabels(viewSelector);
       this.charts['eui'].chart_fueluse.afterRender();
 
       // render Energy Use Trends chart

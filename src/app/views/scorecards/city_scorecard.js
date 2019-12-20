@@ -2,7 +2,7 @@ define([
   'jquery',
   'underscore',
   'backbone',
-  './charts/fuel',
+  './charts/fueluse',
   './charts/shift',
   './charts/building_type_table',
   'models/building_color_bucket_calculator',
@@ -144,7 +144,6 @@ define([
 
       if (view === 'eui') {
         el.find('#fuel-use-chart').html(this.chart_fueluse.render());
-        this.chart_fueluse.fixlabels(viewSelector);
       }
 
 

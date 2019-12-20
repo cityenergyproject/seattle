@@ -30,45 +30,7 @@
     <% } else { %>
       <div class='col-8'>
         <div class='row fc-labels fc-panel'>
-
-          <div class='energy-consumption-bar-chart bar-chart-container'>
-            <div class='bar-chart-label'>
-              <div><strong>Energy Consumed</strong></div>
-              <div>(% kBtu)</div>
-            </div>
-            <div class='bar-chart'>
-              <% _.each(fuels, function(fuel) { %>
-                <div class='bar-item <%= fuel.key %>' style='width: <%= fuel.usage.pct %>%'>
-                  <div class='bar-label'><%= fuel.label %> <%= fuel.usage.pct_raw %>%</div>
-                  <div class='bar'></div>
-                </div>
-              <% }); %>
-            </div>
-            <div class='bar-chart-total'>
-              <span class='quantity'><%= totals.usage %></span>
-              <span class='units'>kBtu</span>
-            </div>
-          </div>
-
-          <div class='emissions-bar-chart bar-chart-container'>
-            <div class='bar-chart-label'>
-              <div><strong>Resulting Emissions</strong></div>
-              <div>(% ghg)</div>
-            </div>
-            <div class='bar-chart'>
-              <% _.each(fuels, function(fuel) { %>
-                <div class='bar-item <%= fuel.key %>' style='width: <%= fuel.emissions.pct %>%'>
-                  <div class='bar-label'><%= fuel.emissions.pct_raw %>%</div>
-                  <div class='bar'></div>
-                </div>
-              <% }); %>
-            </div>
-            <div class='bar-chart-total'>
-              <span class='quantity'><%= totals.emissions %></span>
-              <span class='units'>metric tons</span>
-            </div>
-          </div>
-
+          <div class='energy-consumption-bar-chart-container bar-chart-container'></div>
         </div>
       </div>
       <div class='col-4'>
