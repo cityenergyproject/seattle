@@ -26,7 +26,9 @@
 
   <div id='fueluse-chart' class='row'>
     <% if (fuels.length === 0) { %>
-      <p class='nodata'>Insufficient data</p>
+      <p class='col-4 nodata'>
+        We don't have enough data to show fuel use for this building. Contact <a href="mailto:energybenchmarking@seattle.gov">energybenchmarking@seattle.gov</a> if this is incorrect.
+      </p>
     <% } else { %>
       <div class='col-8'>
         <div class='row fc-labels fc-panel'>
