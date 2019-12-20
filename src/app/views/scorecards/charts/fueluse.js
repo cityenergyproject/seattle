@@ -278,10 +278,11 @@ define([
 
     renderEnergyConsumptionChart: function(data, totals) {
       const parent = d3.select(this.viewParent).select('.energy-consumption-bar-chart-container');
+      if (!parent.node()) return;
+
       const margin = { top: 20, right: 30, bottom: 20, left: 30 };
       const outerWidth = parent.node().offsetWidth;
       const outerHeight = parent.node().offsetHeight;
-      // const outerHeight = 200;
       const width = outerWidth - margin.left - margin.right;
 
       const svg = parent.append('svg')
