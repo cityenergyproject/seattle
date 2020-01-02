@@ -40,6 +40,14 @@
     color: #fff;
     white-space: initial;
     text-align: left;
+
+    .toggle-close {
+      display: none;
+      font-size: 2rem;
+      position: absolute;
+      right: 10px;
+      top: 5px;
+    }
   }
 
   .comparables {
@@ -117,6 +125,10 @@
 
 .compare-mode #map-controls-bar {
   top: $metric-header-height - $metric-footer-height;
+
+  .toggle .toggle-close {
+    display: block;
+  }
 
   &:after {
     bottom: auto;
