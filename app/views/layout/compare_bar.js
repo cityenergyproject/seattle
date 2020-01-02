@@ -24,6 +24,7 @@ define(['jquery', 'underscore', 'backbone', 'text!templates/layout/compare_bar.h
     events: {
       'click .toggle': 'onBarClickHandler',
       'click .close': 'onCloseHandler',
+      'click .compare-closer': 'onBarClickHandler',
       'click .name': 'onNameClickHandler'
     },
 
