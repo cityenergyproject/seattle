@@ -37,6 +37,7 @@ to compile, and copy all site files to the `dist/` folder
 
   * clone the repo
   * make sure you have [node](https://nodejs.org/) and [bower](http://bower.io/) installed
+  * Do `nvm use` to set node version fo `6.17.1`
   * in the root of the repo, run ```npm install```
   * in the root of the repo, run ```bower install```
   * in a separate terminal window run ```npm run dev```
@@ -45,6 +46,8 @@ to compile, and copy all site files to the `dist/` folder
 ## How do I deploy it to the world?
 
 You can fork a copy of the repository, and the `dist` directory will turn into your own version of the site via [Github Pages](https://pages.github.com).  Alternatively, you can host your own copy of the `dist` directory on your own web server.
+
+Doing `npm run deploy` will compile the `dist` artifacts and push them to the `gh-pages` branch of the repo, to update the site if you are serving that way.
 
 For setup and configuration instructions, see the [Setup and Configuration guide](https://github.com/cityenergyproject/cityenergy/wiki/Setup-and-Configuration).
 
