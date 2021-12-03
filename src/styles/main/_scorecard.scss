@@ -106,6 +106,7 @@ $steam-color: #f7c34e;
 
     &.white { color: $sc-white; }
     &.orange { color: $sc-orange; }
+    &.blue-new { color: $blue-new; }
 
     &.tiny { font-size: $sc-font-tiny; }
     &.small { font-size: $sc-font-sm; }
@@ -113,22 +114,10 @@ $steam-color: #f7c34e;
     &.light { font-weight: $sc-weight-lt; }
     &.bold { font-weight: $sc-weight-bd; }
 
-    &.sc-addr {
-      font-weight: bold;
-    }
-
     &.pg { line-height: 1.2; }
 
     @media print {
       font-size: $sc-font-std * .75;
-    }
-  }
-
-  .sc-address {
-    margin-bottom: 1rem;
-
-    .sc-addr {
-      margin-bottom: .5rem;
     }
   }
 
@@ -229,17 +218,31 @@ $steam-color: #f7c34e;
     }
   }
 
-
   .scorecard--nav,
   .scorecard--header {
     align-items: center;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    margin: 1rem 1rem;
 
     @media print {
       margin: 0.5rem 1rem;
+    }
+  }
+
+  .scorecard--header {
+    background: $blue-new;
+    border-radius: 0 0 10px 10px;
+    height: 81px;
+    h1.sc-header {
+      color: #fff;
+      font-size: 30px;
+      font-weight: 500;
+      margin-bottom: 0;
+      margin-left: 30px;
+    }
+    img {
+      margin-right: 20px;
     }
   }
 
@@ -267,13 +270,33 @@ $steam-color: #f7c34e;
     margin-bottom: 1rem;
     position: relative;
     padding: 0 1rem;
-    background: $blue;
-    height: 210px;
+    background: #fff;
+    height: 220px;
     overflow: hidden;
 
     @media print {
       height: 160px;
     }
+
+    display: flex;
+    flex-direction: column;
+
+    div#building-name-wrapper {
+      div.sc-building-name {
+        font-weight: 500;
+        font-size: 30px;
+      }
+    }
+
+    .sc-address {
+      margin-bottom: 1rem;
+
+      .sc-addr {
+        font-weight: 400;
+        font-size: 18px;
+      }
+    }
+
 
     [class^="col"] {
       height: 100%;
@@ -287,14 +310,6 @@ $steam-color: #f7c34e;
       color: $blue;
       z-index: 1;
 
-      .circle-bk {
-        position: relative;
-        top: 50%;
-        padding-top: 0;
-        text-align: center;
-        z-index: 1;
-        transform: translateY(-50%);
-      }
 
       &:after {
         content: ' ';
