@@ -33,20 +33,23 @@
     </div> <!-- #building-detail-row -->
 
     <div id="building-details-cards-wrapper">
-      <div class="building-details-card">
-        <div class="building-details-card-icon eui"></div>
-        <div class="building-details-card-measure">
-          <span class="building-details-card-measure-number"><%= site_eui_wn %></span>
-          <span class="bold">KBTU/FT<sup>2</sup></span>
-          <div class="building-details-card-words"><span class="bolder">energy</span> use per square foot*</div>
-        </div>
-        <div class="building-details-card-trend">
-          <div class="change-arrow <%= eui_direction %>"></div>
-          <div class="building-details-card-trend-words">
-            <div><span class="text-<%= eui_direction %>"><%= eui_direction_statement %></span> than</div>
-            <div>similar buildings.</div>
+      <div class="building-details-cards-inner">
+        <div class="building-details-card">
+          <div class="building-details-card-icon eui"></div>
+          <div class="building-details-card-measure">
+            <span class="building-details-card-measure-number"><%= site_eui_wn %></span>
+            <span class="bold">KBTU/FT<sup>2</sup></span>
+            <div class="building-details-card-words"><span class="bolder">energy</span> use per square foot*</div>
+          </div>
+          <div class="building-details-card-trend">
+            <div class="change-arrow <%= eui_direction %>"></div>
+            <div class="building-details-card-trend-words">
+              <div><span class="text-<%= eui_direction %>"><%= eui_direction_statement %></span> than</div>
+              <div>similar buildings.</div>
+            </div>
           </div>
         </div>
+        <div class="building-details-card-note">*All EUIs are adjusted for weather</div>
       </div>
 
       <div class="building-details-card">
