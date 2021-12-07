@@ -1,22 +1,74 @@
 <div class='scorecard--details'>
   <div id="building-name-wrapper">
-    <div class='sc-building-name sc-txt blue-new largeish bold'><%= name %></div>
+    <div class='sc-building-name sc-txt blue-new bold'><%= name %></div>
   </div>
-  <div>
-      <div>
-        <div class='sc-address'>
-          <div class='sc-txt blue-new smallish light sc-addr'><%= addr1 %></div>
-          <div class='sc-txt blue-new smallish light sc-addr'><%= addr2 %></div>
-        </div>
-        <div class='sc-txt blue-new small light sc-details-value'><label>Sq Footage:</label> <%= sqft %> <span class='sqft'>ft²</span></div>
-        <div class='sc-txt blue-new small light sc-details-value'><label>Type:</label> <%= type %></div>
-        <div class='sc-txt blue-new small light sc-details-value'><label>OSE Building ID:</label> <%= id %></div>
-        <div class='sc-txt blue-new small light sc-details-value'><label>Year Built:</label> <%= year_built %></div>
-        <% if (ess_logo) { %>
-        <div class='sc-txt blue-new small light ess-certified'><img class='ess-logo' src='images/scorecard/energy-star-logo.svg'/><span>This building is ENERGY STAR Certified</span></div>
-        <% } %>
+
+  <div id="building-details-outer">
+
+    <div id="building-details-row">
+      <div class='sc-address blue-new'>
+        <div><%= addr1 %></div>
+        <div><%= addr2 %></div>
       </div>
-  </div>
+
+      <div id="building-details-wrapper">
+        <div class="building-details-col">
+          <div id="building-details-labels">
+            <div>Sq Footage</div>
+            <div>Type</div>
+            <div>OSE Building ID</div>
+            <div>Year Built</div>
+          </div>
+        </div>
+
+        <div class="building-details-col">
+          <div id="building-details-values">
+            <div><%= sqft %></div>
+            <div><%= type %></div>
+            <div><%= id %></div>
+            <div><%= year_built %></div>
+          </div>
+        </div>
+      </div><!-- #building-details-wrapper -->
+    </div> <!-- #building-detail-row -->
+
+    <div id="building-details-cards-wrapper">
+      <div class="building-details-card">
+        <div class="building-details-card-icon eui"></div>
+        <div class="building-details-card-measure">
+          <span class="building-details-card-measure-number"><%= site_eui_wn %></span>
+          <span class="bold">KBTU/FT<sup>2</sup></span>
+          <div class="building-details-card-words"><span class="bolder">energy</span> use per square foot*</div>
+        </div>
+        <div class="building-details-card-trend">
+          <div class="change-arrow <%= eui_direction %>"></div>
+          <div class="building-details-card-trend-words">
+            <div><span class="text-<%= eui_direction %>"><%= eui_direction_statement %></span> than</div>
+            <div>similar buildings.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="building-details-card">
+        <div class="building-details-card-measure">
+        <div class="building-details-card-icon ghg"></div>
+          <span class="building-details-card-measure-number"><%= total_ghg %></span>
+          <span class="bold">KG CO<sub>2</sub>e/FT<sup>2</sup></span>
+          <div class="building-details-card-words"><span class="bolder">emissions</span> per square foot</div>
+        </div>
+        <div class="building-details-card-trend">
+          <div class="change-arrow <%= ghg_direction %>"></div>
+          <div class="building-details-card-trend-words">
+            <div><span class="text-<%= ghg_direction %>"><%= ghg_direction_statement %></span> than</div>
+            <div>similar buildings.</div>
+          </div>
+        </div>
+      </div>
+    
+    </div>
+
+  </div> <!-- #building-details-outer -->
+
 </div>
 
 <div class='scorecard--section scorecard-compare-chart <%= view %>-selected'>

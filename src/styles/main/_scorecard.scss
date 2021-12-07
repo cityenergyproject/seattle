@@ -269,10 +269,10 @@ $steam-color: #f7c34e;
   .scorecard--details {
     margin-bottom: 1rem;
     position: relative;
-    padding: 0 1rem;
+    padding: 0 0 0 1rem;
     background: #fff;
-    height: 220px;
     overflow: hidden;
+    height: 300px;
 
     @media print {
       height: 160px;
@@ -280,96 +280,154 @@ $steam-color: #f7c34e;
 
     display: flex;
     flex-direction: column;
+    justify-content: flex-start;
 
     div#building-name-wrapper {
+      height: 75px;
+      display: flex;
+      align-items: flex-end;
+
       div.sc-building-name {
         font-weight: 500;
-        font-size: 30px;
+        font-size: 25px;
+        padding-bottom: 3px;
       }
     }
 
-    .sc-address {
-      margin-bottom: 1rem;
+    div#building-details-outer {
+      display: flex;
+      flex-direction: row;
 
-      .sc-addr {
-        font-weight: 400;
-        font-size: 18px;
-      }
-    }
+      div#building-details-row {
+        .sc-address {
+          margin-bottom: 6px;
 
+          div {
+            font-weight: 400;
+            font-size: 18px;
+            text-transform: uppercase;
+            margin-bottom: -5px;
+          }
+        }
+  
+        div#building-details-wrapper {
+          display: flex;
+          flex-direction: row;
+      
+          div.building-details-col {
+            padding: 5px 15px;
+            width: 200px;
+            
+            &:first-child {
+              border-right: 1px solid $blue-new;
+              padding-left: 0;
+              width: auto;
+              white-space: nowrap;
+            }
+          }
 
-    [class^="col"] {
-      height: 100%;
-      padding-top: 1rem;
-      color: white;
-    }
-
-    [class^="col"].middle {
-      position: relative;
-      padding-top: 0;
-      color: $blue;
-      z-index: 1;
-
-
-      &:after {
-        content: ' ';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 260px;
-        height: 260px;
-        background: white;
-        border-radius: 50%;
-        transform: translateX(-50%) translateY(-50%);
-        z-index: -1;
-      }
-
-      .eui-desc {
-        margin: 1rem auto 0;
-        width: 150px;
-
-        p:first-child {
-          font-weight: $sc-weight-bd;
+          div#building-details-labels,
+          div#building-details-values {
+            font-size: 16px;
+            font-weight: 400;
+          
+            div {
+              margin-bottom: -5px;
+            }
+          }
         }
       }
     }
 
-    .details-box-wrapper {
-      float: right;
-      width: auto;
-    }
+    div#building-details-cards-wrapper {
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-end;
+      width: 100%;
 
-    .details-box {
-      text-align: right;
+      div.building-details-card {
+        position: relative;
 
-      & + .details-box {
-        margin-top: 1rem;
-      }
+        div.building-details-card-icon {
+          position: absolute;
+          background: $blue-new;
+          width: 40px; height: 40px;
+          top: 0; right: 0;
+          border-radius: 0 5px 0 10px;
 
-      .details-numbers {
-        margin-top: 1rem;
-        text-align: right;
+          background-repeat: no-repeat;
 
-        h4:last-of-type {
-          border-top: 1px solid white;
-          display: inline-block;
-          margin-top: .5rem;
-          padding-top: .5rem;
+          &.ghg {
+            background-image: url('../images/scorecard/cloud.svg');
+            background-size: 83%;
+            background-position: 5px 8px;
+          }
+
+          &.eui {
+            background-image: url('../images/scorecard/lightbulb.svg');            
+            background-size: 68%;
+            background-position: 7px 3px;
+          }
         }
-      }
 
-      .ways-to-save-button {
-        background: white;
-        border-radius: 2px;
-        color: $sc-blue;
-        display: inline-block;
-        font-size: 15px;
-        margin-top: 1rem;
-        padding: .5rem;
-        text-transform: uppercase;
+        width: 242px; 
+        height: 100%;
+        border: 2px solid $blue-new;
+        border-radius: 10px;
+        margin-right: 20px;
+        padding: 12px 16px 10px;
 
-        @media print {
-          display: none;
+        font-size: 16px;      
+
+        div.building-details-card-measure {
+          line-height: 1;
+          margin-bottom: 15px;
+  
+          span.building-details-card-measure-number {
+            font-size: 38px;
+            font-weight: 500;
+          }
+          div.building-details-card-words {
+            .bolder {
+              font-weight: 600;
+            }
+          }
+        }
+
+        div.building-details-card-trend {
+          display: flex;
+
+          .change-arrow {
+            width: 30px;
+            height: 40px;
+            background: transparent;
+            background-repeat: no-repeat;
+            background-size: 100%;
+            background-position: 0 7px;
+            display: inline-block;
+            &.decreased {
+              background-image: url('../images/scorecard/changearrow-down.png');
+            }
+
+            &.increased {
+              background-image: url('../images/scorecard/changearrow-up.png');
+            }
+          }
+
+          .building-details-card-trend-words {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            line-height: 1.15;
+            margin-left: 8px;
+            span.text-increased {
+              color: #C04F31;
+            }
+            span.text-decreased {
+              color: #90AE60;
+            }
+          }
+
         }
       }
     }

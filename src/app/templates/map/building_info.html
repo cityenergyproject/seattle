@@ -20,7 +20,7 @@
               We don't have an EUI for this building for this year. Contact <a href="mailto:energybenchmarking@seattle.gov">energybenchmarking@seattle.gov</a> if this is incorrect.
             </td>
           <% } else { %>
-            <td style="color: <%= data.chart.lead.color %>;"><%= data.chart.lead.value %></td>
+            <td style="color: <%= data.chart.lead.color %>;"><%= data.chart.lead.value.toLocaleString() %></td>
             <td><%= data.chart.lead.label %></td>
           <% } %>
         </tr>

@@ -69,7 +69,6 @@ define([
       var years = _.keys(city.get('years')).map(d => +d).sort((a, b) => {
         return a - b;
       });
-
       if (this.scoreCardData && this.scoreCardData.id === id) {
         this.show(buildings, this.scoreCardData.data, year, years);
       } else {
@@ -198,11 +197,37 @@ define([
     processBuilding: function(buildings, building_data, selected_year, avail_years) {
       var building = building_data[selected_year];
       const view = this.state.get('scorecard').get('view');
-
       var name = building.property_name;
       var sqft = +(building.reported_gross_floor_area);
       var prop_type = building.property_type;
       var id = building.id;
+
+      var site_eui_wn = building.site_eui_wn;
+      var building_eui_win = building.building_type_eui_wn;
+      var eui_difference = ((site_eui_wn - building_eui_win) / building_eui_win) * 100;
+      var eui_direction = eui_difference < 0 ? 'decreased' : 'increased';
+      var eui_direction_word = eui_difference < 0 ? 'lower' : 'higher';
+      var eui_difference_formatted = Math.abs(eui_difference) / 100;
+      eui_difference_formatted = eui_difference_formatted.toLocaleString('en-US', {
+        style: 'percent',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+      });
+      var eui_direction_statement = `${eui_difference_formatted} ${eui_direction_word}`;
+
+      var total_ghg = building.total_ghg_emissions;
+      var building_type_average_ghg = this.getMeanBuildingTypeGhg(buildings, prop_type);
+      var ghg_difference = ((total_ghg - building_type_average_ghg) / building_type_average_ghg) * 100;
+      var ghg_direction = ghg_difference < 0 ? 'decreased' : 'increased';
+      var ghg_direction_word = ghg_difference < 0 ? 'lower' : 'higher';
+      var ghg_difference_formatted = Math.abs(eui_difference) / 100;
+      ghg_difference_formatted = ghg_difference_formatted.toLocaleString('en-US', {
+        style: 'percent',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+      });
+      var ghg_direction_statement = `${ghg_difference_formatted} ${ghg_direction_word}`;
+
 
       var config = this.state.get('city').get('scorecard');
 
@@ -242,7 +267,14 @@ define([
         valueColor,
         costs: this.costs(building, selected_year),
         compareEui: this.compare(building, 'eui', config, chartdata),
-        compareEss: this.compare(building, 'ess', config, essChartData)
+        compareEss: this.compare(building, 'ess', config, essChartData),
+        site_eui_wn: site_eui_wn.toLocaleString(),
+        eui_difference,
+        eui_direction,
+        eui_direction_statement,
+        total_ghg,
+        ghg_direction,
+        ghg_direction_statement
       }));
 
       // set chart hash
@@ -435,6 +467,23 @@ define([
         s += step;
         arr.push(s);
       }
+    },
+
+    getMeanBuildingTypeGhg: function(buildings, property_type) {
+      // first get all the buildings of this type
+      const buildingsOfType = buildings.where({ property_type }).map(m => m.toJSON());
+      // keep only a few fields, and remove blanks
+      buildingsOfType.map(building => {
+        return {
+          id: building.id,
+          eui: building.site_eui,
+          emissions: building.total_ghg_emissions,
+          emissionsIntensity: building.total_ghg_emissions_intensity
+        };
+      }).filter(d => d.eui != null && d.emissionsIntensity != null);
+
+      // find the average (mean), and return it
+      return d3.mean(buildingsOfType.map(d => d.emissionsIntensity));
     },
 
     getThresholdLabels: function(thresholds) {

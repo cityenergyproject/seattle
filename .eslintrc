@@ -18,7 +18,8 @@
     "camelcase": 0,
     "no-console": 0,
     "no-invalid-this": 0,
-    "new-cap": 0
+    "new-cap": 0,
+     "no-debugger": 0,
   },
   "env": {
     "browser": true,
