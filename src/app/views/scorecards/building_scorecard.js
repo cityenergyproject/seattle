@@ -3,12 +3,12 @@ define([
   'underscore',
   'backbone',
   '../../../lib/wrap',
-  './charts/fueluse',
+  './charts/performance_standard',
   './charts/shift',
   './charts/comments',
   'models/building_color_bucket_calculator',
   'text!templates/scorecards/building.html'
-], function($, _, Backbone, wrap, FuelUseView, ShiftView, CommentView, BuildingColorBucketCalculator, BuildingTemplate){
+], function($, _, Backbone, wrap, PerformanceStandardView, ShiftView, CommentView, BuildingColorBucketCalculator, BuildingTemplate){
   var BuildingScorecard = Backbone.View.extend({
     initialize: function(options){
       this.state = options.state;
@@ -228,7 +228,6 @@ define([
       });
       var ghg_direction_statement = `${ghg_difference_formatted} ${ghg_direction_word}`;
 
-
       var config = this.state.get('city').get('scorecard');
 
       var viewSelector = `#scorecard-view`;
@@ -280,21 +279,22 @@ define([
       // set chart hash
       if (!this.charts.hasOwnProperty('eui')) this.charts['eui'] = {};
 
-      // render fuel use chart
-      if (!this.charts['eui'].chart_fueluse) {
-        const emissionsChartData = this.prepareEmissionsChartData(buildings, prop_type);
-        this.charts['eui'].chart_fueluse = new FuelUseView({
+      // render Clean Building Performance Standard chart
+      if (!this.charts['eui'].chart_performance_standard) {
+        this.charts['eui'].chart_performance_standard = new PerformanceStandardView({
           formatters: this.formatters,
           data: [building],
           name: name,
-          year: selected_year,
           parent: el[0],
-          emissionsChartData
+          current_eui: building.site_eui_wn,
+          target_eui: building.cbps_euit,
+          compliance_year: building.cbps_date,
+          cbps_flag: building.cbps_flag,
         });
       }
 
-      el.find('#fuel-use-chart').html(this.charts['eui'].chart_fueluse.render());
-      this.charts['eui'].chart_fueluse.afterRender();
+      el.find('#performance-standard-chart').html(this.charts['eui'].chart_performance_standard.render());
+      this.charts['eui'].chart_performance_standard.afterRender();
 
       // render Energy Use Trends chart
       if (!this.charts['eui'].chart_shift) {
@@ -590,18 +590,6 @@ define([
         selectedColor,
         mean: avg
       };
-    },
-
-    prepareEmissionsChartData: function(buildings, property_type) {
-      const buildingsOfType = buildings.where({ property_type }).map(m => m.toJSON());
-      return buildingsOfType.map(building => {
-        return {
-          id: building.id,
-          eui: building.site_eui,
-          emissions: building.total_ghg_emissions,
-          emissionsIntensity: building.total_ghg_emissions_intensity
-        };
-      }).filter(d => d.eui != null && d.emissionsIntensity != null);
     },
 
     renderCompareChart: function(config, chartdata, view, prop_type, name, viewSelector) {

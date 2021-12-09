@@ -67,11 +67,18 @@
           </div>
         </div>
       </div>
-    
     </div>
-
   </div> <!-- #building-details-outer -->
+</div> <!-- .scorecard--details -->
 
+<div id="state-requirement-wrapper">
+  <div id="state-requirement-outer">
+    <div id="state-requirement-icon"></div>
+    <div id="state-requirement-inner">
+      <div id="state-requirement-action">New state requirement! Action is required.</div>
+      <div id="state-requirement-details">This building likely must comply with Washington state's Clean Building Performance Standard. <a href="#performance-standard-chart">Learn more below.</a></div>
+    </div>
+  </div>
 </div>
 
 <div class='scorecard--section scorecard-compare-chart <%= view %>-selected'>
@@ -133,29 +140,5 @@
 
 <div id='compare-shift-chart' class='scorecard--section avoid-break'></div>
 
-<div class='scorecard--section scorecard-compare-chart scorecard-energy-star-print-only print-only'>
-  <div class='inner'>
-    <div class='scorecard-compare-section ess'>
-      <div class='section-head'>
-        <h3 class='sc-heading'>Energy Star Score Compared to Average</h3>
-        <p class='sc-txt small bold'>See how this building measures up against other buildings of the same primary use:</p>
-      </div>
 
-      <div class='row'>
-        <div class='col-4 compare-desc'>
-          <% if(compareEss.isValid) { %>
-            <p class='compare-logo <%= compareEss.change_label %> ess'><span><%= compareEss.change_pct %></span></p>
-            <p class="sc-txt light pg">This building’s ENERGY STAR Score is <span class='change-txt bold <%= compareEss.change_label %> ess'><%= compareEss.change_pct %> points <%= compareEss.change_label %></span> than the average <%= type %> in Seattle.</p>
-          <% } else { %>
-            <p class='not-available'>
-              We don't have an ENERGY STAR score for this building for this year. Contact <a href="mailto:energybenchmarking@seattle.gov">energybenchmarking@seattle.gov</a> if this is incorrect.
-            </p>
-          <% } %>
-        </div>
-        <div class='col-8 ess-compare-chart compare-chart'></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div id='fuel-use-chart' class='scorecard--section'></div>
+<div id='performance-standard-chart' class='scorecard--section'></div>

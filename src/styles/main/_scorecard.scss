@@ -64,13 +64,13 @@ $steam-color: #f7c34e;
   .sc-heading {
     margin: 0;
     padding: 0;
-    font-size: $sc-font-std;
-    font-weight: $sc-weight-bd;
-    color: $blue;
+    font-size: 18px;
+    font-weight: 500;
+    color: $blue_new;
     text-transform: uppercase;
     line-height: 1;
 
-    &.small { font-size: $sc-font-sm; }
+    &.small { font-size: 16px; }
     &.large { font-size: $sc-font-lg; }
     &.xlarge { font-size: $sc-font-lgr; }
     &.number {
@@ -109,7 +109,7 @@ $steam-color: #f7c34e;
     &.blue-new { color: $blue-new; }
 
     &.tiny { font-size: $sc-font-tiny; }
-    &.small { font-size: $sc-font-sm; }
+    &.small { font-size: 16px; }
 
     &.light { font-weight: $sc-weight-lt; }
     &.bold { font-weight: $sc-weight-bd; }
@@ -149,7 +149,7 @@ $steam-color: #f7c34e;
       }
 
       .sc-heading {
-        margin-bottom: 0.75rem;
+        margin-bottom: 7px;
 
         @media print {
           margin-bottom: .25rem;
@@ -290,7 +290,7 @@ $steam-color: #f7c34e;
       div.sc-building-name {
         font-weight: 500;
         font-size: 25px;
-        padding-bottom: 3px;
+        padding-bottom: 15px;
       }
     }
 
@@ -431,7 +431,39 @@ $steam-color: #f7c34e;
               color: #90AE60;
             }
           }
+        }
+      }
+    }
+  }
 
+  div#state-requirement-wrapper {
+    color: $blue_new;
+    background: #E5EBF6;
+    border-radius: 0px 0px 5px 5px;
+    border-top: 1px solid $blue_new;
+    padding: 16px;
+    div#state-requirement-outer {
+      display: flex;
+      flex-direction: row;
+      div#state-requirement-icon {
+        width: 16px; height: 20px;
+        background-image: url('../images/scorecard/info-icon.svg');
+        background-repeat: no-repeat;
+        background-size: 100%;
+        background-position: 0 4px;
+      }
+      div#state-requirement-inner {
+        margin-left: 6px;
+        div#state-requirement-action {
+          font-size: 16px;
+          font-weight: 600;
+        }
+        div#state-requirement-details {
+          font-size: 16px;
+          a {
+            color: $blue_new;
+            text-decoration: underline;
+          }
         }
       }
     }
@@ -515,8 +547,7 @@ $steam-color: #f7c34e;
     }
   }
 
-  .compare-chart,
-  #emissions-intensity-chart {
+  .compare-chart {
     position: relative;
     height: 250px;
 
@@ -678,85 +709,74 @@ $steam-color: #f7c34e;
     }
   }
 
-  #emissions-intensity-chart {
-    height: 100%;
-
-    .x.axis path {
-      fill: none;
-      stroke: #CBCBCB;
+  div#performance-standard-chart {
+  
+    div.no-performance-standard-data {
+      margin-top: 25px;
+      padding: 5px;
     }
 
-    .x.axis text, .label text {
-      fill: $tick-color;
-    }
-
-    .avg-highlight-html.selected-building {
-      opacity: 1;
-
-      &.right-aligned {
-        text-align: right;
-      }
-
-      p {
-        color: $sc-blue;
-      }
-    }
-
-    .avg-highlight-html p {
-      &.quartile-1 {
-          color: $sc-blue;
-      }
-      &.quartile-2 {
-        color: $sc-green;
-      }
-      &.quartile-3 {
-        color: $sc-yellow;
-      }
-      &.quartile-4 {
-        color: $sc-red;
-      }
-    }
-  }
-
-  .emissions-intensity-chart-container {
-    display: flex;
-    flex-direction: row;
-  }
-
-  .emissions-intensity-chart-legend {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-
-    &-box {
-      margin-top: 1rem;
-    }
-
-    &-label {
-      color: $tick-color;
-      font-weight: 500;
-      text-transform: uppercase;
-    }
-
-    .emissions-dots {
-      border: 1px solid #CBCBCB;
+    div#performance-standard-chart-header {
       display: flex;
-      flex-direction: column;
-      margin-bottom: 48px;
-    }
+      justify-content: space-around;
+      margin-top: 25px;
 
-    .emissions-dots-label {
-      color: $tick-color;
-      font-family: $base-font-family;
-      font-size: 10px;
-    }
+      div.performance-standard-bubble {
+        border: 2px solid $blue_new;
+        border-radius: 10px;
+        padding: 0 60px 0 15px;
 
-    .emissions-dots-title {
-      color: $tick-color;
-      font-size: 10px;
-      text-align: center;
-      text-transform: uppercase;
-      order: 2;
+        position: relative;
+
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+
+        span.performance-standard-bubble-measure {
+          font-size: 26px;
+          font-weight: 500;
+
+          .bubble-unit {
+            font-weight: 400;
+            font-size: 20px;
+            position: relative;
+            top: -1px;
+          }
+        }
+
+        img.arrow-icon {
+          width: 30px;
+          height: 30px;
+        }
+
+        span.performance-standard-bubble-description {
+          font-size: 16px;
+          font-weight: 500;
+          position: relative;
+          top: 2px;
+        }
+      
+        span.bubble-icon {
+          background: $blue-new;
+          width: 36px;
+          height: 100%;
+          border-radius: 0 7px 7px 0;
+          position: absolute;
+          right: 0;
+          
+          &.calendar {
+            background-image: url('../images/scorecard/calendar.svg');
+            background-repeat: no-repeat;
+            background-position: 7px 5px;
+          }
+          &.bolt {
+            background-image: url('../images/scorecard/bolt.svg');
+            background-repeat: no-repeat;
+            background-position: 12px 7px;
+          }
+
+        }
+      }
     }
   }
 
@@ -1074,11 +1094,6 @@ $steam-color: #f7c34e;
       &.screen-only {
         display: none;
       }
-    }
-
-    #fuel-use-chart {
-      page-break-inside: avoid;
-      break-inside: avoid;
     }
 
     #building-type-table {

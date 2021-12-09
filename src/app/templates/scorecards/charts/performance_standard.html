@@ -1,0 +1,35 @@
+<div class='inner'>
+  <div class='section-head'>
+    <h3 class='sc-heading'>WASHINGTON CLEAN BUILDINGS PERFORMANCE STANDARD</h3>
+    <p class='sc-txt small'>All commercial buildings over 50,000 ft2 must comply with Washington's law.</p>
+
+    <% if (cbps_flag) { %>
+
+    <div id="performance-standard-chart-header">
+      <div class="performance-standard-bubble">
+        <span class="performance-standard-bubble-measure">June <%= compliance_year %></span>
+        <img class="arrow-icon" src="./images/scorecard/arrow-icon.svg" />
+        <span class="performance-standard-bubble-description">estimated compliance date</span>
+        <span class="bubble-icon calendar"></span>
+      </div>
+      
+      <div class="performance-standard-bubble">
+        <span class="performance-standard-bubble-measure adjust"><%= target_eui %> <span class="bubble-unit">kBtu/ft<sup>2</sup></span></span>
+        <img class="arrow-icon" src="./images/scorecard/arrow-icon.svg" />
+        <span class="performance-standard-bubble-description adjust">estimated EUI target*</span>
+        <span class="bubble-icon bolt"></span>
+      </div>
+    </div>
+
+    <div class="performance-standard-bar-chart-container"></div>
+
+    <% } else { %>
+
+    <div class="no-performance-standard-data">
+      <p class='sc-txt small'>Performance data not available for this building.</p>
+    </div>
+
+    <% } %>
+
+  </div>
+</div>
