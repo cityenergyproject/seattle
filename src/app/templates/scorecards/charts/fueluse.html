@@ -1,60 +1,63 @@
 <div class='inner'>
   <div class='section-head'>
-    <h3 class='sc-heading'>Fuel Use and Emissions</h3>
-  <% if (!isCity) { %>
-      <p class='sc-txt small bold'>A building’s climate impact results from the fuels used to power, heat, and cool it. In Seattle, nearly all of our electricity comes from low carbon sources and has a much lower climate impact compared to fossil fuels burned either onsite (gas) or offsite (steam).</p>
-      <p class='sc-txt small bold' style='margin-top: 10px;'>See how this building’s climate impact compares to buildings of the same primary use:</p>
-    <% } else { %>
-      <p class='sc-txt small bold'>See the breakdown of different fuel types contributing to citywide GHG emissions:</p>
-    <% } %>
+    <h3 class='sc-heading'>Climate Pollution Impact of Energy Use</h3>
+      <p class='sc-txt small'>Over <span class='bold'>90%</span> of Seattle's building emissions come from burning fossil fuels like fracked gas and oil for furnaces, water heaters, and appliances - including gas used to generate steam. In Seattle, all-electric buildings have the lowest emissions.</p>
   </div>
 
-  <% if (!isCity) { %>
-    <div class='emissions-intensity-chart-container row'>
-      <div id='emissions-intensity-chart' class='col-8 emissions-intensity-chart'></div>
-      <div class='col-4 emissions-intensity-chart-legend'>
-        <div class='sc-txt light pg'>This building’s greenhouse gas (GHG) emissions per square foot was <strong><%= total_ghg_emissions_intensity %> KG/SF</strong> in <%= year %> with a total of <strong><%= totals.emissions %> metric tons (MT)</strong> for the year.</div>
-        <div class='emissions-intensity-chart-legend-box'>
-          <div class='emissions-intensity-chart-legend-label'>legend</div>
-          <div class='emissions-dots'>
-            <div class='emissions-dots-title'>total emissions</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  <% } %>
-
-  <div id='fueluse-chart' class='row'>
+  <div id='fueluse-chart' class='row mt-3'>
     <% if (fuels.length === 0) { %>
       <p class='col-4 nodata'>
         We don't have enough data to show fuel use for this building. Contact <a href="mailto:energybenchmarking@seattle.gov">energybenchmarking@seattle.gov</a> if this is incorrect.
       </p>
     <% } else { %>
-      <div class='col-8'>
+      <div id='energy-consumption-chart-heading' class='sc-heading'>This building’s energy and emissions:</div>
+      <div class='col-12'>
         <div class='row fc-labels fc-panel'>
           <div class='energy-consumption-bar-chart-container bar-chart-container'></div>
         </div>
       </div>
-      <div class='col-4'>
+      <div class='col-12'>
         <% if (fuels.length >= 1) { %>
-        <div class='fc-row notes'>
-          <% if(totals.emissions > 0) { %>
+        <div class='fc-row notes text-center'>
+          <% if (totals.emissions_raw > 0) { %>
           <p class="sc-txt light pg">
             <strong><%= totals.emissions %> MT CO<sub>2</sub>E</strong> is the equivalent of <strong><%= cars %> passenger vehicles driven</strong> for one year.
-          </p>
-          <p class="sc-txt light pg">
-            Of these passenger vehicles
-            <% _.each(fuels, function(fuel, i) { %>
-            <%= fuel.emissions.cars %> are attributable to <%= fuel.label.toLowerCase() %><% if (i <= fuels.length - 2) { %>, <% } else if (i === fuels.length - 1) { %>. <% } %>
-            <% if (i === fuels.length - 2) { %>
-            and
-            <% } %>
-            <% }); %>
           </p>
           <% } %>
         </div>
         <% } %>
       </div>
     <% } %>
+  </div>
+
+  <!-- bottom section: links and additional info -->
+  <div class='hr'></div>
+  <div id='fuel-use-future' class='row'>
+    <div class='col-7'>
+      <h3 id='fuel-use-future-heading' class='sc-heading'>The future is electric! Get started on a path to carbon neutral:</h3>
+      <div id='fuel-use-future-list'>
+        <div class='fuel-use-future-listitem'>
+          <span class='future-icon'><img src='./images/scorecard/clipboard-icon.svg' /></span>
+          <span class='sc-txt'>PLAN – Track energy use and plan for electrification</span>
+        </div>
+        <div class='fuel-use-future-listitem'>
+          <span class='future-icon'><img src='./images/scorecard/lightbulb-icon.svg' /></span>
+          <span class='sc-txt'>REDUCE – Maximize efficiency to enable electrification</span>
+        </div>
+        <div class='fuel-use-future-listitem'>
+          <span class='future-icon'><img src='./images/scorecard/plug-icon.svg' /></span>
+          <span class='sc-txt'>ELECTRIFY - Replace fossil fuel systems with electric ones</span>
+        </div>
+      </div>
+    </div>
+
+    <div class='col-4'>
+      <div id='fuel-use-learn-more'>
+        <p class='sc-txt'>Learn more here</p>
+        <a target='_blank' href='http://www.seattle.gov/environment/climate-change /buildings-and-energy'>http://www.seattle.gov/environment/climate-change /buildings-and-energy</a>
+      </div>
+    </div>
+  </div>
+    
   </div>
 </div>

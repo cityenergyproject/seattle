@@ -15,7 +15,6 @@ define([
       this.template = _.template(FuelUseTemplate);
       this.formatters = options.formatters;
       this.data = options.data;
-      this.emissionsChartData = options.emissionsChartData;
       this.building_name = options.name || '';
       this.year = options.year || '';
       this.isCity = options.isCity || false;
@@ -23,12 +22,12 @@ define([
 
       this.fuels = [
         {
-          label: 'Gas',
-          key: 'gas'
-        },
-        {
           label: 'Electric',
           key: 'electricity'
+        },
+        {
+          label: 'Gas',
+          key: 'gas'
         },
         {
           label: 'Steam',
@@ -195,7 +194,9 @@ define([
       this.fixPercents(fuels, 'usage');
 
       var totals = {
+        usage_raw: total_usage,
         usage: d3.format(',d')(d3.round(total_usage, 0)),
+        emissions_raw: total_ghg_emissions,
         emissions: d3.format(',d')(d3.round(total_ghg_emissions, 0))
       };
 
@@ -280,7 +281,7 @@ define([
       const parent = d3.select(this.viewParent).select('.energy-consumption-bar-chart-container');
       if (!parent.node()) return;
 
-      const margin = { top: 20, right: 30, bottom: 20, left: 30 };
+      const margin = { top: 20, right: 10, bottom: 20, left: 10 };
       const outerWidth = parent.node().offsetWidth;
       const outerHeight = parent.node().offsetHeight;
       const width = outerWidth - margin.left - margin.right;
@@ -288,7 +289,8 @@ define([
       const svg = parent.append('svg')
         .attr('viewBox', `0 0 ${outerWidth} ${outerHeight}`);
 
-      const totalBarWidth = width * (3 / 5);
+      // Extra padding here for dynamic labels on either end of the bars
+      const totalBarWidth = width * (0.7);
 
       const chartData = data.map((row, i) => {
         return {
@@ -420,233 +422,13 @@ define([
       }
     },
 
-    renderEmissionsChart: function(data) {
-      const selectedBuilding = this.data[0];
-      const averageEmissionsIntensity = d3.mean(data.map(d => d.emissionsIntensity));
-
-      const parent = d3.select(this.viewParent).select('.emissions-intensity-chart');
-      if (!parent.node()) return;
-
-      const outerWidth = parent.node().offsetWidth;
-      const outerHeight = 300;
-
-      const margin = { top: 50, right: 30, bottom: 40, left: 40 };
-      const width = outerWidth - margin.left - margin.right;
-      const height = outerHeight - margin.top - margin.bottom;
-
-      const svg = parent.append('svg')
-        .attr('viewBox', `0 0 ${outerWidth} ${outerHeight}`);
-
-      const container = svg.append('g')
-        .attr('width', width)
-        .attr('height', height)
-        .attr('transform', `translate(${margin.left}, ${margin.top})`);
-
-      const maxEmissionsIntensity = d3.max(data.map(r => r.emissionsIntensity));
-      const x = d3.scale.linear()
-        .domain([0, maxEmissionsIntensity * 1.05])
-        .range([0, width]);
-
-      const maxEui = d3.max(data.map(r => r.eui));
-      const y = d3.scale.linear()
-        .domain([0, maxEui * 1.15])
-        .range([height, 0]);
-
-      const size = d3.scale.linear()
-        .domain([0, d3.max(data.map(r => r.emissions))])
-        .range([5, 25]);
-
-      const xAxis = d3.svg.axis()
-        .orient('bottom')
-        .outerTickSize(0)
-        .innerTickSize(2)
-        .scale(x);
-      svg.append('g')
-        .attr('class', 'x axis')
-        .attr('transform', `translate(${margin.left}, ${height + margin.top})`)
-        .call(xAxis);
-
-      const yAxis = d3.svg.axis()
-        .orient('left')
-        .outerTickSize(0)
-        .innerTickSize(2)
-        .scale(y);
-      svg.append('g')
-        .attr('class', 'y axis')
-        .attr('transform', `translate(${margin.left}, ${margin.top})`)
-        .call(yAxis);
-
-      svg.append('g')
-        .classed('label', true)
-        .attr('transform', `translate(${margin.left + (width / 2)}, ${height + margin.top + 30})`)
-          .append('text')
-          .attr('text-anchor', 'middle')
-          .text('GHG Emissions Per Square Foot');
-
-      svg.append('g')
-        .classed('label', true)
-        .attr('transform', `translate(8, ${height / 2 + margin.top}) rotate(-90)`)
-          .append('text')
-          .attr('text-anchor', 'middle')
-          .text('Energy Use Per Square Foot (EUI)');
-
-
-      // Bring selected building to front
-      const scatterpointData = data.slice();
-      const buildingData = data.filter(d => d.id === selectedBuilding.id)[0];
-      if (buildingData) {
-        scatterpointData.push(buildingData);
-      }
-
-      const quartileColors = {
-        1: '#0047BA',
-        2: '#90AE60',
-        3: '#F7C34D',
-        4: '#C04F31'
-      };
-      const emissionsIntensities = data.map(d => d.emissionsIntensity).sort();
-      const quartiles = [0.25, 0.5, 0.75, 1].map(q => d3.quantile(emissionsIntensities, q));
-
-      container.selectAll('circle')
-          .data(scatterpointData)
-        .enter()
-        .append('circle')
-        .attr('cx', d => x(d.emissionsIntensity))
-        .attr('cy', d => y(d.eui))
-        .attr('r', d => size(d.emissions))
-        .attr('fill-opacity', d => d.id === selectedBuilding.id ? 1 : 0.35)
-        .attr('fill', d => quartileColors[this.findQuartile(quartiles, d.emissionsIntensity)]);
-
-      // Show average intensity
-      container.append('line')
-        .attr('stroke', '#D5D5D5')
-        .attr('stroke-dasharray', '8 5')
-        .attr('x1', x(averageEmissionsIntensity))
-        .attr('x2', x(averageEmissionsIntensity))
-        .attr('y1', y(0))
-        .attr('y2', 0);
-
-      // Draw line to selected building
-      container.append('line')
-        .attr('stroke', '#1F5DBE')
-        .attr('x1', x(selectedBuilding.total_ghg_emissions_intensity))
-        .attr('x2', x(selectedBuilding.total_ghg_emissions_intensity))
-        .attr('y1', y(selectedBuilding.site_eui) - size(selectedBuilding.total_ghg_emissions) - 3)
-        .attr('y2', -margin.top);
-
-      // Text for average
-      const averageQuartile = this.findQuartile(quartiles, averageEmissionsIntensity);
-
-      const averageTextGroup = svg.append('g')
-        .classed('callout-text callout-average-text', true)
-        .attr('transform', `translate(${margin.left + x(averageEmissionsIntensity) + 5}, ${margin.top})`);
-
-      averageTextGroup.append('text')
-        .attr('x', 0)
-        .attr('dy', '0')
-        .text('Building type average');
-
-      averageTextGroup.append('text')
-        .text(d3.format('.2f')(averageEmissionsIntensity))
-        .attr('x', 0)
-        .attr('dy', '.8em')
-        .classed(`value quartile-${averageQuartile}`, true);
-
-      averageTextGroup.append('text')
-        .text('KG/SF')
-        .attr('x', 0)
-        .attr('dy', '2.7em')
-        .classed(`units quartile-${averageQuartile}`, true);
-
-      // Text for selected building
-      const selectedBuildingX = x(selectedBuilding.total_ghg_emissions_intensity);
-      const selectedQuartile = this.findQuartile(quartiles, selectedBuilding.total_ghg_emissions_intensity);
-
-      const selectedTextGroup = svg.append('g')
-        .classed('callout-text callout-selected-text', true);
-      selectedTextGroup.append('text')
-        .text(selectedBuilding.property_name)
-        .classed('selected-label', true);
-
-      selectedTextGroup.append('text')
-        .text(d3.format('.2f')(selectedBuilding.total_ghg_emissions_intensity))
-        .attr('x', 0)
-        .attr('dy', '.8em')
-        .classed(`value quartile-${selectedQuartile}`, true);
-
-      selectedTextGroup.append('text')
-        .text('KG/SF')
-        .attr('x', 0)
-        .attr('dy', '2.7em')
-        .classed(`units quartile-${selectedQuartile}`, true);
-
-      const labelOnLeft = (margin.left + selectedBuildingX + selectedTextGroup.node().getBBox().width) > width;
-      selectedTextGroup
-        .attr('text-anchor', labelOnLeft ? 'end' : 'start')
-        .attr('transform', () => {
-          let x = margin.left + selectedBuildingX + 5;
-          if (labelOnLeft) {
-            x -= 10;
-          }
-          return `translate(${x}, 10)`;
-        });
-
-      const legendParent = d3.select(this.viewParent).select('.emissions-dots');
-      if (legendParent.node()) {
-        const legendWidth = legendParent.node().offsetWidth;
-        const dotMargin = 15;
-
-        const dotScale = d3.scale.linear().domain(d3.extent(data.map(d => d.emissions)));
-        const dots = [0.1, 0.25, 0.5, 0.75, 1];
-
-        const expectedWidth = dotMargin * (dots.length - 1) + d3.sum(dots.map(dot => size(dotScale.invert(dot)) * 2));
-
-        const legendSvg = legendParent.append('svg')
-          .attr('viewBox', `0 0 ${legendWidth} 100`);
-        const legendContainer = legendSvg.append('g')
-          .attr('transform', `translate(${(legendWidth - expectedWidth) / 2}, 15)`);
-
-        let xDotPosition = 0;
-        const enterLegendDot = legendContainer.selectAll('.emissions-chart-legend-dot')
-          .data(dots)
-          .enter()
-            .append('g')
-          .classed('emissions-chart-legend-dot', true)
-          .attr('transform', (d, i) => {
-            const r = size(dotScale.invert(d));
-            xDotPosition += r;
-            const translate = `translate(${xDotPosition}, ${50 - r})`;
-            xDotPosition += r + dotMargin;
-            return translate;
-          });
-
-        enterLegendDot
-          .append('circle')
-          .attr('cx', 0)
-          .attr('cy', 0)
-          .attr('r', d => size(dotScale.invert(d)))
-          .attr('fill', d => '#B9B9B9');
-
-        enterLegendDot
-          .append('text')
-          .attr('text-anchor', 'middle')
-          .classed('emissions-dots-label', true)
-          .text(d => d3.format('.2r')(dotScale.invert(d)))
-          .attr('transform', d => `translate(0, ${15 + size(dotScale.invert(d))})`);
-      }
-    },
-
     render: function() {
       return this.template(this.chartData());
     },
 
     afterRender: function() {
-      if (!this.isCity) {
-        this.renderEmissionsChart(this.emissionsChartData);
-
-        const chartData = this.chartData();
-        this.renderEnergyConsumptionChart(chartData.fuels, chartData.totals);
-      }
+      const chartData = this.chartData();
+      this.renderEnergyConsumptionChart(chartData.fuels, chartData.totals);
     }
   });
 

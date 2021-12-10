@@ -103,7 +103,7 @@ $steam-color: #f7c34e;
     color: $sc-blue;
     font-size: $sc-font-std;
     font-weight: $sc-weight;
-    line-height: 1;
+    line-height: 1.2;
 
     &.white { color: $sc-white; }
     &.orange { color: $sc-orange; }
@@ -470,6 +470,65 @@ $steam-color: #f7c34e;
         }
       }
     }
+  }
+
+  div#fuel-use-chart {
+    page-break-inside: avoid;
+    break-inside: avoid;
+
+    div#fueluse-chart {
+      div#energy-consumption-chart-heading {
+        text-transform: none;
+      }
+      .fc-row {
+        &.notes {
+          margin-top: -15px;
+        }
+      }
+    }
+  
+    .hr {
+      margin: 1.7em 0.15em;
+      height: 2px;
+      border-top: 1px solid $blue_new;
+      opacity: 50%; 
+    }
+
+    div#fuel-use-future {
+      padding: 0 2.5em;
+
+      div#fuel-use-learn-more {
+        a {
+          color: $blue_new;
+          text-decoration: underline;
+        }
+      }
+
+      h3#fuel-use-future-heading {
+        text-transform: none;
+      }
+
+      div#fuel-use-future-list {
+        display: flex; 
+        flex-direction: column;
+        margin-top: 1em;
+
+        div.fuel-use-future-listitem {
+          display: flex;
+          align-items: center;
+          height: 45px;
+          span.future-icon {
+            width: 50px;
+            text-align: center;
+            img {
+              width: auto;
+            }
+          }
+        }
+      }
+
+    }
+
   }
 
   .compare-desc {
