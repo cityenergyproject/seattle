@@ -220,7 +220,7 @@ define([
       var ghg_difference = ((total_ghg - building_type_average_ghg) / building_type_average_ghg) * 100;
       var ghg_direction = ghg_difference < 0 ? 'decreased' : 'increased';
       var ghg_direction_word = ghg_difference < 0 ? 'lower' : 'higher';
-      var ghg_difference_formatted = Math.abs(eui_difference) / 100;
+      var ghg_difference_formatted = Math.abs(ghg_difference) / 100;
       ghg_difference_formatted = ghg_difference_formatted.toLocaleString('en-US', {
         style: 'percent',
         minimumFractionDigits: 0,
@@ -472,19 +472,18 @@ define([
 
     getMeanBuildingTypeGhg: function(buildings, property_type) {
       // first get all the buildings of this type
-      const buildingsOfType = buildings.where({ property_type }).map(m => m.toJSON());
+      let buildingsOfType = buildings.where({ property_type }).map(m => m.toJSON());
       // keep only a few fields, and remove blanks
-      buildingsOfType.map(building => {
+      let buildingsFiltered = buildingsOfType.map(building => {
         return {
           id: building.id,
           eui: building.site_eui,
           emissions: building.total_ghg_emissions,
-          emissionsIntensity: building.total_ghg_emissions_intensity
         };
-      }).filter(d => d.eui != null && d.emissionsIntensity != null);
+      }).filter(d => d.eui != null && d.emissions != null);
 
       // find the average (mean), and return it
-      return d3.mean(buildingsOfType.map(d => d.emissionsIntensity));
+      return d3.mean(buildingsFiltered.map(d => d.emissions));
     },
 
     getThresholdLabels: function(thresholds) {
