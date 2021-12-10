@@ -32,8 +32,19 @@
 
     <% } else if (cbps_flag_but_no_cbps_euit) { %>
 
+    <div id='performance-standard-chart-header' class='mt-3'>
+      <div class='performance-standard-bubble'>
+        <span class='performance-standard-bubble-measure'>June <%= compliance_year %></span>
+        <img class='arrow-icon' src='./images/scorecard/arrow-icon.svg' />
+        <span class='performance-standard-bubble-description'>estimated compliance date</span>
+        <span class='bubble-icon calendar'></span>
+      </div>
+    </div>
+
     <div class='no-performance-standard-data'>
-      <p class='sc-txt small'>We could not estimate an EUI Target for this building with the reported data.<br/>Contact <a href="mailto:energybenchmarking@seattle.gov">energybenchmarking@seattle.gov</a> if you have questions.</p>
+      <div>
+        <p class='sc-txt small'>We could not estimate an EUI Target for this building with the reported data.<br/>Contact <a href="mailto:energybenchmarking@seattle.gov">energybenchmarking@seattle.gov</a> if you have questions.</p>
+      </div>
     </div>
 
     <% } %>

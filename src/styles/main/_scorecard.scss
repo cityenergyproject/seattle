@@ -1,4 +1,5 @@
 @import '../base/_basic_grid';
+@import '../base/_bs_spacing';
 
 $sc-blue: #0047BA;
 $sc-green: #90AE60;
@@ -714,19 +715,23 @@ $steam-color: #f7c34e;
   div#performance-standard-chart {
   
     div.no-performance-standard-data {
-      margin-top: 25px;
-      border: 1px solid $blue_new;
-      border-radius: 5px;
-      padding: 1em;
-      display: inline-block;
+      display: flex;
+      justify-content: center;
+      div {
+        margin-top: 5px;
+        border: 1px solid $blue_new;
+        border-radius: 5px;
+        padding: 1em;
+        display: inline-block;
 
-      p {
-        line-height: 1.38;
-      }
+        p {
+          line-height: 1.38;
+        }
 
-      a {
-        color: $blue_new; 
-        text-decoration: underline;
+        a {
+          color: $blue_new; 
+          text-decoration: underline;
+        }
       }
     }
 
