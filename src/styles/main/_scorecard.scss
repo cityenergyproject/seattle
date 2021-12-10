@@ -5,14 +5,14 @@ $sc-green: #90AE60;
 $sc-orange: #DE8F41;
 $sc-red: #C04F31;
 $sc-yellow: #F7C34D;
-$sc-white: #fff;
+$sc-white: #FFFFFF;
+$sc-grey: #707070;
 $sc-offwhite: #f1f1f1;
 
 $sc-weight-lt: 300;
 $sc-weight: 400;
 $sc-weight-bd: 500;
 
-$sc-font-micro: 0.5rem;
 $sc-font-tiny: 0.75rem;
 $sc-font-sm: 0.75rem;
 $sc-font-std: 1rem;
@@ -107,9 +107,11 @@ $steam-color: #f7c34e;
     &.white { color: $sc-white; }
     &.orange { color: $sc-orange; }
     &.blue-new { color: $blue-new; }
+    &.grey { color: $sc-grey; }
 
     &.tiny { font-size: $sc-font-tiny; }
     &.small { font-size: 16px; }
+    &.x-small { font-size: 14px; }
 
     &.light { font-weight: $sc-weight-lt; }
     &.bold { font-weight: $sc-weight-bd; }
@@ -713,7 +715,19 @@ $steam-color: #f7c34e;
   
     div.no-performance-standard-data {
       margin-top: 25px;
-      padding: 5px;
+      border: 1px solid $blue_new;
+      border-radius: 5px;
+      padding: 1em;
+      display: inline-block;
+
+      p {
+        line-height: 1.38;
+      }
+
+      a {
+        color: $blue_new; 
+        text-decoration: underline;
+      }
     }
 
     div#performance-standard-chart-header {
@@ -849,10 +863,26 @@ $steam-color: #f7c34e;
           background-size: 23px;
           // needed for background image 
           width: 152px;
-
         }
-
       }
+      div#performance-standard-bar-chart-x-axis-label {
+        color: #000;
+        font-size: 12px;
+        position: relative;
+        top: -42px;
+        left: 3px;
+      }
+    }
+
+    p#early-incentive-message {
+      a {
+        color: $blue_new;
+        text-decoration: underline;
+      }
+    }
+
+    p#performance-standard-disclaimer {
+      margin-top: 10px;
     }
 
   }

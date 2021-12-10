@@ -9,7 +9,7 @@ define([
   var PerformanceStandardView = Backbone.View.extend({
     className: 'performance-standard-chart',
 
-    initialize: function(options){
+    initialize: function(options) {
       this.template = _.template(PerformanceStandardTemplate);
       this.formatters = options.formatters;
       this.data = options.data;
@@ -19,6 +19,8 @@ define([
       this.target_eui = options.target_eui;
       this.compliance_year = options.compliance_year;
       this.cbps_flag = options.cbps_flag;
+      this.cbps_flag_but_no_cbps_euit = options.cbps_flag_but_no_cbps_euit;
+      console.log(options);
     },
 
     chartData: function() {
@@ -27,6 +29,7 @@ define([
         target_eui: this.target_eui,
         compliance_year: this.compliance_year,
         cbps_flag: this.cbps_flag,
+        cbps_flag_but_no_cbps_euit: this.cbps_flag_but_no_cbps_euit,
       };
     },
 
@@ -129,7 +132,7 @@ define([
       euiLabelGroup.append('line')
         .attr('class', 'data-line')
         .attr('x1', 0)
-        .attr('y1', 8)
+        .attr('y1', 10)
         .attr('y2', -17);
 
       // append a group to hold the tick for the target EUI
@@ -154,15 +157,15 @@ define([
         .text(`${data.target_eui} (Estimated EUI Target)`)
         .attr('class', 'chart-label')
         .style('left', targetWidth - 20 + 'px')
-        .style('bottom', '113px');
+        .style('bottom', '116px');
 
       // append a div to hold the label for current EUI
       d3.select('#performance-standard-bar-chart')
         .append('div')
-        .text(`${data.current_eui} (Current EUI)`)
+        .text(`${data.current_eui.toLocaleString()} (Current EUI)`)
         .attr('class', 'chart-label')
         .style('left', barWidth - 20 + 'px')
-        .style('bottom', '16px');
+        .style('bottom', '14px');
 
       // append a div to hold a lable for "Meets target"
       d3.select('#performance-standard-bar-chart')
@@ -202,7 +205,6 @@ define([
       }
       return quartile;
     },
-
 
     render: function() {
       return this.template(this.chartData());
