@@ -66,7 +66,7 @@ $steam-color: #f7c34e;
     margin: 0;
     padding: 0;
     font-size: 18px;
-    font-weight: 500;
+    font-weight: 600;
     color: $blue_new;
     text-transform: uppercase;
     line-height: 1;
@@ -152,7 +152,7 @@ $steam-color: #f7c34e;
       }
 
       .sc-heading {
-        margin-bottom: 7px;
+        margin-bottom: 8px;
 
         @media print {
           margin-bottom: .25rem;
@@ -964,7 +964,6 @@ $steam-color: #f7c34e;
         padding: 0 10px;
         line-height: 1.2;
         vertical-align: top;
-        font-size: 0.875rem;
       }
 
       .link-cell {
@@ -974,19 +973,23 @@ $steam-color: #f7c34e;
       .link-num {
         width: 2rem;
         height: 2rem;
-        background: $brownish-gray;
+        background: $blue_new;
         border-radius: 2rem;
         text-align: center;
         line-height: 2rem;
         color: white;
-        font-size: 1.5rem;
+        font-size: 20px;
+        font-weight: 600;
         float: left;
+        margin-left: 4px;
       }
 
       .link-content {
         display: block;
         margin-left: 3rem;
         vertical-align: top;
+        color: $blue_new;
+        font-size: 16px;
       }
 
       .link-link {
@@ -995,12 +998,16 @@ $steam-color: #f7c34e;
 
         .link-button {
           display: inline-block;
-          padding: 1em;
-          background: #0047ba;
+          padding: 6px 8px;
+          margin-top: -7px;
+          margin-bottom: 6px;
+          background: $blue_new;
           color: white;
-          margin-bottom: 1em;
+          font-weight: 600;
+          font-size: 16px;
           text-decoration: none;
           text-transform: uppercase;
+          border-radius: 5px;
 
           @media print {
             padding: .5em;
