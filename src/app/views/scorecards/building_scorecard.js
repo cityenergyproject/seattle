@@ -279,19 +279,24 @@ define([
       // set chart hash
       if (!this.charts.hasOwnProperty('eui')) this.charts['eui'] = {};
 
-      // render Clean Building Performance Standard chart
-      if (!this.charts['eui'].chart_performance_standard) {
-        this.charts['eui'].chart_performance_standard = new PerformanceStandardView({
-          formatters: this.formatters,
-          data: [building],
-          name: name,
-          parent: el[0],
-          current_eui: building.site_eui_wn,
-          target_eui: building.cbps_euit,
-          compliance_year: building.cbps_date,
-          cbps_flag: building.cbps_flag && building.cbps_euit,
-          cbps_flag_but_no_cbps_euit: building.cbps_flag && ! building.cbps_euit
-        });
+      // render Clean Building Performance Standard (CBPS) chart, but only if flagged
+      if (building.cbps_flag) {
+        if (!this.charts['eui'].chart_performance_standard) {
+          this.charts['eui'].chart_performance_standard = new PerformanceStandardView({
+            formatters: this.formatters,
+            data: [building],
+            name: name,
+            parent: el[0],
+            current_eui: building.site_eui_wn,
+            target_eui: building.cbps_euit,
+            compliance_year: building.cbps_date,
+            cbps_flag: building.cbps_flag && building.cbps_euit,
+            cbps_flag_but_no_cbps_euit: building.cbps_flag && ! building.cbps_euit
+          });
+        }      
+      } else {
+        // if we aren't showing the CBPS chart, then hide this alert
+        $('div#state-requirement-wrapper').hide();
       }
 
       el.find('#performance-standard-chart').html(this.charts['eui'].chart_performance_standard.render());
