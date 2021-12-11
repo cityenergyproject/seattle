@@ -134,8 +134,6 @@ $steam-color: #f7c34e;
   }
 
   .scorecard--section {
-    border-bottom: 1px solid $sc-offwhite;
-
     .inner {
       padding: 1rem;
 
@@ -157,66 +155,6 @@ $steam-color: #f7c34e;
         @media print {
           margin-bottom: .25rem;
         }
-      }
-    }
-  }
-
-  .sc-toggle {
-    margin-bottom: 1rem;
-
-    .sc-heading {
-      margin-bottom: .25rem;
-    }
-
-    .sc-toggle-row {
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-    }
-
-    label {
-      font-weight: 400;
-      margin: 0;
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-    }
-
-    label + label {
-      margin-left: 0.5rem;
-    }
-
-    label.cb-plain {
-      line-height: 1;
-
-      &.sc-txt {
-        text-transform: uppercase;
-      }
-
-      input[type="checkbox"] {
-        display: none;
-      }
-
-      .cb {
-        display: inline-block;
-        width: 16px;
-        height: 16px;
-        margin-right: 5px;
-        border-radius: 50%;
-        border: 1px solid $sc-blue;
-
-        .cb-inner {
-          background: $sc-blue;
-          display: none;
-          border-radius: 50%;
-          margin: 2px;
-          width: 10px;
-          height: 10px;
-        }
-      }
-
-      input[type=checkbox]:checked ~ .cb .cb-inner {
-        display: block;
       }
     }
   }
@@ -501,6 +439,9 @@ $steam-color: #f7c34e;
         a {
           color: $blue_new;
           text-decoration: underline;
+          line-height: 1.2;
+          display: inline-block;
+          margin-top: 4px;
         }
       }
 
@@ -526,250 +467,9 @@ $steam-color: #f7c34e;
           }
         }
       }
-
-    }
-
-  }
-
-  .compare-desc {
-    text-align: center;
-    padding-right: 2rem;
-
-    & > p:last-child {
-      text-align: left;
-    }
-
-    .compare-logo,
-    .change-arrow {
-      position: relative;
-      display: inline-block;
-      margin: 0 0 1rem;
-      padding: 0;
-      width: 83px;
-      height: 83px;
-      background: transparent;
-      background-repeat: no-repeat;
-      background-position: 50%;
-      line-height: 1;
-
-      &.lower.eui {
-        background-image: url('../images/scorecard/compare-left.png');
-      }
-
-      &.higher.eui {
-        background-image: url('../images/scorecard/compare-right.png');
-      }
-
-      &.lower.ess {
-        background-image: url('../images/scorecard/compare-left_red.png');
-      }
-
-      &.higher.ess {
-        background-image: url('../images/scorecard/compare-right_green.png');
-      }
-
-      span {
-        position: absolute;
-        bottom: 10px;
-        left: 0;
-        width: 100%;
-        font-size: 1rem;
-        font-weight: 500;
-        color: white;
-      }
-
-    }
-
-    .change-arrow {
-      width: 85px;
-      height: 74px;
-
-      &.decreased {
-        background-image: url('../images/scorecard/changearrow-down.png');
-      }
-
-      &.increased {
-        background-image: url('../images/scorecard/changearrow-up.png');
-      }
-
-      span {
-        bottom: auto;
-        top: 50%;
-        margin-top: -2px;
-      }
-
-      &.decreased span {
-        margin-top: -8px;
-      }
-    }
-
-    .change-txt {
-      &.lower.eui, &.higher.ess, &.decreased { color: #90AE60; }
-      &.higher.eui, &.lower.ess, &.increased {color: #C04F31; }
     }
   }
 
-  .compare-chart {
-    position: relative;
-    height: 250px;
-
-    @media print {
-      height: 200px;
-    }
-
-    svg {
-      height: 100%;
-      width: 100%;
-    }
-
-    .bar rect {
-      fill: #F1F1F1;
-      shape-rendering: crispEdges;
-
-      &.selected {
-        fill: #DE8F41;
-      }
-
-      &.avg-bar {
-        opacity: 0.5;
-      }
-    }
-
-    .axis path {
-      shape-rendering: crispEdges;
-    }
-
-    .y.axis path {
-      fill: none;
-      stroke: #CBCBCB;
-    }
-
-    text {
-      font-family: $base-font-family;
-      font-size: 10px;
-      text-transform: lowercase;
-    }
-
-    .y.axis text, .label text {
-      fill: $tick-color;
-    }
-
-    .label text {
-      text-transform: uppercase;
-    }
-
-    .axis line {
-      fill: none;
-      shape-rendering: crispEdges;
-    }
-
-    .y.axis line {
-      display: none;
-    }
-
-    .x.axis line {
-      stroke-width: 1.5;
-    }
-
-    .average-building-highlight {
-      opacity: 0.5;
-
-      & > div {
-        position: relative;
-        width: 100px;
-      }
-
-      text {
-        dominant-baseline: central;
-      }
-
-      tspan {
-        text-anchor: start;
-      }
-
-      &.align-right tspan {
-        text-anchor: end;
-      }
-
-      .value {
-        line-height: 1;
-        font-size: 24px;
-        font-weight: 500;
-        color: $real-orange;
-      }
-
-      .label, .units {
-        font-size: 10px;
-        font-weight: 400;
-        text-transform: uppercase;
-      }
-
-      .label {
-        fill: #666;
-      }
-    }
-
-    .callout-text {
-      text {
-        fill: $medium-gray;
-        text-transform: uppercase;
-
-        &.value {
-          font-size: 24px;
-          font-weight: 500;
-          line-height: 24px;
-        }
-
-        &.quartile-1 {
-          fill: $sc-blue;
-        }
-        &.quartile-2 {
-          fill: $sc-green;
-        }
-        &.quartile-3 {
-          fill: $sc-yellow;
-        }
-        &.quartile-4 {
-          fill: $sc-red;
-        }
-      }
-
-      &.callout-selected-text {
-        .selected-label {
-          fill: $sc-blue;
-        }
-      }
-    }
-
-    .selected-city-highlight {
-      .value {
-        font-size: 24px;
-        font-weight: 500;
-        text-anchor: middle;
-      }
-
-      .units {
-        font-size: 10px;
-        text-anchor: middle;
-        text-transform: none;
-      }
-
-      .building-name {
-        font-size: 14px;
-        fill: $blue;
-        text-transform: uppercase;
-      }
-
-      .circle {
-        fill: none;
-        stroke: $blue;
-      }
-
-      .line {
-        stroke: $blue;
-      }
-    }
-  }
 
   div#performance-standard-chart {
   
@@ -1057,7 +757,7 @@ $steam-color: #f7c34e;
 
         .link-button {
           display: inline-block;
-          padding: 6px 8px;
+          padding: 7px 10px 7px 9px;
           margin-top: -7px;
           margin-bottom: 6px;
           background: $blue_new;
@@ -1166,7 +866,326 @@ $steam-color: #f7c34e;
   }
 
   .scorecard-compare-chart {
-    border: 1px solid $sc-offwhite;
+    border: 1px solid $blue_new;
+    border-radius: 5px;    
+
+    #sc-toggle-wrapper {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+
+      .sc-toggle {
+        padding: 0.5rem;
+        background: #E5EBF6;
+        margin-top: -1rem;
+        margin-right: -1rem;
+        height: 85px;
+        border-radius: 0 5px 0 5px;
+
+        h4 {
+          font-weight: 500;
+        }
+
+        .sc-heading {
+          margin-bottom: .25rem;
+        }
+
+        .sc-toggle-row {
+          margin-top: 8px;
+        }
+
+        label {
+          font-weight: 500;
+          margin: 0;
+          margin-bottom: 5px;
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+        }
+
+        label.cb-plain {
+          line-height: 1;
+
+          &.sc-txt {
+            text-transform: uppercase;
+          }
+
+          input[type="checkbox"] {
+            display: none;
+          }
+
+          .cb {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            margin-right: 5px;
+            border-radius: 50%;
+            border: 1px solid $sc-blue;
+
+            .cb-inner {
+              background: $sc-blue;
+              display: none;
+              border-radius: 50%;
+              margin: 2px;
+              width: 10px;
+              height: 10px;
+            }
+          }
+
+          input[type=checkbox]:checked ~ .cb .cb-inner {
+            display: block;
+          }
+        }
+      }
+    }
+
+    div.sc-compare-row {
+      display: flex;
+      flex-direction: row;
+
+      .compare-desc {
+        text-align: center;
+        padding-right: 2rem;
+        width: 310px;
+        align-self: end;
+
+        & > p:last-child {
+          text-align: left;
+        }
+
+        .compare-logo,
+        .change-arrow {
+          position: relative;
+          display: inline-block;
+          margin: 0 0 1rem;
+          padding: 0;
+          width: 83px;
+          height: 83px;
+          background: transparent;
+          background-repeat: no-repeat;
+          background-position: 50%;
+          line-height: 1;
+
+          &.lower.eui {
+            background-image: url('../images/scorecard/compare-left.png');
+          }
+
+          &.higher.eui {
+            background-image: url('../images/scorecard/compare-right.png');
+          }
+
+          &.lower.ess {
+            background-image: url('../images/scorecard/compare-left_red.png');
+          }
+
+          &.higher.ess {
+            background-image: url('../images/scorecard/compare-right_green.png');
+          }
+
+          span {
+            position: absolute;
+            bottom: 10px;
+            left: 0;
+            width: 100%;
+            font-size: 1rem;
+            font-weight: 500;
+            color: white;
+          }
+
+        }
+
+        .change-arrow {
+          width: 85px;
+          height: 74px;
+
+          &.decreased {
+            background-image: url('../images/scorecard/changearrow-down.png');
+          }
+
+          &.increased {
+            background-image: url('../images/scorecard/changearrow-up.png');
+          }
+
+          span {
+            bottom: auto;
+            top: 50%;
+            margin-top: -2px;
+          }
+
+          &.decreased span {
+            margin-top: -8px;
+          }
+        }
+
+        .change-txt {
+          &.lower.eui, &.higher.ess, &.decreased { color: #90AE60; }
+          &.higher.eui, &.lower.ess, &.increased {color: #C04F31; }
+        }
+      }
+
+      .compare-chart {
+        position: relative;
+        height: 250px;
+
+        @media print {
+          height: 200px;
+        }
+
+        svg {
+          height: 100%;
+          width: 100%;
+        }
+
+        .bar rect {
+          fill: #F1F1F1;
+          shape-rendering: crispEdges;
+
+          &.selected {
+            fill: #DE8F41;
+          }
+
+          &.avg-bar {
+            opacity: 0.5;
+          }
+        }
+
+        .axis path {
+          shape-rendering: crispEdges;
+        }
+
+        .y.axis path {
+          fill: none;
+          stroke: #CBCBCB;
+        }
+
+        text {
+          font-family: $base-font-family;
+          font-size: 10px;
+          text-transform: lowercase;
+        }
+
+        .y.axis text, .label text {
+          fill: $tick-color;
+        }
+
+        .label text {
+          text-transform: uppercase;
+        }
+
+        .axis line {
+          fill: none;
+          shape-rendering: crispEdges;
+        }
+
+        .y.axis line {
+          display: none;
+        }
+
+        .x.axis line {
+          stroke-width: 1.5;
+        }
+
+        .average-building-highlight {
+          opacity: 0.5;
+
+          & > div {
+            position: relative;
+            width: 100px;
+          }
+
+          text {
+            dominant-baseline: central;
+          }
+
+          tspan {
+            text-anchor: start;
+          }
+
+          &.align-right tspan {
+            text-anchor: end;
+          }
+
+          .value {
+            line-height: 1;
+            font-size: 24px;
+            font-weight: 500;
+            color: $real-orange;
+          }
+
+          .label, .units {
+            font-size: 10px;
+            font-weight: 400;
+            text-transform: uppercase;
+          }
+
+          .label {
+            fill: #666;
+          }
+        }
+
+        .callout-text {
+          text {
+            fill: $medium-gray;
+            text-transform: uppercase;
+
+            &.value {
+              font-size: 24px;
+              font-weight: 500;
+              line-height: 24px;
+            }
+
+            &.quartile-1 {
+              fill: $sc-blue;
+            }
+            &.quartile-2 {
+              fill: $sc-green;
+            }
+            &.quartile-3 {
+              fill: $sc-yellow;
+            }
+            &.quartile-4 {
+              fill: $sc-red;
+            }
+          }
+
+          &.callout-selected-text {
+            .selected-label {
+              fill: $sc-blue;
+            }
+          }
+        }
+
+        .selected-city-highlight {
+          .value {
+            font-size: 24px;
+            font-weight: 500;
+            text-anchor: middle;
+          }
+
+          .units {
+            font-size: 10px;
+            text-anchor: middle;
+            text-transform: none;
+          }
+
+          .building-name {
+            font-size: 16px;
+            font-weight: 500;
+            fill: #707070;
+            text-transform: uppercase;
+          }
+
+          .circle {
+            fill: none;
+            stroke: $blue;
+          }
+
+          .line {
+            stroke: #000;
+          }
+        }
+      }
+    } // .sc-copmpare-row
 
     .not-available {
       a {

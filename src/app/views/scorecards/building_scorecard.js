@@ -777,29 +777,31 @@ define([
         .classed('selected-city-highlight', true)
         .attr('transform', `translate(${xpos - circleRadius}, ${highlightOffsetY})`);
 
-      selectedCityHighlight.append('circle')
-        .attr('cx', 0)
-        .attr('cy', 0)
-        .attr('r', circleRadius)
-        .attr('transform', `translate(${circleRadius}, ${circleRadius})`)
-        .classed('circle', true);
+      // selectedCityHighlight.append('circle')
+      //   .attr('cx', 0)
+      //   .attr('cy', 0)
+      //   .attr('r', circleRadius)
+      //   .attr('transform', `translate(${circleRadius}, ${circleRadius})`)
+      //   .classed('circle', true);
 
       const selectedValueTextGroup = selectedCityHighlight.append('g')
         .attr('transform', `translate(${circleRadius}, ${circleRadius + 5})`);
 
       var selectedValueText = selectedValueTextGroup.append('text');
 
+      // add EUI or ESS value
       selectedValueText.append('tspan')
         .attr('x', 0)
-        .text(chartdata.building_value)
-        .style('fill', chartdata.selectedColor)
+        .text(chartdata.building_value.toLocaleString())
+        .style('fill', '#000')
         .classed('value', true);
 
+      // add units
       selectedValueTextGroup.append('text')
         .text(compareChartConfig.highlight_metric[view])
         .attr('x', 0)
         .attr('dy', '1em')
-        .style('fill', chartdata.selectedColor)
+        .style('fill', '#000')
         .classed('units', true)
         .call(wrap, circleRadius * 2);
 
@@ -832,7 +834,7 @@ define([
       selectedCityHighlight.append('path')
         .classed('line', true)
         .attr('d', d3.svg.line()([
-          [circleRadius + 1, circleRadius * 2],
+          [circleRadius + 1, circleRadius * 2 - 5],
           [circleRadius + 1, margin.top + ypos - highlightTopMargin],
         ]));
 
@@ -849,6 +851,79 @@ define([
 
       ypos = y(chartdata.data[chartdata.avgIndex].y); // top of bar
 
+// var xBandWidth = x.rangeBand();
+// var xpos = chartdata.selectedIndex === null ? 0 : x(chartdata.data[chartdata.avgIndex].x) + (xBandWidth / 2);
+// var ypos = chartdata.selectedIndex === null ? 0 : y(chartdata.data[chartdata.avgIndex].y);
+// const selectedXPos = xpos;
+// const circleRadius = 30;
+// const highlightOffsetY = -70;
+// const highlightTopMargin = margin.top + highlightOffsetY;
+
+// var averageTypeHighlight = chartGroup.append('g')
+//   .classed('selected-city-highlight', true)
+//   .attr('transform', `translate(${xpos - circleRadius}, ${highlightOffsetY})`);
+
+// // averageTypeHighlight.append('circle')
+// //   .attr('cx', 0)
+// //   .attr('cy', 0)
+// //   .attr('r', circleRadius)
+// //   .attr('transform', `translate(${circleRadius}, ${circleRadius})`)
+// //   .classed('circle', true);
+
+// const averageValueTextGroup = averageTypeHighlight.append('g')
+//   .attr('transform', `translate(${circleRadius}, ${circleRadius + 5})`);
+
+// var averageValueText = averageValueTextGroup.append('text');
+
+// // add EUI or ESS value
+// averageValueText.append('tspan')
+//   .attr('x', 0)
+//   .text(chartdata.building_value.toLocaleString())
+//   .style('fill', '#000')
+//   .classed('value', true);
+
+// // add units
+// averageValueTextGroup.append('text')
+//   .text(compareChartConfig.highlight_metric[view])
+//   .attr('x', 0)
+//   .attr('dy', '1em')
+//   .style('fill', '#000')
+//   .classed('units', true)
+//   .call(wrap, circleRadius * 2);
+
+// averageValueTextGroup
+//   .attr('transform', () => {
+//     const textGroupHeight = averageValueTextGroup.node().getBBox().height;
+//     const valueHeight = averageValueText.node().getBBox().height;
+//     return `translate(${circleRadius}, ${highlightTopMargin + valueHeight / 2 + (circleRadius - textGroupHeight / 2)})`;
+//   });
+
+// const averageNameText = averageTypeHighlight.append('g').append('text')
+//   .text(name)
+//   .classed('building-name', true)
+//   .call(wrap, 150);
+
+// averageNameText
+//   .attr('transform', () => {
+//     const bbox = averageNameText.node().getBBox();
+//     const nodeWidth = bbox.width;
+//     const nodeHeight = bbox.height;
+//     let x = circleRadius * 2 + 5;
+
+//     if (nodeWidth + xpos + circleRadius > width) {
+//       x = -(nodeWidth + 5);
+//     }
+//     let y = circleRadius - (nodeHeight / 2) + highlightTopMargin;
+//     return `translate(${x}, ${y})`;
+//   });
+
+// averageTypeHighlight.append('path')
+//   .classed('line', true)
+//   .attr('d', d3.svg.line()([
+//     [circleRadius + 1, circleRadius * 2 - 5],
+//     [circleRadius + 1, margin.top + ypos - highlightTopMargin],
+//   ]));
+
       let yTranslate = ypos + 5;
       var averageBuildingHighlight = chartGroup.append('g')
         .classed('average-building-highlight', true)
@@ -858,7 +933,7 @@ define([
 
       averageText.append('tspan')
         .text('Building type average')
-        .classed('label', true)
+        .classed('building-name', true)
         .call(wrap, 75);
 
       averageText.append('tspan')
