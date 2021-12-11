@@ -26,14 +26,15 @@ define([
           key: 'electricity'
         },
         {
-          label: 'Gas',
-          key: 'gas'
-        },
-        {
           label: 'Steam',
           key: 'steam'
+        },
+        {
+          label: 'Gas',
+          key: 'gas'
         }
       ];
+      console.log(options);
     },
 
     getMean: function(key, data) {
@@ -190,6 +191,7 @@ define([
         total_usage = this.getSum('total_kbtu', data);
       }
 
+      // what the heck is this?
       this.fixPercents(fuels, 'emissions');
       this.fixPercents(fuels, 'usage');
 
