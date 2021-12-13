@@ -20,7 +20,6 @@ define([
       this.compliance_year = options.compliance_year;
       this.cbps_flag = options.cbps_flag;
       this.cbps_flag_but_no_cbps_euit = options.cbps_flag_but_no_cbps_euit;
-      console.log(options);
     },
 
     chartData: function() {

@@ -34,7 +34,6 @@ define([
           key: 'gas'
         }
       ];
-      console.log(options);
     },
 
     getMean: function(key, data) {

@@ -9,7 +9,7 @@ define([
   var ShiftView = Backbone.View.extend({
     className: 'shift-chart',
 
-    initialize: function(options){
+    initialize: function(options) {
       this.template = _.template(ShiftTemplate);
       this.formatters = options.formatters;
       this.data = options.data || [];
