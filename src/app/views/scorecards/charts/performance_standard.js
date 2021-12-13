@@ -76,11 +76,12 @@ define([
         .attr('height', barHeight)
         .attr('width', chartWidth);
 
-      // add the red bar, no need for a data/enter type pattern
+      // add the bar, no need for a data/enter type pattern
       // as there is just one bar and we can calc the width directly
       let barWidth = (data.current_eui * chartWidth) / (quartile * 5);
       chartGroup.append('rect')
         .attr('class', 'bar-eui')
+        .attr('fill', function() { return data.current_eui <= data.target_eui ? '#90AE60' : '#C04F31'; })
         .attr('height', barHeight)
         .attr('width', barWidth)
         .attr('text', barWidth);
@@ -94,6 +95,7 @@ define([
         .enter().append('g')
           // we use this class to hide the first tick line (at 0) and the last tick line (at 100%)
           .classed('hide-line', function(d, i) { return i == 5 || i == 0; })
+          .classed('tick-line-over-bar', function(d, i) { return d < data.current_eui; })
           .attr('transform', function(d, i) {
             let dx = (quartileWidth * i);
             return `translate(${dx}, 0)`;

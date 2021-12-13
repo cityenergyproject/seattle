@@ -696,10 +696,6 @@ $steam-color: #f7c34e;
           stroke: #B2B2B2;
         }
 
-        .bar-eui {
-          fill: #C04F31;
-        }
-
         .tick-label {
           fill: #B2B2B2;
           font-size: 12px;
@@ -712,6 +708,10 @@ $steam-color: #f7c34e;
         .tick-line {
           stroke: #B2B2B2;
           stroke-width: 1px;
+        }
+
+        .tick-line-over-bar > .tick-line {
+          stroke: #dfdfdf;
         }
 
         .data-line {
