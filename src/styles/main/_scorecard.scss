@@ -207,8 +207,8 @@ $steam-color: #f7c34e;
     }
   }
 
+  // Scorecard "cards" near top of report
   .scorecard--details {
-    margin-bottom: 1rem;
     position: relative;
     padding: 0 0 0 1rem;
     background: #fff;
@@ -377,6 +377,7 @@ $steam-color: #f7c34e;
     }
   }
 
+  // New State Requirement: Action is required alert
   div#state-requirement-wrapper {
     color: $blue_new;
     background: #E5EBF6;
@@ -410,6 +411,8 @@ $steam-color: #f7c34e;
     }
   }
 
+  // Fuel Use Chart
+  // "Climate Pollution Impact of Energy Use"
   div#fuel-use-chart {
     page-break-inside: avoid;
     break-inside: avoid;
@@ -470,9 +473,132 @@ $steam-color: #f7c34e;
     }
   }
 
+  // SHIFT CHART aka #compare-shift-chart
+  // "Energy Use Trends"
+  #compare-shift-chart {
+    margin-top: 5px;
 
+    .compare-desc {
+      text-align: center;
+      padding-right: 2em;
+
+      .change-arrow {
+        position: relative;
+        display: inline-block;
+        margin: 0 0 1rem;
+        padding: 0;
+
+        background: transparent;
+        background-repeat: no-repeat;
+        background-position: 50%;
+        line-height: 1;
+
+        width: 85px;
+        height: 74px;
+
+        &.decreased {
+          background-image: url('../images/scorecard/changearrow-down.png');
+        }
+
+        &.increased {
+          background-image: url('../images/scorecard/changearrow-up.png');
+        }
+
+        span {
+          width: 100%;
+          font-size: 1rem;
+          font-weight: 500;
+          color: white;
+
+          position: absolute;
+          bottom: auto;
+          top: 50%;
+          left: 0;
+          margin-top: -2px;
+        }
+
+        &.decreased span {
+          margin-top: -8px;
+        }
+      }
+
+      p#compare-label {
+        text-align: left; 
+              
+        .change-txt {
+          &.lower.eui, &.higher.ess, &.decreased { color: #90AE60; }
+          &.higher.eui, &.lower.ess, &.increased { color: #C04F31; }
+        }
+      }
+
+    }
+
+    #change-chart {
+      .year {
+        fill: $base-font-color;
+        font-size: 18px;
+        font-weight: 500;
+        text-anchor: middle;
+      }
+
+      #change-chart-vis {
+        position: relative;
+        margin: 30px 0;
+        height: 200px;
+
+        @media print {
+          height: 100px;
+          margin: 20px 0;
+        }
+
+        svg {
+          overflow: visible;
+          height: 100%;
+          width: 100%;
+        }
+
+        path {
+          fill: none;
+          stroke: #c5c5c5;
+          stroke-width: 1;
+        }
+
+        circle {
+          stroke: none;
+        }
+
+        .no-clr > circle {
+          fill: #bababa;
+        }
+
+        tspan.value {
+          font-size: 16px;
+        }
+
+        tspan.metric.small {
+          font-size: 8px;
+          text-transform: uppercase;
+        }
+
+        text.building {
+          fill: #acacac;
+          font-size: 8px;
+          text-transform: uppercase;
+
+          &.selected-building {
+            font-size: 12px;
+            color: #0047BA;
+          }
+        }
+      }
+    }
+  }
+
+  // CBPS - Building Performance Standard chart
+  // "Washington Clean Buildings Performance Standard"
   div#performance-standard-chart {
-  
+    border-top: 1px solid $blue_new;
+
     div.no-performance-standard-data {
       display: flex;
       justify-content: center;
@@ -648,223 +774,12 @@ $steam-color: #f7c34e;
     p#performance-standard-disclaimer {
       margin-top: 10px;
     }
-
   }
 
-  #change-chart {
-    text-align: center;
-
-    .year {
-      fill: $base-font-color;
-      font-size: 24px;
-      font-weight: 500;
-      text-anchor: middle;
-    }
-
-    #change-chart-vis {
-      position: relative;
-      margin: 30px 0;
-      height: 200px;
-
-      @media print {
-        height: 100px;
-        margin: 20px 0;
-      }
-
-      svg {
-        overflow: visible;
-        height: 100%;
-        width: 100%;
-      }
-
-      path {
-        fill: none;
-        stroke: #c5c5c5;
-        stroke-width: 1;
-      }
-
-      circle {
-        stroke: none;
-      }
-
-      .no-clr > circle {
-        fill: #bababa;
-      }
-
-      tspan.value {
-        font-size: 16px;
-      }
-
-      tspan.metric.small {
-        font-size: 8px;
-        text-transform: uppercase;
-      }
-
-      text.building {
-        fill: #acacac;
-        font-size: 8px;
-        text-transform: uppercase;
-
-        &.selected-building {
-          font-size: 12px;
-          color: #0047BA;
-        }
-      }
-    }
-  }
-
-  #links {
-    background: #F1F1F1;
-
-    table {
-      td {
-        width: auto;
-        border: 0;
-        padding: 0 10px;
-        line-height: 1.2;
-        vertical-align: top;
-      }
-
-      .link-cell {
-        color: $brownish-gray;
-      }
-
-      .link-num {
-        width: 2rem;
-        height: 2rem;
-        background: $blue_new;
-        border-radius: 2rem;
-        text-align: center;
-        line-height: 2rem;
-        color: white;
-        font-size: 20px;
-        font-weight: 600;
-        float: left;
-        margin-left: 4px;
-      }
-
-      .link-content {
-        display: block;
-        margin-left: 3rem;
-        vertical-align: top;
-        color: $blue_new;
-        font-size: 16px;
-      }
-
-      .link-link {
-        margin-left: 3rem;
-        padding-top: 1rem;
-
-        .link-button {
-          display: inline-block;
-          padding: 7px 10px 7px 9px;
-          margin-top: -7px;
-          margin-bottom: 6px;
-          background: $blue_new;
-          color: white;
-          font-weight: 600;
-          font-size: 16px;
-          text-decoration: none;
-          text-transform: uppercase;
-          border-radius: 5px;
-
-          @media print {
-            padding: .5em;
-          }
-        }
-
-        .link-text {
-          display: block;
-        }
-
-        p {
-          font-weight: bold;
-        }
-
-        a {
-          color: #0047ba;
-          text-decoration: underline;
-          word-break: break-word;
-          word-wrap: break-word;
-        }
-      }
-
-      tr.ad {
-
-        td {
-          text-align: center;
-        }
-
-        a {
-          display: block;
-          margin-top: 2rem;
-        }
-      }
-
-    }
-  }
-
-  .scorecard--print-footer {
-    display: none;
-  }
-
-  #building-type-table {
-    table {
-      color: #646569;
-      font-size: 0.725rem;
-    }
-
-    td {
-      text-align: center;
-      vertical-align: middle;
-      border-bottom-color: #ddd;
-      padding: 0.5rem 0;
-
-      &:first-child {
-        text-align: right;
-        width: auto;
-        padding-left: 0.7rem;
-        padding-right: 0.7rem;
-        width: 6.5em;
-      }
-    }
-
-    thead tr:first-child td {
-      border: 0;
-    }
-
-    thead td {
-      vertical-align: bottom;
-    }
-
-    thead td:first-child {
-      font-size: 1.1rem;
-      text-transform: uppercase;
-      font-weight: 500;
-      line-height: 1.1;
-    }
-
-    tbody td {
-      font-weight: 500;
-      font-size: 0.75rem;
-
-      &:first-child {
-        font-size: 0.725rem;
-        font-weight: 400;
-      }
-    }
-
-    .header { font-size: 0.75rem; }
-
-    .gray-bk {
-      background: $sc-offwhite;
-    }
-
-    .no-border {
-      border: 0;
-    }
-  }
-
+  // COMPARE CHART
+  // Energy Use Compared to Average Chart
+  // Energy Star Score Compared to Average Chart
+  // 
   .scorecard-compare-chart {
     border: 1px solid $blue_new;
     border-radius: 5px;    
@@ -994,33 +909,33 @@ $steam-color: #f7c34e;
 
         }
 
-        .change-arrow {
-          width: 85px;
-          height: 74px;
+        // .change-arrow {
+        //   width: 85px;
+        //   height: 74px;
 
-          &.decreased {
-            background-image: url('../images/scorecard/changearrow-down.png');
-          }
+        //   &.decreased {
+        //     background-image: url('../images/scorecard/changearrow-down.png');
+        //   }
 
-          &.increased {
-            background-image: url('../images/scorecard/changearrow-up.png');
-          }
+        //   &.increased {
+        //     background-image: url('../images/scorecard/changearrow-up.png');
+        //   }
 
-          span {
-            bottom: auto;
-            top: 50%;
-            margin-top: -2px;
-          }
+        //   span {
+        //     bottom: auto;
+        //     top: 50%;
+        //     margin-top: -2px;
+        //   }
 
-          &.decreased span {
-            margin-top: -8px;
-          }
-        }
+        //   &.decreased span {
+        //     margin-top: -8px;
+        //   }
+        // }
 
-        .change-txt {
-          &.lower.eui, &.higher.ess, &.decreased { color: #90AE60; }
-          &.higher.eui, &.lower.ess, &.increased {color: #C04F31; }
-        }
+        // .change-txt {
+        //   &.lower.eui, &.higher.ess, &.decreased { color: #90AE60; }
+        //   &.higher.eui, &.lower.ess, &.increased { color: #C04F31; }
+        // }
       }
 
       .compare-chart {
@@ -1238,7 +1153,162 @@ $steam-color: #f7c34e;
     display: block;
   }
 
-  // general print queries follow
+  // Footer Links
+  #links {
+    background: #F1F1F1;
+
+    table {
+      td {
+        width: auto;
+        border: 0;
+        padding: 0 10px;
+        line-height: 1.2;
+        vertical-align: top;
+      }
+
+      .link-cell {
+        color: $brownish-gray;
+      }
+
+      .link-num {
+        width: 2rem;
+        height: 2rem;
+        background: $blue_new;
+        border-radius: 2rem;
+        text-align: center;
+        line-height: 2rem;
+        color: white;
+        font-size: 20px;
+        font-weight: 600;
+        float: left;
+        margin-left: 4px;
+      }
+
+      .link-content {
+        display: block;
+        margin-left: 3rem;
+        vertical-align: top;
+        color: $blue_new;
+        font-size: 16px;
+      }
+
+      .link-link {
+        margin-left: 3rem;
+        padding-top: 1rem;
+
+        .link-button {
+          display: inline-block;
+          padding: 7px 10px 7px 9px;
+          margin-top: -7px;
+          margin-bottom: 6px;
+          background: $blue_new;
+          color: white;
+          font-weight: 600;
+          font-size: 16px;
+          text-decoration: none;
+          text-transform: uppercase;
+          border-radius: 5px;
+
+          @media print {
+            padding: .5em;
+          }
+        }
+
+        .link-text {
+          display: block;
+        }
+
+        p {
+          font-weight: bold;
+        }
+
+        a {
+          color: #0047ba;
+          text-decoration: underline;
+          word-break: break-word;
+          word-wrap: break-word;
+        }
+      }
+
+      tr.ad {
+
+        td {
+          text-align: center;
+        }
+
+        a {
+          display: block;
+          margin-top: 2rem;
+        }
+      }
+
+    }
+  }
+
+  .scorecard--print-footer {
+    display: none;
+  }
+
+  // Building Type Table
+  // not sure what this is, but seems to be on the City Scorecard only
+  #building-type-table {
+    table {
+      color: #646569;
+      font-size: 0.725rem;
+    }
+
+    td {
+      text-align: center;
+      vertical-align: middle;
+      border-bottom-color: #ddd;
+      padding: 0.5rem 0;
+
+      &:first-child {
+        text-align: right;
+        width: auto;
+        padding-left: 0.7rem;
+        padding-right: 0.7rem;
+        width: 6.5em;
+      }
+    }
+
+    thead tr:first-child td {
+      border: 0;
+    }
+
+    thead td {
+      vertical-align: bottom;
+    }
+
+    thead td:first-child {
+      font-size: 1.1rem;
+      text-transform: uppercase;
+      font-weight: 500;
+      line-height: 1.1;
+    }
+
+    tbody td {
+      font-weight: 500;
+      font-size: 0.75rem;
+
+      &:first-child {
+        font-size: 0.725rem;
+        font-weight: 400;
+      }
+    }
+
+    .header { font-size: 0.75rem; }
+
+    .gray-bk {
+      background: $sc-offwhite;
+    }
+
+    .no-border {
+      border: 0;
+    }
+  }
+
+  // General print queries follow
   @media print {
     & {
       overflow: visible;
