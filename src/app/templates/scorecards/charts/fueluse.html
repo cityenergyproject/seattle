@@ -30,8 +30,39 @@
     <% } %>
   </div>
 
-  <!-- bottom section: links and additional info -->
   <div class='hr'></div>
+
+  <!-- bottom section: links and additional info -->
+  <% if (all_electric) { %>
+  <div id='fuel-use-future' class='row'>
+    <div class='col-8'>
+      <h3 id='fuel-use-future-heading' class='sc-heading'>Congratulations! Your building is all electric and carbon neutral:</h3>
+      <div id='fuel-use-future-list'>
+        <div class='fuel-use-future-listitem'>
+          <span class='future-icon'><img src='./images/scorecard/clipboard-icon.svg' /></span>
+          <span class='sc-txt'>PLAN – Is your building as efficient as it can be?</span>
+        </div>
+        <div class='fuel-use-future-listitem'>
+          <span class='future-icon'><img src='./images/scorecard/lightbulb-icon.svg' /></span>
+          <span class='sc-txt'>REDUCE – Check out City Light’s incentives</span>
+        </div>
+        <div class='fuel-use-future-listitem'>
+          <span class='future-icon'><img src='./images/scorecard/plug-icon.svg' /></span>
+          <span class='sc-txt'>RENEWABLES - Get even greener</span>
+        </div>
+      </div>
+    </div>
+
+    <div class='col-4'>
+      <div id='fuel-use-learn-more'>
+        <p class='sc-txt'>Learn more here:</p>
+        <a target='_blank' href='https://www.seattle.gov/city-light/business-solutions/renewable-energy-services'>https://www.seattle.gov/city-light/business-solutions/renewable-energy-services</a>
+      </div>
+    </div>
+  </div>
+
+  <% } else { %>
+
   <div id='fuel-use-future' class='row'>
     <div class='col-8'>
       <h3 id='fuel-use-future-heading' class='sc-heading'>The future is electric! Get started on a path to carbon neutral:</h3>
@@ -54,10 +85,12 @@
     <div class='col-4'>
       <div id='fuel-use-learn-more'>
         <p class='sc-txt'>Learn more here:</p>
-        <a target='_blank' href='http://www.seattle.gov/environment/climate-change /buildings-and-energy'>http://www.seattle.gov/environment/climate-change /buildings-and-energy</a>
+        <a target='_blank' href='http://www.seattle.gov/environment/climate-change/buildings-and-energy'>http://www.seattle.gov/environment/climate-change/buildings-and-energy</a>
       </div>
     </div>
   </div>
+
+  <% } %>
     
   </div>
 </div>
