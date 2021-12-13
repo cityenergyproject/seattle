@@ -1238,6 +1238,7 @@ $steam-color: #f7c34e;
     display: block;
   }
 
+  // general print queries follow
   @media print {
     & {
       overflow: visible;

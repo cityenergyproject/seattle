@@ -280,7 +280,7 @@ define([
       // set chart hash
       if (!this.charts.hasOwnProperty('eui')) this.charts['eui'] = {};
 
-      // render fuel use chart
+      // render fuel use chart (fueluse.js)
       if (!this.charts['eui'].chart_fueluse) {
         this.charts['eui'].chart_fueluse = new FuelUseView({
           formatters: this.formatters,
@@ -294,8 +294,7 @@ define([
       el.find('#fuel-use-chart').html(this.charts['eui'].chart_fueluse.render());
       this.charts['eui'].chart_fueluse.afterRender();
 
-
-      // render Clean Building Performance Standard (CBPS) chart, but only if flagged
+      // render Clean Building Performance Standard (CBPS) chart (performance_standard.js), but only if flagged
       if (building.cbps_flag) {
         if (!this.charts['eui'].chart_performance_standard) {
           this.charts['eui'].chart_performance_standard = new PerformanceStandardView({
@@ -318,7 +317,7 @@ define([
         $('div#state-requirement-wrapper').hide();
       }
 
-      // render Energy Use Trends chart
+      // render Energy Use Trends (shift.js) chart
       if (!this.charts['eui'].chart_shift) {
         var shiftConfig = config.change_chart.building;
         var previousYear = avail_years[0];
@@ -336,17 +335,19 @@ define([
         });
       }
 
+      // Render Energy Use Compared To Average and Energy Star Score Compared To Average
       if (this.charts['eui'].chart_shift) {
         this.charts['eui'].chart_shift.render(t => {
           el.find('#compare-shift-chart').html(t);
         }, viewSelector);
       }
 
-      // Render compare charts
+      // Note: this one doesn't have a separate template, render is defined here
       this.renderCompareChart(config, chartdata, 'eui', prop_type, name, viewSelector);
       this.renderCompareChart(config, essChartData, 'ess', prop_type, name, viewSelector + ' .screen-only');
       this.renderCompareChart(config, essChartData, 'ess', prop_type, name, viewSelector + ' .print-only');
 
+      // Add building comments (??)
       if (!this.commentview) {
         this.commentview = new CommentView({ building });
 
@@ -613,6 +614,7 @@ define([
       };
     },
 
+    // Render Energy Use Compared To Average and Energy Star Score Compared To Average
     renderCompareChart: function(config, chartdata, view, prop_type, name, viewSelector) {
       const container = d3.select(viewSelector);
       const rootElm = container.select(`.${view}-compare-chart`);
@@ -626,6 +628,7 @@ define([
       var outerWidth = rootElm.node().offsetWidth;
       var outerHeight = rootElm.node().offsetHeight;
 
+
       // Don't bother rendering a chart if it will be invisible
       if (outerWidth <= 0 || outerHeight <= 0) return;
 
@@ -633,6 +636,10 @@ define([
       var margin = { top: 80, right: 30, bottom: 40, left: 40 };
       var width = outerWidth - margin.left - margin.right;
       var height = outerHeight - margin.top - margin.bottom;
+
+console.log('outerHeight', outerHeight);
+console.log('margin', margin);
+console.log('height', height);
 
       if (chartdata.building_value === null) margin.top = 20;
 
@@ -742,7 +749,7 @@ define([
       bar.append('rect')
           .attr('x', 1)
           .attr('width', x.rangeBand())
-          .attr('height', function(d) { return height - y(d.y); })
+          .attr('height', function(d) { let h = height - y(d.y); if (h< 0) debugger; return h; })
           .attr('class', function(d, i) {
             if (i === chartdata.selectedIndex) return 'building-bar selected';
             if (i === chartdata.avgIndex) return 'avg-bar selected';
