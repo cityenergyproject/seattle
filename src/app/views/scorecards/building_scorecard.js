@@ -312,9 +312,10 @@ define([
 
         el.find('#performance-standard-chart').html(this.charts['eui'].chart_performance_standard.render());
         this.charts['eui'].chart_performance_standard.afterRender();
+        $('div#state-requirement-wrapper').removeClass('wrapper-hidden');
       } else {
         // if we aren't showing the CBPS chart, then hide this alert
-        $('div#state-requirement-wrapper').hide();
+        $('div#state-requirement-wrapper').addClass('wrapper-hidden');
       }
 
       // render Energy Use Trends (shift.js) chart
