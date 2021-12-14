@@ -20,3 +20,5 @@ venv
 doee_scripts/*.csv
 
 
+# apple cruft
+.DS_Store
