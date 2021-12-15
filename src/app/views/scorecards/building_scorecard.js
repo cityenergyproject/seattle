@@ -280,7 +280,7 @@ define([
       // set chart hash
       if (!this.charts.hasOwnProperty('eui')) this.charts['eui'] = {};
 
-      // Render "Climate Pollution Impact of Energy Use" chart, aka fuel use chart (fueluse.js)
+      // render fuel use chart (fueluse.js)
       if (!this.charts['eui'].chart_fueluse) {
         this.charts['eui'].chart_fueluse = new FuelUseView({
           formatters: this.formatters,
@@ -294,37 +294,7 @@ define([
       el.find('#fuel-use-chart').html(this.charts['eui'].chart_fueluse.render());
       this.charts['eui'].chart_fueluse.afterRender();
 
-      // Render Energy Use Compared To Average and Energy Star Score Compared To Average
-      // Note: this one doesn't have a separate template, render is defined here
-      this.renderCompareChart(config, chartdata, 'eui', prop_type, name, viewSelector);
-      this.renderCompareChart(config, essChartData, 'ess', prop_type, name, viewSelector + ' .screen-only');
-      this.renderCompareChart(config, essChartData, 'ess', prop_type, name, viewSelector + ' .print-only');
-
-      // Render "Energy Use Trends" chart (shift.js)
-      if (!this.charts['eui'].chart_shift) {
-        var shiftConfig = config.change_chart.building;
-        var previousYear = avail_years[0];
-        var hasPreviousYear = previousYear !== selected_year;
-
-        const change_data = hasPreviousYear ? this.extractChangeData(building_data, buildings, building, shiftConfig) : null;
-
-        this.charts['eui'].chart_shift = new ShiftView({
-          formatters: this.formatters,
-          data: change_data,
-          no_year: !hasPreviousYear,
-          previous_year: previousYear,
-          selected_year,
-          view: 'eui'
-        });
-      }
-
-      if (this.charts['eui'].chart_shift) {
-        this.charts['eui'].chart_shift.render(t => {
-          el.find('#compare-shift-chart').html(t);
-        }, viewSelector);
-      }
-
-      // Render Clean Building Performance Standard (CBPS) chart (performance_standard.js), but only if flagged
+      // render Clean Building Performance Standard (CBPS) chart (performance_standard.js), but only if flagged
       if (building.cbps_flag) {
         if (!this.charts['eui'].chart_performance_standard) {
           this.charts['eui'].chart_performance_standard = new PerformanceStandardView({
@@ -347,6 +317,36 @@ define([
         // if we aren't showing the CBPS chart, then hide this alert
         $('div#state-requirement-wrapper').addClass('wrapper-hidden');
       }
+
+      // render Energy Use Trends (shift.js) chart
+      if (!this.charts['eui'].chart_shift) {
+        var shiftConfig = config.change_chart.building;
+        var previousYear = avail_years[0];
+        var hasPreviousYear = previousYear !== selected_year;
+
+        const change_data = hasPreviousYear ? this.extractChangeData(building_data, buildings, building, shiftConfig) : null;
+
+        this.charts['eui'].chart_shift = new ShiftView({
+          formatters: this.formatters,
+          data: change_data,
+          no_year: !hasPreviousYear,
+          previous_year: previousYear,
+          selected_year,
+          view: 'eui'
+        });
+      }
+
+      // Render Energy Use Compared To Average and Energy Star Score Compared To Average
+      if (this.charts['eui'].chart_shift) {
+        this.charts['eui'].chart_shift.render(t => {
+          el.find('#compare-shift-chart').html(t);
+        }, viewSelector);
+      }
+
+      // Note: this one doesn't have a separate template, render is defined here
+      this.renderCompareChart(config, chartdata, 'eui', prop_type, name, viewSelector);
+      this.renderCompareChart(config, essChartData, 'ess', prop_type, name, viewSelector + ' .screen-only');
+      this.renderCompareChart(config, essChartData, 'ess', prop_type, name, viewSelector + ' .print-only');
 
       // Add building comments (??)
       if (!this.commentview) {
@@ -629,6 +629,7 @@ define([
       var outerWidth = rootElm.node().offsetWidth;
       var outerHeight = rootElm.node().offsetHeight;
 
+
       // Don't bother rendering a chart if it will be invisible
       if (outerWidth <= 0 || outerHeight <= 0) return;
 
@@ -771,124 +772,92 @@ console.log('height', height);
             return '>= ' + d.x + ' && < ' + (d.x + d.dx);
           });
 
+      // Set selected building marker
+      var xBandWidth = x.rangeBand();
+      var xpos = chartdata.selectedIndex === null ? 0 : x(chartdata.data[chartdata.selectedIndex].x) + (xBandWidth / 2);
+      var ypos = chartdata.selectedIndex === null ? 0 : y(chartdata.data[chartdata.selectedIndex].y);
+      const selectedXPos = xpos;
+      const circleRadius = 30;
+      const highlightOffsetY = -70;
+      const highlightTopMargin = margin.top + highlightOffsetY;
+
+      var selectedCityHighlight = chartGroup.append('g')
+        .classed('selected-city-highlight', true)
+        .attr('transform', `translate(${xpos - circleRadius}, ${highlightOffsetY})`);
+
+      // selectedCityHighlight.append('circle')
+      //   .attr('cx', 0)
+      //   .attr('cy', 0)
+      //   .attr('r', circleRadius)
+      //   .attr('transform', `translate(${circleRadius}, ${circleRadius})`)
+      //   .classed('circle', true);
+
+      const selectedValueTextGroup = selectedCityHighlight.append('g')
+        .attr('transform', `translate(${circleRadius}, ${circleRadius + 5})`);
+
+      var selectedValueText = selectedValueTextGroup.append('text');
+
+      // add EUI or ESS value
+      selectedValueText.append('tspan')
+        .attr('x', 0)
+        .text(chartdata.building_value.toLocaleString())
+        .style('fill', '#000')
+        .classed('value', true);
+
+      // add units
+      selectedValueTextGroup.append('text')
+        .text(compareChartConfig.highlight_metric[view])
+        .attr('x', 0)
+        .attr('dy', '1em')
+        .style('fill', '#000')
+        .classed('units', true)
+        .call(wrap, circleRadius * 2);
+
+      selectedValueTextGroup
+        .attr('transform', () => {
+          const textGroupHeight = selectedValueTextGroup.node().getBBox().height;
+          const valueHeight = selectedValueText.node().getBBox().height;
+          return `translate(${circleRadius}, ${highlightTopMargin + valueHeight / 2 + (circleRadius - textGroupHeight / 2)})`;
+        });
+
+      const buildingNameText = selectedCityHighlight.append('g').append('text')
+        .text(name)
+        .classed('building-name', true)
+        .call(wrap, 150);
+
+      buildingNameText
+        .attr('transform', () => {
+          const bbox = buildingNameText.node().getBBox();
+          const nodeWidth = bbox.width;
+          const nodeHeight = bbox.height;
+          let x = circleRadius * 2 + 5;
+
+          if (nodeWidth + xpos + circleRadius > width) {
+            x = -(nodeWidth + 5);
+          }
+          let y = circleRadius - (nodeHeight / 2) + highlightTopMargin;
+          return `translate(${x}, ${y})`;
+        });
+
+      selectedCityHighlight.append('path')
+        .classed('line', true)
+        .attr('d', d3.svg.line()([
+          [circleRadius + 1, circleRadius * 2 - 5],
+          [circleRadius + 1, margin.top + ypos - highlightTopMargin],
+        ]));
+
       //
-      // Bar labels
+      // Set average label and fill
       //
+      if (chartdata.avgIndex === null) return;
+      if (chartdata.mean === null) return;
 
-      // Add a pointer line to the selected building bar
-      let b_bar = d3.select('rect.building-bar.selected');
-      let b_bar_group = b_bar.select(function() { return this.parentNode; });
-      // let b_text_y = b_bar.attr('height');
-      let b_bar_group_transform = d3.transform(b_bar_group.attr('transform'));
-      let b_translate = b_bar_group_transform.translate;
-      let b_tran_x = b_translate[0] + (x.rangeBand() / 2);
-      let b_tran_y = b_translate[1] - 50;
+      xpos = x(chartdata.data[chartdata.avgIndex].x);
 
-      let buildingTextGroup = chartGroup.append('g')
-        .attr('transform', `translate(${b_tran_x}, ${b_tran_y})`);
+      var avgPadding = 5;
+      let xTranslate = xpos + xBandWidth + avgPadding;
 
-      buildingTextGroup.append('rect')
-        .attr('width', 1)
-        .attr('height', 50)
-        .attr('fill', 'red');
-
-      // Add a pointer line to the average building bar
-      let avg_bar = d3.select('rect.avg-bar.selected');
-      let avg_bar_group = avg_bar.select(function() { return this.parentNode; });
-      // let avg_text_y = avg_bar.attr('height');
-      let avg_bar_group_transform = d3.transform(avg_bar_group.attr('transform'));
-      let avg_translate = avg_bar_group_transform.translate;
-      let avg_tran_x = avg_translate[0] + (x.rangeBand() / 2);
-      let avg_tran_y = avg_translate[1] - 50;
-
-      let avgTextGroup = chartGroup.append('g')
-        .attr('transform', `translate(${avg_tran_x}, ${avg_tran_y})`);
-
-      avgTextGroup.append('rect')
-        .attr('width', 1)
-        .attr('height', 50)
-        .attr('fill', 'blue');
-
-      // var xBandWidth = x.rangeBand();
-      // var xpos = chartdata.selectedIndex === null ? 0 : x(chartdata.data[chartdata.selectedIndex].x) + (xBandWidth / 2);
-      // var ypos = chartdata.selectedIndex === null ? 0 : y(chartdata.data[chartdata.selectedIndex].y);
-      // const selectedXPos = xpos;
-      // const circleRadius = 30;
-      // const highlightOffsetY = -70;
-      // const highlightTopMargin = margin.top + highlightOffsetY;
-
-      // var selectedCityHighlight = chartGroup.append('g')
-      //   .classed('selected-city-highlight', true)
-      //   .attr('transform', `translate(${xpos - circleRadius}, ${highlightOffsetY})`);
-
-
-      // const selectedValueTextGroup = selectedCityHighlight.append('g')
-      //   .attr('transform', `translate(${circleRadius}, ${circleRadius + 5})`);
-
-      // var selectedValueText = selectedValueTextGroup.append('text');
-
-      // // add EUI or ESS value
-      // selectedValueText.append('tspan')
-      //   .attr('x', 0)
-      //   .text(chartdata.building_value.toLocaleString())
-      //   .style('fill', '#000')
-      //   .classed('value', true);
-
-      // // add units
-      // selectedValueTextGroup.append('text')
-      //   .text(compareChartConfig.highlight_metric[view])
-      //   .attr('x', 0)
-      //   .attr('dy', '1em')
-      //   .style('fill', '#000')
-      //   .classed('units', true)
-      //   .call(wrap, circleRadius * 2);
-
-      // selectedValueTextGroup
-      //   .attr('transform', () => {
-      //     const textGroupHeight = selectedValueTextGroup.node().getBBox().height;
-      //     const valueHeight = selectedValueText.node().getBBox().height;
-      //     return `translate(${circleRadius}, ${highlightTopMargin + valueHeight / 2 + (circleRadius - textGroupHeight / 2)})`;
-      //   });
-
-      // // Building name
-      // const buildingNameText = selectedCityHighlight.append('g').append('text')
-      //   .text(name)
-      //   .classed('building-name', true)
-      //   .call(wrap, 150);
-
-      // buildingNameText
-      //   .attr('transform', () => {
-      //     const bbox = buildingNameText.node().getBBox();
-      //     const nodeWidth = bbox.width;
-      //     const nodeHeight = bbox.height;
-      //     let x = circleRadius * 2 + 5;
-
-      //     if (nodeWidth + xpos + circleRadius > width) {
-      //       x = -(nodeWidth + 5);
-      //     }
-      //     let y = circleRadius - (nodeHeight / 2) + highlightTopMargin;
-      //     return `translate(${x}, ${y})`;
-      //   });
-
-      // selectedCityHighlight.append('path')
-      //   .classed('line', true)
-      //   .attr('d', d3.svg.line()([
-      //     [circleRadius + 1, circleRadius * 2 - 25], // line end
-      //     [circleRadius + 1, margin.top + ypos - highlightTopMargin],
-      //   ]));
-
-      // //
-      // // Set average label and fill
-      // //
-      // if (chartdata.avgIndex === null) return;
-      // if (chartdata.mean === null) return;
-
-      // xpos = x(chartdata.data[chartdata.avgIndex].x);
-
-      // var avgPadding = 5;
-      // let xTranslate = xpos + xBandWidth + avgPadding;
-
-      // ypos = y(chartdata.data[chartdata.avgIndex].y); // top of bar
+      ypos = y(chartdata.data[chartdata.avgIndex].y); // top of bar
 
 // var xBandWidth = x.rangeBand();
 // var xpos = chartdata.selectedIndex === null ? 0 : x(chartdata.data[chartdata.avgIndex].x) + (xBandWidth / 2);
@@ -963,44 +932,44 @@ console.log('height', height);
 //     [circleRadius + 1, margin.top + ypos - highlightTopMargin],
 //   ]));
 
-      // let yTranslate = ypos + 5;
-      // var averageBuildingHighlight = chartGroup.append('g')
-      //   .classed('average-building-highlight', true)
-      //   .attr('transform', `translate(${xTranslate}, ${yTranslate})`);
+      let yTranslate = ypos + 5;
+      var averageBuildingHighlight = chartGroup.append('g')
+        .classed('average-building-highlight', true)
+        .attr('transform', `translate(${xTranslate}, ${yTranslate})`);
 
-      // const averageText = averageBuildingHighlight.append('text');
+      const averageText = averageBuildingHighlight.append('text');
 
-      // averageText.append('tspan')
-      //   .text('Building type average')
-      //   .classed('building-name', true)
-      //   .call(wrap, 75);
+      averageText.append('tspan')
+        .text('Building type average')
+        .classed('building-name', true)
+        .call(wrap, 75);
 
-      // averageText.append('tspan')
-      //   .text(chartdata.mean)
-      //   .attr('x', 0)
-      //   .attr('dy', '.7em')
-      //   .style('fill', chartdata.avgColor)
-      //   .classed('value', true);
+      averageText.append('tspan')
+        .text(chartdata.mean)
+        .attr('x', 0)
+        .attr('dy', '.7em')
+        .style('fill', chartdata.avgColor)
+        .classed('value', true);
 
-      // averageText.append('tspan')
-      //   .text(compareChartConfig.highlight_metric[view])
-      //   .attr('x', 0)
-      //   .attr('dy', '1.5em')
-      //   .style('fill', chartdata.avgColor)
-      //   .classed('label', true);
+      averageText.append('tspan')
+        .text(compareChartConfig.highlight_metric[view])
+        .attr('x', 0)
+        .attr('dy', '1.5em')
+        .style('fill', chartdata.avgColor)
+        .classed('label', true);
 
-      // const averageBbox = averageBuildingHighlight.node().getBBox();
-      // if (xpos < selectedXPos && xpos + averageBbox.width > selectedXPos) {
-      //   xTranslate = xpos - avgPadding;
-      //   averageBuildingHighlight.classed('align-right', true);
-      // }
+      const averageBbox = averageBuildingHighlight.node().getBBox();
+      if (xpos < selectedXPos && xpos + averageBbox.width > selectedXPos) {
+        xTranslate = xpos - avgPadding;
+        averageBuildingHighlight.classed('align-right', true);
+      }
 
-      // if (ypos + averageBbox.height > height) {
-      //   yTranslate = height - averageBbox.height;
-      // }
+      if (ypos + averageBbox.height > height) {
+        yTranslate = height - averageBbox.height;
+      }
 
-      // averageBuildingHighlight
-      //   .attr('transform', `translate(${xTranslate}, ${yTranslate})`);
+      averageBuildingHighlight
+        .attr('transform', `translate(${xTranslate}, ${yTranslate})`);
     },
 
     extractChangeData: function(yearly, buildings, building, config) {
