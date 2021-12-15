@@ -808,6 +808,7 @@ console.log('height', height);
       selectedValueTextGroup.append('text')
         .text(compareChartConfig.highlight_metric[view])
         .attr('x', 0)
+        .attr('y', 3)
         .attr('dy', '1em')
         .style('fill', '#000')
         .classed('units', true)
@@ -816,8 +817,9 @@ console.log('height', height);
       selectedValueTextGroup
         .attr('transform', () => {
           const textGroupHeight = selectedValueTextGroup.node().getBBox().height;
-          const valueHeight = selectedValueText.node().getBBox().height;
-          return `translate(${circleRadius}, ${highlightTopMargin + valueHeight / 2 + (circleRadius - textGroupHeight / 2)})`;
+          const valueHeight = selectedValueText.node().getBBox().height;          
+          const y = highlightTopMargin + valueHeight / 2 + (circleRadius - textGroupHeight / 2);
+          return `translate(${circleRadius}, ${y})`;
         });
 
       const buildingNameText = selectedCityHighlight.append('g').append('text')
@@ -830,19 +832,19 @@ console.log('height', height);
           const bbox = buildingNameText.node().getBBox();
           const nodeWidth = bbox.width;
           const nodeHeight = bbox.height;
-          let x = circleRadius * 2 + 5;
+          let x = circleRadius * 2 + 7;
 
           if (nodeWidth + xpos + circleRadius > width) {
             x = -(nodeWidth + 5);
           }
-          let y = circleRadius - (nodeHeight / 2) + highlightTopMargin;
+          let y = circleRadius - (nodeHeight / 2) + highlightTopMargin + 8;
           return `translate(${x}, ${y})`;
         });
 
       selectedCityHighlight.append('path')
         .classed('line', true)
         .attr('d', d3.svg.line()([
-          [circleRadius + 1, circleRadius * 2 - 5],
+          [circleRadius + 1, circleRadius * 2 - 3],
           [circleRadius + 1, margin.top + ypos - highlightTopMargin],
         ]));
 
@@ -948,14 +950,14 @@ console.log('height', height);
         .text(chartdata.mean)
         .attr('x', 0)
         .attr('dy', '.7em')
-        .style('fill', chartdata.avgColor)
+        .style('fill', '#707070')
         .classed('value', true);
 
       averageText.append('tspan')
         .text(compareChartConfig.highlight_metric[view])
         .attr('x', 0)
         .attr('dy', '1.5em')
-        .style('fill', chartdata.avgColor)
+        .style('fill', '#707070')
         .classed('label', true);
 
       const averageBbox = averageBuildingHighlight.node().getBBox();
