@@ -802,7 +802,7 @@ $steam-color: #f7c34e;
       flex-direction: row;
       justify-content: space-between;
       float: right;
-      
+
       .sc-toggle {
         padding: 0.5rem;
         background: #E5EBF6;
@@ -876,7 +876,7 @@ $steam-color: #f7c34e;
         text-align: center;
         padding-right: 2rem;
         width: 310px;
-        align-self: end;
+        align-self: flex-start;
 
         & > p:last-child {
           text-align: left;
