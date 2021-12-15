@@ -493,7 +493,7 @@ $steam-color: #f7c34e;
 
     .compare-desc {
       text-align: center;
-      padding-right: 2em;
+      padding-right: 2rem;
 
       .change-arrow {
         position: relative;
@@ -798,6 +798,7 @@ $steam-color: #f7c34e;
     border-radius: 5px;    
 
     #sc-toggle-wrapper {
+      float: right; 
       display: flex;
       flex-direction: row;
       justify-content: space-between;
@@ -873,7 +874,7 @@ $steam-color: #f7c34e;
 
       .compare-desc {
         text-align: center;
-        padding-right: 2rem;
+        padding-right: 5px;
         width: 310px;
         align-self: end;
 
@@ -990,6 +991,19 @@ $steam-color: #f7c34e;
           font-family: $base-font-family;
           font-size: 10px;
           text-transform: lowercase;
+        }
+
+        text.bar-label {
+          font-family: $base-font-family;
+          font-weight: 500;
+          font-size: 16px;
+          text-transform: none;
+          tspan.value {
+            fill: #000000;
+          }
+          tspan.label {
+            fill: #707070;
+          }
         }
 
         .y.axis text, .label text {
