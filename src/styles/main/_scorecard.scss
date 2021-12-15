@@ -294,7 +294,7 @@ $steam-color: #f7c34e;
       div.building-details-card {
         position: relative;
         font-size: 16px;      
-        min-width: 241px;
+        min-width: 260px;
         width: auto;
         height: 100%;
         border: 2px solid $blue-new;
@@ -1014,7 +1014,7 @@ $steam-color: #f7c34e;
         }
 
         .average-building-highlight {
-          opacity: 0.5;
+          // opacity: 0.5;
 
           & > div {
             position: relative;
@@ -1091,7 +1091,7 @@ $steam-color: #f7c34e;
           }
 
           .units {
-            font-size: 10px;
+            font-size: 13px;
             text-anchor: middle;
             text-transform: none;
           }
@@ -1100,7 +1100,7 @@ $steam-color: #f7c34e;
             font-size: 16px;
             font-weight: 500;
             fill: #707070;
-            text-transform: uppercase;
+            text-transform: none;
           }
 
           .circle {
