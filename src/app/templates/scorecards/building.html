@@ -85,21 +85,21 @@
 
 <div class='scorecard--section scorecard-compare-chart <%= view %>-selected'>
   <div class='inner'>
+    <div id='sc-toggle-wrapper'>
+      <div class='sc-toggle'>
+        <h4 class='sc-txt'>TOGGLE VIEW</h4>
+        <div class='sc-toggle-row'>
+          <label class='cb-plain sc-txt small'><input class="sc-toggle--input" type="checkbox" <%= view === 'eui' ? 'checked' : '' %> data-view='eui'/><span class='cb'><span class='cb-inner'></span></span><span>Energy Use Intensity (EUI)</span></label>
+          <label class='cb-plain sc-txt small'><input class="sc-toggle--input" type="checkbox" <%= view === 'ess' ? 'checked' : '' %> data-view='ess'/><span class='cb'><span class='cb-inner'></span></span><span>ENERGY STAR Score</span></label>
+        </div>
+      </div>
+    </div>
 
     <div class='scorecard-compare-section eui'>
-      <div id='sc-toggle-wrapper'>
-        <div class='section-head'>
-          <h3 class='sc-heading'>Energy Use Compared to Average</h3>
-          <p class='sc-txt small'>See how this building measures up against other buildings of the same primary use:</p>
-        </div>
 
-        <div class='sc-toggle'>
-          <h4 class='sc-txt'>TOGGLE VIEW</h4>
-          <div class='sc-toggle-row'>
-            <label class='cb-plain sc-txt small'><input class="sc-toggle--input" type="checkbox" <%= view === 'eui' ? 'checked' : '' %> data-view='eui'/><span class='cb'><span class='cb-inner'></span></span><span>Energy Use Intensity (EUI)</span></label>
-            <label class='cb-plain sc-txt small'><input class="sc-toggle--input" type="checkbox" <%= view === 'ess' ? 'checked' : '' %> data-view='ess'/><span class='cb'><span class='cb-inner'></span></span><span>ENERGY STAR Score</span></label>
-          </div>
-        </div>
+      <div class='section-head'>
+        <h3 class='sc-heading'>Energy Use Compared to Average</h3>
+        <p class='sc-txt small'>See how this building measures up against other buildings of the same primary use:</p>
       </div>
 
       <div class='sc-compare-row'>
@@ -122,7 +122,7 @@
     <div class='scorecard-compare-section ess screen-only'>
       <div class='section-head'>
         <h3 class='sc-heading'>Energy Star Score Compared to Average</h3>
-        <p class='sc-txt small bold'>See how this building measures up against other buildings of the same primary use:</p>
+        <p class='sc-txt small'>See how this building measures up against other buildings of the same primary use:</p>
       </div>
 
       <div class='sc-compare-row'>

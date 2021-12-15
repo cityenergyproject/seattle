@@ -801,7 +801,8 @@ $steam-color: #f7c34e;
       display: flex;
       flex-direction: row;
       justify-content: space-between;
-
+      float: right;
+      
       .sc-toggle {
         padding: 0.5rem;
         background: #E5EBF6;
