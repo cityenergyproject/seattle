@@ -629,16 +629,13 @@ define([
       var outerWidth = rootElm.node().offsetWidth;
       var outerHeight = rootElm.node().offsetHeight;
 
-
       // Don't bother rendering a chart if it will be invisible
       if (outerWidth <= 0 || outerHeight <= 0) return;
 
       var compareChartConfig = config.compare_chart;
-      var margin = { top: 80, right: 30, bottom: 40, left: 40 };
+      var margin = { top: 65, right: 30, bottom: 40, left: 40 };
       var width = outerWidth - margin.left - margin.right;
       var height = outerHeight - margin.top - margin.bottom;
-
-      if (chartdata.building_value === null) margin.top = 20;
 
       var x = d3.scale.ordinal()
         .rangeRoundBands([0, width], 0.3, 0)
@@ -774,29 +771,23 @@ define([
       var ypos = chartdata.selectedIndex === null ? 0 : y(chartdata.data[chartdata.selectedIndex].y);
       const selectedXPos = xpos;
       const circleRadius = 30;
-      const highlightOffsetY = -70;
+      const highlightOffsetY = -62;
       const highlightTopMargin = margin.top + highlightOffsetY;
 
       var selectedCityHighlight = chartGroup.append('g')
         .classed('selected-city-highlight', true)
         .attr('transform', `translate(${xpos - circleRadius}, ${highlightOffsetY})`);
 
-      // selectedCityHighlight.append('circle')
-      //   .attr('cx', 0)
-      //   .attr('cy', 0)
-      //   .attr('r', circleRadius)
-      //   .attr('transform', `translate(${circleRadius}, ${circleRadius})`)
-      //   .classed('circle', true);
-
       const selectedValueTextGroup = selectedCityHighlight.append('g')
-        .attr('transform', `translate(${circleRadius}, ${circleRadius + 5})`);
+        .attr('transform', `translate(${circleRadius}, ${circleRadius})`);
 
       var selectedValueText = selectedValueTextGroup.append('text');
 
       // add EUI or ESS value
+      let buildingValue = chartdata.building_value.toLocaleString() || null;
       selectedValueText.append('tspan')
         .attr('x', 0)
-        .text(chartdata.building_value.toLocaleString())
+        .text(buildingValue)
         .style('fill', '#000')
         .classed('value', true);
 
@@ -813,7 +804,7 @@ define([
       selectedValueTextGroup
         .attr('transform', () => {
           const textGroupHeight = selectedValueTextGroup.node().getBBox().height;
-          const valueHeight = selectedValueText.node().getBBox().height;          
+          const valueHeight = selectedValueText.node().getBBox().height;
           const y = highlightTopMargin + valueHeight / 2 + (circleRadius - textGroupHeight / 2);
           return `translate(${circleRadius}, ${y})`;
         });
@@ -821,7 +812,7 @@ define([
       const buildingNameText = selectedCityHighlight.append('g').append('text')
         .text(name)
         .classed('building-name', true)
-        .call(wrap, 150);
+        .call(wrap, 170);
 
       buildingNameText
         .attr('transform', () => {
@@ -833,15 +824,16 @@ define([
           if (nodeWidth + xpos + circleRadius > width) {
             x = -(nodeWidth + 5);
           }
-          let y = circleRadius - (nodeHeight / 2) + highlightTopMargin + 8;
+          let y = circleRadius - (nodeHeight / 2) + highlightTopMargin + 6;
           return `translate(${x}, ${y})`;
         });
 
+      let linebuffer = view == 'eui' ? -8 : -5;
       selectedCityHighlight.append('path')
         .classed('line', true)
         .attr('d', d3.svg.line()([
-          [circleRadius + 1, circleRadius * 2 - 3],
-          [circleRadius + 1, margin.top + ypos - highlightTopMargin],
+          [circleRadius + 1, circleRadius * 2 + linebuffer], // line start
+          [circleRadius + 1, margin.top + ypos - highlightTopMargin], // line finish (top of bar)
         ]));
 
       //
