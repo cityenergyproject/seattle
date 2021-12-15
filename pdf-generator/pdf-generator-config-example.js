@@ -1,5 +1,5 @@
 module.exports = {
-  baseUrl: 'http://localhost:8000',
+  baseUrl: 'http://0.0.0.0:8080',
   outputDirectory: 'test',
   scriptLocation: 'index.js',
   s3Bucket: 'test-bucket',
