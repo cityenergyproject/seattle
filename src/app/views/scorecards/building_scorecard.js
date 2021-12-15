@@ -633,9 +633,13 @@ define([
       if (outerWidth <= 0 || outerHeight <= 0) return;
 
       var compareChartConfig = config.compare_chart;
-      var margin = { top: 80, right: 10, bottom: 40, left: 90 };
+      var margin = { top: 80, right: 30, bottom: 40, left: 40 };
       var width = outerWidth - margin.left - margin.right;
       var height = outerHeight - margin.top - margin.bottom;
+
+console.log('outerHeight', outerHeight);
+console.log('margin', margin);
+console.log('height', height);
 
       if (chartdata.building_value === null) margin.top = 20;
 
@@ -768,7 +772,7 @@ define([
           });
 
       //
-      // Bar labels and label lines
+      // Bar labels
       //
 
       // Add a pointer line to the selected building bar
@@ -778,24 +782,15 @@ define([
       let b_bar_group_transform = d3.transform(b_bar_group.attr('transform'));
       let b_translate = b_bar_group_transform.translate;
       let b_tran_x = b_translate[0] + (x.rangeBand() / 2);
-      let b_tran_y = b_translate[1] - 30;
+      let b_tran_y = b_translate[1] - 50;
 
       let buildingTextGroup = chartGroup.append('g')
         .attr('transform', `translate(${b_tran_x}, ${b_tran_y})`);
 
       buildingTextGroup.append('rect')
         .attr('width', 1)
-        .attr('height', 30)
-        .attr('fill', '#000');
-
-
-      // Add text and EUI or ESS value for the selected building
-      // // add EUI or ESS value
-      // selectedValueText.append('tspan')
-      //   .attr('x', 0)
-      //   .text(chartdata.building_value.toLocaleString())
-      //   .style('fill', '#000')
-      //   .classed('value', true);
+        .attr('height', 50)
+        .attr('fill', 'red');
 
       // Add a pointer line to the average building bar
       let avg_bar = d3.select('rect.avg-bar.selected');
@@ -804,35 +799,15 @@ define([
       let avg_bar_group_transform = d3.transform(avg_bar_group.attr('transform'));
       let avg_translate = avg_bar_group_transform.translate;
       let avg_tran_x = avg_translate[0] + (x.rangeBand() / 2);
-      let avg_tran_y = avg_translate[1] - 30;
+      let avg_tran_y = avg_translate[1] - 50;
 
       let avgTextGroup = chartGroup.append('g')
         .attr('transform', `translate(${avg_tran_x}, ${avg_tran_y})`);
 
       avgTextGroup.append('rect')
         .attr('width', 1)
-        .attr('height', 30)
-        .attr('fill', '#000');
-
-      // Add labels for the selected building, and average building bars
-      let b_label_shift = avg_translate[0] > b_translate[0] ? -98 : 25;
-      // let avg_label_shift = avg_translate[0] > b_translate[0] ? 25 : -150;
-
-      let buildingText = buildingTextGroup.append('text')
-        .attr('class', 'bar-label');
-
-      buildingText.append('tspan')
-        .text(chartdata.building_value.toLocaleString() + compareChartConfig.highlight_metric[view])
-        .attr('class', 'value')
-        .attr('x', b_label_shift)
-        .attr('y', 20);
-
-      buildingText.append('tspan')
-        .text(name)
-        .attr('class', 'label')
-        .attr('x', b_label_shift)
-        .attr('y', -20);
-        // .call(wrap, 100);
+        .attr('height', 50)
+        .attr('fill', 'blue');
 
       // var xBandWidth = x.rangeBand();
       // var xpos = chartdata.selectedIndex === null ? 0 : x(chartdata.data[chartdata.selectedIndex].x) + (xBandWidth / 2);
