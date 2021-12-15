@@ -4,3 +4,4 @@
 /uploads
 config.json
 pdf-generator-config.js
+*.csv
