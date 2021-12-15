@@ -638,10 +638,6 @@ define([
       var width = outerWidth - margin.left - margin.right;
       var height = outerHeight - margin.top - margin.bottom;
 
-console.log('outerHeight', outerHeight);
-console.log('margin', margin);
-console.log('height', height);
-
       if (chartdata.building_value === null) margin.top = 20;
 
       var x = d3.scale.ordinal()
