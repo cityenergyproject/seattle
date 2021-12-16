@@ -216,7 +216,8 @@ $steam-color: #f7c34e;
     height: 300px;
 
     @media print {
-      height: 160px;
+      height: 210px;
+      padding: 0 0 0 15px;
     }
 
     display: flex;
@@ -228,10 +229,19 @@ $steam-color: #f7c34e;
       display: flex;
       align-items: flex-end;
 
+      @media print {
+        height: 45px;
+      }
+
       div.sc-building-name {
         font-weight: 500;
         font-size: 25px;
         padding-bottom: 15px;
+
+        @media print {
+          font-size: 23px;
+          padding-bottom: 5px;
+        }
       }
     }
 
@@ -242,6 +252,11 @@ $steam-color: #f7c34e;
       div#building-details-row {
         .sc-address {
           margin-bottom: 6px;
+
+          @media print {
+            font-size: 14px;
+            margin-bottom: 9px;
+          }
 
           div {
             font-weight: 400;
@@ -272,6 +287,10 @@ $steam-color: #f7c34e;
             font-size: 16px;
             font-weight: 400;
           
+            @media print {
+              font-size: 13px;
+            }
+
             div {
               margin-bottom: -5px;
             }
@@ -289,6 +308,11 @@ $steam-color: #f7c34e;
       div.building-details-card-note {
         font-size: 14px;
         color: #707070;
+
+        @media print {
+          font-size: 12px;
+        }
+
       }
 
       div.building-details-card {
@@ -302,6 +326,13 @@ $steam-color: #f7c34e;
         margin-right: 20px;
         padding: 15px 16px 0;
 
+        @media print {
+          font-size: 12px;
+          min-width: 210px;
+          padding: 10px 4px 0 8px;
+          margin-right: 10px;
+        }
+
         div.building-details-card-icon {
           position: absolute;
           background: $blue-new;
@@ -311,29 +342,56 @@ $steam-color: #f7c34e;
 
           background-repeat: no-repeat;
 
+          @media print {
+            width: 33px;
+            height: 35px;
+          }
+
           &.ghg {
             background-image: url('../images/scorecard/cloud.svg');
             background-size: 76%;
             background-position: 7px 12px;
+
+            @media print {
+              background-size: 65%;
+              background-position: 7px 10px;
+            }
+
           }
 
           &.eui {
             background-image: url('../images/scorecard/lightbulb.svg');            
             background-size: 55%;
             background-position: 12px 7px;
+
+            @media print {
+              background-size: 50%;
+            }
+
           }
         }
-
 
         div.building-details-card-measure {
           line-height: 1;
           margin-bottom: 15px;
   
+          @media print {
+            margin-bottom: 10px;
+          }
+
           span.building-details-card-measure-number {
             font-size: 38px;
             font-weight: 500;
+            
+            @media print {
+              font-size: 25px;
+            }
           }
           div.building-details-card-words {
+            @media print {
+              font-size: 14px;
+            }
+
             .bolder {
               font-weight: 600;
             }
@@ -373,6 +431,12 @@ $steam-color: #f7c34e;
             span.text-decreased {
               color: #90AE60;
             }
+
+            @media print {
+              font-size: 14px;
+            }
+
+
           }
         }
       }
