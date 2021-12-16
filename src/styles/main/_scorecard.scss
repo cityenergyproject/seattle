@@ -300,27 +300,27 @@ $steam-color: #f7c34e;
         border: 2px solid $blue-new;
         border-radius: 10px;
         margin-right: 20px;
-        padding: 27px 16px 0;
+        padding: 15px 16px 0;
 
         div.building-details-card-icon {
           position: absolute;
           background: $blue-new;
-          width: 40px; height: 40px;
-          top: 0; right: 0;
-          border-radius: 0 5px 0 10px;
+          width: 52px; height: 48px;
+          bottom: 0; right: 0;
+          border-radius: 5px 0 5px 0;
 
           background-repeat: no-repeat;
 
           &.ghg {
             background-image: url('../images/scorecard/cloud.svg');
-            background-size: 83%;
-            background-position: 5px 8px;
+            background-size: 76%;
+            background-position: 7px 12px;
           }
 
           &.eui {
             background-image: url('../images/scorecard/lightbulb.svg');            
-            background-size: 68%;
-            background-position: 7px 3px;
+            background-size: 55%;
+            background-position: 12px 7px;
           }
         }
 
@@ -342,8 +342,6 @@ $steam-color: #f7c34e;
 
         div.building-details-card-trend {
           display: flex;
-          justify-content: center;
-          margin-right: 1em;
 
           .change-arrow {
             width: 30px;
