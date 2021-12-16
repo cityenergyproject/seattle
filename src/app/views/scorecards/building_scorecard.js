@@ -182,7 +182,7 @@ define([
     },
 
     getViewField: function(view) {
-      return view === 'eui' ? 'site_eui' : 'energy_star_score';
+      return view === 'eui' ? 'site_eui_wn' : 'energy_star_score';
     },
 
     energyStarCertified: function(view, building, config) {
@@ -240,7 +240,7 @@ define([
 
       let thresholds = this.getThresholdLabels(config.thresholds.eui_schema);
       let valueColor = this.getColor(compareField, value);
-      if (compareField === 'site_eui') {
+      if (compareField === 'site_eui_wn') {
         valueColor = this.getCompareChartColor(data, thresholds, id);
       }
       if (!_.isNumber(value) || !_.isFinite(value)) {
@@ -336,7 +336,7 @@ define([
         });
       }
 
-      // Render Energy Use Compared To Average and Energy Star Score Compared To Average
+      // Render Energy Use Compared To Average and Energy Star Score Compared To Average ("compare" chart)
       if (this.charts['eui'].chart_shift) {
         this.charts['eui'].chart_shift.render(t => {
           el.find('#compare-shift-chart').html(t);
@@ -583,11 +583,10 @@ define([
         if (avg >= d.min && avg < next.min) avgIndex = i;
       });
 
-
       let avgColor;
       let selectedColor;
 
-      if (compareField === 'site_eui') {
+      if (compareField === 'site_eui_wn') {
         selectedColor = this.getCompareChartColor(data, thresholds, id);
 
         thresholds.forEach(d => {
@@ -743,7 +742,7 @@ define([
       bar.append('rect')
           .attr('x', 1)
           .attr('width', x.rangeBand())
-          .attr('height', function(d) { let h = height - y(d.y); if (h< 0) debugger; return h; })
+          .attr('height', function(d) { let h = height - y(d.y); return h; })
           .attr('class', function(d, i) {
             if (i === chartdata.selectedIndex) return 'building-bar selected';
             if (i === chartdata.avgIndex) return 'avg-bar selected';
