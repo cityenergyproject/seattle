@@ -25,16 +25,16 @@ define([
 
     events: {
       'click .sc-toggle--input': 'toggleView',
-      'click .ways-to-save-button': 'scrollToLinks'
+      'click .cbps-learn-more-below': 'scrollToPerformanceStandardChart'
     },
 
     close: function() {
       this.scoreCardData = null;
     },
 
-    scrollToLinks: function(evt) {
+    scrollToPerformanceStandardChart: function(evt) {
       evt.preventDefault();
-      this.parentEl[0].scrollTo(0, this.parentEl.find('#links')[0].offsetTop);
+      this.parentEl[0].scrollTo(0, this.parentEl.find('#performance-standard-chart')[0].offsetTop);
       return false;
     },
 
