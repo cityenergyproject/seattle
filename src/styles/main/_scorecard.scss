@@ -366,6 +366,7 @@ $steam-color: #f7c34e;
 
             @media print {
               background-size: 50%;
+            background-position: 9px 7px;
             }
 
           }
@@ -481,6 +482,11 @@ $steam-color: #f7c34e;
             color: $blue_new;
             text-decoration: underline;
           }
+          @media print {
+            line-height: 1.1;
+            margin-top: 4px;
+            font-size: 14px;
+          }
         }
       }
     }
@@ -557,6 +563,10 @@ $steam-color: #f7c34e;
       text-align: center;
       padding-right: 2em;
 
+      @media print {
+        padding-right: 10px;
+      }
+
       .change-arrow {
         position: relative;
         display: inline-block;
@@ -622,7 +632,7 @@ $steam-color: #f7c34e;
         height: 200px;
 
         @media print {
-          height: 100px;
+          height: 170px;
           margin: 20px 0;
         }
 
@@ -711,21 +721,40 @@ $steam-color: #f7c34e;
         flex-direction: row;
         align-items: center;
 
+        @media print {
+          min-height: 44px;
+        }
+
+
         span.performance-standard-bubble-measure {
           font-size: 26px;
           font-weight: 500;
+
+          @media print {
+            font-size: 20px;
+          }
 
           .bubble-unit {
             font-weight: 400;
             font-size: 20px;
             position: relative;
             top: -1px;
+
+            @media print {
+              font-size: 12px;
+            }
           }
         }
 
         img.arrow-icon {
           width: 30px;
           height: 30px;
+
+          @media print {
+            width: 23px;
+            height: 23px;
+          }
+
         }
 
         span.performance-standard-bubble-description {
@@ -733,6 +762,11 @@ $steam-color: #f7c34e;
           font-weight: 500;
           position: relative;
           top: 2px;
+
+          @media print {
+            font-size: 14px;
+          }
+
         }
       
         span.bubble-icon {
@@ -844,6 +878,10 @@ $steam-color: #f7c34e;
         color: $blue_new;
         text-decoration: underline;
       }
+
+      @media print {
+        font-size: 14px;
+      }
     }
 
     p#performance-standard-disclaimer {
@@ -939,6 +977,10 @@ $steam-color: #f7c34e;
         padding-right: 2rem;
         width: 310px;
         align-self: flex-start;
+
+        @media print {
+          padding-right: 10px;
+        }
 
         & > p:last-child {
           text-align: left;
@@ -1266,6 +1308,11 @@ $steam-color: #f7c34e;
         vertical-align: top;
         color: $blue_new;
         font-size: 16px;
+
+        &.links-3 {
+          font-size: 15px;
+        }
+
       }
 
       .link-link {
@@ -1285,8 +1332,16 @@ $steam-color: #f7c34e;
           text-transform: uppercase;
           border-radius: 5px;
 
+          &.links-3 {
+            font-size: 14px;
+            @media print {
+              font-size: 11px;
+            }
+          }
+
           @media print {
             padding: .5em;
+            font-size: 13px;
           }
         }
 
@@ -1428,7 +1483,7 @@ $steam-color: #f7c34e;
 
     .scorecard-compare-chart {
       border: none;
-      border-bottom: 1px solid $sc-offwhite;
+      border-bottom: 1px solid $blue_new;
 
       &.print-only {
         float: none;

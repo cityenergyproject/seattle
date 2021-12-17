@@ -9,7 +9,7 @@
       <td>
         <div class='link-cell'>
           <div class='link-num'><%= (idx + 1) %></div>
-          <div class='link-content'>
+          <div class='link-content links-<%= links.length %>'>
             <p><strong><%= item.header %></strong> <%= item.txt %></p>
           </div>
         </div>
@@ -20,8 +20,8 @@
       <% _.each(links, function(item) { %>
       <td>
         <div class='link-link'>
-          <a href='<%= item.link_href %>' target='_blank' class='link-button'><%= item.link_txt %> &gt;</a>
-          <a href='<%= item.link_href %>' target='_blank' class='link-text'><%= item.link_href %></a>
+          <a href='<%= item.link_href %>' target='_blank' class='link-button links-<%= links.length %>'><%= item.link_txt %> &gt;</a>
+          <a href='<%= item.link_href %>' target='_blank' class='link-text links-<%= links.length %>'><%= item.link_href %></a>
         </div>
       </td>
       <% }) %>
