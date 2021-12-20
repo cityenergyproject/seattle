@@ -271,12 +271,13 @@ $steam-color: #f7c34e;
           flex-direction: row;
       
           div.building-details-col {
-            padding: 5px 15px;
+            padding: 5px 0 5px 15px;
             width: 200px;
             
             &:first-child {
               border-right: 1px solid $blue-new;
               padding-left: 0;
+              padding-right: 15px;
               width: auto;
               white-space: nowrap;
             }
@@ -294,6 +295,10 @@ $steam-color: #f7c34e;
             div {
               margin-bottom: -5px;
             }
+          }
+
+          div#building-details-values {
+            min-width: 225px;
           }
         }
       }
@@ -331,6 +336,10 @@ $steam-color: #f7c34e;
           min-width: 210px;
           padding: 10px 4px 0 8px;
           margin-right: 10px;
+        }
+
+        &:last-child {
+          margin-right: 0;
         }
 
         div.building-details-card-icon {
