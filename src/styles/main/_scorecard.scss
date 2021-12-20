@@ -1483,6 +1483,7 @@ $steam-color: #f7c34e;
 
     .scorecard-compare-chart {
       border: none;
+      border-radius: none;
       border-bottom: 1px solid $blue_new;
 
       &.print-only {
