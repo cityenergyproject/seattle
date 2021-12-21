@@ -226,6 +226,7 @@ define([
           return `translate(${-dotText[0][i].getBBox().width - 5}, 0)`;
         });
 
+      // hacky way to attempt fixing label collisions after the fact
       this.detectAndCorrectLabelCollisions();
 
       const lastyear = x.domain().slice(-1)[0];
@@ -244,6 +245,11 @@ define([
     detectAndCorrectLabelCollisions: function() {
       const group_a = d3.selectAll('g.dot.shift-dot-site_eui_wn');
       const group_b = d3.selectAll('g.dot.shift-dot-building_type_eui_wn');
+
+      // sometimes the series are not the same length, and we don't try and accomodate that
+      // everything that follows assumes pairs of labels on the same plane
+      if (group_a.size() !== group_b.size()) return;
+
       let diffs = [];
       group_a.each(function(d, i) {
         let t1 = d3.transform(d3.select(this).attr('transform'));
