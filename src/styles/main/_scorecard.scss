@@ -718,7 +718,7 @@ $steam-color: #f7c34e;
     div#performance-standard-chart-header {
       display: flex;
       justify-content: space-around;
-      margin: 20px 0;
+      margin: 20px 0 25px;
 
       div.performance-standard-bubble {
         border: 2px solid $blue_new;
@@ -801,13 +801,10 @@ $steam-color: #f7c34e;
       }
     }
     div#performance-standard-bar-chart-container {
-      div#performance-standard-bar-chart-label {
-        margin-bottom: 5px;
-      }
 
       div#performance-standard-bar-chart {
         width: 100%;
-        height: 150px;
+        height: 140px;
         position: relative;
 
         .bar-outline {
@@ -878,24 +875,27 @@ $steam-color: #f7c34e;
         color: #000;
         font-size: 12px;
         position: relative;
-        top: -42px;
+        top: -37px;
         left: 3px;
       }
     }
 
-    p#early-incentive-message {
-      a {
-        color: $blue_new;
-        text-decoration: underline;
-      }
+    div#performance-standard-additional-messages {
+      margin-top: -5px;
+      p#early-incentive-message {
+        a {
+          color: $blue_new;
+          text-decoration: underline;
+        }
 
-      @media print {
-        font-size: 14px;
+        @media print {
+          font-size: 14px;
+        }
       }
     }
 
     p#performance-standard-disclaimer {
-      margin-top: 10px;
+      margin-top: 7px;
     }
   }
 

@@ -133,8 +133,8 @@ define([
       euiLabelGroup.append('line')
         .attr('class', 'data-line')
         .attr('x1', 0)
-        .attr('y1', 10)
-        .attr('y2', -17);
+        .attr('y1', 13)
+        .attr('y2', -15);
 
       // append a group to hold the tick for the target EUI
       let targetWidth = (data.target_eui * chartWidth) / (quartile * 5);
@@ -158,15 +158,15 @@ define([
         .text(`${data.target_eui} (Estimated EUI Target)`)
         .attr('class', 'chart-label')
         .style('left', targetWidth - 20 + 'px')
-        .style('bottom', '116px');
+        .style('bottom', '109px');
 
       // append a div to hold the label for current EUI
       d3.select('#performance-standard-bar-chart')
         .append('div')
         .text(`${data.current_eui.toLocaleString()} (Current EUI)`)
         .attr('class', 'chart-label')
-        .style('left', barWidth - 20 + 'px')
-        .style('bottom', '14px');
+        .style('left', barWidth - 30 + 'px')
+        .style('bottom', '10px');
 
       // append a div to hold a lable for "Meets target"
       d3.select('#performance-standard-bar-chart')
@@ -174,7 +174,7 @@ define([
         .text('Meets EUI Target')
         .attr('class', 'chart-label-meets-target')
         .style('left', targetWidth - 120 + 'px')
-        .style('bottom', '93px');
+        .style('bottom', '87px');
 
       // append a div to hold a lable for "Misses target"
       d3.select('#performance-standard-bar-chart')
@@ -182,7 +182,7 @@ define([
         .text('Doesn\'t Meet EUI Target')
         .attr('class', 'chart-label-misses-target')
         .style('left', targetWidth + 20 + 'px')
-        .style('bottom', '93px');
+        .style('bottom', '87px');
     },
 
     roundToNearest: function(nearest, number) {
