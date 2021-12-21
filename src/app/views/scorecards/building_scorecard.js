@@ -506,10 +506,10 @@ define([
       let buildingsFiltered = buildingsOfType.map(building => {
         return {
           id: building.id,
-          eui: building.site_eui,
+          eui_wn: building.site_eui_wn,
           emissions: building.total_ghg_emissions_intensity,
         };
-      }).filter(d => d.eui != null && d.emissions != null);
+      }).filter(d => d.eui_wn != null && d.emissions != null);
 
       // find the average (mean), and return it
       let mean = d3.mean(buildingsFiltered.map(d => d.emissions));
