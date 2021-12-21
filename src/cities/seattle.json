@@ -60,7 +60,7 @@
         {"field": "zip", "template": "Seattle, WA {zip}", "skipFormatter": true},
         {"field": "property_type", "template": "<strong>{property_type}</strong>"},
         {"field": "reported_gross_floor_area", "template": "<strong>{reported_gross_floor_area}</strong> ft²"},
-        {"field": "id", "label": "Building ID "},
+        {"field": "id", "label": "Building ID ",  "skipFormatter": true},
         {"field": "yearbuilt", "label": "Built in ", "skipFormatter": true}
     ],
     "popup_chart": {
