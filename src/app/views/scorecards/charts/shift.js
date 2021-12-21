@@ -193,7 +193,7 @@ define([
         })
         .attr('d', d => line(d.values));
 
-      var dot = svg.selectAll('.dot')
+      var dotGroup = svg.selectAll('.dot')
           .data(filteredData)
         .enter().append('g')
           .attr('class', d => {
@@ -204,11 +204,11 @@ define([
           })
           .attr('transform', d => { return 'translate(' + x(d.year) + ',' + y(d.value) + ')'; });
 
-      dot.append('circle')
+      dotGroup.append('circle')
         .attr('r', 5)
         .attr('fill', d => d.clr);
 
-      const dotText = dot.append('text')
+      const dotText = dotGroup.append('text')
         .style('fill', d => d.clr || '#acacac');
 
       dotText.append('tspan')
@@ -226,8 +226,10 @@ define([
           return `translate(${-dotText[0][i].getBBox().width - 5}, 0)`;
         });
 
+      this.detectAndCorrectLabelCollisions();
+
       const lastyear = x.domain().slice(-1)[0];
-      dot.filter(d => d.year === lastyear)
+      dotGroup.filter(d => d.year === lastyear)
         .append('text')
         .classed('building', true)
         .classed('selected-building', d => d.colorize)
@@ -235,6 +237,54 @@ define([
         .attr('transform', `translate(10, 0)`)
         .text(d => d.label)
         .call(wrap, 120);
+    },
+
+    // look for label groups that overlap (defined as within 10px of each other)
+    // and when found, update the transforms on the text within them, moving them +/- 15px
+    detectAndCorrectLabelCollisions: function() {
+      const group_a = d3.selectAll('g.dot.shift-dot-site_eui_wn');
+      const group_b = d3.selectAll('g.dot.shift-dot-building_type_eui_wn');
+      let diffs = [];
+      group_a.each(function(d, i) {
+        let t1 = d3.transform(d3.select(this).attr('transform'));
+        let x1 = t1.translate[0];
+        let y1 = t1.translate[1];
+        diffs[i] = { ax: x1, ay: parseFloat(y1) };
+      });
+      group_b.each(function(d, i) {
+        let t1 = d3.transform(d3.select(this).attr('transform'));
+        let x1 = t1.translate[0];
+        let y1 = t1.translate[1];
+        diffs[i]['bx'] = x1;
+        diffs[i]['by'] = parseFloat(y1);
+      });
+
+      diffs.forEach(function(d, i) {
+        let diff = d.ay - d.by;
+        if (Math.abs(diff) < 10) {
+          let a = group_a.filter(function(d, j) { return j === i; });
+          let a_text = a.select('text');
+          let at = d3.transform(a_text.attr('transform'));
+          let at_x = at.translate[0];
+          let at_y = at.translate[1];
+
+          let b = group_b.filter(function(d, j) { return j === i; });
+          let b_text = b.select('text');
+          let bt = d3.transform(b_text.attr('transform'));
+          let bt_x = bt.translate[0];
+          let bt_y = bt.translate[1];
+
+          let change_y = 15 + diff;
+
+          if (diff < 0) {
+            a_text.attr('transform', `translate(${at_x}, ${at_y - change_y})`);
+            b_text.attr('transform', `translate(${bt_x}, ${bt_y + change_y})`);
+          } else {
+            a_text.attr('transform', `translate(${at_x}, ${at_y + change_y})`);
+            b_text.attr('transform', `translate(${bt_x}, ${bt_y - change_y})`);
+          }
+        }
+      });
     },
 
     chartData: function(cb) {
