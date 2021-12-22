@@ -65,7 +65,7 @@
     ],
     "popup_chart": {
         "lead": {
-            "field": "site_eui",
+            "field": "site_eui_wn",
             "label": "Site EUI (kBTU/ft²)",
             "nodata": "Site EUI data not available."
         },
@@ -128,7 +128,7 @@
         {
             "title": "Building EUI Quartiles",
             "id": "site_eui_quartiles",
-            "field_name": "site_eui",
+            "field_name": "site_eui_wn",
             "display_type": "range",
             "range_slice_count": 4,
             "filter_range": {"min": 0, "max" : 4},
@@ -155,7 +155,7 @@
         },
         {
             "title": "Site Energy Use Intensity",
-            "field_name": "site_eui",
+            "field_name": "site_eui_wn",
             "display_type": "range",
             "range_slice_count": 18,
             "section": "Energy Performance Metrics",
@@ -167,7 +167,7 @@
         },
         {
             "title": "Source Energy Use Intensity",
-            "field_name": "source_eui",
+            "field_name": "source_eui_wn",
             "display_type": "range",
             "range_slice_count": 18,
             "section": "Energy Performance Metrics",
