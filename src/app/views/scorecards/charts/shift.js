@@ -45,7 +45,7 @@ define([
       const previousValue = yearData[0].val;
       const selectedValue = yearData[1].val;
       if (previousValue == null || selectedValue == null) return null;
-      return ((selectedValue - previousValue) / selectedValue) * 100;
+      return ((selectedValue - previousValue) / previousValue) * 100;
     },
 
     extractChangeData: function() {
