@@ -53,15 +53,15 @@
       "Type" : "AWS::EC2::Instance",
       "Properties" : {
         "KeyName" : { "Ref" : "KeyPair" },
-        "ImageId" : "ami-0b69ea66ff7391e80",
+        "ImageId" : "ami-00eaf50e59f87c284",
         "IamInstanceProfile": { "Ref": "InstanceProfile" },
         "InstanceType": "t2.small",
-        "SubnetId": "subnet-0382a680ef0013dde",
-        "SecurityGroupIds": [ "sg-05bf61a1f1d800d5b" ],
+        "SubnetId": "subnet-bf8fbfd7",
+        "SecurityGroupIds": [ "sg-045cf4e641a5722f7" ],
         "Tags": [
           {
             "Key": "client",
-            "Value": "seattle-energy-2019"
+            "Value": "seattle-energy-2021"
           },
           {
             "Key": "Name",
@@ -221,7 +221,7 @@
         "Tags": [
           {
             "Key": "client",
-            "Value": "seattle-energy-2019"
+            "Value": "seattle-energy-2021"
           }
         ]
       },
