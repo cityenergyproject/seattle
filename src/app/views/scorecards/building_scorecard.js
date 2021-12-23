@@ -206,7 +206,6 @@ define([
       // for building details first card "energy per square foot"
       var site_eui_wn = building.site_eui_wn;
       var building_eui_wn = building.building_type_eui_wn;
-      console.log(building_eui_wn);
       var eui_difference = ((site_eui_wn - building_eui_wn) / building_eui_wn) * 100;
       var eui_direction = eui_difference < 0 ? 'decreased' : 'increased';
       var eui_direction_word = eui_difference < 0 ? 'lower' : 'higher';
