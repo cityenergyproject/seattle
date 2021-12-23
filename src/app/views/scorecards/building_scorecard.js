@@ -329,28 +329,36 @@ define([
 
         var shiftConfig = config.change_chart.building;
         var previousYear = building_years[0];
+
+        // by definition, we should always have a previous year, or else a single year of data
+        // so how can no_year be a condition?
         var hasPreviousYear = previousYear !== selected_year;
 
         const change_data = hasPreviousYear ? this.extractChangeData(building_data, buildings, building, shiftConfig) : null;
+
+        // trap case where there is a range of only one year, send to the view for rendering an error
+        const single_year = building_years.length === 1;
 
         this.charts['eui'].chart_shift = new ShiftView({
           formatters: this.formatters,
           data: change_data,
           no_year: !hasPreviousYear,
+          single_year: single_year,
           previous_year: previousYear,
           selected_year,
           view: 'eui'
         });
       }
 
-      // Render Energy Use Compared To Average and Energy Star Score Compared To Average ("compare" chart)
+      // now render
       if (this.charts['eui'].chart_shift) {
         this.charts['eui'].chart_shift.render(t => {
           el.find('#compare-shift-chart').html(t);
         }, viewSelector);
       }
 
-      // Note: this one doesn't have a separate template, render is defined here
+      // Render Energy Use Compared To Average and Energy Star Score Compared To Average ("compare" chart)
+      // Note: this one doesn't have a separate template, render is defined here (this.renderCompareChart)
       this.renderCompareChart(config, chartdata, 'eui', prop_type, name, viewSelector);
       this.renderCompareChart(config, essChartData, 'ess', prop_type, name, viewSelector + ' .screen-only');
       this.renderCompareChart(config, essChartData, 'ess', prop_type, name, viewSelector + ' .print-only');
