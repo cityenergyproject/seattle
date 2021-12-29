@@ -720,6 +720,10 @@ $steam-color: #f7c34e;
       justify-content: space-around;
       margin: 20px 0 25px;
 
+      @media print {
+        margin: 10px 0 10px;
+      }
+
       div.performance-standard-bubble {
         border: 2px solid $blue_new;
         border-radius: 10px;
@@ -1285,6 +1289,10 @@ $steam-color: #f7c34e;
   #links {
     background: #F1F1F1;
 
+    @media print {
+      background: #FFFFFF;
+    }
+
     table {
       td {
         width: auto;
@@ -1298,6 +1306,11 @@ $steam-color: #f7c34e;
         color: $brownish-gray;
       }
 
+      @media print {
+        .link-cell {
+          display: none;
+        }
+      }
       .link-num {
         width: 2rem;
         height: 2rem;
