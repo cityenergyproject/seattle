@@ -8,6 +8,11 @@ You can run pdf-generator on your local machine. From the `pdf-generator` direct
 
 Make sure you first use the `pdf-generator-config-example.js` file to make a real set of configs. This file is git-ignored and it doesn't seem to matter much what is in it for local script function.
 
+Example usage: 
+```bash
+node index.js -i 'test.csv' --base-url http://localhost:8080 -y 2020 -o output
+```
+
 ## Deploy
 
 You can also run `pdf-generator` as a server. Here we document doing so with AWS.
