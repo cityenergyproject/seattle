@@ -53,7 +53,7 @@
       "Type" : "AWS::EC2::Instance",
       "Properties" : {
         "KeyName" : { "Ref" : "KeyPair" },
-        "ImageId" : "ami-00eaf50e59f87c284",
+        "ImageId" : "ami-03af6a70ccd8cb578",
         "IamInstanceProfile": { "Ref": "InstanceProfile" },
         "InstanceType": "t2.small",
         "SubnetId": "subnet-bf8fbfd7",
