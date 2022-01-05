@@ -73,7 +73,7 @@
             "Fn::Join" : [
               "", [
                 "#!/bin/bash\n",
-                "sudo yum update\n",
+                "sudo yum update -y\n",
                 "sudo yum install -y aws-cfn-bootstrap\n",
                 "sudo amazon-linux-extras install nginx1.12\n",
                 "curl -sL https://rpm.nodesource.com/setup_10.x | sudo bash -\n",
@@ -90,8 +90,8 @@
                 "sudo systemctl restart nginx.service\n",
                 "cd /home/ec2-user\n",
                 "sudo -i -u ec2-user bash << EOF\n",
-                "git clone https://github.com/cityenergyproject/seattle.git\n",
-                "ln -s seattle/pdf-generator .\n",
+                "git clone https://github.com/GreenInfo-Network/seattle-building-dashboard.git\n",
+                "ln -s seattle-building-dashboard/pdf-generator .\n",
                 "cd pdf-generator\n",
                 "mkdir uploads\n",
                 "mkdir pdfs\n",
@@ -141,10 +141,10 @@
                   "  region: '", { "Ref" : "AWS::Region" }, "',\n",
                   "  environment: 'production',\n",
                   "  email: {\n",
-                  "    cc: ['ebrelsford@stamen.com'],\n",
-                  "    from: 'ebrelsford@stamen.com',\n",
-                  "    replyTo: ['ebrelsford@stamen.com'],\n",
-                  "    returnPath: 'ebrelsford@stamen.com',\n",
+                  "    cc: ['tom@greeninfo.org'],\n",
+                  "    from: 'tom@greeninfo.org',\n",
+                  "    replyTo: ['tom@greeninfo.org'],\n",
+                  "    returnPath: 'tom@greeninfo.org',\n",
                   "  }\n",
                   "};"
                 ]]},
@@ -226,6 +226,38 @@
         ]
       },
       "DeletionPolicy": "Delete"
+    },
+    "BucketPolicy": {
+      "Type": "AWS::S3::BucketPolicy",
+      "Properties": {
+        "PolicyDocument": {
+          "Id": "seattle-energy-2021-s3-bucket-policy",
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Sid": "PublicReadForGetBucketObjects",
+              "Effect": "Allow",
+              "Principal": "*",
+              "Action": "s3:GetObject",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:aws:s3:::",
+                    {
+                      "Ref": "S3Bucket"
+                    },
+                    "/*"
+                  ]
+                ]
+              }
+            }
+          ]
+        },
+        "Bucket": {
+          "Ref": "S3Bucket"
+        }
+      }
     }
   },
   "Outputs" : {
