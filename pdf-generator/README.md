@@ -35,4 +35,7 @@ This will set up:
  * An EC2 instance that runs the server
  * An S3 bucket where the generated files will be persisted
 
+If the stack is created successfully, you will see it listed in the [CloudFormation console](https://us-west-1.console.aws.amazon.com/ec2/v2/home?region=us-west-1#Instances:v=3;instanceState=running;tag:Name=seattle-energy), with a status of "CREATE_COMPLETE"
+
+To find the IP address of the created EC2, go to the [EC2 console](https://us-west-1.console.aws.amazon.com/ec2/v2/home?region=us-west-1#Instances:v=3;instanceState=running;tag:Name=seattle-energy), click the box next to the running instance, and look for the "Public IPv4 DNS". You can open the link directly, note however that 
 
