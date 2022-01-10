@@ -94,7 +94,7 @@
             "unit": "Metric Tons CO₂e",
             "filter_range": {"min" : 0, "max" : 500},
             "formatter": "fixed-1",
-            "description": "Greenhouse Gas (GHG) Emissions are the carbon dioxide (CO2), methane (CH4), and nitrous oxide (N2O) gases released into the atmosphere as a result of energy consumption at the property. GHG emissions are expressed in Metric Tons of carbon dioxide equivalent (CO2e), a universal unit of measure that combines the quantity and global warming potential of each greenhouse gas. Total Emissions is the sum of Direct Emissions (emissions associated with onsite fuel combustion) and Indirect Emissions (emissions associated with purchases of electricity, district steam, district hot water, or district chilled water). These emissions estimates are calculated from site electricity, natural gas, and steam energy use using GHG emissions factors. The calculation includes a custom factor from Seattle City Light for electricity, a default natural gas factor from the EPA, and a custom emissions factor from Enwave for steam."
+            "description": "Greenhouse Gas (GHG) Emissions are the carbon dioxide (CO2), methane (CH4), and nitrous oxide (N2O) gases released into the atmosphere as a result of energy consumption at the property. GHG emissions are expressed in Metric Tons of carbon dioxide equivalent (CO2e), a universal unit of measure that combines the quantity and global warming potential of each greenhouse gas. Total Emissions is the sum of Direct Emissions (emissions associated with onsite fuel combustion) and Indirect Emissions (emissions associated with purchases of electricity, district steam, district hot water, or district chilled water). These emissions estimates are calculated from site electricity, natural gas, and steam energy use using GHG emissions factors. The calculation includes a custom factor from Seattle City Light for electricity, a default natural gas factor from the EPA, and a custom emissions factor for steam."
         },
         {
             "title": "Seattle GHG Intensity",
@@ -146,7 +146,7 @@
             "unit": "kBtu",
             "formatter": "fixed-1",
             "filter_range": {"min": 0, "max": 1500},
-            "description": "Non-normalized site energy use is the total amount of all the energy a property consumes on-site annually, as reported on utility bills. Site energy use is measured in thousands of British thermal units (kBtu)."
+            "description": "Weather-normalized site energy use is the total amount of all the energy a property consumes on-site annually, as reported on utility bills. Site energy use is measured in thousands of British thermal units (kBtu)."
         },
         {
             "title": "Neighborhood",
