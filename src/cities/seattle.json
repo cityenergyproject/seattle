@@ -137,15 +137,15 @@
             "description": "The 1-100 score calculated by ENERGY STAR® Portfolio Manager® that measures how well the property is performing relative to similar properties, when normalized for climate and operational characteristics. The 1-100 scale is set so that 1 represents the worst performing buildings and 100 represents the best performing buildings. A score of 50 indicates that a building is performing at the national median, taking into account its size, location, and operating parameters. A score of 75 indicates that at a property is performing in the 75th percentile and may be eligible to earn ENERGY STAR® Certification."
         },
         {
-            "title": "Site Total Energy Use",
-            "field_name": "total_kbtu",
+            "title": "Site EUI (WN)",
+            "field_name": "site_eui_wn",
             "display_type": "range",
             "range_slice_count": 18,
             "section": "Energy Performance Metrics",
             "color_range": ["#1f5dbe","#599b67","#ffd552","#da863f","#ab2328"],
             "unit": "kBtu",
             "formatter": "fixed-1",
-            "filter_range": {"min": 1000, "max": 3000000},
+            "filter_range": {"min": 0, "max": 1500},
             "description": "Non-normalized site energy use is the total amount of all the energy a property consumes on-site annually, as reported on utility bills. Site energy use is measured in thousands of British thermal units (kBtu)."
         },
         {
