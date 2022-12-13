@@ -214,7 +214,12 @@
          "2020": {
             "table_name": "seattle_buildings_2021_update",
             "default_layer": "total_ghg_emissions"
+        },
+         "2021": {
+            "table_name": "seattle_buildings_2021_update",
+            "default_layer": "total_ghg_emissions"
         }
+
     },
     "building_footprints": {
         "allowable": true,
