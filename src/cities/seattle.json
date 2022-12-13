@@ -219,8 +219,8 @@
     "building_footprints": {
         "allowable": true,
         "atZoom": 15,
-        "property_id": "id",
-        "table_name": "seattle_building_outlines_20181126"
+        "property_id": "buildingid",
+        "table_name": "seattle_building_outlines_2021"
     },
     "scorecard": {
         "citywide": {
