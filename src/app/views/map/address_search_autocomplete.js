@@ -247,6 +247,7 @@ define([
       const url = this.SEARCH_URL;
       const bounds = this.SEARCH_BOUNDS;
       const center = this.state.get('city').get('center');
+      // no longer used...
       const api_key = this.SEARCH_API_KEY;
 
       try {
@@ -258,16 +259,12 @@ define([
       this.xhr = $.ajax({
         url: url,
         data: {
-          'api_key': api_key,
-          'text': term + ' ' + this.state.get('city').get('address_search_regional_context'),
-          'size': 10,
-          'focus.point.lat': center[0],
-          'focus.point.lon': center[1],
-          'boundary.rect.min_lat': bounds[0],
-          'boundary.rect.min_lon': bounds[1],
-          'boundary.rect.max_lat': bounds[2],
-          'boundary.rect.max_lon': bounds[3],
-          'layers': 'address',
+          'q': term + ',' + this.state.get('city').get('address_search_regional_context'),
+          'countrycodes': 'US',
+          'limit': 1,
+          'addressdetails': 1,
+          'viewbox': [bounds[0], bounds[1], bounds[2], bounds[3]].join(','),
+          'format': 'geojson',
         },
 
         error: (xhr, status, err) => {
@@ -312,7 +309,11 @@ define([
     onAjaxAddressSuccess: function(data, term) {
       const regional_context = this.state.get('city').get('address_search_regional_context');
       const features = (data.features || []).filter(feat => {
-        return feat.properties.region && feat.properties.region === regional_context;
+        // NOTE: mapzen search returned a property called "region"
+        // there is no equivalent in Nominatim, but there is "address.city"
+        // I'm not sure this will always match "regional_context" but it does here ("Seattle")
+        // in any case, we already restrict results to bounds that should largely countain Seattle
+        return feat.properties.address.city && feat.properties.address.city === regional_context;
       });
 
       if (!features.length) return { match: false, buildings: [] };
