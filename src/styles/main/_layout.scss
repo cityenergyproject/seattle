@@ -199,7 +199,7 @@ header {
   }
 
   th:first-child, td:first-child {
-    width: $nav-col-fixed-width / 2;
+    width: calc($nav-col-fixed-width / 2);
 
     @include media($medium-screen-up) {
       width: $nav-col-fixed-width;

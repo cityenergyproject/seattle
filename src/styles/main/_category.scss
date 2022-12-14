@@ -6,7 +6,7 @@
   .category-list-toggle {
     line-height: 1;
     box-sizing: border-box;
-    padding: $base-spacing/3 1.2em;
+    padding: calc($base-spacing / 3) 1.2em;
     display: block;
     margin-bottom: .5rem;
   }

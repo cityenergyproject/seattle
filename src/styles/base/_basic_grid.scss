@@ -19,15 +19,15 @@ $gutter: 0;
   clear: both;
 }
 
-.col-1 { width:($width / 12) - ($gutter * 11 / 12); }
-.col-2 { width: ($width / 6) - ($gutter * 10 / 12); }
-.col-3 { width: ($width / 4) - ($gutter * 9 / 12); }
-.col-4 { width: ($width / 3) - ($gutter * 8 / 12); }
-.col-5 { width: ($width / (12 / 5)) - ($gutter * 7 / 12); }
-.col-6 { width: ($width / 2) - ($gutter * 6 / 12); }
-.col-7 { width: ($width / (12 / 7)) - ($gutter * 5 / 12); }
-.col-8 { width: ($width / (12 / 8)) - ($gutter * 4 / 12); }
-.col-9 { width: ($width / (12 / 9)) - ($gutter * 3 / 12); }
-.col-10 { width: ($width / (12 / 10)) - ($gutter * 2 / 12); }
-.col-11 { width: ($width / (12 / 11)) - ($gutter * 1 / 12); }
+.col-1 { width: calc($width / 12) - calc($gutter * 11 / 12); }
+.col-2 { width: calc($width / 6) - calc($gutter * 10 / 12); }
+.col-3 { width: calc($width / 4) - calc($gutter * 9 / 12); }
+.col-4 { width: calc($width / 3) - calc($gutter * 8 / 12); }
+.col-5 { width: calc($width / (12 / 5)) - calc($gutter * 7 / 12); }
+.col-6 { width: calc($width / 2) - calc($gutter * 6 / 12); }
+.col-7 { width: calc($width / (12 / 7)) - calc($gutter * 5 / 12); }
+.col-8 { width: calc($width / (12 / 8)) - calc($gutter * 4 / 12); }
+.col-9 { width: calc($width / (12 / 9)) - calc($gutter * 3 / 12); }
+.col-10 { width: calc($width / (12 / 10)) - calc($gutter * 2 / 12); }
+.col-11 { width: calc($width / (12 / 11)) - calc($gutter * 1 / 12); }
 .col-12 { width: $width; }

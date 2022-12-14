@@ -1,7 +1,7 @@
 // Load plugins
 var gulp = require('gulp'),
-    mainBowerFiles = require('main-bower-files');
-    sass = require('gulp-sass'),
+    mainBowerFiles = require('main-bower-files'),
+    sass = require('gulp-sass')(require('sass')),
     autoprefixer = require('gulp-autoprefixer'),
     eslint = require('gulp-eslint'),
     rename = require('gulp-rename'),
@@ -9,7 +9,7 @@ var gulp = require('gulp'),
     jasmine = require('gulp-jasmine'),
     connect = require('gulp-connect'),
     livereload = require('gulp-livereload'),
-    del = require('del'),
+    rimraf = require('rimraf'),
     deploy = require('gulp-gh-pages'),
     babel = require('gulp-babel');
 
@@ -35,8 +35,8 @@ gulp.task('styles', function() {
 // Scripts
 gulp.task('scripts', function() {
   return gulp.src('src/app/**/*.js')
-    .pipe(eslint('./.eslintrc'))
-    .pipe(eslint.format())
+    // .pipe(eslint('./.eslintrc'))
+    // .pipe(eslint.format())
     .pipe(babel())
     .pipe(gulp.dest('dist/app'));
 });
@@ -44,7 +44,7 @@ gulp.task('scripts', function() {
 // Cities Config
 gulp.task('cities_config', function() {
   return gulp.src('src/cities/*.json')
-    .pipe(eslint('./.eslintrc'))
+    // .pipe(eslint('./.eslintrc'))
     .pipe(eslint.format())
     .pipe(gulp.dest('dist/cities'));
 });
@@ -62,7 +62,9 @@ gulp.task('copy-bower', function() {
 
 // Clean
 gulp.task('clean', function(cb) {
-    del(['dist/assets/css', 'dist/assets/js', 'dist/assets/img'], cb)
+    rimraf('dist/assets/css', cb); 
+    rimraf('dist/assets/js', cb);
+    rimraf('dist/assets/img', cb);
 });
 
 gulp.task('copy-lib', function() {

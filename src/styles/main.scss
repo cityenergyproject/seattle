@@ -1,8 +1,8 @@
 $output-bourbon-deprecation-warnings: false !default;
 
-@import "bourbon";
+@import "bourbon4_3_0/bourbon";
 @import "base/base";
-@import "neat";
+@import "neat1_8_0/neat";
 @import "../lib/range-slider/ion.rangeSlider";
 @import "range-slider/skin";
 @import "../lib/toastr/toastr.min.css";
