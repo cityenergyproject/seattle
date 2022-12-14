@@ -261,7 +261,7 @@ define([
         data: {
           'q': term + ',' + this.state.get('city').get('address_search_regional_context'),
           'countrycodes': 'US',
-          'limit': 1,
+          'limit': 10,
           'addressdetails': 1,
           'viewbox': [bounds[0], bounds[1], bounds[2], bounds[3]].join(','),
           'format': 'geojson',
