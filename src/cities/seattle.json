@@ -24,9 +24,8 @@
     "property_name": "property_name",
     "building_type": "property_type",
     "search": {
-        "url": "https://search.mapzen.com/v1/search",
+        "url": "https://nominatim.openstreetmap.org",
         "bounds": [38.79163, -77.119766, 38.995853, -76.909363],
-        "api_key": "search-oqsffOQ",
         "terms": [
             {
                 "name": "property",
