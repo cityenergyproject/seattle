@@ -18,7 +18,7 @@ define([
     SYNC_WITH_STATE: true,
 
     ERRORS: {
-      noimage: 'Address not found! Trying adding the relevant zip code.'
+      noimage: 'Address not found! Try adding the relevant zip code.'
     },
 
     initialize: function(options){
