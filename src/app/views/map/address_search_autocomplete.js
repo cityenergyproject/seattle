@@ -246,9 +246,6 @@ define([
 
       const url = this.SEARCH_URL;
       const bounds = this.SEARCH_BOUNDS;
-      const center = this.state.get('city').get('center');
-      // no longer used...
-      const api_key = this.SEARCH_API_KEY;
 
       try {
         this.xhr.abort();
