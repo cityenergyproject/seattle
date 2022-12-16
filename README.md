@@ -37,7 +37,7 @@ to compile, and copy all site files to the `dist/` folder
 
   * clone the repo
   * make sure you have [node](https://nodejs.org/) and [bower](http://bower.io/) installed
-  * Do `nvm use` to set node version fo `6.17.1`
+  * Do `nvm use` to set node version 
   * in the root of the repo, run ```npm install```
   * in the root of the repo, run ```bower install```
   * in a separate terminal window run ```npm run dev```
