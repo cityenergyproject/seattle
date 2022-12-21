@@ -26,7 +26,6 @@
   "homepage": "https://github.com/stamen/cityenergy#readme",
   "dependencies": {
     "backbone": "^1.4.1",
-    "node-neat": "^1.7.2",
     "underscore": "^1.13.6"
   },
   "devDependencies": {
