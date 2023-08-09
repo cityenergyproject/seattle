@@ -12,7 +12,7 @@ define([
 
     url: function(props) {
       if (props.tablename) return this.cartoUrl(props.tablename);
-      if (props.file) return `constants/${props.file}`;
+      if (props.file) return `data/${props.file}`;
       return null;
     },
 

@@ -97,31 +97,16 @@ define([
       return null;
     },
 
-    url: function() {
-      const table = this.links_table;
-      const where = [
-        `property_type in ('${this.link_type}', 'default')`,
-        `building_id = ${this.building}`
-      ].join(' OR ');
-
-      const base = 'https://cityenergy-seattle.carto.com/api/v2/sql?q=';
-      const query = `SELECT * FROM ${table} WHERE ${where}`;
-
-      return base + query;
-    },
-
     load: function() {
       // Load link data
-      d3.json(this.url(), payload => {
+      d3.csv('data/links.csv', payload => {
         if (!this.active) return;
 
         if (!payload) {
           console.error('There was an error loading link data for the scorecard');
           return;
         }
-
-        let data = this.getRow(payload.rows || []);
-
+        let data = this.getRow(payload || []);
         if (!data || !Array.isArray(data.links)) {
           data = {
             error: 'Could not load links at this time',

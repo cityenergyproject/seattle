@@ -55,6 +55,12 @@ gulp.task('images', function() {
     .pipe(gulp.dest('dist/images'));
 });
 
+// Data
+gulp.task('data', function() {
+  return gulp.src('src/data/**/*')
+    .pipe(gulp.dest('dist/data'));
+});
+
 gulp.task('copy-bower', function() {
   return gulp.src(mainBowerFiles())
     .pipe(gulp.dest('dist/app/lib'));
@@ -73,7 +79,7 @@ gulp.task('copy-lib', function() {
 });
 
 // Default task
-gulp.task('default', gulp.series('clean', 'fileinclude', 'styles', 'scripts', 'images', 'templates', 'cities_config', 'copy-lib'));
+gulp.task('default', gulp.series('clean', 'fileinclude', 'styles', 'scripts', 'images', 'data', 'templates', 'cities_config', 'copy-lib'));
 
 gulp.task('connect', function() {
   connect.server({
