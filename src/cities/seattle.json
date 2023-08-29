@@ -47,8 +47,8 @@
             "caseSensitive": false,
             "include": ["score", "matches"],
             "location": 0,
-            "distance": 50,
-            "threshold": 0.1,
+            "distance": 80,
+            "threshold": 0.3,
             "maxPatternLength": 32,
             "shouldSort": true
         }
