@@ -155,6 +155,10 @@ define([
           state: this.state,
           mapView: this
         });
+
+        // Hack: move the Leaflet popup pane to a fixed position outside of the map
+        // See additional style hacks in styles/main/_building-info-map-popup.scss to make this work
+        $('div.leaflet-popup-pane').prependTo('div.main-container');
       }
     },
 
