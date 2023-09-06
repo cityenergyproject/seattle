@@ -21,7 +21,10 @@
       <td>
         <div class='link-link'>
           <a href='<%= item.link_href %>' target='_blank' class='link-button links-<%= links.length %>'><%= item.link_txt %> &gt;</a>
-          <a href='<%= item.link_href %>' target='_blank' class='link-text links-<%= links.length %>'><%= item.link_href %></a>
+          <!-- skip mailto links, otherwise, print out the link_href -->
+          <% if ( item.link_href.indexOf('mailto:') < 0 ) { %>
+            <a href='<%= item.link_href %>' target='_blank' class='link-text links-<%= links.length %>'><%= item.link_href %></a>
+          <% } %>
         </div>
       </td>
       <% }) %>
