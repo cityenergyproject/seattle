@@ -281,6 +281,7 @@ define([
 
     // Keep popup in map view after showing more details
     adjustPopup: function(layer) {
+      console.log('adjustPopup');
       var container = $(layer._container);
       var latlng = layer.getLatLng();
 
@@ -382,12 +383,16 @@ define([
 
       if (!presenter.toLatLng()) return;
 
-      var popup = L.popup()
+      var popup = L.popup({
+        autoPan: false,
+      })
        .setLatLng(presenter.toLatLng())
        .setContent(template({
           data: presenter.toPopulatedLabels(),
           compare_disabled: ''
         }));
+
+      this.leafletMap.panTo(presenter.toLatLng());
 
       this._popupid = building_id;
       popup._buildingid = building_id;
