@@ -215,7 +215,7 @@
             "default_layer": "total_ghg_emissions"
         },
          "2021": {
-            "table_name": "seattle_buildings_2021_update_202308",
+            "table_name": "seattle_buildings_2021_update",
             "default_layer": "total_ghg_emissions"
         }
 
