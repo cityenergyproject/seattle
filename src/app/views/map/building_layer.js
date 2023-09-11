@@ -7,6 +7,7 @@ define([
   'text!templates/map/building_info.html'
 ], function($, _, Backbone, CityBuildings,
         BuildingColorBucketCalculator, BuildingInfoTemplate){
+
   const baseCartoCSS = {
     dots: [
     '{marker-fill: #CCC;' +
@@ -212,6 +213,17 @@ define([
     this.mapLayerFields = this.mapLayerFields.join(',');
   };
 
+  FootprintGenerateSql.prototype.sql_as_json = function(building_id) {
+    var tableFootprint = this.footprintConfig.table_name;
+    var query = 'SELECT cartob_id, ST_ASGeoJSON(the_geom) as the_geom FROM ' +
+                this.tableFootprint + 
+                ' WHERE buildingid = ' +
+                building_id +
+                ' LIMIT 1';
+    console.log(query);
+    return query;
+  }
+
   FootprintGenerateSql.prototype.sql = function(components) {
     var tableFootprint = this.footprintConfig.table_name;
     var tableData = components.table;
@@ -271,12 +283,72 @@ define([
           self._popupid = undefined;
           self.state.set({ building: null });
         }
+
+        self.removeBuildingOutline();
       });
 
       this.leafletMap.on('popupopen', function(e) {
         $('#view-report').on('click', self.onViewReportClick.bind(self));
         $('#compare-building').on('click', self.onCompareBuildingClick.bind(self));
+
+        self.addBuildingOutline();
       });
+    },
+
+    // Add outline to highlight dot or footprint
+    addBuildingOutline: async function() {
+      var building_id = this.state.get('building');
+
+      var propertyId = this.state.get('city').get('property_id');
+      if (this.buildingLayerWatcher.mode !== 'dots') {
+        propertyId = this.footprints_cfg.property_id;
+      }
+
+      var presenter = new BuildingInfoPresenter(
+          this.state.get('city'),
+          this.allBuildings,
+          building_id,
+          propertyId,
+          this.mapView.getControls(),
+          this.state.get('layer'));
+
+      if (!presenter.toLatLng()) return;
+      var latlng = presenter.toLatLng();
+
+      this.leafletMap.highlightLayer.clearLayers();
+
+      var layerMode = this.buildingLayerWatcher.mode;
+      if (layerMode === 'dots') {
+        // if this is dots, then add a circle
+        const circle = L.circleMarker([latlng.lat, latlng.lng], { radius: 5, fill: false, color: '#000', weight: 3, opacity: 1 }).addTo(this.leafletMap.highlightLayer);        
+        this.state.set({ 'dot_highlight': circle });
+        this.state.set({ 'has_highlight': 'dots' });
+      } else {
+        // otherwise this is 'footprints': add a polygon from geojson
+        const cartoDbUser = this.state.get('cartoDbUser');
+        const url = `https://${cartoDbUser}.carto.com/api/v2/sql`;
+        const tablename = this.footprints_cfg.table_name;
+        const query = `SELECT cartodb_id,ST_AsGeoJSON(the_geom) as geojson FROM ${tablename} WHERE buildingid=${building_id} LIMIT 1`;
+        const response = await fetch(`${url}/?q=${query}`);
+        const json = await response.json();
+
+        const geojson = JSON.parse(json.rows[0].geojson);
+        const poly = L.geoJson(geojson, {});
+        poly.setStyle({ 
+          fill: false, color: '#000', weight: 3, opacity: 1
+        });
+        poly.addTo(this.leafletMap.highlightLayer);
+        this.state.set({ 'footprint_highlight': poly });
+        this.state.set({ 'has_highlight': 'footprints' });
+      }
+    },
+
+    // Remove building or dot highlight
+    removeBuildingOutline: function() {
+      this.leafletMap.highlightLayer.clearLayers();     
+      this.state.set({ 'footprint_highlight': null });
+      this.state.set({ 'dot_highlight': null });
+      this.state.set({ 'has_highlight': false });
     },
 
     // Keep popup in map view after showing more details
@@ -295,6 +367,7 @@ define([
     },
 
     onClearMapPopupTrigger: function() {
+      console.log('onClearMapPopupTrigger...')
       this.onClearPopups();
     },
 
@@ -302,6 +375,7 @@ define([
       var map = this.leafletMap;
 
       map.eachLayer(function(lyr) {
+        // the only reference to _tip, is this used? 
         if (lyr._tip) {
           map.removeLayer(lyr);
         }
@@ -356,6 +430,7 @@ define([
     },
 
     onBuildingChange: function() {
+      console.log('onBuildingChange');
       var building_id = this.state.get('building');
       var isShowing = (building_id === this._popupid);
 
@@ -363,6 +438,7 @@ define([
       if (!building_id || isShowing) return;
       if (!this.mapView.getControls()) return;
 
+      // The only reference to popup_dirty, is this used? 
       this.popup_dirty = false;
 
       var propertyId = this.state.get('city').get('property_id');
@@ -455,7 +531,11 @@ define([
       // mapzoom change we need to re-render the map
       // to show either 'dots' or 'footprints'
       if (this.state._previousAttributes.zoom !== this.state.attributes.zoom) {
-        if (this.buildingLayerWatcher.check()) this.render();
+        if (this.buildingLayerWatcher.check()) {
+          this.render();
+          // also re-render the building highlights, which will swap out dots for footprints as needed
+          if (this.state.get('has_highlight')) this.addBuildingOutline();
+        } 
       }
     },
 
@@ -521,6 +601,7 @@ define([
         type: 'cartodb',
         sublayers: [this.toCartoSublayer()]
       }, { https: true }).addTo(this.leafletMap).on('done', this.onCartoLoad, this);
+
 
       return this;
     },
