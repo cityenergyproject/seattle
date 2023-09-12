@@ -213,17 +213,6 @@ define([
     this.mapLayerFields = this.mapLayerFields.join(',');
   };
 
-  FootprintGenerateSql.prototype.sql_as_json = function(building_id) {
-    var tableFootprint = this.footprintConfig.table_name;
-    var query = 'SELECT cartob_id, ST_ASGeoJSON(the_geom) as the_geom FROM ' +
-                this.tableFootprint + 
-                ' WHERE buildingid = ' +
-                building_id +
-                ' LIMIT 1';
-    console.log(query);
-    return query;
-  }
-
   FootprintGenerateSql.prototype.sql = function(components) {
     var tableFootprint = this.footprintConfig.table_name;
     var tableData = components.table;
