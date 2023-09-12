@@ -331,15 +331,14 @@ define([
         const query = `SELECT cartodb_id,ST_AsGeoJSON(the_geom) as geojson FROM ${tablename} WHERE buildingid=${building_id}`;
         const response = await fetch(`${url}/?q=${query}`);
         const json = await response.json();
-console.log(json);
 
-        // parse the incoming features. There can be 1-many of them
+        // parse the incoming features. There can be one to many of them
         let features = [];
         json.rows.forEach(function(row) {
           const f = JSON.parse(row.geojson);
           features.push(f);
         });
-        // create an output featureCollection
+        // create an output FeatureCollection
         let geojson = {
           type: 'FeatureCollection',
           features: features,
@@ -441,7 +440,6 @@ console.log(json);
     },
 
     onBuildingChange: function() {
-      console.log('onBuildingChange');
       var building_id = this.state.get('building');
       var isShowing = (building_id === this._popupid);
 
