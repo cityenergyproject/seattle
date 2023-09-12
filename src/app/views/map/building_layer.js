@@ -328,11 +328,22 @@ define([
         const cartoDbUser = this.state.get('cartoDbUser');
         const url = `https://${cartoDbUser}.carto.com/api/v2/sql`;
         const tablename = this.footprints_cfg.table_name;
-        const query = `SELECT cartodb_id,ST_AsGeoJSON(the_geom) as geojson FROM ${tablename} WHERE buildingid=${building_id} LIMIT 1`;
+        const query = `SELECT cartodb_id,ST_AsGeoJSON(the_geom) as geojson FROM ${tablename} WHERE buildingid=${building_id}`;
         const response = await fetch(`${url}/?q=${query}`);
         const json = await response.json();
+console.log(json);
 
-        const geojson = JSON.parse(json.rows[0].geojson);
+        // parse the incoming features. There can be 1-many of them
+        let features = [];
+        json.rows.forEach(function(row) {
+          const f = JSON.parse(row.geojson);
+          features.push(f);
+        });
+        // create an output featureCollection
+        let geojson = {
+          type: 'FeatureCollection',
+          features: features,
+        };
         const poly = L.geoJson(geojson, {});
         poly.setStyle({ 
           fill: false, color: '#000', weight: 3, opacity: 1
