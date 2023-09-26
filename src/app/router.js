@@ -19,12 +19,14 @@ define([
   'views/layout/mobile-alert',
   'views/modals/modal-model',
   'views/modals/modal',
-  'views/layout/footer'
+  'views/layout/footer',
+  'views/layout/tutorial',
+  'views/modals/splash'
 ], function($, deparam, _, Backbone, CityModel, ScorecardModel,
             CityBuildings, MapView, AddressSearchView,
             YearControlView, ActivityIndicator,
             BuildingCounts, CompareBar, ScorecardController,
-            Button, MobileAlert, ModalModel, ModalController, FooterView) {
+            Button, MobileAlert, ModalModel, ModalController, FooterView, TutorialView, SplashView) {
   var RouterState = Backbone.Model.extend({
     queryFields: [
       'filters', 'categories', 'layer',
@@ -173,6 +175,8 @@ define([
       new ScorecardController({ state, mapView });
       new MobileAlert({ state });
       new FooterView({ state });
+      new TutorialView({ state });
+      new SplashView({ state });
       new Button({
         el: '#city-scorcard-toggle',
         onClick: _.bind(this.toggleCityScorecard, this),

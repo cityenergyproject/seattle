@@ -10,6 +10,7 @@ require.config({
     store: '//cdnjs.cloudflare.com/ajax/libs/store.js/1.3.20/store.min',
     fusejs: '//cdnjs.cloudflare.com/ajax/libs/fuse.js/2.5.0/fuse.min',
     autocomplete: '../lib/autocomplete/autocomplete',
+    driver: '../lib/driver/driver',
     templates: 'templates'
   },
   shim: {

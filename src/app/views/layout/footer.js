@@ -2,8 +2,9 @@ define([
   'jquery',
   'underscore',
   'backbone',
+  'views/layout/tutorial',
   'text!templates/layout/footer.html'
-], function($, _, Backbone, FooterTemplate){
+], function($, _, Backbone, Tutorial, FooterTemplate){
   var Footer = Backbone.View.extend({
     el: $('#footer'),
 
@@ -17,7 +18,8 @@ define([
     },
 
     events: {
-      'click .modal-link': 'onModalLink'
+      'click .modal-link': 'onModalLink',
+      'click #launch-tutorial-link': 'onHelpLink'
     },
 
     getModals: function(city) {
@@ -46,6 +48,12 @@ define([
       modelFn(evt.target.dataset.modal);
 
       return false;
+    },
+
+    onHelpLink: function(evt) {
+      if (typeof evt.preventDefault === 'function') evt.preventDefault();
+      var tutorial = new Tutorial();
+      tutorial.render(0);
     },
 
     getFooterLinks: function(city) {
