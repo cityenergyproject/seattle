@@ -19,35 +19,47 @@
   a {
     color: inherit;
     text-decoration: underline;
+    &:focus {
+      outline: 2px solid #000;
+    }
   }
 }
 
 /* Modal Content/Box */
 .splash-content {
-  font-size: 15px;
+  font-size: 16px;
   background-color: #fefefe;
   margin: 15% auto; /* 15% from the top and centered */
   padding: 20px;
   border: 1px solid #888;
-  width: 60%; 
+  width: 60%;
 }
 
 /* The Close Button */
-#splash-close {
-  color: #aaa;
-  float: right;
-  font-size: 28px;
-  font-weight: bold;
-  position: relative;
-  right: -7px;
-  top: -21px;
 
-  &:hover,
-  &:focus {
-    color: black;
-    text-decoration: none;
-    cursor: pointer;
+button#splash-close {
+  float: right;
+  position: relative;
+  right: -29px;
+  top: -27px;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  border: 1px solid $blue;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  &:hover {
+    background: #ccc;
   }
+  &:focus {
+    outline: 2px solid #000;
+  }
+  span {
+    margin-bottom: 2px;       
+    font-size: 28px;
+    font-weight: bold;
+  }  
 }
 
 #splash-controls-wrapper {
@@ -60,6 +72,9 @@
     margin-right: 8px;
     &:hover {
       background: #ccc;
+    }
+    &:focus {
+      outline: 2px solid #000;
     }
   }
 

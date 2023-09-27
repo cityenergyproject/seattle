@@ -8,7 +8,8 @@ define([
   const Splash = Backbone.View.extend({
     el: $('#splash'),
 
-    initialize: function() {
+    initialize: function(options) {
+      this.state = options.state;
     	this.$el.html(_.template(SplashTemplate));
     	// check the value of the cookie, to know whether to show the splash or not
     	var skip = this.getCookie('skip_tutorial');
@@ -25,7 +26,7 @@ define([
 		},
 
     events: {
-      'click #splash-close': 'onModalClose',
+      'click button#splash-close': 'onModalClose',
       'click button#skip-tutorial': 'onModalClose',
       'click button#start-tutorial': 'onStartTutorial',
       'change input#opt-in': 'onCheckOptIn'
@@ -48,8 +49,9 @@ define([
 
     onStartTutorial: function(evt) {
       if (typeof evt.preventDefault === 'function') evt.preventDefault();
-      var tutorial = new Tutorial();
-      tutorial.render(0);
+      const state = this.state;
+      var tutorial = new Tutorial({state});
+      tutorial.render(1000);
       this.$el.hide();
     },
 

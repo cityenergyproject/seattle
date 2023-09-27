@@ -175,13 +175,17 @@ define([
       new ScorecardController({ state, mapView });
       new MobileAlert({ state });
       new FooterView({ state });
-      new TutorialView({ state });
-      new SplashView({ state });
       new Button({
         el: '#city-scorcard-toggle',
         onClick: _.bind(this.toggleCityScorecard, this),
         value: 'Citywide Report'
       });
+      // hack: the turorial needs state from the map, which isn't present until after the map loads
+      // TODO: define and instantiate these views in the mapView/building_layer? 
+      setTimeout(function() {
+        new TutorialView({ state, mapView });
+        new SplashView({ state });
+      }, 3000);
 
       this.state.on('change', this.onChange, this);
     },

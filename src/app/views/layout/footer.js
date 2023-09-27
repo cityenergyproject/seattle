@@ -51,8 +51,9 @@ define([
     },
 
     onHelpLink: function(evt) {
+      const state = this.state;
       if (typeof evt.preventDefault === 'function') evt.preventDefault();
-      var tutorial = new Tutorial();
+      var tutorial = new Tutorial({state});
       tutorial.render(0);
     },
 
