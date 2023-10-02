@@ -2,7 +2,7 @@ define(['underscore', 'd3'], function(_, d3) {
   const getThresholds = (thresholds, proptype, yr) => {
     if (!thresholds[proptype]) {
       return {
-        error: 'No threshold for property type'
+        error: `No threshold for property type ${proptype}`
       };
     }
 
