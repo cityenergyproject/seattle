@@ -163,6 +163,15 @@ define([
       return result;
     },
     parse: function(data){
+      // Housecleaning: Trim d['property_type'] because it (sometimes) includes newlines
+      // TODO: Is there a better place to do this?
+      //     : Can we do this upstream in data processing so we don't have to do it every time the app loads?
+      // data.rows.forEach(function(o) {
+      //   Object.keys(o).forEach(function(key) {
+      //     o[key] = key === 'property_type' ? o['property_type'].trim() : o[key];
+      //   });
+      // });
+
       return data.rows;
     },
     toSql: function(year, categories, range){
