@@ -38,40 +38,58 @@ define([
 			  showProgress: true,
 			  allowClose: true,
 			  steps: [
-			    { element: '#search', 
+			    { element: '#search',
+			    	onHighlighted: () => { 
+			    		// make sure we have focus
+			    		document.querySelector('.driver-popover').focus(); 
+			    		// it is possible to load on a building report, so go ahead and click the close button
+							$('a#back-to-map-link').click();
+							// it is also possible to have a map popup open, close them
+							mapview.leafletMap.closePopup();
+			    	},
 			    	popover: { 
 			    		title: 'Search', 
 			    		description: 'Use the Search bar to find a building based on its name, address, or building ID' 
 			    	} 
 			    },
 			    { element: '#map-category-controls', 
+			    	onHighlighted: () => { document.querySelector('.driver-popover').focus(); },
 			    	popover: { 
 			    		title: 'Filter buildings', 
 			    		description: 'Filter buildings based on criteria like neighborhood, council district and reporting year',
 			  			onNextClick: () => {
-			  				// open the dropdown
-			  				var select = $('#building-proptype-selector select');
-			  				select[0].selectize.open();
-								// artificially increase the size of the selector we pass to the next step
-								$('#building-proptype-selector').height(230);
+			  				// Add an image of the menu - this is overall easier to control than selectize
+			  				// and we don't have any focus conflicts (see next step)
+								$('<img>', {
+									src: './images/menu.jpg',
+									id: 'proptype-menu-image',
+									css: {
+										'z-index': 999999,
+										'position': 'fixed',
+									}
+								}).insertAfter('#building-proptype-selector select');
+
 								driverObj.moveNext();
 			  			}
 			  		} 
 			  	},
-			    { element: '#building-proptype-selector', 
+			    { element: '#proptype-menu-image', 
+			    	onHighlighted: () => { 
+			    		// This steals focus from the select, 
+			    		// which is why we had to add an image of the menu in the previous step
+			    		document.querySelector('.driver-popover').focus();
+			    	},
 			    	popover: { 
 			    		title: 'Filter buildings', 
 			    		description: 'You can also filter buildings by property type' 
 			    	},
 			    	onDeselected: () => {
-			    		// close the dropdown
-		  				var select = $('#building-proptype-selector select');
-		  				select[0].selectize.close();
-							// restore the size of the selector
-							$('#building-proptype-selector').height('auto');
+			    		// delete the menu image
+			    		$('img#proptype-menu-image').remove();
 			    	},
 			    },
 			    { element: '#total_ghg_emissions', 
+			    	onHighlighted: () => { document.querySelector('.driver-popover').focus(); },
 			    	popover: { 
 			    		title: 'Map display', 
 			    		description: 'The visualization defaults to displaying greenhouse gas emissions; you can toggle between absolute GHG emissions and GHG intensity, as shown next.',
@@ -83,6 +101,7 @@ define([
 			  		} 
 			  	},
 			    { element: '#total_ghg_emissions_intensity', 
+			    	onHighlighted: () => { document.querySelector('.driver-popover').focus(); },
 			    	popover: { 
 			    		title: 'Map display', 
 			    		description: 'You can also visualize buildings by GHG intensity (i.e. per square foot)',
@@ -97,6 +116,7 @@ define([
 			      },
 		      },
 		      { element: '#map-controls-content--inner',
+			    	onHighlighted: () => { document.querySelector('.driver-popover').focus(); },
 			    	popover: { 
 			    		title: 'Map display', 
 			    		description: 'In addition to greenhouse gas emissions data, you can also choose to display energy performance metrics and property information like square footage. Click on these tabs to minimize or maximize these data types.' 
@@ -110,6 +130,7 @@ define([
 			    	},
 		    	},
 			    { element: 'table.comparables', 
+			    	onHighlighted: () => { document.querySelector('.driver-popover').focus(); },
 			    	popover: { 
 			    		title: 'Compare buildings', 
 			    		description: 'Buildings that are viewed in succession will populate the Building Comparison tab. If you click on Building Comparison, a side by side comparison will expand from the bottom of the screen.', 
@@ -121,6 +142,7 @@ define([
 			    	},
 			    },
 			    { element: '#map', 
+			    	onHighlighted: () => { document.querySelector('.driver-popover').focus(); },
 			    	popover: { 
 			    		title: 'Map display', 
 			    		description: 'Zooming in will display building shapes.',
@@ -132,6 +154,7 @@ define([
 			    	},
 			    },
 			    { element: '#map', 
+			    	onHighlighted: () => { document.querySelector('.driver-popover').focus(); },
 			    	popover: { 
 			    		title: 'Map display', 
 			    		description: 'Clicking on a building will show an information snapshot. Clicking on “View Building Report” will take you to a building-specific report that provides more detailed building information.',
