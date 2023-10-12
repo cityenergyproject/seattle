@@ -25,38 +25,38 @@ define([
 			const driver = window.driver.js.driver;
       const state = this.state;
 
-			const startlat = state.get('lat');
-      const startlng = state.get('lng');
-      const startzoom = state.get('zoom');
-
-      console.log(startlat);
-      console.log(startlng);
-      console.log(startzoom);
-      console.log(mapview);
+			const userlat = state.get('lat');
+      const userlng = state.get('lng');
+      const userzoom = state.get('zoom');
 
 			const driverObj = driver({
 			  showProgress: true,
 			  allowClose: true,
+			  showButtons: ['next', 'close'],
 			  steps: [
 			    { element: '#search',
 			    	onHighlighted: () => { 
 			    		// make sure we have focus
 			    		document.querySelector('.driver-popover').focus(); 
-			    		// it is possible to load on a building report, so go ahead and click the close button
-							$('a#back-to-map-link').click();
-							// it is also possible to have a map popup open, close them
+			    		// START: make sure we use the default view and deselect everything
+			    		$('#back-to-map-link').click();
+			    		let citycenter = state.get('city').get('center');
+			    		let cityzoom = state.get('city').get('zoom');
+							mapview.leafletMap.setView(citycenter, cityzoom);
+							state.set({building: null});
 							mapview.leafletMap.closePopup();
+							mapview.leafletMap.highlightLayer.clearLayers();
 			    	},
 			    	popover: { 
 			    		title: 'Search', 
-			    		description: 'Use the Search bar to find a building based on its name, address, or building ID' 
+			    		description: 'Use the Search bar to find a building based on its name, address, or building ID.' 
 			    	} 
 			    },
 			    { element: '#map-category-controls', 
 			    	onHighlighted: () => { document.querySelector('.driver-popover').focus(); },
 			    	popover: { 
 			    		title: 'Filter buildings', 
-			    		description: 'Filter buildings based on criteria like neighborhood, council district and reporting year',
+			    		description: 'Filter buildings based on criteria like neighborhood, council district or reporting year',
 			  			onNextClick: () => {
 			  				// Add an image of the menu - this is overall easier to control than selectize
 			  				// and we don't have any focus conflicts (see next step)
@@ -92,7 +92,7 @@ define([
 			    	onHighlighted: () => { document.querySelector('.driver-popover').focus(); },
 			    	popover: { 
 			    		title: 'Map display', 
-			    		description: 'The visualization defaults to displaying greenhouse gas emissions; you can toggle between absolute GHG emissions and GHG intensity, as shown next.',
+			    		description: 'The map defaults to displaying greenhouse gas (GHG) emissions; users can toggle between absolute GHG emissions and GHG intensity (emissions per square foot), as shown next. Move the sliders to filter for the highest or lowest emitting buildings.',
 			  			onNextClick: () => {
 			  				// open the next panel
 			  				$('#total_ghg_emissions_intensity').click();
@@ -104,7 +104,7 @@ define([
 			    	onHighlighted: () => { document.querySelector('.driver-popover').focus(); },
 			    	popover: { 
 			    		title: 'Map display', 
-			    		description: 'You can also visualize buildings by GHG intensity (i.e. per square foot)',
+			    		description: 'You can also visualize buildings by GHG intensity (i.e. emissions per square foot)',
 			        onNextClick: () => {
 			          // Collapse the accordion
 			          $('input#category-greenhouse-gas-emissions-expanded').click();
@@ -119,7 +119,12 @@ define([
 			    	onHighlighted: () => { document.querySelector('.driver-popover').focus(); },
 			    	popover: { 
 			    		title: 'Map display', 
-			    		description: 'In addition to greenhouse gas emissions data, you can also choose to display energy performance metrics and property information like square footage. Click on these tabs to minimize or maximize these data types.' 
+			    		description: 'Users can choose to display greenhouse gas emissions, energy performance metrics, and property information like square footage. Click on these tabs to minimize or maximize these data options.', 
+				    	onNextClick: () => {
+				    		// Zoom in so that building footprints are shown
+				    		mapview.leafletMap.setView([47.6050418, -122.3299205], 16);
+			          driverObj.moveNext();
+				    	},
 			    	},
 			    	onDeselected: () => {
 			    		// reopen the accordion, select the first panel
@@ -129,25 +134,14 @@ define([
 							$('#map-controls-content--inner').height('100%');
 			    	},
 		    	},
-			    { element: 'table.comparables', 
-			    	onHighlighted: () => { document.querySelector('.driver-popover').focus(); },
-			    	popover: { 
-			    		title: 'Compare buildings', 
-			    		description: 'Buildings that are viewed in succession will populate the Building Comparison tab. If you click on Building Comparison, a side by side comparison will expand from the bottom of the screen.', 
-				    	onNextClick: () => {
-				    		// Zoom in so that building footprints are shown
-				    		mapview.leafletMap.setView([47.6050418, -122.3299205], 16);
-			          driverObj.moveNext();
-				    	},
-			    	},
-			    },
 			    { element: '#map', 
 			    	onHighlighted: () => { document.querySelector('.driver-popover').focus(); },
 			    	popover: { 
 			    		title: 'Map display', 
-			    		description: 'Zooming in will display building shapes.',
+			    		description: 'Zooming in will display additional detail about the building location and footprints.',
 				    	onNextClick: () => {
-				    		// Select a building
+				    		// Select a building: has to be in this order for some reason
+				    		state.set({selected_buildings: [{id: '357', selected: true, insertedAt: Date.now()}]});
 				    		state.set({building: '357'});
 			          driverObj.moveNext();
 				    	},
@@ -157,17 +151,63 @@ define([
 			    	onHighlighted: () => { document.querySelector('.driver-popover').focus(); },
 			    	popover: { 
 			    		title: 'Map display', 
-			    		description: 'Clicking on a building will show an information snapshot. Clicking on “View Building Report” will take you to a building-specific report that provides more detailed building information.',
+			    		description: 'Clicking on a building will display an information snapshot. To view a more detailed, building-specific report, click on "View Building Report".',
+			    	},
+			    },
+			    { element: 'table.comparables', 
+			    	onHighlighted: () => { document.querySelector('.driver-popover').focus(); },
+			    	popover: { 
+			    		title: 'Compare buildings', 
+			    		description: 'Buildings that are selected in succession will populate the Building Comparison tab. If you click on Building Comparison, a side by side comparison will expand from the bottom of the screen.',
+			    	
+				    	onNextClick: () => {
+				    		// Select a building and quickly click "Show Report"
+				    		state.set({building: '357'});
+				    		$('button#view-report').click();
+				    		// without this delay, seems that Driver cannot find the element 
+			          setTimeout(function() {
+				          driverObj.moveNext();
+			          }, 750);
+				    	},
+			    	},
+			    },
+			    { element: '#building-details-cards-wrapper', 
+			    	onHighlighted: () => { document.querySelector('.driver-popover').focus(); },
+			    	popover: { 
+			    		title: 'Building performance details', 
+			    		description: 'The customized Building Report displays the building’s EUI and GHG Intensity for the selected reporting year and frames them in the context of their peers. The report also displays the energy consumption and GHG emission breakdown by fuel type (e.g. electricity, natural gas, district steam).',
+			    	},
+			    },
+			    { element: '#change-chart', 
+			    	onHighlighted: () => { document.querySelector('.driver-popover').focus(); },
+			    	popover: { 
+			    		title: 'Building performance trends', 
+			    		description: 'The report displays performance trends of the same building over time against a typical building of the same property type.',
+			    	},
+			    },
+			    { element: '#performance-standard-chart', 
+			    	onHighlighted: () => { document.querySelector('.driver-popover').focus(); },
+			    	popover: { 
+			    		title: 'Building performance standard', 
+			    		description: 'For commercial buildings 50,000 SF and larger, the report displays current energy performance versus an approximate Washington Clean Buildings Performance Standard EUI target.',
+			    	},
+			    },
+			    { element: '#links', 
+			    	onHighlighted: () => { document.querySelector('.driver-popover').focus(); },
+			    	popover: { 
+			    		title: 'Utility incentives', 
+			    		description: 'Users can also find utility incentive opportunities at the bottom of the report.',
 			    	},
 			    	onDeselected: () => {
-			    		// zoom back out to the default view and deselect the building
-							mapview.leafletMap.setView([startlat, startlng], startzoom);
+			    		// END: zoom back out to the default view and deselect the building
+			    		$('#back-to-map-link').click();
+							mapview.leafletMap.setView([userlat, userlng], userzoom);
 							state.set({building: null});
+							state.set({selected_buildings: []});
 							mapview.leafletMap.closePopup();
 							mapview.leafletMap.highlightLayer.clearLayers();
 			    	}, 
 			    },
-
 			  ]
 	  	});
 

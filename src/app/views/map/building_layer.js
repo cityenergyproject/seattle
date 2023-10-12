@@ -117,6 +117,8 @@ define([
       label: chartData.lead.label
     };
 
+    // console.log(o.chart.lead);
+
     if (!_.isNumber(o.chart.lead.value) || _.isNaN(o.chart.lead.value)) {
       o.chart.lead.nodata = chartData.lead.nodata;
     }
@@ -352,7 +354,6 @@ define([
 
     // Keep popup in map view after showing more details
     adjustPopup: function(layer) {
-      console.log('adjustPopup');
       var container = $(layer._container);
       var latlng = layer.getLatLng();
 
@@ -366,7 +367,6 @@ define([
     },
 
     onClearMapPopupTrigger: function() {
-      console.log('onClearMapPopupTrigger...')
       this.onClearPopups();
     },
 
@@ -487,6 +487,7 @@ define([
 
 
       var selectedBuildings = this.makeSelectedBuildingsState(buildingId);
+      console.log(selectedBuildings)
 
       if (selectedBuildings) {
         state.selected_buildings = selectedBuildings;
@@ -564,7 +565,8 @@ define([
                               colorStops, cssFillType, thresholds);
 
       var stylesheet = new CartoStyleSheet(buildings.tableName, calculator, layerMode);
-
+// console.log(calculator);
+// console.log(stylesheet);
       var sql = (layerMode === 'dots') ?
                   buildings.toSql(year, state.get('categories'), state.get('filters')) :
                   this.footprintGenerateSql.sql(
@@ -575,6 +577,7 @@ define([
                   );
 
       var cartocss = stylesheet.toCartoCSS();
+// console.log(cartocss);
       var interactivity = this.state.get('city').get('property_id');
 
       return {
@@ -592,6 +595,9 @@ define([
 
       // skip if we are loading `cartoLayer`
       if (this.cartoLoading) return;
+
+console.log('user_name: ', this.allBuildings.cartoDbUser);
+console.log('sublayers: ', this.toCartoSublayer() );
 
       this.cartoLoading = true;
       cartodb.createLayer(this.leafletMap, {
