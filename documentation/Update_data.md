@@ -1,5 +1,41 @@
-# Update data
+# Update Building Energy data
 
+Bulding Energy data are served from a single data table on the Seattle Energy [CARTO account](https://cityenergy-seattle.carto.com/dashboard/datasets/). This document describes how to update this dataset.
+
+The bulk of the data update work takes place in an R script managed by the city outside of this repository. The end result of this R script is a data CSV, with field names exactly matching the current set of field names. Other requirements for this data CSV, all managed in R, include: 
+- Blanks (empty) for "nodata", not "N/A" or any other "nodata" representation
+- Field names that match the current set of field names exactly (case and spelling)
+- Field types appropriate to each field (interger, float, string)
+
+Once a data update is delivered, there are a few steps to get this live on the City Energy website
+1. Upload to CARTO
+2. Local Testing
+3. Staging
+3. Live deployment
+
+## Upload to CARTO
+* From the [dataset landing page](https://cityenergy-seattle.carto.com/dashboard/datasets/) on CARTO, select "New Dataset"
+* Upload the CSV, taking note of the filename
+* You can review the table in CARTO for any obvious errors or discrepencies
+
+## Local Testing
+* Follow the instructions in [the README](../README.md) for installing the local development environment
+* Open [seattle.json](../src/cities/seattle.json), look for the "years" block, and add or edit the table name for the year that you are updating. There is an example showing this at the bottom of this document. 
+* Save [seattle.json](../src/cities/seattle.json) and reload the locally running copy of the application. 
+* Test all relevant app features, including the map, building reports, building comparisons, building filters, etc. 
+
+## Staging
+* Follow the instructions in [the README](../README.md) for deploying the app to GH Pages. This provides another environment for testing the funcationality of the new/updated dataset  
+
+At this point, if everything checks out, it is possible to rename the new table in CARTO, to overwrite the old table in CARTO, and no further action is necessary (it is wise to download a copy of the old table prior to renaming). The live application will now load the updated data.  
+
+## Deployment
+* Follow the instructions in [the README](../README.md) for building the application distribution. 
+* Share a copy of the files in `/dist/`, with Seattle IT for deployment on Seattle infrastructure. 
+* NOTE: If nothing else has changed, they should be able to simply update `seattle.json` that you edited in a previous step. 
+
+
+## Old data update notes below (pre 2018)
 Here is how the data was updated in November/December 2018 when 2017 data was added to the map:
 
 1. **Before you upload the data to Carto**, make sure it is consistent with the data that is already in Carto:

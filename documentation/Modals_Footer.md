@@ -5,12 +5,17 @@ Seattle city energy app contains modals and a custom footer module. The configur
 Locate the "modals" block in the `seattle.json` file mentioned above.  Each modal is linked to a particular dataset located in `Carto`.  The datasets have already been configured to work with each module so do not change the column names. The fields of a modal configuration block are as follows:
 * **title:** Title of the modal
 * **desc:** Short description of the modal which will appear under title
-* **tablename:** Name of the dataset in `Carto`.  **very important**
+* **file:** Name of the CSV file in `../src/data/` that contains the modal data.  **very important**
 * **label:** Name used for the button
 * **reflinks** Lets the modal know if there is an "reflinks" column.  Only used for the glossary modal.
 
 ### Adding data to the modals
-Go to the modal dataset located in [`Carto`](https://cityenergy-seattle.carto.com/dashboard/datasets). Once the appropriate dataset is open, add a row and fill in the values. The new data will be automatically picked up the next time the web app is reloaded.
+Go to the CSV file located in [data](../src/data/). Once the appropriate dataset is open in a text editor or spreadsheet, add a row and fill in the values. The new data will be automatically picked up the next time the web app is reloaded.
+
+### Currently supported modals
+Currently, the app supports the following modals:
+[FAQ](../src/data/faq.csv): Edit this file to add or change the FAQs
+[Glossary](../src/data/glossary.csv): Edit this file to add or change the Glossary
 
 ### Configure footer links
 Locate the "footer" block in the `seattle.json` file mentioned at the top. There are two fields in this block:

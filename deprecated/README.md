@@ -5,8 +5,11 @@ In October 2023, we moved several directories here that are no longer being used
 spec/			Tests that have not been run or updated in 7 years
 pdf-generator/	Tools for setting up a server to generate static PDFs
 
-At this time, we also deleted the following directories. They can be retrieved using version control as needed:
+At this time, we also deleted the following directories and files. They can be retrieved using version control as needed:
 play/
 doee_scripts/
 email/
 iframe_style/
+docs/Citywide_scoredcard.md
+2015_Stamen_Phase_I.csv
+overview.pdf
