@@ -62,6 +62,10 @@ Please see the [Links.md](./docs/Links.md) file.
 ## City-wide scorecard data
 Please see the [Citywide_scorecard.md](./docs/Citywide_scorecard.md) file.
 
+## PDF generator
+
+There are some tools to help you create PDF scorecards for buildings. These can run on both a local machine or through a server. Note: This feature is unused and have been moved into [deprecated/](./deprecated) Read more in [the README](deprecated/pdf-generator/README.md).
+
 ## Multi-building campuses
 The system can manage and display data for multi-building "campuses", provided that the building footprints share a building id. In general there are two kinds of campus data
 1. A campus made up of buildings that each report their own benchmarking data. Each of these buildings should have a separate row in the building energy dataset, and a separate outline in the building outline dataset. 
