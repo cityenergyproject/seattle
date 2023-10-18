@@ -36,7 +36,7 @@ At this point, if everything checks out, it is possible to rename the new table 
 
 For details on updating Building Outlines, [see this related document](./Building_outlines.md).
 
-### Old data update notes follow (pre 2018)
+# Old data update notes follow (pre 2018)
 Here is how the data was updated in November/December 2018 when 2017 data was added to the map:
 
 1. **Before you upload the data to Carto**, make sure it is consistent with the data that is already in Carto:
