@@ -6,7 +6,7 @@ The site was commissioned by the [City Energy Project](http://www.cityenergyproj
 
 In close collaboration with partners at the City Energy Project, [Stamen Design](http://stamen.com) and [Ministry of Velocity](http://www.ministryofvelocity.com) designed and built the system in summer 2015. Stamen is a leading innovator in data visualization, with a long history of direct collaborations with industry leaders, universities, museums, and humanitarian organizations. Ministry of Velocity is an agile software engineering consultancy with decades of combined experience in building immersive experiences alongside startups, nonprofit organizations, and design agencies.
 
-In 2021, [GreenInfo Network](https://www.greeninfo.org) was brought on the manage the project and data updates
+In 2021, [GreenInfo Network](https://www.greeninfo.org) was brought on to help manage the project and data updates
 
 ## Dependencies
 
