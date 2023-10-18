@@ -34,7 +34,6 @@ At this point, if everything checks out, it is possible to rename the new table 
 * Share a copy of the files in `/dist/`, with Seattle IT for deployment on Seattle infrastructure. 
 * NOTE: If nothing else has changed, they should be able to simply update `seattle.json` that you edited in a previous step. 
 
-
 For details on updating Building Outlines, [see this related document](./Building_outlines.md).
 
 ### Old data update notes follow (pre 2018)
