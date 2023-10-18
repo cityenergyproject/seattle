@@ -59,9 +59,6 @@ Please see the [Modals_Footer.md](./docs/Modals_Footer.md) file.
 ## Links
 Please see the [Links.md](./docs/Links.md) file.
 
-## City-wide scorecard data
-Please see the [Citywide_scorecard.md](./docs/Citywide_scorecard.md) file.
-
 ## PDF generator
 
 There are some tools to help you create PDF scorecards for buildings. These can run on both a local machine or through a server. Note: This feature is unused and have been moved into [deprecated/](./deprecated) Read more in [the README](deprecated/pdf-generator/README.md).
