@@ -64,6 +64,8 @@ Please see the [Links.md](./docs/Links.md) file.
 There are some tools to help you create PDF scorecards for buildings. These can run on both a local machine or through a server. Note: This feature is unused and have been moved into [deprecated/](./deprecated) Read more in [the README](deprecated/pdf-generator/README.md).
 
 ## Multi-building campuses
-The system can manage and display data for multi-building "campuses", provided that the building footprints share a building id. In general there are two kinds of campus data
-1. A campus made up of buildings that each report their own benchmarking data. Each of these buildings should have a separate row in the building energy dataset, and a separate outline in the building outline dataset. 
-2. A campus made up of buildings that together report benchmarking data. For this type of campus, there should be only one row of data in the benchmarking energy dataset, and multiple rows in the building outline dataset. Each of the building outlines should have the same parent `buildingid`.
+The system can manage and display data for multi-building "campuses", provided that all of the building footprints that make up a campus share a building id. 
+
+In general there are two kinds of campus data
+1. A campus made up of buildings that each report their own benchmarking data. Each of these buildings should have a separate row in the building energy dataset, and a separate outline in the building outline dataset. An example might be a university building that reports benchmarking data separately from other buildings on that campus. 
+2. A campus made up of buildings that report benchmarking data together. For this type of campus, there should be only one row of data in the benchmarking energy dataset, and multiple rows in the building outline dataset. Each of the building outlines should have the same parent `buildingid`.
