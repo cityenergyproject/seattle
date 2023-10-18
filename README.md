@@ -6,6 +6,8 @@ The site was commissioned by the [City Energy Project](http://www.cityenergyproj
 
 In close collaboration with partners at the City Energy Project, [Stamen Design](http://stamen.com) and [Ministry of Velocity](http://www.ministryofvelocity.com) designed and built the system in summer 2015. Stamen is a leading innovator in data visualization, with a long history of direct collaborations with industry leaders, universities, museums, and humanitarian organizations. Ministry of Velocity is an agile software engineering consultancy with decades of combined experience in building immersive experiences alongside startups, nonprofit organizations, and design agencies.
 
+In 2021, [GreenInfo Network](https://www.greeninfo.org) was brought on the manage the project and data updates
+
 ## Dependencies
 
 ### Software
@@ -60,10 +62,7 @@ Please see the [Links.md](./docs/Links.md) file.
 ## City-wide scorecard data
 Please see the [Citywide_scorecard.md](./docs/Citywide_scorecard.md) file.
 
-## PDF generator
-
-There are some tools to help you create PDF scorecards for buildings. These can run on both a local machine or through a server. Read more in [the README](pdf-generator/README.md).
-
-## Contributing
-
-Bug reports and pull requests are welcome on GitHub at [https://github.com/cityenergyproject/cityenergy](https://github.com/cityenergyproject/cityenergy).
+## Multi-building campuses
+The system can manage and display data for multi-building "campuses", provided that the building footprints share a building id. In general there are two kinds of campus data
+1. A campus made up of buildings that each report their own benchmarking data. Each of these buildings should have a separate row in the building energy dataset, and a separate outline in the building outline dataset. 
+2. A campus made up of buildings that together report benchmarking data. For this type of campus, there should be only one row of data in the benchmarking energy dataset, and multiple rows in the building outline dataset. Each of the building outlines should have the same parent `buildingid`.
