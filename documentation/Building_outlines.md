@@ -9,10 +9,10 @@ The latest process to update the building outlines / footprints involves multipl
 ### Step 1: Review Buildings
 First, determine all the buildings/records that need their footprint updated.  This step requires manual review of the buildings data to determine which records need to have their attributes and/or geometry updated.  After the review, separate updates into Attribute Updates and Geometry/Outline Updates, noting the unique building id associated with each record that needs updates.  One example of how the buildings were reviewed and the notes that were taken is [here](https://docs.google.com/spreadsheets/d/1Uu3OiZqaJau9jNAGF7zjal-XunqhKVkR/edit#gid=500738303).  An example of the final table produced with all buildings that need updates, separated into several categories, is [here](https://docs.google.com/spreadsheets/d/1S3ftokz4nCtDrrEmpBPLNyr5fnd0YlbnjasbCqZTiHI/edit#gid=0).
 
-### Step 2: Attribute Updates
+### Step 2: Attribute Updates: Categorize and Create Lists
 The Master Data Updates table shows that the updates are separated into different cases. In some cases there is a need to correct the address and correct the latitude and longitude coordinates. For each of those two scenarios, a list of building ids and correction values is provided. 
 
-### Step 3: Geometry Updates
+### Step 3: Geometry Updates: Categorize and Create Lists
 These updates require a correction to the building outline and fall into three categories:
 - Complete redo: A building footprint is entirely wrong (e.g. building was rebuilt) and the footprint needs to be redrawn.
 - Additions: Multiple buildings comprise the record, however, some are missing and need to be added (often the case for apartment condominiums)
