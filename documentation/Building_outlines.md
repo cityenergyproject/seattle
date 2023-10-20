@@ -4,6 +4,23 @@ Building outlines (or footprints) are displayed on the map at higher zoom levels
 
 ## Latest process for updating building outlines (2023)
 
+The latest process to update the building outlines / footprints involves multiple steps, as detailed below.  In the final step, a script is run to update all the building outlines necessary.  As long as the proper format is followed, the script is able to target and update different buildings, and can be used for future updates.  Please follow the process below:   
+
+### Step 1: Review Buildings
+First, determine all the buildings/records that need their footprint updated.  This step requires manual review of the buildings data to determine which records need to have their attributes and/or geometry updated.  After the review, separate updates into Attribute Updates and Geometry/Outline Updates, noting the unique building id associated with each record that needs updates.  One example of how the buildings were reviewed and the notes that were taken is [here](https://docs.google.com/spreadsheets/d/1Uu3OiZqaJau9jNAGF7zjal-XunqhKVkR/edit#gid=500738303).  An example of the final table produced with all buildings that need updates, separated into several categories, is [here](https://docs.google.com/spreadsheets/d/1S3ftokz4nCtDrrEmpBPLNyr5fnd0YlbnjasbCqZTiHI/edit#gid=0).
+
+### Step 2: Attribute Updates
+The Master Data Updates table shows that the updates are separated into different cases. In some cases there is a need to correct the address and correct the latitude and longitude coordinates. For each of those two scenarios, a list of building ids and correction values is provided. 
+
+### Step 3: Geometry Updates
+These updates require a correction to the building outline and fall into three categories:
+- Complete redo: A building footprint is entirely wrong (e.g. building was rebuilt) and the footprint needs to be redrawn.
+- Additions: Multiple buildings comprise the record, however, some are missing and need to be added (often the case for apartment condominiums)
+- Deletions: Sometimes footprints accidentally include buildings or structures that should not be part of the record and need to be removed.
+
+Much of the data necessary to correct the building outlines for 2023 is obtained from the 2015 Seattle Open Data Building Outlines shapefile provided by OSE Seattle. However, in about 20 cases, manual digitization was required since the 2015 Open Data shapefile did not have the necessary outlines.  
+
+Again, as for the attribute updates, the geometry updates are summarized into [separate lists](https://docs.google.com/spreadsheets/d/1S3ftokz4nCtDrrEmpBPLNyr5fnd0YlbnjasbCqZTiHI/edit#gid=0) depending on the specific type of geometry edit required.  The lists contain the building id that needs its footprint corrected, along with the ID of the associated correct building outline from the 2015 Seattle Open Data Building Outlines shapefile, or the manually digitized outlines shapefile.  Then, these lists are used as input for the `Update_Building_Outlines.py` script which automates the entire process.  Please refer to the documentation in the scripts folder for further detail.
 
 
 ## Original building outline process notes (pre 2018)
