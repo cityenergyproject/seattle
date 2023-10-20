@@ -20,7 +20,10 @@ These updates require a correction to the building outline and fall into three c
 
 Much of the data necessary to correct the building outlines for 2023 is obtained from the 2015 Seattle Open Data Building Outlines shapefile provided by OSE Seattle. However, in about 20 cases, manual digitization was required since the 2015 Open Data shapefile did not have the necessary outlines.  
 
-Again, as for the attribute updates, the geometry updates are summarized into [separate lists](https://docs.google.com/spreadsheets/d/1S3ftokz4nCtDrrEmpBPLNyr5fnd0YlbnjasbCqZTiHI/edit#gid=0) depending on the specific type of geometry edit required.  The lists contain the building id that needs its footprint corrected, along with the ID of the associated correct building outline from the 2015 Seattle Open Data Building Outlines shapefile, or the manually digitized outlines shapefile.  Then, these lists are used as input for the `Update_Building_Outlines.py` script which automates the entire process.  Please refer to the documentation in the scripts folder for further detail.
+Again, as for the attribute updates, the geometry updates are summarized into [separate lists](https://docs.google.com/spreadsheets/d/1S3ftokz4nCtDrrEmpBPLNyr5fnd0YlbnjasbCqZTiHI/edit#gid=0) depending on the specific type of geometry edit required.  The lists contain the building id that needs its footprint corrected, along with the ID of the associated correct building outline from the 2015 Seattle Open Data Building Outlines shapefile, or the manually digitized outlines shapefile.  
+
+### Step 4: Run Update_Building_Outlines.py
+The geometry lists mentioned above are used as input for the `Update_Building_Outlines.py` script which automates the entire building outlines update process.  Please refer to the documentation in the scripts folder for further detail.
 
 
 ## Original building outline process notes (pre 2018)
