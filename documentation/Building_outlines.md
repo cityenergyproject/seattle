@@ -14,7 +14,7 @@ The Master Data Updates table shows that the updates are separated into differen
 
 ### Step 3: Geometry Updates: Categorize and Create Lists
 These updates require a correction to the building outline and fall into three categories:
-- Complete redo: A building footprint is entirely wrong (e.g. building was rebuilt) and the footprint needs to be redrawn.
+- Replacement: A building footprint is partially or entirely wrong (e.g. building was rebuilt) and the footprint needs to be replaced with the correct footprint.
 - Additions: Multiple buildings comprise the record, however, some are missing and need to be added (often the case for apartment condominiums)
 - Deletions: Sometimes footprints accidentally include buildings or structures that should not be part of the record and need to be removed.
 
@@ -22,7 +22,10 @@ Much of the data necessary to correct the building outlines for 2023 is obtained
 
 Again, as for the attribute updates, the geometry updates are summarized into [separate lists](https://docs.google.com/spreadsheets/d/1S3ftokz4nCtDrrEmpBPLNyr5fnd0YlbnjasbCqZTiHI/edit#gid=0) depending on the specific type of geometry edit required.  The lists contain the building id that needs its footprint corrected, along with the ID of the associated correct building outline from the 2015 Seattle Open Data Building Outlines shapefile, or the manually digitized outlines shapefile.  
 
-### Step 4: Run Update_Building_Outlines.py
+### Step 4: Manual Deletion
+Usually there are few deletions to be made.  Since deleting anything has to be done carefully, and since there are usually so few footprints to delete, a manual process is best.  
+
+### Step 5: Run Update_Building_Outlines.py
 The geometry lists mentioned above are used as input for the `Update_Building_Outlines.py` script which automates the entire building outlines update process.  Please refer to the documentation in the scripts folder for further detail.
 
 
