@@ -3,10 +3,9 @@ This script can be used to update the building outlines that feed into the Seatt
 
 ### Conda Environment needed to run script
 The conda environment that is used to run this script includes installation of the following package versions:
-
-python v.3.11.0
-pandas v1.5.2
-geopandas v0.12.2
+- python v.3.11.0
+- pandas v1.5.2
+- geopandas v0.12.2
 
 ### Seattle Buildings Dashboard data download
 The CartoDB database that feeds into the Seattle Buildings Dashboard is downloaded each time an updated is needed (just building id and geometry fields) and saved internally: 
