@@ -33,6 +33,8 @@ These two csv files provide a list of all the building ids to have their footpri
 
 `replace_missing_buildings_from_opendata.csv`: ..using data from the 2015 Open Data file
 
+**IMPORTANT CSV FILE FORMATING NOTE**
+The script expects that all csv files have a column called `buildingid` which records the building id that needs the update.  For two of the scripts, `add_missing_buildings_from_opendata.csv` and `replace_missing_buildings_from_opendata.csv`, there is an additional column `opendataid`.  This column `opendataid` specifically **expects brackets** around a list of opendata IDs, such as [12034, 12134] for example, associated with the `buildingid`.
 
 ### Output
 A shapefile with updated building footprints (again, just building id and geometry fields) is saved internally to `P:\proj_p_s\Seattle Building Dashboard\2023 update\seattle_building_outlines_2023_updated.shp`.
