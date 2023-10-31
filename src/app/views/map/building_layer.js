@@ -8,6 +8,7 @@ define([
 ], function($, _, Backbone, CityBuildings,
         BuildingColorBucketCalculator, BuildingInfoTemplate){
 
+
   const baseCartoCSS = {
     dots: [
     '{marker-fill: #CCC;' +
@@ -27,11 +28,23 @@ define([
       'line-width: 1;' +
       'line-color: #FFF;' +
       'line-opacity: 0.5;}'
+    ],
+    // A hatch polygon that only applies to buildings with null values for the given measure
+    // we make the pattern transparent for all non-null values in building_color_bucket_calculator.js
+    footprints_hatch: [
+      '{polygon-fill: #CCC;' +
+      'polygon-opacity: 0.9;' +
+      'line-width: 1;' +
+      'line-color: #FFF;' +
+      'line-opacity: 0.5;' +
+      'polygon-pattern-file: url(https://seattle-buildings-polygon-hatch-images.s3.us-west-1.amazonaws.com/hatch_double_cross_grey_45_narrow_thin_transparent.png);' + 
+      'polygon-pattern-opacity: 1;}'
     ]
   };
 
-  const CartoStyleSheet = function(tableName, bucketCalculator, mode) {
+  const CartoStyleSheet = function(tableName, hatchCss, bucketCalculator, mode) {
     this.tableName = tableName;
+    this.hatchCss = hatchCss;
     this.bucketCalculator = bucketCalculator;
     this.mode = mode;
   };
@@ -40,7 +53,12 @@ define([
     const bucketCSS = this.bucketCalculator.toCartoCSS();
     const tableName = this.tableName;
 
-    let styles = [...baseCartoCSS[this.mode]].concat(bucketCSS);
+    let mode = this.mode;
+    let hatch = this.hatchCss;
+
+    if (hatch && mode === 'footprints') mode = `${mode}_hatch`;
+
+    let styles = [...baseCartoCSS[mode]].concat(bucketCSS);
 
     styles = _.reject(styles, function(s) { return !s; });
     styles = _.map(styles, function(s) { return `#${tableName} ${s}`; });
@@ -487,7 +505,6 @@ define([
 
 
       var selectedBuildings = this.makeSelectedBuildingsState(buildingId);
-      console.log(selectedBuildings)
 
       if (selectedBuildings) {
         state.selected_buildings = selectedBuildings;
@@ -555,6 +572,8 @@ define([
       });
 
       var fieldName = cityLayer.field_name;
+      var hatchCss = cityLayer.hatch_null_css;
+
       var buckets = cityLayer.range_slice_count;
       var colorStops = cityLayer.color_range;
 
@@ -564,9 +583,8 @@ define([
                               buildings, fieldName, buckets,
                               colorStops, cssFillType, thresholds);
 
-      var stylesheet = new CartoStyleSheet(buildings.tableName, calculator, layerMode);
-// console.log(calculator);
-// console.log(stylesheet);
+      var stylesheet = new CartoStyleSheet(buildings.tableName, hatchCss, calculator, layerMode);
+
       var sql = (layerMode === 'dots') ?
                   buildings.toSql(year, state.get('categories'), state.get('filters')) :
                   this.footprintGenerateSql.sql(
@@ -577,7 +595,7 @@ define([
                   );
 
       var cartocss = stylesheet.toCartoCSS();
-// console.log(cartocss);
+
       var interactivity = this.state.get('city').get('property_id');
 
       return {
@@ -590,14 +608,13 @@ define([
     render: function(){
       if (this.cartoLayer) {
         this.cartoLayer.getSubLayer(0).set(this.toCartoSublayer()).show();
+
         return this;
       }
 
       // skip if we are loading `cartoLayer`
       if (this.cartoLoading) return;
 
-console.log('user_name: ', this.allBuildings.cartoDbUser);
-console.log('sublayers: ', this.toCartoSublayer() );
 
       this.cartoLoading = true;
       cartodb.createLayer(this.leafletMap, {
@@ -605,7 +622,6 @@ console.log('sublayers: ', this.toCartoSublayer() );
         type: 'cartodb',
         sublayers: [this.toCartoSublayer()]
       }, { https: true }).addTo(this.leafletMap).on('done', this.onCartoLoad, this);
-
 
       return this;
     },

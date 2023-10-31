@@ -90,6 +90,7 @@
             "range_slice_count": 18,
             "section": "Greenhouse Gas Emissions",
             "color_range": ["#1f5dbe","#599b67","#ffd552","#da863f","#ab2328"],
+            "hatch_null_css": true,
             "unit": "Metric Tons CO₂e",
             "filter_range": {"min" : 0, "max" : 500},
             "formatter": "fixed-1",
@@ -102,10 +103,11 @@
             "range_slice_count": 18,
             "section": "Greenhouse Gas Emissions",
             "color_range": ["#1f5dbe","#599b67","#ffd552","#da863f","#ab2328"],
+            "hatch_null_css": true,
             "unit": "Kilograms CO₂e/ft²",
             "formatter": "fixed-1",
             "filter_range": {"min" : 0, "max" : 10},
-            "description": "The  total Greenhouse Gas (GHG) Emissions, divided by the floor area of the building, in kilograms of carbon dioxide equivalent (CO2e) per square foot."
+            "description": "The total Greenhouse Gas (GHG) Emissions, divided by the floor area of the building, in kilograms of carbon dioxide equivalent (CO2e) per square foot."
         },
         {
             "title": "Building EUI Quartiles",
@@ -114,6 +116,7 @@
             "display_type": "range",
             "range_slice_count": 4,
             "filter_range": {"min": 0, "max" : 4},
+            "hatch_null_css": true,
             "section": "Energy Performance Metrics",
             "color_range": ["#1F5DBE", "#90AE60", "#F7C34D", "#C04F31"],
             "formatter": "threshold",
@@ -142,6 +145,7 @@
             "range_slice_count": 18,
             "section": "Energy Performance Metrics",
             "color_range": ["#1f5dbe","#599b67","#ffd552","#da863f","#ab2328"],
+            "hatch_null_css": true,
             "unit": "kBtu",
             "formatter": "fixed-1",
             "filter_range": {"min": 0, "max": 1500},

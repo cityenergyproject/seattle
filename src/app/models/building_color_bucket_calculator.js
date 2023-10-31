@@ -48,18 +48,28 @@ define([
     const cssFillType = this.cssFillType;
     let css;
 
+    // for polygons (only) we have to add a rule to "undo" the default polygon pattern
+    // otherwise it applies to all polygons
+    let defaultHatchCSSOpacityRule = 'polygon-pattern-opacity: 0;';
+
     if (this.thresholds) {
       css = this.memoized.cartoCSS[this.fieldName] = _.map(stops, (stop, i) => {
         const min = _.min(gradient.invertExtent(stop));
+        let cssText;
         if (i === 0) {
-          return `[${fieldName}<${min}]{${cssFillType}:${stop}}`;
+          cssText = cssFillType === 'polygon-fill' ? `[${fieldName}<${min}]{${cssFillType}:${stop}; ${defaultHatchCSSOpacityRule}}` :
+            `[${fieldName}<${min}]{${cssFillType}:${stop}}`;
+          return cssText;
         }
-        return `[${fieldName}>=${min}]{${cssFillType}:${stop}}`;
+        cssText = cssFillType === 'polygon-fill' ? `[${fieldName}>=${min}]{${cssFillType}:${stop}; ${defaultHatchCSSOpacityRule}}` : `[${fieldName}>=${min}]{${cssFillType}:${stop}; ${defaultHatchCSSOpacityRule}}`;
+        return cssText;
       });
     } else {
       css = this.memoized.cartoCSS[this.fieldName] = _.map(stops, stop => {
         const min = _.min(gradient.invertExtent(stop));
-        return `[${fieldName}>=${min}]{${cssFillType}:${stop}}`;
+        let cssText
+        cssText = cssFillType === 'polygon-fill' ? `[${fieldName}>=${min}]{${cssFillType}:${stop}; ${defaultHatchCSSOpacityRule}}` : `[${fieldName}>=${min}]{${cssFillType}:${stop}}`;
+        return cssText; 
       });
     }
     return css;
