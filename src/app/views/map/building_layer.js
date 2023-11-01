@@ -533,7 +533,7 @@ define([
 
       // update the tooltip
       var tooltip = $('div.cartodb-tooltip');
-      tooltip.text(`${name}, ${id}`);
+      tooltip.html(`<strong>${name}</strong><br>Building ID: <strong>${id}</strong>`);
       tooltip.css({
         top: e.pageY - 60,
         left: e.pageX - 335,
