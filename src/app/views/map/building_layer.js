@@ -513,11 +513,39 @@ define([
       this.state.set(state);
     },
 
-    onFeatureOver: function(){
-      this.mapElm.css('cursor', 'help');
+    onFeatureOver: function(e, latlng, _unused, data) {
+      // get the name of the id field to lookup, which is different for footprints and dots
+      var propertyId = this.state.get('city').get('property_id');
+      if (this.buildingLayerWatcher.mode !== 'dots') {
+        propertyId = this.footprints_cfg.property_id;
+      }
+      // get the id of the hovered building
+      var buildingId = data[propertyId];
+
+      // find the building in the building data
+      var building = this.allBuildings.find(building => {
+        return building.get(propertyId) == buildingId;
+      }, this);
+
+      // get the name and the id of the building
+      var id = building.get('id');
+      var name = building.get('property_name');
+
+      // update the tooltip
+      var tooltip = $('div.cartodb-tooltip');
+      tooltip.text(`${name}, ${id}`);
+      tooltip.css({
+        top: e.pageY - 60,
+        left: e.pageX - 335,
+        display: 'block',
+      });
     },
+
     onFeatureOut: function(){
       this.mapElm.css('cursor', '');
+
+      // hide the tooltip
+      $('div.cartodb-tooltip').hide();
     },
 
     onStateChange: function(){
@@ -632,6 +660,7 @@ define([
 
       this.cartoLayer = layer;
       sub.setInteraction(true);
+
       sub.on('featureClick', this.onFeatureClick, this);
       sub.on('featureOver', this.onFeatureOver, this);
       sub.on('featureOut', this.onFeatureOut, this);
