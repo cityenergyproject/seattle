@@ -41,6 +41,12 @@ define([
           reset_all: true
         });
 
+        // reset the map to defaults
+        // Note: these are not the defaults based on URL params, but rather global city defaults from seattle.json
+        var mapview = this.state.get('mapview');
+        var leafletMap = mapview.leafletMap;
+        leafletMap.setView(city.center, city.zoom);
+
         return false;
       });
     },
