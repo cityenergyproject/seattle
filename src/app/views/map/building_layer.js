@@ -27,7 +27,11 @@ define([
       'polygon-opacity: 0.9;' +
       'line-width: 1;' +
       'line-color: #FFF;' +
-      'line-opacity: 0.5;}'
+      'line-opacity: 0.5;' + 
+      // we need to include these declarations, even if we're not using the pattern (e.g for Energy Star Score)
+      // because CARTO balks if we include pattern-opacity in later declarations, without having first declared the pattern-file
+      'polygon-pattern-file: url(https://seattle-buildings-polygon-hatch-images.s3.us-west-1.amazonaws.com/hatch_double_cross_grey_45_narrow_thin_transparent.png);' + 
+      'polygon-pattern-opacity: 0;}'
     ],
     // A hatch polygon that only applies to buildings with null values for the given measure
     // we make the pattern transparent for all non-null values in building_color_bucket_calculator.js
