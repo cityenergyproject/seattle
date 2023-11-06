@@ -621,8 +621,6 @@ define([
 
       var stylesheet = new CartoStyleSheet(buildings.tableName, hatchCss, calculator, layerMode);
       var cartocss = stylesheet.toCartoCSS();
-      console.log(layerMode);
-      console.log(cartocss);
 
       var sql = (layerMode === 'dots') ?
                   buildings.toSql(year, state.get('categories'), state.get('filters')) :
@@ -652,8 +650,6 @@ define([
 
       // skip if we are loading `cartoLayer`
       if (this.cartoLoading) return;
-
-      console.log('render');
 
       this.cartoLoading = true;
       cartodb.createLayer(this.leafletMap, {
