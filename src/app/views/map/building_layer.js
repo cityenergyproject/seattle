@@ -518,6 +518,9 @@ define([
     },
 
     onFeatureOver: function(e, latlng, _unused, data) {
+      // change the cursor to pointer, indicating that we can click a given building
+      this.mapElm.css('cursor', 'pointer');
+
       // get the name of the id field to lookup, which is different for footprints and dots
       var propertyId = this.state.get('city').get('property_id');
       if (this.buildingLayerWatcher.mode !== 'dots') {
@@ -546,6 +549,7 @@ define([
     },
 
     onFeatureOut: function(){
+      // change back to the default cursor
       this.mapElm.css('cursor', '');
 
       // hide the tooltip
@@ -616,6 +620,9 @@ define([
                               colorStops, cssFillType, thresholds);
 
       var stylesheet = new CartoStyleSheet(buildings.tableName, hatchCss, calculator, layerMode);
+      var cartocss = stylesheet.toCartoCSS();
+      console.log(layerMode);
+      console.log(cartocss);
 
       var sql = (layerMode === 'dots') ?
                   buildings.toSql(year, state.get('categories'), state.get('filters')) :
@@ -626,7 +633,6 @@ define([
                       state.get('filters'), 'b.')
                   );
 
-      var cartocss = stylesheet.toCartoCSS();
 
       var interactivity = this.state.get('city').get('property_id');
 
@@ -647,6 +653,7 @@ define([
       // skip if we are loading `cartoLayer`
       if (this.cartoLoading) return;
 
+      console.log('render');
 
       this.cartoLoading = true;
       cartodb.createLayer(this.leafletMap, {

@@ -61,7 +61,7 @@ define([
             `[${fieldName}<${min}]{${cssFillType}:${stop}}`;
           return cssText;
         }
-        cssText = cssFillType === 'polygon-fill' ? `[${fieldName}>=${min}]{${cssFillType}:${stop}; ${defaultHatchCSSOpacityRule}}` : `[${fieldName}>=${min}]{${cssFillType}:${stop}; ${defaultHatchCSSOpacityRule}}`;
+        cssText = cssFillType === 'polygon-fill' ? `[${fieldName}>=${min}]{${cssFillType}:${stop}; ${defaultHatchCSSOpacityRule}}` : `[${fieldName}>=${min}]{${cssFillType}:${stop}}`;
         return cssText;
       });
     } else {
