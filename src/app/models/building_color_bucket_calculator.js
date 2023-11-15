@@ -49,7 +49,7 @@ define([
     let css;
 
     // for polygons (only) we have to add a rule to "undo" the default polygon pattern
-    // otherwise it applies to all polygons
+    // otherwise it applies to all polygons - we only want it to show for the default, nodata polygons
     let defaultHatchCSSOpacityRule = 'polygon-pattern-opacity: 0;';
 
     if (this.thresholds) {
