@@ -585,6 +585,7 @@
     },
     "footer": {
         "about_link": "http://www.seattle.gov/environment/climate-change/building-energy/energy-benchmarking",
-        "download_link": "https://www.seattle.gov/environment/climate-change/buildings-and-energy/energy-benchmarking/data-and-reports"
+        "download_link": "https://www.seattle.gov/environment/climate-change/buildings-and-energy/energy-benchmarking/data-and-reports",
+        "feedback_link": "https://www.surveymonkey.com/r/QMXVQLF"
     }
 }
