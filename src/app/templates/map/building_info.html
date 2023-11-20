@@ -17,7 +17,8 @@
         <tr class="lead">
           <% if (data.chart.lead.nodata) { %>
             <td colspan='2' class='nodata'>
-              We don't have an EUI for this building for this year. Contact <a href="mailto:energybenchmarking@seattle.gov">energybenchmarking@seattle.gov</a> if this is incorrect.
+              <span class="out-of-compliance">Out of Compliance</span>
+              As of the last quarterly update to this map, the City of Seattle has not received complete, valid energy data for this property in this reporting year. If this is your building, please visit the <a target="_blank" href="https://www.seattle.gov/environment/climate-change/buildings-and-energy/energy-benchmarking/instructions">Energy Benchmarking Instructions page</a> or contact <a href="mailto:energybenchmarking@seattle.gov">energybenchmarking@seattle.gov</a> to bring your building into compliance.
             </td>
           <% } else { %>
             <td style="color: <%= data.chart.lead.color %>;"><%= data.chart.lead.value.toLocaleString() %></td>
@@ -26,11 +27,12 @@
         </tr>
 
         <% if (data.chart.barchart.nodata) { %>
+        <!-- just leave this blank for now 
         <tr class="barchart">
           <td colspan='2' class='nodata'>
             We don't have an ENERGY STAR score for this building for this year. Contact <a href="mailto:energybenchmarking@seattle.gov">energybenchmarking@seattle.gov</a> if this is incorrect.
           </td>
-        </tr>
+        </tr> -->
         <% } else { %>
           <tr class="barchart">
             <td style="color: <%= data.chart.barchart.color %>"><%= data.chart.barchart.value %></td>
