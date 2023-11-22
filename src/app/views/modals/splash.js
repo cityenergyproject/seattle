@@ -62,6 +62,7 @@ define([
 
     render: function() {
       this.$el.show();
+      $('.splash-content').focus();
       return this;
     }
   });
