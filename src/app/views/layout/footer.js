@@ -60,7 +60,8 @@ define([
     getFooterLinks: function(city) {
       const rsp = {
         about: '/',
-        download: '/'
+        download: '/',
+        feedback: '/',
       };
 
       let footerLinks = city && city.get && city.get('footer');
@@ -69,6 +70,7 @@ define([
 
       rsp.about = footerLinks.about_link || '/';
       rsp.download = footerLinks.download_link || '/';
+      rsp.feedback = footerLinks.feedback_link || '/';
 
       return rsp;
     },

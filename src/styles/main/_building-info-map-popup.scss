@@ -85,6 +85,25 @@ div.leaflet-popup-pane {
           vertical-align: baseline;
         }
 
+        .lead td.nodata a {
+          text-decoration: underline;
+          color: $base-font-color;
+        }
+
+        .lead td.nodata {
+          padding-bottom: 0;
+          font-size: 1em !important;
+          line-height: 1.25 !important;
+        }
+
+        .lead td span.out-of-compliance {
+          font-weight: 600;
+          font-size: 1.25em !important;
+          color: #b33e44;
+          margin-bottom: 6px;
+          display: block;
+        }
+
         .lead td:first-child {
           font-size: 2.5em;
           font-weight: 500;
@@ -143,13 +162,6 @@ div.leaflet-popup-pane {
           }
         }
 
-        td.nodata {
-          font-size: 0.85em !important;
-
-          a {
-            color: $base-font-color;
-          }
-        }
       } // end .building-popup-chart
 
       button {

@@ -48,18 +48,28 @@ define([
     const cssFillType = this.cssFillType;
     let css;
 
+    // for polygons (only) we have to add a rule to "undo" the default polygon pattern
+    // otherwise it applies to all polygons - we only want it to show for the default, nodata polygons
+    let defaultHatchCSSOpacityRule = 'polygon-pattern-opacity: 0;';
+
     if (this.thresholds) {
       css = this.memoized.cartoCSS[this.fieldName] = _.map(stops, (stop, i) => {
         const min = _.min(gradient.invertExtent(stop));
+        let cssText;
         if (i === 0) {
-          return `[${fieldName}<${min}]{${cssFillType}:${stop}}`;
+          cssText = cssFillType === 'polygon-fill' ? `[${fieldName}<${min}]{${cssFillType}:${stop}; ${defaultHatchCSSOpacityRule}}` :
+            `[${fieldName}<${min}]{${cssFillType}:${stop}}`;
+          return cssText;
         }
-        return `[${fieldName}>=${min}]{${cssFillType}:${stop}}`;
+        cssText = cssFillType === 'polygon-fill' ? `[${fieldName}>=${min}]{${cssFillType}:${stop}; ${defaultHatchCSSOpacityRule}}` : `[${fieldName}>=${min}]{${cssFillType}:${stop}}`;
+        return cssText;
       });
     } else {
       css = this.memoized.cartoCSS[this.fieldName] = _.map(stops, stop => {
         const min = _.min(gradient.invertExtent(stop));
-        return `[${fieldName}>=${min}]{${cssFillType}:${stop}}`;
+        let cssText
+        cssText = cssFillType === 'polygon-fill' ? `[${fieldName}>=${min}]{${cssFillType}:${stop}; ${defaultHatchCSSOpacityRule}}` : `[${fieldName}>=${min}]{${cssFillType}:${stop}}`;
+        return cssText; 
       });
     }
     return css;
@@ -96,6 +106,7 @@ define([
     if (this.thresholds) {
       scale = d3.scale.threshold().domain(this.thresholds).range(stops);
     } else {
+      // this quantile scale function brings in the entire sorted array of 3663 values 
       scale = d3.scale.quantile().domain(fieldValues).range(stops);
     }
 

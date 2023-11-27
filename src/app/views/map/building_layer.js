@@ -8,6 +8,7 @@ define([
 ], function($, _, Backbone, CityBuildings,
         BuildingColorBucketCalculator, BuildingInfoTemplate){
 
+
   const baseCartoCSS = {
     dots: [
     '{marker-fill: #CCC;' +
@@ -26,12 +27,28 @@ define([
       'polygon-opacity: 0.9;' +
       'line-width: 1;' +
       'line-color: #FFF;' +
-      'line-opacity: 0.5;}'
+      'line-opacity: 0.5;' + 
+      // we need to include these declarations, even if we're not using the pattern (e.g for Energy Star Score)
+      // because CARTO balks if we include pattern-opacity in later declarations, without having first declared the pattern-file
+      'polygon-pattern-file: url(https://seattle-buildings-polygon-hatch-images.s3.us-west-1.amazonaws.com/hatch_double_cross_grey_45_narrow_thin_transparent.png);' + 
+      'polygon-pattern-opacity: 0;}'
+    ],
+    // A hatch polygon that only applies to buildings with null values for the given measure
+    // we make the pattern transparent for all non-null values in building_color_bucket_calculator.js
+    footprints_hatch: [
+      '{polygon-fill: #CCC;' +
+      'polygon-opacity: 0.9;' +
+      'line-width: 1;' +
+      'line-color: #FFF;' +
+      'line-opacity: 0.5;' +
+      'polygon-pattern-file: url(https://seattle-buildings-polygon-hatch-images.s3.us-west-1.amazonaws.com/hatch_double_cross_grey_45_narrow_thin_transparent.png);' + 
+      'polygon-pattern-opacity: 1;}'
     ]
   };
 
-  const CartoStyleSheet = function(tableName, bucketCalculator, mode) {
+  const CartoStyleSheet = function(tableName, hatchCss, bucketCalculator, mode) {
     this.tableName = tableName;
+    this.hatchCss = hatchCss;
     this.bucketCalculator = bucketCalculator;
     this.mode = mode;
   };
@@ -40,7 +57,12 @@ define([
     const bucketCSS = this.bucketCalculator.toCartoCSS();
     const tableName = this.tableName;
 
-    let styles = [...baseCartoCSS[this.mode]].concat(bucketCSS);
+    let mode = this.mode;
+    let hatch = this.hatchCss;
+
+    if (hatch && mode === 'footprints') mode = `${mode}_hatch`;
+
+    let styles = [...baseCartoCSS[mode]].concat(bucketCSS);
 
     styles = _.reject(styles, function(s) { return !s; });
     styles = _.map(styles, function(s) { return `#${tableName} ${s}`; });
@@ -487,7 +509,6 @@ define([
 
 
       var selectedBuildings = this.makeSelectedBuildingsState(buildingId);
-      console.log(selectedBuildings)
 
       if (selectedBuildings) {
         state.selected_buildings = selectedBuildings;
@@ -496,11 +517,43 @@ define([
       this.state.set(state);
     },
 
-    onFeatureOver: function(){
-      this.mapElm.css('cursor', 'help');
+    onFeatureOver: function(e, latlng, _unused, data) {
+      // change the cursor to pointer, indicating that we can click a given building
+      this.mapElm.css('cursor', 'pointer');
+
+      // get the name of the id field to lookup, which is different for footprints and dots
+      var propertyId = this.state.get('city').get('property_id');
+      if (this.buildingLayerWatcher.mode !== 'dots') {
+        propertyId = this.footprints_cfg.property_id;
+      }
+      // get the id of the hovered building
+      var buildingId = data[propertyId];
+
+      // find the building in the building data
+      var building = this.allBuildings.find(building => {
+        return building.get(propertyId) == buildingId;
+      }, this);
+
+      // get the name and the id of the building
+      var id = building.get('id');
+      var name = building.get('property_name');
+
+      // update the tooltip
+      var tooltip = $('div.cartodb-tooltip');
+      tooltip.html(`<strong>${name}</strong><br>Building ID: <strong>${id}</strong>`);
+      tooltip.css({
+        top: e.pageY - 60,
+        left: e.pageX - 335,
+        display: 'block',
+      });
     },
+
     onFeatureOut: function(){
+      // change back to the default cursor
       this.mapElm.css('cursor', '');
+
+      // hide the tooltip
+      $('div.cartodb-tooltip').hide();
     },
 
     onStateChange: function(){
@@ -555,6 +608,8 @@ define([
       });
 
       var fieldName = cityLayer.field_name;
+      var hatchCss = cityLayer.hatch_null_css;
+
       var buckets = cityLayer.range_slice_count;
       var colorStops = cityLayer.color_range;
 
@@ -564,9 +619,9 @@ define([
                               buildings, fieldName, buckets,
                               colorStops, cssFillType, thresholds);
 
-      var stylesheet = new CartoStyleSheet(buildings.tableName, calculator, layerMode);
-// console.log(calculator);
-// console.log(stylesheet);
+      var stylesheet = new CartoStyleSheet(buildings.tableName, hatchCss, calculator, layerMode);
+      var cartocss = stylesheet.toCartoCSS();
+
       var sql = (layerMode === 'dots') ?
                   buildings.toSql(year, state.get('categories'), state.get('filters')) :
                   this.footprintGenerateSql.sql(
@@ -576,8 +631,7 @@ define([
                       state.get('filters'), 'b.')
                   );
 
-      var cartocss = stylesheet.toCartoCSS();
-// console.log(cartocss);
+
       var interactivity = this.state.get('city').get('property_id');
 
       return {
@@ -590,14 +644,12 @@ define([
     render: function(){
       if (this.cartoLayer) {
         this.cartoLayer.getSubLayer(0).set(this.toCartoSublayer()).show();
+
         return this;
       }
 
       // skip if we are loading `cartoLayer`
       if (this.cartoLoading) return;
-
-console.log('user_name: ', this.allBuildings.cartoDbUser);
-console.log('sublayers: ', this.toCartoSublayer() );
 
       this.cartoLoading = true;
       cartodb.createLayer(this.leafletMap, {
@@ -605,7 +657,6 @@ console.log('sublayers: ', this.toCartoSublayer() );
         type: 'cartodb',
         sublayers: [this.toCartoSublayer()]
       }, { https: true }).addTo(this.leafletMap).on('done', this.onCartoLoad, this);
-
 
       return this;
     },
@@ -616,6 +667,7 @@ console.log('sublayers: ', this.toCartoSublayer() );
 
       this.cartoLayer = layer;
       sub.setInteraction(true);
+
       sub.on('featureClick', this.onFeatureClick, this);
       sub.on('featureOver', this.onFeatureOver, this);
       sub.on('featureOut', this.onFeatureOut, this);
