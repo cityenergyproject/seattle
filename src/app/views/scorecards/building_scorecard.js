@@ -219,7 +219,7 @@ define([
       var eui_direction_statement = `${eui_difference_formatted} ${eui_direction_word}`;
 
       // for building details second card "emissions per square foot"
-      var total_ghg = building.total_ghg_emissions_intensity;
+      var total_ghg = building.total_ghg_emissions_intensity || 0;
       var building_type_average_ghg = this.getMeanBuildingTypeGhg(buildings, prop_type);
       var ghg_difference = ((total_ghg - building_type_average_ghg) / building_type_average_ghg) * 100;
       var ghg_direction = ghg_difference < 0 ? 'decreased' : 'increased';
