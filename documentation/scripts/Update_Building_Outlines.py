@@ -13,7 +13,7 @@ This script assumes that all and any necessary manual edits have already been pe
 The conda environment that is used to run this script includes installation of the following package versions: python v.3.11.0 pandas v1.5.2 geopandas v0.12.2
 
 --- Seattle Buildings Dashboard data download
-The CartoDB database that feeds into the Seattle Buildings Dashboard is downloaded each time an updated is needed (just building id and geometry fields) and saved internally: P:\proj_p_s\Seattle Building Dashboard\2023 update\Original_Dashboard_Data\seattle_building_outlines_2023.shp Please create a new folder for next year's update.
+The CartoDB database that feeds into the Seattle Buildings Dashboard is downloaded each time an updated is needed (just building id and geometry fields) and saved internally: P:\proj_p_s\Seattle Building Dashboard\2023 update\Original_Dashboard_Data\seattle_building_outlines_2023.shp Please create a new folder for next year's update.  If some updates have already been done, the input file is the previously updated version at P:\proj_p_s\Seattle Building Dashboard\2023 update\Original_Dashboard_Data\seattle_building_outlines_2023_updated.shp
 
 --- Source Data for Geometry Updates
 All building outlines are updated either by making use of the 2015 Seattle Open Data Building Outlines shapefile provided by OSE Seattle or via a manually digitized shapefile of about 20 footprints (for those that were not in the Open Data). Internal paths to those files: 2015 Open Data Building Outlines: P:\proj_p_s\Seattle Building Dashboard\2023 update\Building_Outline_2015\Building_Outlines___2015.shp" Digitized file: P:\proj_p_s\Seattle Building Dashboard\2023 update\DigitizingFootprints_20230921\DigitizedFootprints_20230926.shp"
