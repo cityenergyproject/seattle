@@ -50,6 +50,7 @@
   zoom: 1;
   margin: 0;
   text-transform: uppercase;
+  height: auto;
 }
 .driver-popover-close-btn {
   all: unset;

@@ -18,6 +18,8 @@ define([
       }
 
       const mapview = this.state.get('mapview');
+      console.log("MAPVIEW: ",mapview);
+      console.log("Leaflet Map: ",mapview.leafletMap);
       this.driverObj = this.initTutorial(mapview);
   	},
 
@@ -39,13 +41,32 @@ define([
 			    		// make sure we have focus
 			    		document.querySelector('.driver-popover').focus(); 
 			    		// START: make sure we use the default view and deselect everything
-			    		$('#back-to-map-link').click();
-			    		let citycenter = state.get('city').get('center');
-			    		let cityzoom = state.get('city').get('zoom');
-							mapview.leafletMap.setView(citycenter, cityzoom);
-							state.set({building: null});
-							mapview.leafletMap.closePopup();
-							mapview.leafletMap.highlightLayer.clearLayers();
+
+              // open the first accordion panel, if closed, and close all the rest
+              $('div.category').each(function() {
+                const $div = $(this);
+                const $button = $div.find('input');
+                const $panel = $div.children('.category-control-container');
+                
+                if ($div.attr('id') === 'greenhouse-gas-emissions') {
+                  // open this one
+                  if (! $panel.is(':visible')) $button.click();
+                } else {
+                  // close all the rest
+                  if ($panel.is(':visible')) $button.click();
+                }
+              })
+
+              $('#total_ghg_emissions').click();                  // select default layer
+              // $('input#year-2021').click();                       // select 2021 which we know works
+			    		let citycenter = state.get('city').get('center');   // map center
+			    		let cityzoom = state.get('city').get('zoom');       // map zoom
+							mapview.leafletMap.setView(citycenter, cityzoom);   // set map xyz
+							mapview.leafletMap.closePopup();                    // close any popups
+							mapview.leafletMap.highlightLayer.clearLayers();    // clear any bldg highlights
+              $('#back-to-map-link').click();                     // close report if open
+							state.set({selected_buildings: []});                // deselect any selected bldgs
+              state.set({building: null});
 			    	},
 			    	popover: { 
 			    		title: 'Search', 
