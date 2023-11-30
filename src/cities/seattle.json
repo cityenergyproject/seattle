@@ -19,7 +19,7 @@
     "zoom": 14,
     "categoryDefaults": [],
     "cartoDbUser": "cityenergy-seattle",
-    "table_name": "table_2022_sbw_test_with_nulls",
+    "table_name": "table_2022_sbw_updated",
     "property_id": "id",
     "property_name": "property_name",
     "building_type": "property_type",
@@ -232,7 +232,7 @@
         "allowable": true,
         "atZoom": 15,
         "property_id": "id",
-        "table_name": "seattle_building_outlines_2021"
+        "table_name": "seattle_building_outlines_2021_final"
     },
     "scorecard": {
         "citywide": {
