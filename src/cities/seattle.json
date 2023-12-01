@@ -224,7 +224,7 @@
             "default_layer": "total_ghg_emissions"
         },
          "2022": {
-            "table_name": "table_2022_sbw_updated",
+            "table_name": "table_2022_full_update_testing",
             "default_layer": "total_ghg_emissions"
         }
     },
