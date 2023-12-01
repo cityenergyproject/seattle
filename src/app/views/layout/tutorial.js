@@ -244,13 +244,6 @@ define([
 			    		description: 'Users can also find utility incentive opportunities at the bottom of the report.',
 			    	},
 			    },
-			    { element: '#links', 
-			    	onHighlighted: () => { document.querySelector('.driver-popover').focus(); },
-			    	popover: { 
-			    		title: 'Utility incentives', 
-			    		description: 'Users can also find utility incentive opportunities at the bottom of the report.',
-			    	}
-			    },
 			  ]
 	  	});
 
