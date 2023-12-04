@@ -102,6 +102,8 @@ define([
 									css: {
 										'z-index': 999999,
 										'position': 'fixed',
+                    'width': 234,
+                    'height': 234
 									}
 								}).insertAfter('#building-proptype-selector select');
 
