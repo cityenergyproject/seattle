@@ -80,7 +80,6 @@ define([
 							mapview.leafletMap.highlightLayer.clearLayers();    // clear any bldg highlights
               $('#back-to-map-link').click();                     // close report if open
               state.set({selected_buildings: []});                // deselect any selected bldgs
-              console.log('HERE?');
 			    	},
 			    	popover: { 
 			    		title: 'Search', 
