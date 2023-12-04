@@ -18,8 +18,6 @@ define([
       }
 
       const mapview = this.state.get('mapview');
-      console.log("MAPVIEW: ",mapview);
-      console.log("Leaflet Map: ",mapview.leafletMap);
       this.driverObj = this.initTutorial(mapview);
   	},
 
@@ -36,10 +34,11 @@ define([
         // END: zoom back out to the default view and deselect the building
         $('#back-to-map-link').click();
         mapview.leafletMap.setView([userlat, userlng], userzoom);
-        state.set({building: null});
-        state.set({selected_buildings: []});
         mapview.leafletMap.closePopup();
         mapview.leafletMap.highlightLayer.clearLayers();
+        setTimeout(function() {
+          state.set({selected_buildings: []});
+        },300);
       }
 
       // This is the main config for the tutorial
@@ -54,7 +53,8 @@ define([
 			    	onHighlighted: () => { 
 			    		// make sure we have focus
 			    		document.querySelector('.driver-popover').focus(); 
-			    		// START: make sure we use the default view and deselect everything
+			    		
+              // START: make sure we use the default view and deselect everything
 
               // open the first accordion panel, if closed, and close all the rest
               $('div.category').each(function() {
@@ -79,8 +79,8 @@ define([
 							mapview.leafletMap.closePopup();                    // close any popups
 							mapview.leafletMap.highlightLayer.clearLayers();    // clear any bldg highlights
               $('#back-to-map-link').click();                     // close report if open
-							state.set({selected_buildings: []});                // deselect any selected bldgs
-              state.set({building: null});
+              state.set({selected_buildings: []});                // deselect any selected bldgs
+              console.log('HERE?');
 			    	},
 			    	popover: { 
 			    		title: 'Search', 
@@ -182,9 +182,8 @@ define([
 			    		title: 'Map display', 
 			    		description: 'Zooming in will display additional detail about the building location and footprints.',
 				    	onNextClick: () => {
-				    		// Select a building: has to be in this order for some reason
-				    		state.set({selected_buildings: [{id: '357', selected: true, insertedAt: Date.now()}]});
-				    		state.set({building: '357'});
+                // pretend to click this building (id 357 is specific to Seattle Municipal Tower)
+                mapview.currentLayerView.onFeatureClick(null,null,null,{'id': '357'});
 			          driverObj.moveNext();
 				    	},
 			    	},
@@ -204,8 +203,7 @@ define([
 			    		title: 'Compare buildings', 
 			    		description: 'Buildings that are selected in succession will populate the Building Comparison tab. If you click on Building Comparison, a side-by-side comparison will expand from the bottom of the screen. Select different display metrics via the left pane',			    	
 				    	onNextClick: () => {
-				    		// Select a building and quickly click "Show Report"
-				    		state.set({building: '357'});
+				    		// Click "Show Report"
 				    		$('button#view-report').click();
 				    		// without this delay, seems that Driver cannot find the element 
 			          setTimeout(function() {
