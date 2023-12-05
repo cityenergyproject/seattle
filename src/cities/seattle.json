@@ -232,7 +232,7 @@
         "allowable": true,
         "atZoom": 15,
         "property_id": "id",
-        "table_name": "seattle_building_outlines_2021_final"
+        "table_name": "seattle_building_outlines_2023_1204"
     },
     "scorecard": {
         "citywide": {
